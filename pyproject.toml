@@ -1,0 +1,28 @@
+[project]
+name = "vuln-scanner"
+version = "0.1.0"
+description = "Automated Vulnerability Assessment and Report Generator"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "requests>=2.32",
+]
+
+[project.scripts]
+vuln-scanner = "main:main"
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.0",
+    "pytest>=8.0",
+    "ruff>=0.15.21",
+]

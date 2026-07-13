@@ -1,0 +1,122 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - vuln_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - vuln_net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Runs DB migrations and creates the admin user, then exits.
+  # All other app services wait for this to complete successfully.
+  initializer:
+    image: defectdojo/defectdojo-django:latest
+    entrypoint: [ "/entrypoint-initializer.sh" ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DD_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DD_CELERY_BROKER_URL: redis://redis:6379/0
+      DD_INITIALIZE: "true"
+    volumes:
+      - media_data:/app/media
+    networks:
+      - vuln_net
+
+  uwsgi:
+    image: defectdojo/defectdojo-django:latest
+    depends_on:
+      initializer:
+        condition: service_completed_successfully
+    env_file: .env
+    environment:
+      DD_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DD_CELERY_BROKER_URL: redis://redis:6379/0
+      DD_INITIALIZE: "false"
+    volumes:
+      - media_data:/app/media
+    restart: unless-stopped
+    networks:
+      - vuln_net
+
+  celerybeat:
+    image: defectdojo/defectdojo-django:latest
+    entrypoint: [ "/entrypoint-celery-beat.sh" ]
+    depends_on:
+      initializer:
+        condition: service_completed_successfully
+    env_file: .env
+    environment:
+      DD_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DD_CELERY_BROKER_URL: redis://redis:6379/0
+    volumes:
+      - media_data:/app/media
+    restart: unless-stopped
+    networks:
+      - vuln_net
+
+  celeryworker:
+    image: defectdojo/defectdojo-django:latest
+    entrypoint: [ "/entrypoint-celery-worker.sh" ]
+    depends_on:
+      initializer:
+        condition: service_completed_successfully
+    env_file: .env
+    environment:
+      DD_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DD_CELERY_BROKER_URL: redis://redis:6379/0
+    volumes:
+      - media_data:/app/media
+    restart: unless-stopped
+    networks:
+      - vuln_net
+
+  nginx:
+    image: defectdojo/defectdojo-nginx:latest
+    depends_on:
+      - uwsgi
+    ports:
+      - "${DEFECTDOJO_PORT}:8080"
+    environment:
+      NGINX_METRICS_ENABLED: "false"
+    volumes:
+      - media_data:/usr/share/nginx/html/media
+    restart: unless-stopped
+    networks:
+      - vuln_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
+
+networks:
+  vuln_net:
+    name: vuln_scanner_network

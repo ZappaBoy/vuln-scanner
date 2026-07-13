@@ -1,0 +1,85 @@
+# Deliberately vulnerable applications for scanner testing.
+# These containers expose well-known security flaws on purpose.
+# DO NOT expose them to untrusted networks or the public internet.
+#
+# Usage:
+#   docker compose -f docker-compose.target.yaml up -d
+#
+# Then scan them:
+#   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+#     run --rm scanner \
+#       --targets juice-shop dvwa webgoat \
+#       --mode active
+
+services:
+
+  # OWASP Juice Shop — modern Node.js app covering OWASP Top 10
+  # https://owasp.org/www-project-juice-shop/
+  juice-shop:
+    image: bkimminich/juice-shop:latest
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      vuln_net:
+        aliases:
+          - juice-shop
+
+  # DVWA (Damn Vulnerable Web Application) — classic PHP/MySQL target
+  # https://github.com/digininja/DVWA
+  dvwa:
+    image: ghcr.io/digininja/dvwa:latest
+    ports:
+      - "4280:80"
+    environment:
+      DB_SERVER: dvwa-db
+      DB_DATABASE: dvwa
+      DB_USER: dvwa
+      DB_PASSWORD: dvwa
+    depends_on:
+      dvwa-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      vuln_net:
+        aliases:
+          - dvwa
+
+  dvwa-db:
+    image: mariadb:11-jammy
+    environment:
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: dvwa
+      MYSQL_ROOT_PASSWORD: dvwaroot
+    volumes:
+      - dvwa_db:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - vuln_net
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # OWASP WebGoat — Java/Spring intentionally insecure app
+  # https://owasp.org/www-project-webgoat/
+  webgoat:
+    image: webgoat/webgoat:latest
+    ports:
+      - "8888:8080"
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      vuln_net:
+        aliases:
+          - webgoat
+
+volumes:
+  dvwa_db:
+
+networks:
+  vuln_net:
+    external: true
+    name: vuln_scanner_network

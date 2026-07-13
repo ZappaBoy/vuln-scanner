@@ -1,0 +1,22 @@
+services:
+
+  scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      VS_DEFECTDOJO_URL: http://nginx:8080
+    volumes:
+      - ./reports:/app/reports
+    networks:
+      - vuln_net
+    # Scanner is a one-shot command: pass arguments via docker compose run.
+    # Example:
+    #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+    #     run --rm scanner --targets 192.168.1.1 --mode active
+
+networks:
+  vuln_net:
+    external: true
+    name: vuln_scanner_network

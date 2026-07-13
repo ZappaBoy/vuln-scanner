@@ -1,0 +1,45 @@
+# vuln-scanner configuration file
+# Copy to config.toml and adjust values before running.
+# CLI flags and VS_* environment variables override values defined here.
+
+[scan]
+# Targets: IP addresses, CIDR ranges, or hostnames
+targets = ["192.168.1.1", "192.168.1.0/24", "example.com"]
+# Per-tool execution timeout in seconds
+timeout = 300
+# Max tools running concurrently (ThreadPoolExecutor slots)
+max_concurrent = 3
+# Scan aggressiveness mode:
+#   paranoid   — maximum stealth, T0 timing, evades IDS detection
+#   passive    — no active probing, banner grabbing / enumeration only (default)
+#   active     — standard port+service scan with vulnerability checks
+#   aggressive — full scan: OS detection, all templates, fast timing (T4)
+mode = "passive"
+
+[categories]
+# Limit scan to these categories. Empty list = all categories.
+# Valid values: network, web, ssl, container, sast, sca, secrets, iac, mobile
+include = []
+# Skip these categories even if included above.
+exclude = []
+
+[tools]
+# Run only these tools. Empty list = all tools in active categories.
+include = []
+# Skip these tools by name.
+exclude = []
+
+[report]
+# Output format. Currently only "markdown" is supported.
+format = "markdown"
+# Directory where reports are written.
+output_dir = "./reports"
+
+[defectdojo]
+# DefectDojo API base URL (no trailing slash).
+url = "http://localhost:8080"
+# API key from DefectDojo → Profile → API v2 Key.
+api_key = ""
+# Product and engagement names used when importing findings.
+product_name = "My Product"
+engagement_name = "Automated Scan"

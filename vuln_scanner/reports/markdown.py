@@ -1,8 +1,9 @@
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 from vuln_scanner.reports.base import AbstractReporter
-from vuln_scanner.tools.base import ScanResult, ScanStatus, Severity
+from vuln_scanner.tools.base import Finding, ScanResult, ScanStatus, Severity
 
 _SEVERITY_ORDER = [
     Severity.CRITICAL,
@@ -30,62 +31,73 @@ class MarkdownReporter(AbstractReporter):
 
     def _render(self, results: list[ScanResult]) -> list[str]:
         now = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+        # Group results and findings by target host
+        by_target: dict[str, list[ScanResult]] = defaultdict(list)
+        for r in results:
+            by_target[r.target].append(r)
+
+        total_findings = sum(len(r.findings) for r in results)
         lines: list[str] = []
 
         lines += [
             "# Vulnerability Scan Report",
             "",
             f"**Generated:** {now}",
-            f"**Total scans:** {len(results)}",
-            f"**Total findings:** {sum(len(r.findings) for r in results)}",
+            f"**Hosts scanned:** {len(by_target)}",
+            f"**Total findings:** {total_findings}",
             "",
         ]
 
-        # --- summary table ---
+        # --- summary table grouped by host ---
         lines += [
             "## Summary",
             "",
-            "| Tool | Target | Status | Findings | Duration |",
-            "|------|--------|--------|----------|----------|",
+            "| Host | Tool | Status | Findings | Duration |",
+            "|------|------|--------|----------|----------|",
         ]
-        for r in sorted(results, key=lambda x: (x.tool, x.target)):
-            status_icon = "✅" if r.status == ScanStatus.SUCCESS else "❌"
-            lines.append(
-                f"| `{r.tool}` | `{r.target}` | {status_icon} {r.status.value} "
-                f"| {len(r.findings)} | {r.duration:.1f}s |"
-            )
+        for target in sorted(by_target):
+            for r in sorted(by_target[target], key=lambda x: x.tool):
+                status_icon = "✅" if r.status == ScanStatus.SUCCESS else "❌"
+                lines.append(
+                    f"| `{target}` | `{r.tool}` | {status_icon} {r.status.value} "
+                    f"| {len(r.findings)} | {r.duration:.1f}s |"
+                )
         lines.append("")
 
-        # --- findings by result ---
+        # --- findings grouped by host ---
         lines += ["## Findings", ""]
 
-        all_results_sorted = sorted(results, key=lambda x: (x.tool, x.target))
-        for r in all_results_sorted:
-            lines += [
-                f"### {r.tool} → `{r.target}`",
-                "",
-            ]
+        for target in sorted(by_target):
+            target_results = by_target[target]
+            lines += [f"### {target}", ""]
 
-            if r.error:
-                lines += [f"> **Error:** {r.error}", ""]
+            # Collect all findings and emit errors for this host
+            all_findings: list[tuple[str, Finding]] = []
+            for r in sorted(target_results, key=lambda x: x.tool):
+                if r.error:
+                    lines += [f"> **{r.tool} error:** {r.error}", ""]
+                for f in r.findings:
+                    all_findings.append((r.tool, f))
 
-            if not r.findings:
+            if not all_findings:
                 lines += ["*No findings.*", ""]
                 continue
 
-            sorted_findings = sorted(r.findings, key=lambda f: _SEVERITY_ORDER.index(f.severity))
+            all_findings.sort(key=lambda x: _SEVERITY_ORDER.index(x[1].severity))
 
             lines += [
-                "| Severity | Title | Description | CVEs |",
-                "|----------|-------|-------------|------|",
+                "| Severity | Tool | Title | Description | CVEs |",
+                "|----------|------|-------|-------------|------|",
             ]
-            for f in sorted_findings:
+            for tool_name, f in all_findings:
                 emoji = _SEVERITY_EMOJI.get(f.severity, "")
                 cves = ", ".join(f.cve) if f.cve else "—"
                 desc = f.description.replace("|", "\\|").replace("\n", " ")
                 title = f.title.replace("|", "\\|")
                 lines.append(
-                    f"| {emoji} {f.severity.value.upper()} | {title} | {desc} | {cves} |"
+                    f"| {emoji} {f.severity.value.upper()} | `{tool_name}` "
+                    f"| {title} | {desc} | {cves} |"
                 )
             lines.append("")
 

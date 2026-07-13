@@ -18,6 +18,7 @@ class _EnvSettings(BaseSettings):
     timeout: int | None = None
     max_concurrent: int | None = None
     mode: str | None = None
+    rate_limit: int | None = None
     include_categories: list[str] | None = None
     exclude_categories: list[str] | None = None
     include_tools: list[str] | None = None
@@ -65,6 +66,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
             "paranoid=max stealth, passive=no active probing (default), "
             "active=standard scan, aggressive=full scan. (env: VS_MODE)"
         ),
+    )
+    parser.add_argument(
+        "--rate-limit",
+        type=int,
+        metavar="RPS",
+        help="Max requests per second sent by tools that support it. Omit for no limit. (env: VS_RATE_LIMIT)",
     )
     parser.add_argument(
         "--include-categories",
@@ -154,6 +161,8 @@ def load_config(args: Namespace) -> AppConfig:
         data["scan"]["max_concurrent"] = env.max_concurrent
     if env.mode is not None:
         data["scan"]["mode"] = env.mode
+    if env.rate_limit is not None:
+        data["scan"]["rate_limit"] = env.rate_limit
     if env.include_categories is not None:
         data["categories"]["include"] = env.include_categories
     if env.exclude_categories is not None:
@@ -184,6 +193,8 @@ def load_config(args: Namespace) -> AppConfig:
         data["scan"]["max_concurrent"] = args.max_concurrent
     if args.mode is not None:
         data["scan"]["mode"] = args.mode
+    if args.rate_limit is not None:
+        data["scan"]["rate_limit"] = args.rate_limit
     if args.include_categories:
         data["categories"]["include"] = args.include_categories
     if args.exclude_categories:

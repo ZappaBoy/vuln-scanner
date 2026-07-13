@@ -1,18 +1,13 @@
-import os
-import tomllib
 from argparse import Namespace
-from pathlib import Path
-
-import pytest
 
 from vuln_scanner.config.loader import load_config
-from vuln_scanner.config.models import AppConfig, ScanMode
+from vuln_scanner.config.models import ScanMode
 
 
 def _args(**kwargs) -> Namespace:
     defaults = dict(
         config=None, targets=None, timeout=None, max_concurrent=None,
-        mode=None, include_categories=None, exclude_categories=None,
+        mode=None, rate_limit=None, include_categories=None, exclude_categories=None,
         include_tools=None, exclude_tools=None, format=None,
         output_dir=None, defectdojo_url=None, defectdojo_api_key=None,
         verbose=False,

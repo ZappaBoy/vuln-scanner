@@ -15,6 +15,9 @@ max_concurrent = 3
 #   active     — standard port+service scan with vulnerability checks
 #   aggressive — full scan: OS detection, all templates, fast timing (T4)
 mode = "passive"
+# Rate limit in requests per second. Null/unset = no limit.
+# Tools that support rate limiting: nuclei, wpscan, amass.
+rate_limit = null
 
 [categories]
 # Limit scan to these categories. Empty list = all categories.

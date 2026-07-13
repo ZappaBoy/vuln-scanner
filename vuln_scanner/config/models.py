@@ -9,9 +9,9 @@ class ReportFormat(str, Enum):
 
 
 class ScanMode(str, Enum):
-    PARANOID = "paranoid"    # maximum stealth, T0 timing, avoids IDS detection
-    PASSIVE = "passive"      # no active probing, banner grabbing / enumeration only
-    ACTIVE = "active"        # standard port+service scan with vuln checks
+    PARANOID = "paranoid"      # maximum stealth, T0 timing, avoids IDS detection
+    PASSIVE = "passive"        # no active probing, banner grabbing / enumeration only
+    ACTIVE = "active"          # standard port+service scan with vuln checks
     AGGRESSIVE = "aggressive"  # full scan: OS detection, all templates, fast timing
 
 
@@ -20,6 +20,7 @@ class ScanConfig(BaseModel):
     timeout: int = 300
     max_concurrent: int = 3
     mode: ScanMode = ScanMode.PASSIVE
+    rate_limit: int | None = None  # requests per second; None = no limit
 
 
 class CategoriesConfig(BaseModel):

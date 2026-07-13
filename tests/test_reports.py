@@ -1,7 +1,3 @@
-from pathlib import Path
-
-import pytest
-
 from vuln_scanner.reports.markdown import MarkdownReporter
 from vuln_scanner.tools.base import Finding, ScanResult, ScanStatus, Severity
 

@@ -50,6 +50,7 @@ class ScanOrchestrator:
             targets=targets,
             timeout=self._config.scan.timeout,
             mode=self._config.scan.mode,
+            rate_limit=self._config.scan.rate_limit,
         )
 
         tasks = [(tool, target) for tool in active_tools for target in targets]

@@ -8,7 +8,15 @@ RUN pacman -Syu --noconfirm && \
         testssl.sh \
         python \
         python-pip \
-        uv && \
+        uv \
+        wapiti \
+        wpscan \
+        ssh-audit \
+        gitleaks \
+        amass \
+        zaproxy \
+        trivy \
+        sslyze && \
     pacman -Scc --noconfirm
 
 WORKDIR /app

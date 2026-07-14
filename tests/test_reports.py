@@ -44,7 +44,8 @@ def test_report_contains_header(tmp_path):
 
 def test_report_summary_table(tmp_path):
     out = tmp_path / "report.md"
-    MarkdownReporter().generate([_result(tool="nmap", target="10.0.0.1")], out)
+    findings = [_finding()]
+    MarkdownReporter().generate([_result(tool="nmap", target="10.0.0.1", findings=findings)], out)
     content = out.read_text()
     assert "nmap" in content
     assert "10.0.0.1" in content
@@ -62,7 +63,10 @@ def test_report_finding_appears(tmp_path):
 def test_report_no_findings_message(tmp_path):
     out = tmp_path / "report.md"
     MarkdownReporter().generate([_result()], out)
-    assert "No findings" in out.read_text()
+    # Tools with no findings and no errors are omitted entirely
+    content = out.read_text()
+    assert "nmap" not in content
+    assert "10.0.0.1" not in content
 
 
 def test_report_error_shown(tmp_path):
@@ -93,8 +97,8 @@ def test_report_creates_parent_dirs(tmp_path):
 def test_report_multiple_results(tmp_path):
     out = tmp_path / "report.md"
     results = [
-        _result(tool="nmap", target="10.0.0.1"),
-        _result(tool="nikto", target="10.0.0.2"),
+        _result(tool="nmap",  target="10.0.0.1", findings=[_finding("Port 22", Severity.HIGH)]),
+        _result(tool="nikto", target="10.0.0.2", findings=[_finding("XSS", Severity.MEDIUM)]),
     ]
     MarkdownReporter().generate(results, out)
     content = out.read_text()

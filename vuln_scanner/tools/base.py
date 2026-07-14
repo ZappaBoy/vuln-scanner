@@ -71,6 +71,13 @@ class Finding(BaseModel):
 
 
 class ScanInput(BaseModel):
+    # Each entry may be any of:
+    #   hostname / IP / CIDR   → network tools (nmap, masscan, …)
+    #   URL                    → web tools (nikto, zap, sslyze, …)
+    #   absolute file path     → SAST / secret / SCA tools (semgrep, bandit, gitleaks, …)
+    #   absolute directory     → SAST / IaC / SCA tools (checkov, tfsec, trivy fs, …)
+    #   container image ref    → container tools (trivy image, grype, …)
+    # Tools silently skip targets that are not relevant to their scan type.
     targets: list[str]
     timeout: int = 300
     mode: ScanMode = ScanMode.PASSIVE

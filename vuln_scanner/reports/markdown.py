@@ -49,7 +49,7 @@ class MarkdownReporter(AbstractReporter):
             "",
         ]
 
-        # --- summary table grouped by host ---
+        # --- summary table: only tools that produced findings or errors ---
         lines += [
             "## Summary",
             "",
@@ -58,6 +58,8 @@ class MarkdownReporter(AbstractReporter):
         ]
         for target in sorted(by_target):
             for r in sorted(by_target[target], key=lambda x: x.tool):
+                if not r.findings and not r.error:
+                    continue
                 status_icon = "✅" if r.status == ScanStatus.SUCCESS else "❌"
                 lines.append(
                     f"| `{target}` | `{r.tool}` | {status_icon} {r.status.value} "
@@ -65,23 +67,30 @@ class MarkdownReporter(AbstractReporter):
                 )
         lines.append("")
 
-        # --- findings grouped by host ---
+        # --- findings grouped by host: skip hosts with nothing to report ---
         lines += ["## Findings", ""]
 
         for target in sorted(by_target):
             target_results = by_target[target]
-            lines += [f"### {target}", ""]
 
-            # Collect all findings and emit errors for this host
+            # Collect findings and errors for this host
             all_findings: list[tuple[str, Finding]] = []
+            errors: list[tuple[str, str]] = []
             for r in sorted(target_results, key=lambda x: x.tool):
                 if r.error:
-                    lines += [f"> **{r.tool} error:** {r.error}", ""]
+                    errors.append((r.tool, r.error))
                 for f in r.findings:
                     all_findings.append((r.tool, f))
 
+            if not all_findings and not errors:
+                continue
+
+            lines += [f"### {target}", ""]
+
+            for tool_name, err in errors:
+                lines += [f"> **{tool_name} error:** {err}", ""]
+
             if not all_findings:
-                lines += ["*No findings.*", ""]
                 continue
 
             all_findings.sort(key=lambda x: _SEVERITY_ORDER.index(x[1].severity))

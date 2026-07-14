@@ -16,6 +16,15 @@ class ScanMode(str, Enum):
 
 
 class ScanConfig(BaseModel):
+    # Accepted target formats (mix freely in the same list):
+    #   "example.com"          hostname
+    #   "192.168.1.1"          IP address
+    #   "192.168.0.0/24"       CIDR range
+    #   "https://example.com"  URL
+    #   "/path/to/project"     local directory (SAST, IaC, secrets, SCA)
+    #   "/path/to/file.py"     single file (SAST, secret scanners)
+    #   "nginx:latest"         container image reference (Trivy, Grype)
+    # Each tool only acts on the target types relevant to it.
     targets: list[str] = Field(default_factory=list)
     timeout: int = 300
     max_concurrent: int = 3

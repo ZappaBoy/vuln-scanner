@@ -3,8 +3,17 @@
 # CLI flags and VS_* environment variables override values defined here.
 
 [scan]
-# Targets: IP addresses, CIDR ranges, or hostnames
-targets = ["192.168.1.1", "192.168.1.0/24", "example.com"]
+# Targets: one or more of the following, mixed freely in the same list —
+#   • Hostname or IP address       → "example.com", "192.168.1.1"
+#   • CIDR range                   → "192.168.1.0/24"
+#   • URL                          → "https://example.com"
+#   • Absolute file path           → "/path/to/app.js", "/etc/ssl/cert.pem"
+#   • Absolute directory path      → "/home/user/project", "/opt/repo"
+#   • Git repository (local path)  → "/home/user/myrepo"  (used by secret scanners)
+#   • Container image reference    → "nginx:latest"        (used by Trivy, Grype)
+#   • CIDR for ARP discovery       → "192.168.0.0/24"     (used by Netdiscover)
+# Each tool only acts on the target types it supports and silently skips others.
+targets = ["192.168.1.1", "192.168.1.0/24", "https://example.com", "/path/to/project"]
 # Per-tool execution timeout in seconds
 timeout = 300
 # Max tools running concurrently (ThreadPoolExecutor slots)

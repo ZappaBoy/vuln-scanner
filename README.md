@@ -12,10 +12,11 @@ config.toml / env vars / CLI args
    ScanOrchestrator
          ↓
   ┌──────┴──────┐
-  │  Tool(s)    │  (Nmap, Nikto, Nuclei, testssl.sh, ...)
+  │  Tool(s)    │  (Nmap, Nuclei, Nikto, testssl.sh, SSLyze, Wapiti,
+  │             │   WPScan, ssh-audit, Trivy, Gitleaks, ZAP, Amass)
   └──────┬──────┘
          ↓
-   ScanResult[]
+   ScanResult[]  (grouped by host)
     ↙         ↘
 Markdown      DefectDojo
  Report         API
@@ -25,14 +26,46 @@ All tools run inside a **BlackArch Linux** Docker container — no host installa
 
 ---
 
+## Implemented Tools
+
+| Tool | Category | Rate limit | Notes |
+|------|----------|-----------|-------|
+| `nmap` | network | — | Timing controlled by mode (T0–T4) |
+| `nuclei` | web | `-rate-limit` | Passive mode uses `-passive` + limited templates |
+| `nikto` | web | — | Tuning depth scales with mode |
+| `testssl` | ssl | — | Depth scales with mode; `--full` in aggressive |
+| `sslyze` | ssl | — | Active/aggressive unlocks Heartbleed, ROBOT, CRIME checks |
+| `wapiti` | web | — | Passive = tech detection only; aggressive = all modules |
+| `wpscan` | web | `--throttle` | Passive detection; aggressive = deep plugin enumeration |
+| `ssh-audit` | network | — | JSON output; banner + algorithm recommendations |
+| `trivy` | container | — | Scanners scale with mode: vuln → +config+secret+license |
+| `gitleaks` | secrets | — | Scans source paths for credential leaks |
+| `zap` | web | — | Passive mode disables active attack |
+| `amass` | network | `-max-dns-queries` | `-passive` in paranoid/passive; brute in aggressive |
+
+---
+
 ## Scan Modes
 
-| Mode | Description | Nmap timing |
-|---|---|---|
-| `paranoid` | Maximum stealth, evades IDS | T0 |
-| `passive` | No active probing, enumeration only | T1 (default) |
-| `active` | Standard port/service scan + vuln checks | T3 |
-| `aggressive` | Full scan: OS detection, all templates | T4 |
+| Mode | Description |
+|------|-------------|
+| `paranoid` | Maximum stealth — passive probing, low timing, minimal footprint |
+| `passive` | No active attacks — enumeration and banner grabbing only (default) |
+| `active` | Standard scans with vulnerability checks enabled |
+| `aggressive` | Full scan: all templates, OS detection, brute-force, fast timing |
+
+---
+
+## Rate Limiting
+
+Set `rate_limit` (requests per second) in config, via `VS_RATE_LIMIT`, or `--rate-limit`:
+
+```toml
+[scan]
+rate_limit = 10   # 10 req/s; null = no limit (default)
+```
+
+Tools that honour it: `nuclei` (`-rate-limit`), `wpscan` (`--throttle`), `amass` (`-max-dns-queries`).
 
 ---
 
@@ -49,7 +82,7 @@ The `poc.sh` script starts DefectDojo, three vulnerable targets, and the scanner
 **What it does:**
 
 | Step | Action |
-|---|---|
+|------|--------|
 | 1 | Checks prerequisites |
 | 2 | Loads `.env` (copies from `.env.example` if missing) |
 | 3 | Starts DefectDojo stack |
@@ -81,7 +114,7 @@ docker compose -f docker-compose.target.yaml down -v
 Started automatically by `poc.sh` via `docker-compose.target.yaml`.
 
 | App | URL | Description |
-|---|---|---|
+|-----|-----|-------------|
 | [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) | http://localhost:3000 | Modern Node.js app covering OWASP Top 10 |
 | [DVWA](https://github.com/digininja/DVWA) | http://localhost:4280 | Classic PHP/MySQL vulnerable app |
 | [WebGoat](https://owasp.org/www-project-webgoat/) | http://localhost:8888/WebGoat | Java/Spring intentionally insecure app |
@@ -102,12 +135,16 @@ Key options in `config.toml`:
 
 ```toml
 [scan]
-targets = ["192.168.1.1", "10.0.0.0/24"]
-mode    = "passive"   # paranoid | passive | active | aggressive
-timeout = 300
+targets    = ["192.168.1.1", "10.0.0.0/24"]
+mode       = "passive"   # paranoid | passive | active | aggressive
+timeout    = 300
+rate_limit = null        # requests/sec; null = no limit
 
 [tools]
-exclude = ["nikto"]   # skip specific tools
+exclude = ["nikto"]      # skip specific tools by name
+
+[categories]
+include = ["web", "ssl"] # limit to these categories; empty = all
 
 [report]
 format     = "markdown"
@@ -133,6 +170,13 @@ uv run vuln-scanner --targets 192.168.1.1 --mode active
 
 # With a config file
 uv run vuln-scanner --config config.toml
+
+# Limit to specific tools or categories
+uv run vuln-scanner --targets 192.168.1.1 --include-tools nmap nuclei
+uv run vuln-scanner --targets 192.168.1.1 --include-categories ssl network
+
+# Rate-limit all supporting tools to 10 req/s
+uv run vuln-scanner --targets 192.168.1.1 --rate-limit 10
 
 # Verbose output
 uv run vuln-scanner --targets 192.168.1.1 -v
@@ -162,10 +206,11 @@ docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
 ## Environment Variables
 
 | Variable | CLI equivalent | Description |
-|---|---|---|
+|----------|----------------|-------------|
 | `VS_TARGETS` | `--targets` | Space-separated list of targets |
 | `VS_MODE` | `--mode` | Scan mode |
 | `VS_TIMEOUT` | `--timeout` | Per-tool timeout (seconds) |
+| `VS_RATE_LIMIT` | `--rate-limit` | Rate limit in requests/sec |
 | `VS_MAX_CONCURRENT` | `--max-concurrent` | Parallel tool slots |
 | `VS_INCLUDE_TOOLS` | `--include-tools` | Whitelist tools by name |
 | `VS_EXCLUDE_TOOLS` | `--exclude-tools` | Blacklist tools by name |
@@ -189,17 +234,28 @@ vuln_scanner/
 │   └── loader.py       # TOML + env + CLI merge logic
 ├── tools/
 │   ├── base.py         # AbstractTool, Finding, ScanInput, ScanResult
-│   └── nmap.py         # NmapTool (example implementation)
+│   ├── nmap.py
+│   ├── nuclei.py
+│   ├── nikto.py
+│   ├── testssl.py
+│   ├── sslyze.py
+│   ├── wapiti.py
+│   ├── wpscan.py
+│   ├── ssh_audit.py
+│   ├── trivy.py
+│   ├── gitleaks.py
+│   ├── zap.py
+│   └── amass.py
 ├── defectdojo/
 │   └── client.py       # DefectDojoClient — push findings via REST API
 ├── reports/
 │   ├── base.py         # AbstractReporter
-│   └── markdown.py     # MarkdownReporter
+│   └── markdown.py     # MarkdownReporter (findings grouped by host)
 └── orchestrator.py     # ScanOrchestrator — filters tools, runs scans concurrently
 
 main.py                 # Entry point
 config.example.toml     # Documented config template
-Dockerfile              # BlackArch-based scanner image
+Dockerfile              # BlackArch-based scanner image (all tools via pacman)
 docker-compose.yml                # Main compose entry (includes DefectDojo)
 docker-compose.defectdojo.yml     # DefectDojo stack
 docker-compose.scanner.yml        # Scanner service
@@ -213,18 +269,19 @@ poc.sh                            # End-to-end PoC script
 
 1. Create `vuln_scanner/tools/mytool.py` extending `AbstractTool`
 2. Implement `build_command()` and `parse_output()`
-3. Register it in `vuln_scanner/tools/__init__.py`:
+3. For file-based output, use `OUTPUT_FILE_SENTINEL` as the output path placeholder and override `run()` to call `self._run_with_tempfile()`
+4. Register it in `vuln_scanner/tools/__init__.py`:
 
 ```python
 from vuln_scanner.tools.mytool import MyTool
 
 TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
-    "nmap": NmapTool,
-    "mytool": MyTool,   # ← add here
+    ...
+    "mytool": MyTool,
 }
 ```
 
-4. Add the tool binary to `Dockerfile` via `pacman -S`
+5. Add the binary to `Dockerfile` via `pacman -S mytool`
 
 ---
 

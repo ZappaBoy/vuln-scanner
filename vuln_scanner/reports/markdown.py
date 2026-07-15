@@ -58,6 +58,8 @@ class MarkdownReporter(AbstractReporter):
         ]
         for target in sorted(by_target):
             for r in sorted(by_target[target], key=lambda x: x.tool):
+                if r.status == ScanStatus.SKIPPED and not r.findings:
+                    continue
                 if not r.findings and not r.error:
                     continue
                 status_icon = "✅" if r.status == ScanStatus.SUCCESS else "❌"
@@ -77,7 +79,7 @@ class MarkdownReporter(AbstractReporter):
             all_findings: list[tuple[str, Finding]] = []
             errors: list[tuple[str, str]] = []
             for r in sorted(target_results, key=lambda x: x.tool):
-                if r.error:
+                if r.error and r.status != ScanStatus.SKIPPED:
                     errors.append((r.tool, r.error))
                 for f in r.findings:
                     all_findings.append((r.tool, f))

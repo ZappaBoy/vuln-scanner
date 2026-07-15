@@ -23,7 +23,9 @@ class BanditTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."
-        cmd = ["bandit", "-r", path, "-f", "json", "-q"]
+        cmd = ["bandit", "-r", path, "-f", "json", "-q",
+               "--exclude", ".venv,venv,.git,node_modules,dist,build,tests",
+               "--skip", "B101,B404,B405,B603"]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
         return cmd

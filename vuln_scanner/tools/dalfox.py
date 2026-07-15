@@ -8,7 +8,7 @@ class DalfoxTool(AbstractTool):
     category: str = "web"
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["dalfox", "url", target, "--format", "json", "--silence"]
+        cmd = ["dalfox", "url", "--url", target, "--format", "json", "--silence"]
 
         if scan_input.mode == ScanMode.PARANOID:
             cmd += ["--only-discovery"]

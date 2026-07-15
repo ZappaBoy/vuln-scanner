@@ -90,17 +90,30 @@ class JSluiceTool(AbstractTool):
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
-        url = target if target.startswith(("http://", "https://")) else f"https://{target}"
         start = time.monotonic()
 
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "vuln-scanner/jsluice"})
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                content = resp.read()
-        except Exception as exc:
+        # Determine URL to fetch — prefer the scheme already in the target,
+        # fall back from https to http if the connection is refused.
+        if target.startswith(("http://", "https://")):
+            urls_to_try = [target]
+        else:
+            urls_to_try = [f"http://{target}", f"https://{target}"]
+
+        content = None
+        for url in urls_to_try:
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "vuln-scanner/jsluice"})
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    content = resp.read()
+                break
+            except Exception:
+                continue
+
+        if content is None:
             return ScanResult(
                 tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error=f"Failed to fetch {url}: {exc}",
+                status=ScanStatus.FAILED,
+                error=f"Failed to fetch {target}: target unreachable",
             )
 
         cmd = self.build_command(target, scan_input)
@@ -126,5 +139,4 @@ class JSluiceTool(AbstractTool):
                               error=f"Timed out after {scan_input.timeout}s")
         except FileNotFoundError:
             return ScanResult(tool=self.name, target=target,
-                              status=ScanStatus.FAILED,
-                              error="Binary not found: jsluice")
+                              status=ScanStatus.SKIPPED)

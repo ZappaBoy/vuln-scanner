@@ -197,11 +197,10 @@ class AbstractTool(ABC, BaseModel):
                 error=f"Tool timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
-            log.error("[%s] Binary not found: %r.", self.name, cmd[0])
+            log.debug("[%s] Binary not found: %r — skipping.", self.name, cmd[0])
             return ScanResult(
                 tool=self.name,
                 target=target,
                 duration=0.0,
-                status=ScanStatus.FAILED,
-                error=f"Tool binary not found: {cmd[0]!r}. Is it installed?",
+                status=ScanStatus.SKIPPED,
             )

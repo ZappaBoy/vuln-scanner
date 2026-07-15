@@ -26,8 +26,8 @@ class ArjunTool(AbstractTool):
         cmd = [
             "arjun",
             "-u", target,
-            "-oJ", OUTPUT_FILE_SENTINEL,
-            "--chunk-size", str(_CHUNK[scan_input.mode]),
+            "-o", OUTPUT_FILE_SENTINEL,
+            "-c", str(_CHUNK[scan_input.mode]),
             "-q",
         ]
         if scan_input.mode == ScanMode.AGGRESSIVE:

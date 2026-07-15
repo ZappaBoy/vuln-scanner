@@ -99,8 +99,7 @@ class RESTlerTool(AbstractTool):
 
                 if spec_file is None:
                     return ScanResult(
-                        tool=self.name, target=target, status=ScanStatus.FAILED,
-                        error="Could not locate OpenAPI spec. Provide a spec file path or use extra_args.",
+                        tool=self.name, target=target, status=ScanStatus.SKIPPED,
                     )
                 compile_cmd = ["restler", "compile", "--api_spec", spec_file]
 

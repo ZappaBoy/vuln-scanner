@@ -5,7 +5,6 @@ from vuln_scanner.tools.base import (
     Finding,
     ScanInput,
     ScanMode,
-    Severity,
     _parse_severity,
 )
 
@@ -56,15 +55,6 @@ class SemgrepTool(AbstractTool):
                 cve=cves,
                 references=refs,
                 raw=r,
-            ))
-
-        for err in data.get("errors", []):
-            findings.append(Finding(
-                title=f"Semgrep error: {err.get('type', 'unknown')}",
-                severity=Severity.INFO,
-                description=err.get("message", ""),
-                tool=self.name,
-                target=target,
             ))
 
         return findings

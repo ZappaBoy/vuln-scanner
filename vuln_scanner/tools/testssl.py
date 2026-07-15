@@ -13,6 +13,10 @@ from vuln_scanner.tools.base import (
 
 _SKIP_SEVERITIES = {"ok", "info", "hint", "debug", "not tested"}
 
+# testssl IDs that are scanner diagnostics, not target vulnerabilities
+_SKIP_IDS = {"engine_problem", "scanTime", "scanProblem", "fileCreation",
+             "service", "pre_info"}
+
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--protocols", "--headers", "--cipher-per-proto"],
     ScanMode.PASSIVE:  ["--protocols", "--headers", "--cipher-per-proto", "--server-defaults"],
@@ -55,6 +59,8 @@ class TestSSLTool(AbstractTool):
         for item in items:
             sev_raw = item.get("severity", "ok").lower()
             if sev_raw in _SKIP_SEVERITIES:
+                continue
+            if item.get("id", "") in _SKIP_IDS:
                 continue
             severity = _parse_severity(sev_raw)
             cve_raw = item.get("cve", "")

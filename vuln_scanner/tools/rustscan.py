@@ -9,8 +9,15 @@ _ULIMIT: dict[ScanMode, int] = {
     ScanMode.AGGRESSIVE: 10000,
 }
 
-_PORTS: dict[ScanMode, str] = {
+_PORTS: dict[ScanMode, str | None] = {
     ScanMode.PARANOID:   "22,80,443,8080",
+    ScanMode.PASSIVE:    None,   # rustscan default (~top 1000)
+    ScanMode.ACTIVE:     None,   # full range via --range flag
+    ScanMode.AGGRESSIVE: None,
+}
+
+_RANGE: dict[ScanMode, str | None] = {
+    ScanMode.PARANOID:   None,
     ScanMode.PASSIVE:    "1-1024",
     ScanMode.ACTIVE:     "1-65535",
     ScanMode.AGGRESSIVE: "1-65535",
@@ -30,15 +37,15 @@ class RustScanTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         ulimit = _ULIMIT[scan_input.mode]
-        ports = _PORTS[scan_input.mode]
         nmap_flags = _NMAP_FLAGS[scan_input.mode] + ["-oX", "-"]
-        cmd = [
-            "rustscan",
-            "-a", target,
-            "-p", ports,
-            "--ulimit", str(ulimit),
-            "--",
-        ] + nmap_flags
+        cmd = ["rustscan", "-a", target, "--ulimit", str(ulimit)]
+        ports = _PORTS[scan_input.mode]
+        if ports is not None:
+            cmd += ["-p", ports]
+        port_range = _RANGE[scan_input.mode]
+        if port_range is not None:
+            cmd += ["--range", port_range]
+        cmd += ["--"] + nmap_flags
         cmd += scan_input.extra_args
         return cmd
 

@@ -99,7 +99,7 @@ class ArachniTool(AbstractTool):
             except FileNotFoundError:
                 return ScanResult(
                     tool=self.name, target=target, duration=0.0,
-                    status=ScanStatus.FAILED, error="arachni binary not found.",
+                    status=ScanStatus.SKIPPED,
                 )
 
             # Step 2: convert .afr → JSON report
@@ -110,12 +110,18 @@ class ArachniTool(AbstractTool):
             log.debug("[arachni] Converting report: %s", " ".join(report_cmd))
             try:
                 subprocess.run(report_cmd, capture_output=True, text=True, timeout=60)
-            except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+            except FileNotFoundError:
+                return ScanResult(
+                    tool=self.name, target=target,
+                    duration=time.monotonic() - start,
+                    status=ScanStatus.SKIPPED,
+                )
+            except subprocess.TimeoutExpired as exc:
                 return ScanResult(
                     tool=self.name, target=target,
                     duration=time.monotonic() - start,
                     status=ScanStatus.FAILED,
-                    error=f"arachni_reporter failed: {exc}",
+                    error=f"arachni_reporter timed out: {exc}",
                 )
 
             raw = ""

@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 
 from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
 
@@ -16,13 +17,15 @@ class NoSQLMapTool(AbstractTool):
     category: str = "web"
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = [
-            "nosqlmap",
-            "--attack", "0",   # test all attack types
-            "--url", target,
-        ]
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
-            cmd = ["nosqlmap", "--attack", "1", "--url", target]  # app-level only
+            attack = "1"  # app-level injection only
+        else:
+            attack = "2"  # app-level + DB-level injection
+
+        parsed = urlparse(target if "://" in target else f"http://{target}")
+        host = parsed.hostname or target
+        port = str(parsed.port) if parsed.port else ("443" if parsed.scheme == "https" else "80")
+        cmd = ["nosqlmap", "--attack", attack, "--victim", host, "--webPort", port]
 
         cmd += scan_input.extra_args
         return cmd

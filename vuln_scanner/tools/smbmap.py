@@ -23,7 +23,7 @@ class SMBMapTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]
-        cmd = ["smbmap", "-H", host, "--no-banner"]
+        cmd = ["smbmap", "-H", host, "--no-pass"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-R"]   # recursive share listing

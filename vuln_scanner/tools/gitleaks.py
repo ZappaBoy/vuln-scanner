@@ -1,16 +1,14 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    Severity,
-)
+from vuln_scanner.tools.enums import Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 
 class GitleaksTool(AbstractTool):
     name: str = "gitleaks"
     category: str = "secrets"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target is treated as a filesystem path or git repo path

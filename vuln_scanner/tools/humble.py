@@ -1,7 +1,9 @@
 import json
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 # Security headers whose absence is a finding
 _MISSING_HEADER_SEV: dict[str, Severity] = {
@@ -34,6 +36,7 @@ _DEPRECATED_SEV: dict[str, Severity] = {
 class HumbleTool(AbstractTool):
     name: str = "humble"
     category: str = "ssl"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
@@ -46,8 +49,6 @@ class HumbleTool(AbstractTool):
         return cmd
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
-        findings: list[Finding] = []
-
         # Try JSON first (humble -j)
         try:
             data = json.loads(raw)

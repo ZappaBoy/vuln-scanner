@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _RATE: dict[ScanMode, int] = {
     ScanMode.PARANOID:   100,
@@ -20,6 +22,7 @@ _PORTS: dict[ScanMode, str] = {
 class MasscanTool(AbstractTool):
     name: str = "masscan"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         rate = scan_input.rate_limit or _RATE[scan_input.mode]

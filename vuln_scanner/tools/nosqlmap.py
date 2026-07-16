@@ -1,7 +1,9 @@
 import re
 from urllib.parse import urlparse
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _VULN_RE = re.compile(
     r"(?:vulnerable|injection|bypass|found|detected).+?(?:NoSQL|MongoDB|CouchDB|injection)",
@@ -15,6 +17,7 @@ _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 class NoSQLMapTool(AbstractTool):
     name: str = "nosqlmap"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
@@ -61,7 +64,7 @@ class NoSQLMapTool(AbstractTool):
                     param_m = _PARAM_RE.search(line)
                     param = param_m.group(1) if param_m else ""
                     findings.append(Finding(
-                        title=f"NoSQL injection" + (f" — parameter '{param}'" if param else ""),
+                        title="NoSQL injection" + (f" — parameter '{param}'" if param else ""),
                         severity=Severity.HIGH,
                         description=f"NoSQL injection detected on {target}: {line}",
                         tool=self.name,

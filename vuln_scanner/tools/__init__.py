@@ -1,4 +1,4 @@
-from vuln_scanner.tools.base import AbstractTool
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.acunetix import AcunetixTool
 from vuln_scanner.tools.amass import AmassTool
 from vuln_scanner.tools.apifuzzer import APIFuzzerTool

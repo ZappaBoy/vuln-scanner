@@ -194,7 +194,7 @@ wait_for_targets() {
 # ---------------------------------------------------------------------------
 build_scanner() {
     banner "Building scanner image"
-    docker compose -f docker-compose.yml -f docker-compose.scanner.yml build scanner
+    docker compose -f docker-compose.yml build scanner
     success "Scanner image built"
 }
 
@@ -205,7 +205,6 @@ run_scanner() {
 
     docker compose \
         -f docker-compose.yml \
-        -f docker-compose.scanner.yml \
         run --rm \
         -e VS_DEFECTDOJO_API_KEY="$DD_API_TOKEN" \
         -e VS_DEFECTDOJO_PRODUCT="$DD_PRODUCT" \
@@ -241,7 +240,6 @@ print_summary() {
 
   ${BOLD}Teardown${NC}
     docker compose down -v
-    docker compose -f docker-compose.target.yaml down -v
 
 EOF
 }

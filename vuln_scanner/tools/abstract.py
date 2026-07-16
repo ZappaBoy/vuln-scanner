@@ -1,16 +1,21 @@
+"""AbstractTool ABC and subprocess execution helpers."""
 import logging
 import os
 import subprocess
 import tempfile
 import time
 from abc import ABC, abstractmethod
-from enum import Enum
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
+
+from vuln_scanner.tools.enums import ScanStatus, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.target import _ALL_TARGET_TYPES, classify_target
 
 log = logging.getLogger(__name__)
 
+# Place in a command list where the output file path should be substituted.
 OUTPUT_FILE_SENTINEL = "__OUTPUT_FILE__"
 
 
@@ -20,108 +25,42 @@ def _as_url(target: str, scheme: str = "http") -> str:
     return f"{scheme}://{target}"
 
 
-def _parse_severity(s: str) -> "Severity":
-    s = s.lower().strip()
-    if s in ("critical", "c"):
-        return Severity.CRITICAL
-    if s in ("high", "h"):
-        return Severity.HIGH
-    if s in ("medium", "m", "warning", "warn", "moderate", "3"):
-        return Severity.MEDIUM
-    if s in ("low", "l", "1"):
-        return Severity.LOW
-    return Severity.INFO
-
-
-class Severity(str, Enum):
-    CRITICAL = "critical"
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
-    INFO = "info"
-
-    @property
-    def sort_order(self) -> int:
-        return {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}[self.value]
-
-
-class ScanStatus(str, Enum):
-    SUCCESS = "success"
-    FAILED = "failed"
-    SKIPPED = "skipped"
-    TIMEOUT = "timeout"
-
-
-class ScanMode(str, Enum):
-    PARANOID = "paranoid"
-    PASSIVE = "passive"
-    ACTIVE = "active"
-    AGGRESSIVE = "aggressive"
-
-
-class Finding(BaseModel):
-    title: str
-    severity: Severity
-    description: str
-    tool: str
-    target: str
-    cve: list[str] = Field(default_factory=list)
-    references: list[str] = Field(default_factory=list)
-    raw: dict = Field(default_factory=dict)
-
-
-class ScanInput(BaseModel):
-    # Each entry may be any of:
-    #   hostname / IP / CIDR   → network tools (nmap, masscan, …)
-    #   URL                    → web tools (nikto, zap, sslyze, …)
-    #   absolute file path     → SAST / secret / SCA tools (semgrep, bandit, gitleaks, …)
-    #   absolute directory     → SAST / IaC / SCA tools (checkov, tfsec, trivy fs, …)
-    #   container image ref    → container tools (trivy image, grype, …)
-    # Tools silently skip targets that are not relevant to their scan type.
-    targets: list[str]
-    timeout: int = 300
-    mode: ScanMode = ScanMode.PASSIVE
-    rate_limit: int | None = None  # requests per second; None = no limit
-    extra_args: list[str] = Field(default_factory=list)
-
-
-class ScanResult(BaseModel):
-    tool: str
-    target: str
-    findings: list[Finding] = Field(default_factory=list)
-    duration: float = 0.0
-    status: ScanStatus = ScanStatus.SUCCESS
-    error: str | None = None
-    raw_output: str = ""
-
-
 class AbstractTool(ABC, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
     category: str
 
+    # Override in subclasses to restrict which target types this tool handles.
+    # Default = all types so tools without an override keep working.
+    applicable_targets: frozenset[TargetType] = _ALL_TARGET_TYPES
+
+    def applies_to(self, target: str) -> bool:
+        """Return True if this tool should run against *target*."""
+        if self.applicable_targets is _ALL_TARGET_TYPES:
+            return True
+        return bool(classify_target(target) & self.applicable_targets)
+
     @abstractmethod
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        """Return the subprocess argv list for the given target.
-        Use OUTPUT_FILE_SENTINEL where the output file path should go."""
+        """Return the subprocess argv list for *target*.
+
+        Use OUTPUT_FILE_SENTINEL where the output file path should go.
+        """
 
     @abstractmethod
     def parse_output(self, raw: str, target: str) -> list[Finding]:
-        """Parse raw tool output (stdout or file content) into Finding objects."""
+        """Parse raw tool output into Finding objects."""
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
-        """Execute against target using stdout capture."""
+        """Execute against *target*, capturing stdout."""
         cmd = self.build_command(target, scan_input)
         return self._exec(cmd, target, scan_input, raw_from="stdout")
 
     def _run_with_tempfile(
         self, target: str, scan_input: ScanInput, suffix: str = ".json"
     ) -> ScanResult:
-        """Execute against target; tool writes results to a temp file.
-
-        build_command() must include OUTPUT_FILE_SENTINEL where the path goes.
-        """
+        """Execute against *target*; tool writes results to a temp file."""
         fd, tmpfile = tempfile.mkstemp(suffix=suffix, prefix=f"vs_{self.name}_")
         os.close(fd)
         try:
@@ -164,7 +103,6 @@ class AbstractTool(ABC, BaseModel):
             else:
                 raw = proc.stdout
 
-            # Some tools exit non-zero even on success (e.g. found vulns); let parse decide
             if proc.returncode not in (0, 1) and not raw.strip():
                 log.warning("[%s] Exited %d on %s.", self.name, proc.returncode, target)
                 return ScanResult(

@@ -12,16 +12,9 @@ import subprocess
 import time
 import xml.etree.ElementTree as ET
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool
 
 # GVM built-in scan config UUIDs (Greenbone Community Edition defaults)
 _CONFIG_IDS: dict[ScanMode, str] = {
@@ -46,6 +39,7 @@ def _gvm(socket: str, user: str, password: str, xml: str, timeout: int = 60) -> 
 class OpenVASTool(AbstractTool):
     name: str = "openvas"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []  # GVM protocol handled in run()

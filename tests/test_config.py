@@ -1,19 +1,16 @@
 from argparse import Namespace
 
-from vuln_scanner.config.loader import load_config
-from vuln_scanner.config.models import ScanMode
+from vuln_scanner.config.loader import build_arg_parser, load_config
+from vuln_scanner.config.models import ReportFormat, ScanMode
 
 
 def _args(**kwargs) -> Namespace:
-    defaults = dict(
-        config=None, targets=None, timeout=None, max_concurrent=None,
-        mode=None, rate_limit=None, include_categories=None, exclude_categories=None,
-        include_tools=None, exclude_tools=None, format=None,
-        output_dir=None, defectdojo_url=None, defectdojo_api_key=None,
-        verbose=False,
-    )
-    defaults.update(kwargs)
-    return Namespace(**defaults)
+    """Build a Namespace that matches what build_arg_parser() would produce."""
+    # Parse empty args to get all defaults, then override with kwargs.
+    base = build_arg_parser().parse_args([])
+    for k, v in kwargs.items():
+        setattr(base, k, v)
+    return base
 
 
 def test_defaults_when_no_source():
@@ -21,7 +18,7 @@ def test_defaults_when_no_source():
     assert config.scan.targets == []
     assert config.scan.mode == ScanMode.PASSIVE
     assert config.scan.timeout == 300
-    assert config.report.format.value == "markdown"
+    assert ReportFormat.MARKDOWN in config.report.formats
 
 
 def test_cli_targets_override():
@@ -80,3 +77,45 @@ def test_tool_filter_include():
 def test_tool_filter_exclude():
     config = load_config(_args(exclude_tools=["nikto"]))
     assert config.tools.exclude == ["nikto"]
+
+
+def test_formats_cli_multi():
+    config = load_config(_args(formats=["markdown", "html", "json"]))
+    assert ReportFormat.MARKDOWN in config.report.formats
+    assert ReportFormat.HTML in config.report.formats
+    assert ReportFormat.JSON in config.report.formats
+
+
+def test_no_llm_flag():
+    config = load_config(_args(no_llm=True))
+    assert config.llm.enabled is False
+
+
+def test_llm_model_cli():
+    config = load_config(_args(llm_model="gpt-4o"))
+    assert config.llm.model == "gpt-4o"
+
+
+def test_openai_api_key_fallback(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-123")
+    config = load_config(_args())
+    assert config.llm.api_key == "sk-test-123"
+
+
+def test_build_llm_config_valid():
+    config = load_config(_args(llm_model="gpt-4o"))
+    # inject a key manually so the config is "active"
+    config.llm.api_key = "sk-test"
+    config.llm.enabled = True
+    llm = config.build_llm_config()
+    llm.validate_active()  # should not raise
+
+
+def test_build_llm_config_no_model_raises():
+    import pytest
+    config = load_config(_args())
+    config.llm.api_key = "sk-test"
+    config.llm.enabled = True
+    llm = config.build_llm_config()
+    with pytest.raises(ValueError):
+        llm.validate_active()

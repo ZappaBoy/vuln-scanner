@@ -1,14 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _as_url,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _MODE_ENUMERATE: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--enumerate", "p,t,u", "--detection-mode", "passive"],
@@ -25,6 +19,7 @@ _MODE_ENUMERATE: dict[ScanMode, list[str]] = {
 class WPScanTool(AbstractTool):
     name: str = "wpscan"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [

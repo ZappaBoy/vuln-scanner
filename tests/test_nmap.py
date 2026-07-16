@@ -1,4 +1,5 @@
-from vuln_scanner.tools.base import ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity
+from vuln_scanner.tools.models import ScanInput
 from vuln_scanner.tools.nmap import NmapTool
 
 _XML_TWO_PORTS = """<?xml version="1.0"?>

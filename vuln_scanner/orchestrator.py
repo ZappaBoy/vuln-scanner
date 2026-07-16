@@ -2,7 +2,9 @@ import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from vuln_scanner.config.models import AppConfig
-from vuln_scanner.tools.base import AbstractTool, ScanInput, ScanResult, ScanStatus
+from vuln_scanner.tools.enums import ScanStatus
+from vuln_scanner.tools.models import ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool
 
 log = logging.getLogger(__name__)
 
@@ -53,12 +55,27 @@ class ScanOrchestrator:
             rate_limit=self._config.scan.rate_limit,
         )
 
-        tasks = [(tool, target) for tool in active_tools for target in targets]
+        # Build task matrix gated by target-type applicability (Phase 2)
+        tasks: list[tuple[AbstractTool, str]] = []
+        skipped_count = 0
+        for tool in active_tools:
+            for target in targets:
+                if tool.applies_to(target):
+                    tasks.append((tool, target))
+                else:
+                    log.debug(
+                        "Skipping tool '%s' for target '%s': target type not applicable.",
+                        tool.name, target,
+                    )
+                    skipped_count += 1
+
         log.info(
-            "Starting scan: %d tool(s) × %d target(s) = %d task(s) | mode=%s | workers=%d",
+            "Starting scan: %d tool(s) × %d target(s) = %d task(s) "
+            "(%d type-gated skips) | mode=%s | workers=%d",
             len(active_tools),
             len(targets),
             len(tasks),
+            skipped_count,
             scan_input.mode.value,
             self._config.scan.max_concurrent,
         )

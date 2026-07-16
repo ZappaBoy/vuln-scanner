@@ -1,15 +1,9 @@
 import json
 import re
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    OUTPUT_FILE_SENTINEL,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    Severity,
-)
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _DETAIL: dict[ScanMode, str] = {
     ScanMode.PARANOID:   "NORMAL",
@@ -41,6 +35,7 @@ _VULN_SEV: dict[str, tuple[Severity, list[str]]] = {
 class TLSAttackerTool(AbstractTool):
     name: str = "tls-attacker"
     category: str = "ssl"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "")

@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _WEAK_PROTOS = {
     ("ssl", "2"): ("SSL 2.0", Severity.CRITICAL),
@@ -15,6 +17,7 @@ _WEAK_BITS = 128  # cipher suites below this key length are flagged
 class SSLScanTool(AbstractTool):
     name: str = "sslscan"
     category: str = "ssl"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "")

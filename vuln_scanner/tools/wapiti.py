@@ -4,17 +4,9 @@ import subprocess
 import tempfile
 import time
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-    _as_url,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _VULN_SEVERITY: dict[int, Severity] = {
     3: Severity.HIGH,
@@ -31,6 +23,7 @@ _AGGRESSIVE_MODULES = ""               # empty = all modules
 class WapitiTool(AbstractTool):
     name: str = "wapiti"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # Not used directly; run() builds command with tmpfile

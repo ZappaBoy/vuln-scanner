@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 # Netdiscover -P output line:
 # " 192.168.1.1     aa:bb:cc:dd:ee:ff      1    60  Intel Corporate"
@@ -14,6 +16,7 @@ _HOST_RE = re.compile(
 class NetdiscoverTool(AbstractTool):
     name: str = "netdiscover"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a CIDR range e.g. 192.168.1.0/24

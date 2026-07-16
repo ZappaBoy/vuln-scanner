@@ -3,15 +3,9 @@ import os
 import tempfile
 import time
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool
 import subprocess
 
 _SOURCES: dict[ScanMode, str] = {
@@ -30,6 +24,7 @@ _LIMIT: dict[ScanMode, int] = {
 class TheHarvesterTool(AbstractTool):
     name: str = "theharvester"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # placeholder — overridden by run()

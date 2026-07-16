@@ -1,9 +1,12 @@
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 
 class GauTool(AbstractTool):
     name: str = "gau"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         domain = target.replace("https://", "").replace("http://", "").split("/")[0]

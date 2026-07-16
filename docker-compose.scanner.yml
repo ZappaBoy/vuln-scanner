@@ -7,6 +7,11 @@ services:
     env_file: .env
     environment:
       VS_DEFECTDOJO_URL: http://nginx:8080
+      # LLM analysis — override via .env or environment
+      # VS_LLM_API_KEY: ""          # or OPENAI_API_KEY
+      # VS_LLM_BASE_URL: ""         # or OPENAI_BASE_URL (for non-OpenAI endpoints)
+      # VS_LLM_MODEL: "gpt-4o"      # required when LLM active
+      # VS_LLM_FEATURE_EXECUTE_POC: "false"  # set "true" for in-container PoC execution
     volumes:
       - ./reports:/app/reports
     networks:

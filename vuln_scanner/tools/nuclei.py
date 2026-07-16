@@ -1,14 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _as_url,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _MODE_TEMPLATES: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["-t", "dns,ssl,http/technologies,http/headers", "-passive"],
@@ -21,6 +15,7 @@ _MODE_TEMPLATES: dict[ScanMode, list[str]] = {
 class NucleiTool(AbstractTool):
     name: str = "nuclei"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["nuclei", "-u", _as_url(target), "-json", "-no-interactsh"]

@@ -1,13 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_SCANNERS: dict[ScanMode, str] = {
     ScanMode.PARANOID:   "vuln",
@@ -20,6 +15,7 @@ _MODE_SCANNERS: dict[ScanMode, str] = {
 class TrivyTool(AbstractTool):
     name: str = "trivy"
     category: str = "container"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         scanners = _MODE_SCANNERS.get(scan_input.mode, "vuln")

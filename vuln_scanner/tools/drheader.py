@@ -1,14 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _as_url,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _SEVERITY_MAP = {
     "high": Severity.HIGH,
@@ -20,6 +14,7 @@ _SEVERITY_MAP = {
 class DrheaderTool(AbstractTool):
     name: str = "drheader"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["drheader", "scan", "single", _as_url(target), "--json"]

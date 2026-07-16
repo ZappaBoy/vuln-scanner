@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _WORDLISTS: dict[ScanMode, str] = {
     ScanMode.PARANOID:   "/usr/share/wordlists/kiterunner/routes-small.kite",
@@ -27,6 +29,7 @@ _STATUS_SEV: dict[int, Severity] = {
 class KiterunnerTool(AbstractTool):
     name: str = "kiterunner"
     category: str = "api"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
@@ -50,7 +53,7 @@ class KiterunnerTool(AbstractTool):
             m = _ROUTE_RE.search(line.strip())
             if not m:
                 continue
-            method, status_str, length, words, lines_count, url = (
+            method, status_str, length, words, _, url = (
                 m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6)
             )
             status = int(status_str)

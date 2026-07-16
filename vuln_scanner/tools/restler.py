@@ -1,23 +1,17 @@
 import json
-import os
 import subprocess
 import tempfile
 import time
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool
 
 
 class RESTlerTool(AbstractTool):
     name: str = "restler"
     category: str = "api"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # placeholder — multi-phase execution handled in run()

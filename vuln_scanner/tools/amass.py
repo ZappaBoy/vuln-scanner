@@ -1,19 +1,14 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    OUTPUT_FILE_SENTINEL,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    Severity,
-)
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 
 class AmassTool(AbstractTool):
     name: str = "amass"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a domain name (e.g. example.com)

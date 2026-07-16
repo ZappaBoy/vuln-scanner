@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _XSS_RE = re.compile(r"XSS\s+Found\s+In\s+(.+)", re.IGNORECASE)
 _PARAM_RE = re.compile(r"(?:parameter|param)[:\s]+([^\s,]+)", re.IGNORECASE)
@@ -11,6 +13,7 @@ _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 class XSStrikeTool(AbstractTool):
     name: str = "xsstrike"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["xsstrike", "-u", target, "--skip", "--timeout", "10"]

@@ -1,15 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    OUTPUT_FILE_SENTINEL,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    Severity,
-    _as_url,
-)
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL, _as_url
 
 _RISK_SEVERITY: dict[str, Severity] = {
     "3": Severity.HIGH,
@@ -22,6 +15,7 @@ _RISK_SEVERITY: dict[str, Severity] = {
 class ZAPTool(AbstractTool):
     name: str = "zap"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [

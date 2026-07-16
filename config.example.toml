@@ -1,57 +1,127 @@
-# vuln-scanner configuration file
-# Copy to config.toml and adjust values before running.
-# CLI flags and VS_* environment variables override values defined here.
+# vuln-scanner configuration example
+# Copy to config.toml and customise.
+# Priority order (highest wins): CLI args > environment variables > this file.
+# Env prefix: VS_*  (e.g. VS_LLM_MODEL, VS_LLM_API_KEY)
+# Also honours standard OPENAI_API_KEY / OPENAI_BASE_URL as fallbacks for LLM.
 
+# ─── Scan targets ─────────────────────────────────────────────────────────────
 [scan]
-# Targets: one or more of the following, mixed freely in the same list —
-#   • Hostname or IP address       → "example.com", "192.168.1.1"
-#   • CIDR range                   → "192.168.1.0/24"
-#   • URL                          → "https://example.com"
-#   • Absolute file path           → "/path/to/app.js", "/etc/ssl/cert.pem"
-#   • Absolute directory path      → "/home/user/project", "/opt/repo"
-#   • Git repository (local path)  → "/home/user/myrepo"  (used by secret scanners)
-#   • Container image reference    → "nginx:latest"        (used by Trivy, Grype)
-#   • CIDR for ARP discovery       → "192.168.0.0/24"     (used by Netdiscover)
-# Each tool only acts on the target types it supports and silently skips others.
-targets = ["192.168.1.1", "192.168.1.0/24", "https://example.com", "/path/to/project"]
-# Per-tool execution timeout in seconds
-timeout = 300
-# Max tools running concurrently (ThreadPoolExecutor slots)
-max_concurrent = 3
-# Scan aggressiveness mode:
-#   paranoid   — maximum stealth, T0 timing, evades IDS detection
-#   passive    — no active probing, banner grabbing / enumeration only (default)
-#   active     — standard port+service scan with vulnerability checks
-#   aggressive — full scan: OS detection, all templates, fast timing (T4)
-mode = "passive"
-# Rate limit in requests per second. Null/unset = no limit.
-# Tools that support rate limiting: nuclei, wpscan, amass.
-rate_limit = null
+# Mix target types freely — tools only act on the types they support.
+#   hostname / IP / CIDR  → network tools (nmap, masscan, smbmap …)
+#   http/https URL        → web tools (nikto, nuclei, dalfox …)
+#   /path/to/dir|file     → SAST / IaC / secret tools (bandit, semgrep, checkov …)
+#   image:tag             → container tools (trivy, grype)
+#   git URL / .git path   → secret / repo tools (trufflehog, gitleaks)
+targets = [
+    "http://dvwa",
+    "192.168.1.1",
+    "/path/to/project",
+]
+timeout        = 300     # seconds per tool per target
+max_concurrent = 3       # parallel tool executions
+mode           = "passive" # paranoid | passive | active | aggressive
+# rate_limit   = 50      # requests/s for tools that honour it
 
+# ─── Tool / category filtering ────────────────────────────────────────────────
 [categories]
-# Limit scan to these categories. Empty list = all categories.
-# Valid values: network, web, ssl, container, sast, sca, secrets, iac, mobile
-include = []
-# Skip these categories even if included above.
-exclude = []
+include = []   # non-empty = run ONLY these categories
+exclude = []   # always skip these categories
 
 [tools]
-# Run only these tools. Empty list = all tools in active categories.
-include = []
-# Skip these tools by name.
-exclude = []
+include = []   # non-empty = run ONLY these tools by name
+exclude = []   # always skip these tools by name
 
+# ─── Reporting ────────────────────────────────────────────────────────────────
 [report]
-# Output format. Currently only "markdown" is supported.
-format = "markdown"
-# Directory where reports are written.
+formats    = ["markdown", "html", "json"]   # any subset; all three recommended
 output_dir = "./reports"
 
+# ─── DefectDojo integration (optional) ───────────────────────────────────────
 [defectdojo]
-# DefectDojo API base URL (no trailing slash).
-url = "http://localhost:8080"
-# API key from DefectDojo → Profile → API v2 Key.
-api_key = ""
-# Product and engagement names used when importing findings.
-product_name = "My Product"
+url             = "http://localhost:8080"
+api_key         = ""
+product_name    = ""
 engagement_name = "Automated Scan"
+
+# ─── LLM analysis (OpenAI-compatible) ────────────────────────────────────────
+[llm]
+# enabled = "auto"      # "auto" = on when api_key present; true/false to force
+                        # env: VS_LLM_ENABLED
+# api_key  = ""         # env: VS_LLM_API_KEY  or  OPENAI_API_KEY
+# base_url = ""         # env: VS_LLM_BASE_URL or  OPENAI_BASE_URL
+#                       # Override for non-OpenAI endpoints:
+#                       #   Ollama:    "http://localhost:11434/v1"
+#                       #   vLLM:      "http://localhost:8000/v1"
+#                       #   OpenRouter:"https://openrouter.ai/api/v1"
+# model    = "gpt-4o"   # REQUIRED when LLM active — no default, fails fast
+                        # env: VS_LLM_MODEL
+
+# ── Sampling (all OpenAI-compatible, forwarded directly to the API) ───────────
+# temperature       = 0.2
+# top_p             = 0.9
+# max_tokens        = 4096
+# frequency_penalty = 0.0
+# presence_penalty  = 0.0
+# seed              = 42
+# stop              = ["\n###"]
+
+# ── Non-standard / gateway-specific params (e.g. top_k via extra_body) ───────
+# Many OpenAI-compatible servers (Ollama, vLLM) expose top_k only via extra_body.
+# [llm.extra_body]
+# top_k = 40
+
+# ── Scope filters (same include/exclude semantics as [tools] / [categories]) ──
+# include_tools      = []
+# exclude_tools      = ["checkov", "bandit"]
+# include_categories = []
+# exclude_categories = []
+
+# ─── LLM feature matrix ───────────────────────────────────────────────────────
+# Each flag can be overridden per-tool or per-category (see below).
+[llm.features]
+logs_analysis         = true   # feed tool raw_output/error into LLM analysis
+enrich                = true   # CWE / confidence / exploitability triage per finding
+classify              = true   # classify findings for the clustering pass
+cluster               = true   # group findings into root-cause clusters
+mitigation            = true   # generate mitigation + remediation per finding
+generate_poc          = true   # generate PoC scripts as report assets (host-safe)
+execute_poc           = false  # run PoCs — CONTAINER-ONLY; never on host (opt-in)
+false_positive_filter = true   # let LLM suppress likely false positives
+
+# ── Per-tool feature overrides (tool > category > global precedence) ──────────
+# [llm.features.tool.bandit]
+# generate_poc = false   # no PoC for SAST findings
+
+# [llm.features.tool.sqlmap]
+# generate_poc = true
+# execute_poc  = true    # enable in-container PoC execution for sqli
+
+# ── Per-category feature overrides ────────────────────────────────────────────
+# [llm.features.category.iac]
+# generate_poc = false
+# cluster      = false
+
+# [llm.features.category.web]
+# generate_poc = true
+
+# ─── LLM prompt overrides ─────────────────────────────────────────────────────
+# Leave any field empty to use the built-in template. Override to customise.
+# Available placeholders vary by template — see vuln_scanner/llm/prompts.py.
+# [llm.prompts]
+# enrich_system     = "You are a CISA analyst. Return only JSON."
+# enrich_user       = "Triage: {title} on {target}..."
+# cluster_system    = ""
+# cluster_user      = ""
+# mitigation_system = ""
+# mitigation_user   = ""
+# poc_system        = ""
+# poc_user          = ""
+
+# ─── PoC generation / execution mechanics ────────────────────────────────────
+[llm.poc]
+languages       = ["python", "bash"]   # script languages to generate
+timeout         = 120                  # seconds per PoC execution (container-only)
+allow_git_clone = false                # clone official exploit PoCs from git
+max_pocs        = 20                   # cap to avoid runaway generation
+only_severities = ["critical", "high", "medium"]
+# assets_dir    = ""                   # default: <report_dir>/<timestamp>_assets/poc/

@@ -4,17 +4,9 @@ import subprocess
 import tempfile
 import time
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-    _as_url,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _CHECKS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--checks=xss*,sqli*", "--audit-links", "--audit-forms"],
@@ -29,6 +21,7 @@ _CHECKS: dict[ScanMode, list[str]] = {
 class ArachniTool(AbstractTool):
     name: str = "arachni"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []  # two-step execution handled in run()

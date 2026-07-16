@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 # "https://example.com - Origin: https://evil.com - is allowed"
 _ALLOWED_RE = re.compile(
@@ -21,6 +23,7 @@ _SEVERITY_KEYWORDS: dict[str, Severity] = {
 class CORScannerTool(AbstractTool):
     name: str = "corscanner"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

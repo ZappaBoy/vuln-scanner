@@ -1,6 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_BY_STATUS = {
     range(200, 300): Severity.INFO,
@@ -20,6 +22,7 @@ def _status_severity(code: int) -> Severity:
 class HttpxTool(AbstractTool):
     name: str = "httpx"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["httpx", "-u", target, "-json", "-silent", "-status-code", "-title", "-tech-detect"]
@@ -51,7 +54,7 @@ class HttpxTool(AbstractTool):
             title = item.get("title", "")
             server = item.get("webserver", "")
             techs = item.get("tech", [])
-            content_length = item.get("content_length", 0)
+            _ = item.get("content_length", 0)  # noqa: F841
 
             desc_parts = [f"URL: {url}", f"Status: {status}"]
             if title:

@@ -1,15 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    OUTPUT_FILE_SENTINEL,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--enableExperimental"],
@@ -23,6 +16,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 class DependencyCheckTool(AbstractTool):
     name: str = "dependency-check"
     category: str = "sca"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."

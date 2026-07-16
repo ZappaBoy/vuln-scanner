@@ -1,14 +1,9 @@
 import json
 import os
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--strict"],
@@ -21,6 +16,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 class PipAuditTool(AbstractTool):
     name: str = "pip-audit"
     category: str = "sca"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["pip-audit", "-f", "json", "-l"]

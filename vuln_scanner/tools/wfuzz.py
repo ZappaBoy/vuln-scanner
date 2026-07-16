@@ -1,6 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _WORDLISTS: dict[ScanMode, str] = {
     ScanMode.PARANOID:   "/usr/share/wordlists/dirb/small.txt",
@@ -13,6 +15,7 @@ _WORDLISTS: dict[ScanMode, str] = {
 class WfuzzTool(AbstractTool):
     name: str = "wfuzz"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target.rstrip("/")

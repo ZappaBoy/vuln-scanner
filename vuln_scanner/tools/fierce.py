@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _IP_RE = re.compile(r"\b(\d{1,3}(?:\.\d{1,3}){3})\b")
 _SUBDOMAIN_RE = re.compile(r"Found:\s+(\S+)\s+(?:==>|->)?\s*(\d{1,3}(?:\.\d{1,3}){3})?")
@@ -11,6 +13,7 @@ _WILDCARD_RE = re.compile(r"wildcard", re.IGNORECASE)
 class FierceTool(AbstractTool):
     name: str = "fierce"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         domain = target.replace("https://", "").replace("http://", "").split("/")[0]

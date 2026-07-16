@@ -1,6 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _PORTS: dict[ScanMode, str] = {
     ScanMode.PARANOID:   "22,80,443,8080,8443",
@@ -18,6 +20,7 @@ _RATE: dict[ScanMode, int] = {
 class NaabuTool(AbstractTool):
     name: str = "naabu"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "").split("/")[0]

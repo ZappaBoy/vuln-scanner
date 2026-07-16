@@ -1,13 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--only-fixed"],      # only report fixable vulns
@@ -20,6 +15,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 class GrypeTool(AbstractTool):
     name: str = "grype"
     category: str = "container"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["grype", target, "-o", "json", "--quiet"]

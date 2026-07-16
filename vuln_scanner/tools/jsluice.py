@@ -4,15 +4,9 @@ import subprocess
 import time
 import urllib.request
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +32,7 @@ def _secret_severity(kind: str) -> Severity:
 class JSluiceTool(AbstractTool):
     name: str = "jsluice"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # jsluice reads from stdin; mode determines what we extract
@@ -89,31 +84,39 @@ class JSluiceTool(AbstractTool):
 
         return findings
 
+    # Common web ports to probe when the target has no explicit port.
+    _WEB_PORTS = [80, 8080, 3000, 8000, 8888, 8443, 443]
+
+    def _candidate_urls(self, target: str) -> list[str]:
+        """Return ordered list of URLs to try fetching JS from."""
+        if target.startswith(("http://", "https://")):
+            return [target]
+        # Plain hostname or IP — probe common ports, http before https.
+        urls = []
+        for port in self._WEB_PORTS:
+            scheme = "https" if port in (443, 8443) else "http"
+            urls.append(f"{scheme}://{target}:{port}")
+        return urls
+
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         start = time.monotonic()
 
-        # Determine URL to fetch — prefer the scheme already in the target,
-        # fall back from https to http if the connection is refused.
-        if target.startswith(("http://", "https://")):
-            urls_to_try = [target]
-        else:
-            urls_to_try = [f"http://{target}", f"https://{target}"]
-
+        urls_to_try = self._candidate_urls(target)
         content = None
         for url in urls_to_try:
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": "vuln-scanner/jsluice"})
-                with urllib.request.urlopen(req, timeout=30) as resp:
+                with urllib.request.urlopen(req, timeout=15) as resp:
                     content = resp.read()
                 break
             except Exception:
                 continue
 
         if content is None:
+            # Can't reach the target on any common port — not a tool error.
             return ScanResult(
                 tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED,
-                error=f"Failed to fetch {target}: target unreachable",
+                status=ScanStatus.SKIPPED,
             )
 
         cmd = self.build_command(target, scan_input)

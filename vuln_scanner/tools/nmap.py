@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _TIMING: dict[ScanMode, str] = {
     ScanMode.PARANOID: "-T0",
@@ -13,6 +15,7 @@ _TIMING: dict[ScanMode, str] = {
 class NmapTool(AbstractTool):
     name: str = "nmap"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         timing = _TIMING[scan_input.mode]

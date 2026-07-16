@@ -1,6 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _AGGRESSION: dict[ScanMode, int] = {
     ScanMode.PARANOID:   1,
@@ -19,6 +21,7 @@ _INTERESTING = {
 class WhatWebTool(AbstractTool):
     name: str = "whatweb"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

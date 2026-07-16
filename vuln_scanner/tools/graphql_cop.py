@@ -1,6 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP: dict[str, Severity] = {
     "HIGH":     Severity.HIGH,
@@ -14,6 +16,7 @@ _SEV_MAP: dict[str, Severity] = {
 class GraphQLCopTool(AbstractTool):
     name: str = "graphql-cop"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

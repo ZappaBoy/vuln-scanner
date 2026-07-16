@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -40,6 +42,7 @@ def _classify(kind: str) -> Severity:
 class SecretFinderTool(AbstractTool):
     name: str = "secretfinder"
     category: str = "secrets"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

@@ -1,7 +1,9 @@
 import json
 import os
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity, _parse_severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP: dict[str, Severity] = {
     "critical": Severity.CRITICAL,
@@ -15,6 +17,7 @@ _SEV_MAP: dict[str, Severity] = {
 class CherrybombTool(AbstractTool):
     name: str = "cherrybomb"
     category: str = "api"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target: path to an OpenAPI/Swagger spec file, or a URL pointing to one

@@ -1,6 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _EXPIRED_SEV   = Severity.HIGH
 _SELF_SIGN_SEV = Severity.MEDIUM
@@ -10,6 +12,7 @@ _WEAK_PROTO    = {"ssl2.0", "ssl3.0", "tls1.0", "tls1.1"}
 class TlsxTool(AbstractTool):
     name: str = "tlsx"
     category: str = "ssl"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "")

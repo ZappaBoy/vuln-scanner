@@ -1,21 +1,14 @@
 import json
-import os
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    OUTPUT_FILE_SENTINEL,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 
 class APIFuzzerTool(AbstractTool):
     name: str = "apifuzzer"
     category: str = "api"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target may be:

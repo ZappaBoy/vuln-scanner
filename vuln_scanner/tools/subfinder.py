@@ -1,11 +1,14 @@
 import json
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 
 class SubfinderTool(AbstractTool):
     name: str = "subfinder"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a domain (e.g. example.com)

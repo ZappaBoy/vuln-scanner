@@ -1,12 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_CONFIG: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--config", "p/security-audit"],
@@ -20,6 +16,7 @@ _MODE_CONFIG: dict[ScanMode, list[str]] = {
 class SemgrepTool(AbstractTool):
     name: str = "semgrep"
     category: str = "sast"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."

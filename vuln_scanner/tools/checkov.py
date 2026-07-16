@@ -1,13 +1,8 @@
 import json
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--check", "HIGH,CRITICAL"],
@@ -20,6 +15,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 class CheckovTool(AbstractTool):
     name: str = "checkov"
     category: str = "iac"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."

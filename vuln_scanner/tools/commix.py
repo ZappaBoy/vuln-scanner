@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 _VULN_RE = re.compile(
     r"parameter\s+'?([^']+?)'?\s+(?:appears to be|is)\s+(?:vulnerable|injectable).+?'(.+?)'",
@@ -19,6 +21,7 @@ _TECHNIQUE_RE = re.compile(
 class CommixTool(AbstractTool):
     name: str = "commix"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["commix", "--url", target, "--batch"]

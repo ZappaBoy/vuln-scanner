@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 # SMB line: "SMB  192.168.1.1  445  HOSTNAME  [*] Windows 10 Build ... (name:HOSTNAME) ..."
 _SMB_RE = re.compile(
@@ -24,6 +26,7 @@ _PROTOCOLS = {
 class CrackMapExecTool(AbstractTool):
     name: str = "crackmapexec"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]

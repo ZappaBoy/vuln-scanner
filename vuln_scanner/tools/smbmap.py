@@ -1,6 +1,8 @@
 import re
 
-from vuln_scanner.tools.base import AbstractTool, Finding, ScanInput, ScanMode, Severity
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.abstract import AbstractTool
 
 # Example smbmap line: "\tSHARENAME\tDisk\tsome comment\tREAD ONLY"
 _SHARE_RE = re.compile(
@@ -20,10 +22,11 @@ _ACCESS_SEV: dict[str, Severity] = {
 class SMBMapTool(AbstractTool):
     name: str = "smbmap"
     category: str = "network"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]
-        cmd = ["smbmap", "-H", host, "--no-pass"]
+        cmd = ["smbmap", "-H", host, "-u", "guest", "--no-pass"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-R"]   # recursive share listing

@@ -6,7 +6,8 @@ from io import BytesIO
 import requests
 
 from vuln_scanner.config.models import DefectDojoConfig
-from vuln_scanner.tools.base import ScanResult, Severity
+from vuln_scanner.tools.enums import Severity
+from vuln_scanner.tools.models import ScanResult
 
 log = logging.getLogger(__name__)
 

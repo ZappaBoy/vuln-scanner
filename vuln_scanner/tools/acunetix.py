@@ -5,16 +5,9 @@ Requires VS_ACUNETIX_URL and VS_ACUNETIX_API_KEY environment variables.
 import os
 import time
 
-from vuln_scanner.tools.base import (
-    AbstractTool,
-    Finding,
-    ScanInput,
-    ScanMode,
-    ScanResult,
-    ScanStatus,
-    Severity,
-    _parse_severity,
-)
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.abstract import AbstractTool
 
 try:
     import requests as _requests
@@ -33,6 +26,7 @@ _PROFILE_IDS: dict[ScanMode, str] = {
 class AcunetixTool(AbstractTool):
     name: str = "acunetix"
     category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []  # API-based; subprocess not used

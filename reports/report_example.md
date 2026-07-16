@@ -1,2232 +1,1782 @@
-# Vulnerability Scan Report
-
-**Generated:** 2026-07-14 22:52:35 UTC
-**Hosts scanned:** 3
-**Total findings:** 1978
-
-## Summary
-
-| Host | Tool | Status | Findings | Duration |
-|------|------|--------|----------|----------|
-| `dvwa` | `acunetix` | ❌ skipped | 0 | 0.0s |
-| `dvwa` | `arachni` | ❌ failed | 0 | 0.1s |
-| `dvwa` | `arjun` | ❌ failed | 0 | 0.2s |
-| `dvwa` | `bandit` | ✅ success | 629 | 19.1s |
-| `dvwa` | `checkov` | ❌ timeout | 0 | 300.0s |
-| `dvwa` | `corscanner` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `dalfox` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `drheader` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `gau` | ✅ success | 1 | 23.7s |
-| `dvwa` | `graphql-cop` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `jsluice` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `kiterunner` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `nmap` | ✅ success | 1 | 6.4s |
-| `dvwa` | `nosqlmap` | ❌ failed | 0 | 0.1s |
-| `dvwa` | `openvas` | ❌ skipped | 0 | 0.0s |
-| `dvwa` | `paramspider` | ❌ failed | 0 | 0.1s |
-| `dvwa` | `pip-audit` | ✅ success | 12 | 15.0s |
-| `dvwa` | `restler` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `rustscan` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `semgrep` | ✅ success | 5 | 4.7s |
-| `dvwa` | `smbmap` | ❌ failed | 0 | 0.1s |
-| `dvwa` | `testssl` | ✅ success | 3 | 1.3s |
-| `dvwa` | `theharvester` | ❌ failed | 0 | 0.0s |
-| `dvwa` | `trufflehog` | ✅ success | 8 | 6.1s |
-| `juice-shop` | `acunetix` | ❌ skipped | 0 | 0.0s |
-| `juice-shop` | `arachni` | ❌ failed | 0 | 0.1s |
-| `juice-shop` | `arjun` | ❌ failed | 0 | 0.1s |
-| `juice-shop` | `bandit` | ✅ success | 629 | 19.4s |
-| `juice-shop` | `checkov` | ❌ timeout | 0 | 300.0s |
-| `juice-shop` | `corscanner` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `dalfox` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `drheader` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `graphql-cop` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `jsluice` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `kiterunner` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `nmap` | ✅ success | 1 | 12.0s |
-| `juice-shop` | `nosqlmap` | ❌ failed | 0 | 0.3s |
-| `juice-shop` | `openvas` | ❌ skipped | 0 | 0.0s |
-| `juice-shop` | `paramspider` | ❌ failed | 0 | 0.2s |
-| `juice-shop` | `pip-audit` | ✅ success | 12 | 15.4s |
-| `juice-shop` | `restler` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `rustscan` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `semgrep` | ✅ success | 5 | 4.9s |
-| `juice-shop` | `smbmap` | ❌ failed | 0 | 0.2s |
-| `juice-shop` | `testssl` | ✅ success | 3 | 1.3s |
-| `juice-shop` | `theharvester` | ❌ failed | 0 | 0.0s |
-| `juice-shop` | `trufflehog` | ✅ success | 8 | 6.4s |
-| `webgoat` | `acunetix` | ❌ skipped | 0 | 0.0s |
-| `webgoat` | `arachni` | ❌ failed | 0 | 0.1s |
-| `webgoat` | `arjun` | ❌ failed | 0 | 0.1s |
-| `webgoat` | `bandit` | ✅ success | 629 | 19.1s |
-| `webgoat` | `checkov` | ❌ timeout | 0 | 300.0s |
-| `webgoat` | `corscanner` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `dalfox` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `drheader` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `gau` | ✅ success | 2 | 32.4s |
-| `webgoat` | `graphql-cop` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `jsluice` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `kiterunner` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `nmap` | ✅ success | 2 | 7.0s |
-| `webgoat` | `nosqlmap` | ❌ failed | 0 | 0.1s |
-| `webgoat` | `openvas` | ❌ skipped | 0 | 0.0s |
-| `webgoat` | `paramspider` | ❌ failed | 0 | 0.2s |
-| `webgoat` | `pip-audit` | ✅ success | 12 | 14.0s |
-| `webgoat` | `restler` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `rustscan` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `semgrep` | ✅ success | 5 | 4.9s |
-| `webgoat` | `smbmap` | ❌ failed | 0 | 0.1s |
-| `webgoat` | `testssl` | ✅ success | 3 | 1.3s |
-| `webgoat` | `theharvester` | ❌ failed | 0 | 0.0s |
-| `webgoat` | `trufflehog` | ✅ success | 8 | 6.1s |
-
-## Findings
-
-### dvwa
-
-> **acunetix error:** VS_ACUNETIX_URL and VS_ACUNETIX_API_KEY must be set.
-
-> **arachni error:** arachni_reporter failed: [Errno 2] No such file or directory: 'arachni_reporter'
-
-> **arjun error:** Exit code 2: usage: arjun [-h] [-u URL] [-o JSON_FILE] [-oT TEXT_FILE] [-oB [BURP_PROXY]]
-             [-d DELAY] [-t THREADS] [-w WORDLIST] [-m METHOD]
-             [-i [IMPORT_FILE]] [-T TIMEOUT] [-c CHUNKS] [-q
-
-> **checkov error:** Tool timed out after 300s
-
-> **corscanner error:** Tool binary not found: 'cors_scan'. Is it installed?
-
-> **dalfox error:** Exit code 2: error: the following required arguments were not provided:
-  --url <URL>
-
-Usage: dalfox url --url <URL> --format <FORMAT> --silence <TARGET>...
-
-For more information, try '--help'.
-
-> **drheader error:** Tool binary not found: 'drheader'. Is it installed?
-
-> **graphql-cop error:** Tool binary not found: 'graphql-cop'. Is it installed?
-
-> **jsluice error:** Failed to fetch https://dvwa: <urlopen error [Errno 111] Connection refused>
-
-> **kiterunner error:** Tool binary not found: 'kr'. Is it installed?
-
-> **nosqlmap error:** Exit code 2: usage: nosqlmap.py [-h] [--attack {1,2,3}] [--platform {MongoDB,CouchDB}]
-                   [--victim VICTIM] [--dbPort DBPORT] [--myIP MYIP]
-                   [--myPort MYPORT] [--webPort WEBPORT] 
-
-> **openvas error:** GVM socket not found at /var/run/gvm/gvmd.sock. Is OpenVAS running?
-
-> **paramspider error:** Exit code 2: usage: paramspider [-h] [-d DOMAIN] [-l LIST] [-s] [--proxy PROXY]
-                   [-p PLACEHOLDER]
-paramspider: error: unrecognized arguments: --output /tmp/vs_paramspider_08cts5yy.txt --quiet
-
-> **restler error:** Could not locate OpenAPI spec. Provide a spec file path or use extra_args.
-
-> **rustscan error:** Exit code 2: error: invalid value '1-65535' for '--ports <PORTS>': invalid digit found in string
-
-For more information, try '--help'.
-
-> **smbmap error:** Exit code 2: usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD |
-              --prompt] [-k] [--no-pass] [--dc-ip IP or Host] [-s SHARE]
-              [-d DOMAIN] [-P PORT] [-v] [--signin
-
-> **theharvester error:** Binary not found: theHarvester
-
-| Severity | Tool | Title | Description | CVEs |
-|----------|------|-------|-------------|------|
-| 🟠 HIGH | `bandit` | [B411] Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml | Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:41 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟠 HIGH | `bandit` | [B411] Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defuse | Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:77 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/distlib/database.py:1007 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/distlib/index.py:269 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1307 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B602] subprocess call with shell=True identified, security issue. | subprocess call with shell=True identified, security issue. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:500 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:639 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:859 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/docker.py:70 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:119 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/ruby.py:85 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_php_builtins.py:3304 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-237 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-237 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, the server_hostname TLS SNI check can be bypassed when an existing connection is reused. If an application makes multiple requests to the same domain, but with different per-request server_hostname parameters, then the later calls may succeed by reusing the existing connection when they should have been rejected due to the TLS SNI check. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54275 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2104 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2104 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to version 3.14.0, using ``CookieJar.load()`` with untrusted input may allow arbitrary code execution. Most applications using this function will be doing so with the user's own data, so this is unlikely to affect many applications. Version 3.14.0 patches the issue. If an application does allow attacker controlled files to be loaded, a workaround on older releases would be to sanitize the files before loading. Fix: 3.14.0 | CVE-2026-34993 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2112 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2112 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, host-only cookies that are saved with CookieJar.save() and then restored later with CookieJar.load() lose their host-only status. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54279 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2111 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2111 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, during cleanup it is possible for a compressed request body to be decompressed into memory in one chunk. An attacker may be able to send a compressed payload in specific situations that could be decompressed into memory, potentially leading to DoS (a zip bomb edge case). This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54278 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2113 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2113 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, payload resources are not closed correctly when a client disconnects in the middle of a write. If a payload is using an open file or similar limited resource, then an attacker may be able to cause resource starvation temporarily until garbage collection or similar closes the file. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54280 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2109 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2109 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, DigestAuthMiddleware can send an authentication response after following a cross-origin redirect. This likely requires an open redirect vulnerability or similar on the target domain for an attacker to be able to execute. Further, the attacker is only receiving the digest, so should only be able to extract the user's credentials if the cryptography is weak or there is some kind of password reuse. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54276 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2110 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2110 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, it is possible to bypass the max_line_size check in parts of an HTTP request in the C parser. If using the optimised C parser (the default in pre-built wheels), then an attacker may be able to send oversized lines through the HTTP parser and use an excessive amount of memory, potentially leading to DoS. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54277 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2108 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2108 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, if an attacker sends large incomplete websocket frame payloads, it may be possible to bypass the usual size limits on memory use. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54274 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2105 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2105 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to version 3.14.0, cookies set with the `cookies` parameter on requests are sent after following a cross-origin redirect. If a developer uses the `cookies` parameter on a per-request basis then sensitive data might be leaked to an attacker if they manage to control a redirect. Version 3.14.0 patches the issue. If unable to upgrade, using a `Cookie` header in the `headers` parameter is not vulnerable. Fix: 3.14.0 | CVE-2026-47265 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2106 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2106 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.0, attacker-controlled input included into multipart/payload headers can be used to modify a request to inject additional headers or similar. In the unlikely situation that an application is passing user-controlled strings into MultipartWriter.append(headers=...) or Payload.headers, then an attacker may be able to modify the request to inject headers or change the contents of the request. This vulnerability is fixed in 3.14.0. Fix: 3.14.0 | CVE-2026-50269 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2107 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2107 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, no limit was present on the number of pipelined requests that could be queued. An attacker may be able to use pipelined requests to use excessive amounts of memory, potentially leading to DoS. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54273 |
-| 🟠 HIGH | `pip-audit` | GHSA-6v7p-g79w-8964 in msgpack 1.1.2 | Package: msgpack 1.1.2 Vulnerability: GHSA-6v7p-g79w-8964 Description: ### Impact  If the Unpacker is used repeatedly after an error occurs, the process may crash with a SEGV.  If the Unpacker is used repeatedly to unpack untrusted input from external sources, it may be vulnerable to a DoS attack.  ### Patches  v1.2.1  ### Workarounds  Users should create a new Unpacker instead of reusing the same Unpacker after an error occurs.  Applying the above patch can prevent SEGV, but reusing the Streaming Unpacker after it has encountered an error will not yield correct data. If an error occurs during Streaming Unpacking, the Stream and Streaming Unpacker should be discarded.  Therefore, this is not just a workaround but the correct solution. The above patch only prevents crashes from incorrect usage. Fix: 1.2.1 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): https://user:pass@host | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/url.py Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/__pycache__/url.cpython-314.pyc Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/__pycache__/url.cpython-314.pyc Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): https://foo.com:123,foo%3Abar@bar.com | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/virtualenv/seed/wheels/embed/pip-26.1.2-py3-none-any.whl Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/virtualenv/seed/wheels/embed/pip-26.0.1-py3-none-any.whl Verified: False Raw (truncated): http://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): http://samuel:pass@example.com:8000 | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:173 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1153 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:188 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B302] Deserialization with the marshal module is possibly dangerous. | Deserialization with the marshal module is possibly dangerous. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:393 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/expression.py:353 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/_pytest/pastebin.py:91 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:296 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/skipping.py:119 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:651 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:652 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B108] Probable insecure usage of temp file/directory. | Probable insecure usage of temp file/directory. File: ./.venv/lib/python3.14/site-packages/platformdirs/unix.py:184 CWE: 377 — https://cwe.mitre.org/data/definitions/377.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attac | Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/dotnet.py:86 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:92 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:104 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/rust.py:94 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B301] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible secu | Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/parse.py:54 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B301] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible secu | Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/parse.py:42 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/utils.py:195 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/__init__.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/__init__.py:154 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_lua_builtins.py:225 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_lua_builtins.py:233 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_mysql_builtins.py:1297 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_mysql_builtins.py:1303 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_php_builtins.py:3299 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_postgres_builtins.py:642 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_postgres_builtins.py:647 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:4172 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:4254 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/typing_inspection/typing_objects.py:101 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/typing_inspection/typing_objects.py:133 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B323] By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnec | By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnection. However, it still allows using an insecure context via the _create_unverified_context that  reverts to the previous behavior that does not validate certificates or perform hostname checks. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:376 CWE: 295 — https://cwe.mitre.org/data/definitions/295.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:401 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./vuln_scanner/tools/jsluice.py:98 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/masscan.py:43 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/nmap.py:40 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:83 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:101 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:119 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:172 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./vuln_scanner/tools/restler.py:94 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/rustscan.py:55 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/sslscan.py:42 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `semgrep` | [package_managers.uv.uv-missing-dependency-cooldown.uv-missing-dependency-cooldown] pyproject.toml:16 | This pyproject.toml configures uv but does not set a dependency cooldown. Newly published packages can be malicious or unstable. Add `exclude-newer = "7 days"` under `[tool.uv]` to wait 7 days before resolving newly published package versions. Added in: 0.9.17 Reference: https://docs.astral.sh/uv/concepts/resolution/#dependency-cooldowns | — |
-| 🟡 MEDIUM | `semgrep` | [python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected] vuln_scanner/tools/jsluice.py:98 | Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead. | — |
-| 🟡 MEDIUM | `semgrep` | [python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected] vuln_scanner/tools/restler.py:94 | Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead. | — |
-| 🟡 MEDIUM | `testssl` | [engine_problem] No engine or GOST support via engine with your /usr/sbin/openssl | No engine or GOST support via engine with your /usr/sbin/openssl | — |
-| 🟡 MEDIUM | `testssl` | [scanTime] Scan interrupted | Scan interrupted | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:270 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:331 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:544 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:582 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:595 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:601 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:609 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:617 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:625 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:791 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:862 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:864 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/source.py:217 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/pprint.py:274 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/pprint.py:275 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/terminalwriter.py:85 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:396 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:844 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:879 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1164 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1165 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1169 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1404 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1411 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/_compare_any.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:149 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:150 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:563 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:741 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:841 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:859 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/util.py:127 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/util.py:131 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:320 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:420 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:432 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:468 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:571 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:604 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:199 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:208 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:396 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:452 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:661 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:664 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:685 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:772 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:802 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/compat.py:287 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:434 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:511 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:765 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:897 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1203 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1514 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1673 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1752 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1911 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:2005 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:2072 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:172 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:440 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/findpaths.py:341 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:181 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:185 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:296 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:392 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/doctest.py:351 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/doctest.py:354 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/faulthandler.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/faulthandler.py:84 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:227 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:548 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:631 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:850 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:940 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:1210 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:1221 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:2094 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:2289 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/helpconfig.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:18 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:196 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:209 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:216 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:238 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/legacypath.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/legacypath.py:390 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/logging.py:117 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/logging.py:710 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:918 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:963 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:1029 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:122 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:296 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:486 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:180 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:196 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:262 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:568 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:571 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:573 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:588 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:763 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pastebin.py:119 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:220 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:233 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:419 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:712 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:1018 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:1019 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:26 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:129 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:162 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:319 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:432 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:437 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:793 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:962 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1005 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1204 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1288 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1324 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1377 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1379 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1382 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester_assertions.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester_assertions.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:223 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:307 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:453 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:761 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:770 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:961 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1371 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1384 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1696 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python_api.py:162 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:704 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1150 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1151 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1168 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1229 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1291 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1375 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1408 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1473 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1482 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1490 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/recwarn.py:242 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/recwarn.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:277 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:284 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:392 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:415 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:420 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:535 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:574 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:191 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:247 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:422 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:424 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:430 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:527 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:532 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:546 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:547 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:548 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/skipping.py:285 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:63 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:703 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:721 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:768 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1020 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1021 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1356 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1357 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1358 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1400 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1401 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1585 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1586 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1690 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1691 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1729 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1737 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1762 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1777 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/tmpdir.py:226 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/tmpdir.py:348 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:385 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:400 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:487 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:653 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/warnings.py:61 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:615 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:58 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:193 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/locators.py:970 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:114 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:315 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:327 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/markers.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/metadata.py:918 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/metadata.py:980 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/distlib/scripts.py:305 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:21 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:275 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:362 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:539 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:603 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:652 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:669 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:847 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1111 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1116 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1339 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1347 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1348 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1357 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1448 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1785 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/version.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/version.py:35 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/wheel.py:435 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:231 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B606] Starting a process without a shell. | Starting a process without a shell. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:236 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/dotenv/main.py:367 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/filelock/_soft.py:178 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/filelock/_soft_rw/_sync.py:530 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/identify/identify.py:81 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/identify/identify.py:82 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '-i' | Possible hardcoded password: '-i' File: ./.venv/lib/python3.14/site-packages/identify/identify.py:171 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/idna/core.py:500 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/iniconfig/_parse.py:58 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:24 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/nodeenv.py:190 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:190 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:817 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:942 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_manylinux.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:52 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:79 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:121 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:147 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: 'with' | Possible hardcoded password: 'with' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:130 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '(' | Possible hardcoded password: '(' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:133 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: ')' | Possible hardcoded password: ')' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:136 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:179 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:241 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:274 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:228 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:234 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:380 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/specifiers.py:630 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/packaging/tags.py:12 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/packaging/tags.py:608 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:414 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:506 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:527 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:547 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:209 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:211 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:336 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_tracing.py:59 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/autoupdate.py:147 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:4 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:56 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:61 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:70 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:46 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:117 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:143 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:152 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:164 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/run.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/run.py:317 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B311] Standard pseudo-random generators are not suitable for security/cryptographic purposes. | Standard pseudo-random generators are not suitable for security/cryptographic purposes. File: ./.venv/lib/python3.14/site-packages/pre_commit/lang_base.py:148 CWE: 330 — https://cwe.mitre.org/data/definitions/330.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/coursier.py:41 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/dotnet.py:7 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/node.py:80 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/repository.py:71 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:137 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:149 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:168 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:177 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:180 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/xargs.py:8 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:694 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:787 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_discriminated_union.py:163 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1384 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1599 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2021 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2088 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2486 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2649 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generics.py:297 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:658 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_typing_extra.py:481 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_validators.py:361 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/dataclasses.py:145 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/dataclasses.py:146 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/decorator.py:122 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/parse.py:4 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:396 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:558 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:569 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:631 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:638 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/json_schema.py:2562 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:181 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:205 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:367 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:403 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:682 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:866 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:911 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:914 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:917 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:1349 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/networks.py:1327 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/type_adapter.py:732 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/type_adapter.py:786 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:212 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:258 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:268 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:271 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:289 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:305 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:318 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:321 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:339 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:346 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/class_validators.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/decorator.py:105 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:763 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:768 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:853 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:856 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1103 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1135 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1179 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:393 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:182 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:183 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:860 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:277 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:365 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:738 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/parse.py:2 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/schema.py:526 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/schema.py:715 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/utils.py:665 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/validate_call_decorator.py:36 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/sources/base.py:303 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/sources/providers/cli.py:119 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/utils.py:21 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/pygments/cmdline.py:522 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:93 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:93 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:514 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:531 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:538 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:546 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:551 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:555 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:556 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:564 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:744 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:831 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3055 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3061 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3061 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: 'root' | Possible hardcoded password: 'root' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/int_fiction.py:728 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '[^\W\d]\w*' | Possible hardcoded password: '[^\W\d]\w*' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/jsonnet.py:17 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lilypond.py:43 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '
-      (?=
-        \s         # whitespace
-        \| ;        # commen | Possible hardcoded password: '       (?=         \s         # whitespace         \| ;        # comment         \| \#[;\|!] # fancy comments         \| [)\]]    # end delimiters         \| $        # end of file       )     ' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lisp.py:50 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '(?=\s\|#\|[)\]]\|$)' | Possible hardcoded password: '(?=\s\|#\|[)\]]\|$)' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lisp.py:3047 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '[A-Z]\w*' | Possible hardcoded password: '[A-Z]\w*' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/parsers.py:334 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/scripting.py:1499 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/scripting.py:1583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/sql.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/style.py:79 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:18 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:200 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/python_discovery/_py_info.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:66 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:76 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:78 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:85 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:90 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/_internal_utils.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:375 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:481 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:581 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:659 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/cookies.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:317 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:318 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:350 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:637 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:770 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:13 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B606] Starting a process without a shell. | Starting a process without a shell. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:23 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:515 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:632 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:633 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:1921 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2128 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2608 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2609 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2619 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2620 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:3448 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:3520 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/_collections.py:335 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/connection.py:260 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/connection.py:313 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/probe.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/response.py:437 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/response.py:969 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/urllib3/util/connection.py:129 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B311] Standard pseudo-random generators are not suitable for security/cryptographic purposes. | Standard pseudo-random generators are not suitable for security/cryptographic purposes. File: ./.venv/lib/python3.14/site-packages/urllib3/util/retry.py:325 CWE: 330 — https://cwe.mitre.org/data/definitions/330.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/util/ssltransport.py:137 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/util/ssltransport.py:160 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/virtualenv/app_data/via_disk_folder.py:136 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/creator.py:223 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:8 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:53 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:53 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:138 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:201 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:266 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/activators.py:68 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/base.py:70 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/base.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/creators.py:84 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/creators.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/seeders.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/pip_invoke.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/pip_invoke.py:37 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/pip_install/symlink.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/pip_install/symlink.py:23 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/via_app_data.py:10 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/acquire.py:10 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/acquire.py:135 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:14 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:246 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/util/subprocess/__init__.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/util/subprocess/__init__.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/yaml/parser.py:185 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/yaml/parser.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:21 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:22 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:23 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:24 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:29 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:39 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:51 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:57 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:64 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:65 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:72 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:82 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:44 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:47 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:52 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:57 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:62 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:67 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:72 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:83 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:90 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:96 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:103 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:110 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:111 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:29 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:35 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:42 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:50 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:51 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:59 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:60 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:68 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:69 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:76 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:88 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:94 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:105 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:106 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:107 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:108 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/arachni.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/arachni.py:88 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/arachni.py:112 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/base.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/base.py:150 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/hakrawler.py:2 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/hakrawler.py:73 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/jsluice.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/jsluice.py:108 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/masscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/nmap.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/openvas.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/openvas.py:13 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/openvas.py:42 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/restler.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B112] Try, Except, Continue detected. | Try, Except, Continue detected. File: ./vuln_scanner/tools/restler.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/restler.py:107 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/restler.py:137 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/rustscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/sslscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/theharvester.py:15 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/theharvester.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/wapiti.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/wapiti.py:107 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| ⚪ INFO | `gau` | Archived URL: http://dvwa/ | URL found in web archives for dvwa: http://dvwa/ | — |
-| ⚪ INFO | `nmap` | Open port 80/tcp — http (Apache httpd 2.4.67) | Port 80/tcp is open on 172.20.0.4. Service detected: http (Apache httpd 2.4.67). | — |
-| ⚪ INFO | `semgrep` | [dockerfile.security.missing-user-entrypoint.missing-user-entrypoint] Dockerfile:113 | By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'. | — |
-| ⚪ INFO | `semgrep` | Semgrep error: ['PartialParsing', [{'path': 'Dockerfile', 'start': {'line': 79, 'col': 5, 'offset': 0}, 'end': {'line': 79, 'col': 6, 'offset': 1}}, {'path': 'Dockerfile', 'start': {'line': 93, 'col': 5, 'offset': 0}, 'end': {'line': 93, 'col': 6, 'offset': 1}}, {'path': 'Dockerfile', 'start': {'line': 98, 'col': 5, 'offset': 0}, 'end': {'line': 98, 'col': 6, 'offset': 1}}]] | Syntax error at line Dockerfile:79:  `[` was unexpected | — |
-| ⚪ INFO | `testssl` | [scanProblem] Can't connect to '172.20.0.4:443' Make sure a firewall is not between you and your scanning target! | Can't connect to '172.20.0.4:443' Make sure a firewall is not between you and your scanning target! | — |
-
-### juice-shop
-
-> **acunetix error:** VS_ACUNETIX_URL and VS_ACUNETIX_API_KEY must be set.
-
-> **arachni error:** arachni_reporter failed: [Errno 2] No such file or directory: 'arachni_reporter'
-
-> **arjun error:** Exit code 2: usage: arjun [-h] [-u URL] [-o JSON_FILE] [-oT TEXT_FILE] [-oB [BURP_PROXY]]
-             [-d DELAY] [-t THREADS] [-w WORDLIST] [-m METHOD]
-             [-i [IMPORT_FILE]] [-T TIMEOUT] [-c CHUNKS] [-q
-
-> **checkov error:** Tool timed out after 300s
-
-> **corscanner error:** Tool binary not found: 'cors_scan'. Is it installed?
-
-> **dalfox error:** Exit code 2: error: the following required arguments were not provided:
-  --url <URL>
-
-Usage: dalfox url --url <URL> --format <FORMAT> --silence <TARGET>...
-
-For more information, try '--help'.
-
-> **drheader error:** Tool binary not found: 'drheader'. Is it installed?
-
-> **graphql-cop error:** Tool binary not found: 'graphql-cop'. Is it installed?
-
-> **jsluice error:** Failed to fetch https://juice-shop: <urlopen error [Errno 111] Connection refused>
-
-> **kiterunner error:** Tool binary not found: 'kr'. Is it installed?
-
-> **nosqlmap error:** Exit code 2: usage: nosqlmap.py [-h] [--attack {1,2,3}] [--platform {MongoDB,CouchDB}]
-                   [--victim VICTIM] [--dbPort DBPORT] [--myIP MYIP]
-                   [--myPort MYPORT] [--webPort WEBPORT] 
-
-> **openvas error:** GVM socket not found at /var/run/gvm/gvmd.sock. Is OpenVAS running?
-
-> **paramspider error:** Exit code 2: usage: paramspider [-h] [-d DOMAIN] [-l LIST] [-s] [--proxy PROXY]
-                   [-p PLACEHOLDER]
-paramspider: error: unrecognized arguments: --output /tmp/vs_paramspider_qp0cvlrv.txt --quiet
-
-> **restler error:** Could not locate OpenAPI spec. Provide a spec file path or use extra_args.
-
-> **rustscan error:** Exit code 2: error: invalid value '1-65535' for '--ports <PORTS>': invalid digit found in string
-
-For more information, try '--help'.
-
-> **smbmap error:** Exit code 2: usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD |
-              --prompt] [-k] [--no-pass] [--dc-ip IP or Host] [-s SHARE]
-              [-d DOMAIN] [-P PORT] [-v] [--signin
-
-> **theharvester error:** Binary not found: theHarvester
-
-| Severity | Tool | Title | Description | CVEs |
-|----------|------|-------|-------------|------|
-| 🟠 HIGH | `bandit` | [B411] Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml | Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:41 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟠 HIGH | `bandit` | [B411] Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defuse | Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:77 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/distlib/database.py:1007 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/distlib/index.py:269 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1307 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B602] subprocess call with shell=True identified, security issue. | subprocess call with shell=True identified, security issue. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:500 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:639 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:859 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/docker.py:70 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:119 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/ruby.py:85 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_php_builtins.py:3304 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-237 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-237 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, the server_hostname TLS SNI check can be bypassed when an existing connection is reused. If an application makes multiple requests to the same domain, but with different per-request server_hostname parameters, then the later calls may succeed by reusing the existing connection when they should have been rejected due to the TLS SNI check. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54275 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2104 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2104 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to version 3.14.0, using ``CookieJar.load()`` with untrusted input may allow arbitrary code execution. Most applications using this function will be doing so with the user's own data, so this is unlikely to affect many applications. Version 3.14.0 patches the issue. If an application does allow attacker controlled files to be loaded, a workaround on older releases would be to sanitize the files before loading. Fix: 3.14.0 | CVE-2026-34993 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2112 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2112 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, host-only cookies that are saved with CookieJar.save() and then restored later with CookieJar.load() lose their host-only status. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54279 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2111 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2111 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, during cleanup it is possible for a compressed request body to be decompressed into memory in one chunk. An attacker may be able to send a compressed payload in specific situations that could be decompressed into memory, potentially leading to DoS (a zip bomb edge case). This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54278 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2113 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2113 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, payload resources are not closed correctly when a client disconnects in the middle of a write. If a payload is using an open file or similar limited resource, then an attacker may be able to cause resource starvation temporarily until garbage collection or similar closes the file. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54280 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2109 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2109 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, DigestAuthMiddleware can send an authentication response after following a cross-origin redirect. This likely requires an open redirect vulnerability or similar on the target domain for an attacker to be able to execute. Further, the attacker is only receiving the digest, so should only be able to extract the user's credentials if the cryptography is weak or there is some kind of password reuse. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54276 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2110 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2110 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, it is possible to bypass the max_line_size check in parts of an HTTP request in the C parser. If using the optimised C parser (the default in pre-built wheels), then an attacker may be able to send oversized lines through the HTTP parser and use an excessive amount of memory, potentially leading to DoS. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54277 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2108 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2108 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, if an attacker sends large incomplete websocket frame payloads, it may be possible to bypass the usual size limits on memory use. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54274 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2105 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2105 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to version 3.14.0, cookies set with the `cookies` parameter on requests are sent after following a cross-origin redirect. If a developer uses the `cookies` parameter on a per-request basis then sensitive data might be leaked to an attacker if they manage to control a redirect. Version 3.14.0 patches the issue. If unable to upgrade, using a `Cookie` header in the `headers` parameter is not vulnerable. Fix: 3.14.0 | CVE-2026-47265 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2106 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2106 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.0, attacker-controlled input included into multipart/payload headers can be used to modify a request to inject additional headers or similar. In the unlikely situation that an application is passing user-controlled strings into MultipartWriter.append(headers=...) or Payload.headers, then an attacker may be able to modify the request to inject headers or change the contents of the request. This vulnerability is fixed in 3.14.0. Fix: 3.14.0 | CVE-2026-50269 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2107 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2107 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, no limit was present on the number of pipelined requests that could be queued. An attacker may be able to use pipelined requests to use excessive amounts of memory, potentially leading to DoS. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54273 |
-| 🟠 HIGH | `pip-audit` | GHSA-6v7p-g79w-8964 in msgpack 1.1.2 | Package: msgpack 1.1.2 Vulnerability: GHSA-6v7p-g79w-8964 Description: ### Impact  If the Unpacker is used repeatedly after an error occurs, the process may crash with a SEGV.  If the Unpacker is used repeatedly to unpack untrusted input from external sources, it may be vulnerable to a DoS attack.  ### Patches  v1.2.1  ### Workarounds  Users should create a new Unpacker instead of reusing the same Unpacker after an error occurs.  Applying the above patch can prevent SEGV, but reusing the Streaming Unpacker after it has encountered an error will not yield correct data. If an error occurs during Streaming Unpacking, the Stream and Streaming Unpacker should be discarded.  Therefore, this is not just a workaround but the correct solution. The above patch only prevents crashes from incorrect usage. Fix: 1.2.1 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): https://user:pass@host | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/__pycache__/url.cpython-314.pyc Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/__pycache__/url.cpython-314.pyc Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/url.py Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): https://foo.com:123,foo%3Abar@bar.com | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/virtualenv/seed/wheels/embed/pip-26.1.2-py3-none-any.whl Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/virtualenv/seed/wheels/embed/pip-26.0.1-py3-none-any.whl Verified: False Raw (truncated): http://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): http://samuel:pass@example.com:8000 | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:173 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1153 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:188 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B302] Deserialization with the marshal module is possibly dangerous. | Deserialization with the marshal module is possibly dangerous. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:393 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/expression.py:353 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/_pytest/pastebin.py:91 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:296 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/skipping.py:119 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:651 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:652 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B108] Probable insecure usage of temp file/directory. | Probable insecure usage of temp file/directory. File: ./.venv/lib/python3.14/site-packages/platformdirs/unix.py:184 CWE: 377 — https://cwe.mitre.org/data/definitions/377.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attac | Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/dotnet.py:86 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:92 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:104 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/rust.py:94 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B301] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible secu | Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/parse.py:54 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B301] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible secu | Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/parse.py:42 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/utils.py:195 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/__init__.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/__init__.py:154 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_lua_builtins.py:225 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_lua_builtins.py:233 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_mysql_builtins.py:1297 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_mysql_builtins.py:1303 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_php_builtins.py:3299 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_postgres_builtins.py:642 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_postgres_builtins.py:647 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:4172 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:4254 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/typing_inspection/typing_objects.py:101 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/typing_inspection/typing_objects.py:133 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B323] By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnec | By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnection. However, it still allows using an insecure context via the _create_unverified_context that  reverts to the previous behavior that does not validate certificates or perform hostname checks. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:376 CWE: 295 — https://cwe.mitre.org/data/definitions/295.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:401 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./vuln_scanner/tools/jsluice.py:98 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/masscan.py:43 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/nmap.py:40 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:83 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:101 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:119 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:172 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./vuln_scanner/tools/restler.py:94 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/rustscan.py:55 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/sslscan.py:42 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `semgrep` | [package_managers.uv.uv-missing-dependency-cooldown.uv-missing-dependency-cooldown] pyproject.toml:16 | This pyproject.toml configures uv but does not set a dependency cooldown. Newly published packages can be malicious or unstable. Add `exclude-newer = "7 days"` under `[tool.uv]` to wait 7 days before resolving newly published package versions. Added in: 0.9.17 Reference: https://docs.astral.sh/uv/concepts/resolution/#dependency-cooldowns | — |
-| 🟡 MEDIUM | `semgrep` | [python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected] vuln_scanner/tools/jsluice.py:98 | Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead. | — |
-| 🟡 MEDIUM | `semgrep` | [python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected] vuln_scanner/tools/restler.py:94 | Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead. | — |
-| 🟡 MEDIUM | `testssl` | [engine_problem] No engine or GOST support via engine with your /usr/sbin/openssl | No engine or GOST support via engine with your /usr/sbin/openssl | — |
-| 🟡 MEDIUM | `testssl` | [scanTime] Scan interrupted | Scan interrupted | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:270 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:331 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:544 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:582 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:595 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:601 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:609 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:617 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:625 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:791 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:862 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:864 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/source.py:217 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/pprint.py:274 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/pprint.py:275 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/terminalwriter.py:85 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:396 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:844 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:879 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1164 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1165 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1169 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1404 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1411 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/_compare_any.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:149 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:150 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:563 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:741 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:841 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:859 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/util.py:127 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/util.py:131 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:320 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:420 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:432 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:468 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:571 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:604 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:199 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:208 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:396 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:452 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:661 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:664 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:685 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:772 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:802 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/compat.py:287 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:434 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:511 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:765 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:897 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1203 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1514 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1673 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1752 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1911 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:2005 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:2072 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:172 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:440 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/findpaths.py:341 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:181 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:185 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:296 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:392 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/doctest.py:351 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/doctest.py:354 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/faulthandler.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/faulthandler.py:84 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:227 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:548 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:631 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:850 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:940 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:1210 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:1221 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:2094 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:2289 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/helpconfig.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:18 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:196 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:209 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:216 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:238 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/legacypath.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/legacypath.py:390 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/logging.py:117 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/logging.py:710 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:918 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:963 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:1029 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:122 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:296 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:486 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:180 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:196 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:262 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:568 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:571 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:573 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:588 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:763 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pastebin.py:119 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:220 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:233 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:419 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:712 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:1018 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:1019 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:26 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:129 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:162 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:319 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:432 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:437 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:793 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:962 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1005 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1204 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1288 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1324 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1377 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1379 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1382 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester_assertions.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester_assertions.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:223 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:307 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:453 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:761 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:770 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:961 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1371 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1384 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1696 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python_api.py:162 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:704 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1150 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1151 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1168 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1229 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1291 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1375 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1408 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1473 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1482 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1490 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/recwarn.py:242 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/recwarn.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:277 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:284 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:392 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:415 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:420 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:535 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:574 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:191 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:247 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:422 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:424 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:430 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:527 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:532 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:546 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:547 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:548 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/skipping.py:285 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:63 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:703 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:721 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:768 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1020 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1021 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1356 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1357 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1358 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1400 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1401 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1585 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1586 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1690 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1691 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1729 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1737 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1762 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1777 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/tmpdir.py:226 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/tmpdir.py:348 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:385 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:400 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:487 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:653 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/warnings.py:61 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:615 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:58 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:193 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/locators.py:970 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:114 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:315 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:327 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/markers.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/metadata.py:918 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/metadata.py:980 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/distlib/scripts.py:305 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:21 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:275 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:362 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:539 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:603 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:652 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:669 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:847 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1111 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1116 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1339 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1347 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1348 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1357 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1448 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1785 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/version.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/version.py:35 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/wheel.py:435 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:231 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B606] Starting a process without a shell. | Starting a process without a shell. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:236 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/dotenv/main.py:367 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/filelock/_soft.py:178 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/filelock/_soft_rw/_sync.py:530 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/identify/identify.py:81 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/identify/identify.py:82 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '-i' | Possible hardcoded password: '-i' File: ./.venv/lib/python3.14/site-packages/identify/identify.py:171 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/idna/core.py:500 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/iniconfig/_parse.py:58 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:24 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/nodeenv.py:190 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:190 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:817 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:942 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_manylinux.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:52 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:79 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:121 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:147 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: 'with' | Possible hardcoded password: 'with' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:130 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '(' | Possible hardcoded password: '(' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:133 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: ')' | Possible hardcoded password: ')' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:136 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:179 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:241 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:274 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:228 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:234 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:380 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/specifiers.py:630 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/packaging/tags.py:12 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/packaging/tags.py:608 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:414 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:506 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:527 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:547 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:209 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:211 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:336 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_tracing.py:59 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/autoupdate.py:147 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:4 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:56 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:61 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:70 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:46 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:117 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:143 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:152 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:164 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/run.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/run.py:317 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B311] Standard pseudo-random generators are not suitable for security/cryptographic purposes. | Standard pseudo-random generators are not suitable for security/cryptographic purposes. File: ./.venv/lib/python3.14/site-packages/pre_commit/lang_base.py:148 CWE: 330 — https://cwe.mitre.org/data/definitions/330.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/coursier.py:41 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/dotnet.py:7 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/node.py:80 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/repository.py:71 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:137 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:149 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:168 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:177 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:180 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/xargs.py:8 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:694 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:787 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_discriminated_union.py:163 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1384 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1599 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2021 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2088 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2486 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2649 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generics.py:297 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:658 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_typing_extra.py:481 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_validators.py:361 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/dataclasses.py:145 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/dataclasses.py:146 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/decorator.py:122 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/parse.py:4 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:396 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:558 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:569 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:631 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:638 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/json_schema.py:2562 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:181 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:205 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:367 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:403 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:682 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:866 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:911 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:914 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:917 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:1349 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/networks.py:1327 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/type_adapter.py:732 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/type_adapter.py:786 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:212 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:258 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:268 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:271 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:289 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:305 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:318 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:321 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:339 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:346 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/class_validators.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/decorator.py:105 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:763 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:768 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:853 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:856 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1103 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1135 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1179 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:393 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:182 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:183 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:860 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:277 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:365 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:738 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/parse.py:2 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/schema.py:526 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/schema.py:715 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/utils.py:665 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/validate_call_decorator.py:36 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/sources/base.py:303 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/sources/providers/cli.py:119 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/utils.py:21 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/pygments/cmdline.py:522 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:93 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:93 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:514 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:531 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:538 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:546 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:551 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:555 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:556 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:564 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:744 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:831 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3055 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3061 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3061 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: 'root' | Possible hardcoded password: 'root' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/int_fiction.py:728 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '[^\W\d]\w*' | Possible hardcoded password: '[^\W\d]\w*' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/jsonnet.py:17 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lilypond.py:43 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '
-      (?=
-        \s         # whitespace
-        \| ;        # commen | Possible hardcoded password: '       (?=         \s         # whitespace         \| ;        # comment         \| \#[;\|!] # fancy comments         \| [)\]]    # end delimiters         \| $        # end of file       )     ' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lisp.py:50 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '(?=\s\|#\|[)\]]\|$)' | Possible hardcoded password: '(?=\s\|#\|[)\]]\|$)' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lisp.py:3047 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '[A-Z]\w*' | Possible hardcoded password: '[A-Z]\w*' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/parsers.py:334 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/scripting.py:1499 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/scripting.py:1583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/sql.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/style.py:79 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:18 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:200 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/python_discovery/_py_info.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:66 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:76 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:78 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:85 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:90 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/_internal_utils.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:375 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:481 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:581 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:659 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/cookies.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:317 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:318 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:350 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:637 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:770 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:13 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B606] Starting a process without a shell. | Starting a process without a shell. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:23 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:515 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:632 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:633 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:1921 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2128 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2608 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2609 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2619 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2620 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:3448 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:3520 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/_collections.py:335 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/connection.py:260 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/connection.py:313 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/probe.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/response.py:437 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/response.py:969 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/urllib3/util/connection.py:129 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B311] Standard pseudo-random generators are not suitable for security/cryptographic purposes. | Standard pseudo-random generators are not suitable for security/cryptographic purposes. File: ./.venv/lib/python3.14/site-packages/urllib3/util/retry.py:325 CWE: 330 — https://cwe.mitre.org/data/definitions/330.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/util/ssltransport.py:137 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/util/ssltransport.py:160 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/virtualenv/app_data/via_disk_folder.py:136 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/creator.py:223 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:8 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:53 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:53 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:138 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:201 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:266 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/activators.py:68 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/base.py:70 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/base.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/creators.py:84 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/creators.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/seeders.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/pip_invoke.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/pip_invoke.py:37 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/pip_install/symlink.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/pip_install/symlink.py:23 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/via_app_data.py:10 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/acquire.py:10 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/acquire.py:135 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:14 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:246 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/util/subprocess/__init__.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/util/subprocess/__init__.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/yaml/parser.py:185 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/yaml/parser.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:21 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:22 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:23 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:24 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:29 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:39 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:51 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:57 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:64 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:65 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:72 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:82 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:44 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:47 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:52 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:57 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:62 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:67 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:72 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:83 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:90 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:96 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:103 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:110 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:111 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:29 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:35 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:42 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:50 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:51 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:59 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:60 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:68 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:69 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:76 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:88 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:94 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:105 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:106 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:107 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:108 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/arachni.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/arachni.py:88 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/arachni.py:112 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/base.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/base.py:150 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/hakrawler.py:2 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/hakrawler.py:73 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/jsluice.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/jsluice.py:108 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/masscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/nmap.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/openvas.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/openvas.py:13 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/openvas.py:42 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/restler.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B112] Try, Except, Continue detected. | Try, Except, Continue detected. File: ./vuln_scanner/tools/restler.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/restler.py:107 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/restler.py:137 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/rustscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/sslscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/theharvester.py:15 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/theharvester.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/wapiti.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/wapiti.py:107 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| ⚪ INFO | `nmap` | Open port 3000/tcp — ppp | Port 3000/tcp is open on 172.20.0.7. Service detected: ppp. | — |
-| ⚪ INFO | `semgrep` | [dockerfile.security.missing-user-entrypoint.missing-user-entrypoint] Dockerfile:113 | By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'. | — |
-| ⚪ INFO | `semgrep` | Semgrep error: ['PartialParsing', [{'path': 'Dockerfile', 'start': {'line': 79, 'col': 5, 'offset': 0}, 'end': {'line': 79, 'col': 6, 'offset': 1}}, {'path': 'Dockerfile', 'start': {'line': 93, 'col': 5, 'offset': 0}, 'end': {'line': 93, 'col': 6, 'offset': 1}}, {'path': 'Dockerfile', 'start': {'line': 98, 'col': 5, 'offset': 0}, 'end': {'line': 98, 'col': 6, 'offset': 1}}]] | Syntax error at line Dockerfile:79:  `[` was unexpected | — |
-| ⚪ INFO | `testssl` | [scanProblem] Can't connect to '172.20.0.7:443' Make sure a firewall is not between you and your scanning target! | Can't connect to '172.20.0.7:443' Make sure a firewall is not between you and your scanning target! | — |
-
-### webgoat
-
-> **acunetix error:** VS_ACUNETIX_URL and VS_ACUNETIX_API_KEY must be set.
-
-> **arachni error:** arachni_reporter failed: [Errno 2] No such file or directory: 'arachni_reporter'
-
-> **arjun error:** Exit code 2: usage: arjun [-h] [-u URL] [-o JSON_FILE] [-oT TEXT_FILE] [-oB [BURP_PROXY]]
-             [-d DELAY] [-t THREADS] [-w WORDLIST] [-m METHOD]
-             [-i [IMPORT_FILE]] [-T TIMEOUT] [-c CHUNKS] [-q
-
-> **checkov error:** Tool timed out after 300s
-
-> **corscanner error:** Tool binary not found: 'cors_scan'. Is it installed?
-
-> **dalfox error:** Exit code 2: error: the following required arguments were not provided:
-  --url <URL>
-
-Usage: dalfox url --url <URL> --format <FORMAT> --silence <TARGET>...
-
-For more information, try '--help'.
-
-> **drheader error:** Tool binary not found: 'drheader'. Is it installed?
-
-> **graphql-cop error:** Tool binary not found: 'graphql-cop'. Is it installed?
-
-> **jsluice error:** Failed to fetch https://webgoat: <urlopen error [Errno 111] Connection refused>
-
-> **kiterunner error:** Tool binary not found: 'kr'. Is it installed?
-
-> **nosqlmap error:** Exit code 2: usage: nosqlmap.py [-h] [--attack {1,2,3}] [--platform {MongoDB,CouchDB}]
-                   [--victim VICTIM] [--dbPort DBPORT] [--myIP MYIP]
-                   [--myPort MYPORT] [--webPort WEBPORT] 
-
-> **openvas error:** GVM socket not found at /var/run/gvm/gvmd.sock. Is OpenVAS running?
-
-> **paramspider error:** Exit code 2: usage: paramspider [-h] [-d DOMAIN] [-l LIST] [-s] [--proxy PROXY]
-                   [-p PLACEHOLDER]
-paramspider: error: unrecognized arguments: --output /tmp/vs_paramspider_atsrebz_.txt --quiet
-
-> **restler error:** Could not locate OpenAPI spec. Provide a spec file path or use extra_args.
-
-> **rustscan error:** Exit code 2: error: invalid value '1-65535' for '--ports <PORTS>': invalid digit found in string
-
-For more information, try '--help'.
-
-> **smbmap error:** Exit code 2: usage: smbmap [-h] (-H HOST | --host-file FILE) [-u USERNAME] [-p PASSWORD |
-              --prompt] [-k] [--no-pass] [--dc-ip IP or Host] [-s SHARE]
-              [-d DOMAIN] [-P PORT] [-v] [--signin
-
-> **theharvester error:** Binary not found: theHarvester
-
-| Severity | Tool | Title | Description | CVEs |
-|----------|------|-------|-------------|------|
-| 🟠 HIGH | `bandit` | [B411] Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml | Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:41 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟠 HIGH | `bandit` | [B411] Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defuse | Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:77 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/distlib/database.py:1007 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/distlib/index.py:269 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1307 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B602] subprocess call with shell=True identified, security issue. | subprocess call with shell=True identified, security issue. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:500 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:639 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:859 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B324] Use of weak MD5 hash for security. Consider usedforsecurity=False | Use of weak MD5 hash for security. Consider usedforsecurity=False File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/docker.py:70 CWE: 327 — https://cwe.mitre.org/data/definitions/327.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:119 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/ruby.py:85 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `bandit` | [B202] tarfile.extractall used without any validation. Please check and discard dangerous members. | tarfile.extractall used without any validation. Please check and discard dangerous members. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_php_builtins.py:3304 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-237 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-237 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, the server_hostname TLS SNI check can be bypassed when an existing connection is reused. If an application makes multiple requests to the same domain, but with different per-request server_hostname parameters, then the later calls may succeed by reusing the existing connection when they should have been rejected due to the TLS SNI check. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54275 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2104 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2104 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to version 3.14.0, using ``CookieJar.load()`` with untrusted input may allow arbitrary code execution. Most applications using this function will be doing so with the user's own data, so this is unlikely to affect many applications. Version 3.14.0 patches the issue. If an application does allow attacker controlled files to be loaded, a workaround on older releases would be to sanitize the files before loading. Fix: 3.14.0 | CVE-2026-34993 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2112 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2112 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, host-only cookies that are saved with CookieJar.save() and then restored later with CookieJar.load() lose their host-only status. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54279 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2111 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2111 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, during cleanup it is possible for a compressed request body to be decompressed into memory in one chunk. An attacker may be able to send a compressed payload in specific situations that could be decompressed into memory, potentially leading to DoS (a zip bomb edge case). This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54278 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2113 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2113 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, payload resources are not closed correctly when a client disconnects in the middle of a write. If a payload is using an open file or similar limited resource, then an attacker may be able to cause resource starvation temporarily until garbage collection or similar closes the file. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54280 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2109 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2109 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, DigestAuthMiddleware can send an authentication response after following a cross-origin redirect. This likely requires an open redirect vulnerability or similar on the target domain for an attacker to be able to execute. Further, the attacker is only receiving the digest, so should only be able to extract the user's credentials if the cryptography is weak or there is some kind of password reuse. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54276 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2110 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2110 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, it is possible to bypass the max_line_size check in parts of an HTTP request in the C parser. If using the optimised C parser (the default in pre-built wheels), then an attacker may be able to send oversized lines through the HTTP parser and use an excessive amount of memory, potentially leading to DoS. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54277 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2108 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2108 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, if an attacker sends large incomplete websocket frame payloads, it may be possible to bypass the usual size limits on memory use. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54274 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2105 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2105 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to version 3.14.0, cookies set with the `cookies` parameter on requests are sent after following a cross-origin redirect. If a developer uses the `cookies` parameter on a per-request basis then sensitive data might be leaked to an attacker if they manage to control a redirect. Version 3.14.0 patches the issue. If unable to upgrade, using a `Cookie` header in the `headers` parameter is not vulnerable. Fix: 3.14.0 | CVE-2026-47265 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2106 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2106 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.0, attacker-controlled input included into multipart/payload headers can be used to modify a request to inject additional headers or similar. In the unlikely situation that an application is passing user-controlled strings into MultipartWriter.append(headers=...) or Payload.headers, then an attacker may be able to modify the request to inject headers or change the contents of the request. This vulnerability is fixed in 3.14.0. Fix: 3.14.0 | CVE-2026-50269 |
-| 🟠 HIGH | `pip-audit` | PYSEC-2026-2107 in aiohttp 3.13.5 | Package: aiohttp 3.13.5 Vulnerability: PYSEC-2026-2107 Description: AIOHTTP is an asynchronous HTTP client/server framework for asyncio and Python. Prior to 3.14.1, no limit was present on the number of pipelined requests that could be queued. An attacker may be able to use pipelined requests to use excessive amounts of memory, potentially leading to DoS. This vulnerability is fixed in 3.14.1. Fix: 3.14.1 | CVE-2026-54273 |
-| 🟠 HIGH | `pip-audit` | GHSA-6v7p-g79w-8964 in msgpack 1.1.2 | Package: msgpack 1.1.2 Vulnerability: GHSA-6v7p-g79w-8964 Description: ### Impact  If the Unpacker is used repeatedly after an error occurs, the process may crash with a SEGV.  If the Unpacker is used repeatedly to unpack untrusted input from external sources, it may be vulnerable to a DoS attack.  ### Patches  v1.2.1  ### Workarounds  Users should create a new Unpacker instead of reusing the same Unpacker after an error occurs.  Applying the above patch can prevent SEGV, but reusing the Streaming Unpacker after it has encountered an error will not yield correct data. If an error occurs during Streaming Unpacking, the Stream and Streaming Unpacker should be discarded.  Therefore, this is not just a workaround but the correct solution. The above patch only prevents crashes from incorrect usage. Fix: 1.2.1 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): https://user:pass@host | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/url.py Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/__pycache__/url.cpython-314.pyc Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/urllib3/util/__pycache__/url.cpython-314.pyc Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): https://foo.com:123,foo%3Abar@bar.com | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/virtualenv/seed/wheels/embed/pip-26.1.2-py3-none-any.whl Verified: False Raw (truncated): https://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/virtualenv/seed/wheels/embed/pip-26.0.1-py3-none-any.whl Verified: False Raw (truncated): http://username:password@host.com:80 | — |
-| 🟠 HIGH | `trufflehog` | Potential secret: URI | Detector: URI File: .venv/lib/python3.14/site-packages/pydantic/networks.py Verified: False Raw (truncated): http://samuel:pass@example.com:8000 | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:173 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1153 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:188 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B302] Deserialization with the marshal module is possibly dangerous. | Deserialization with the marshal module is possibly dangerous. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:393 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/expression.py:353 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/_pytest/pastebin.py:91 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:296 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/_pytest/skipping.py:119 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:651 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:652 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B108] Probable insecure usage of temp file/directory. | Probable insecure usage of temp file/directory. File: ./.venv/lib/python3.14/site-packages/platformdirs/unix.py:184 CWE: 377 — https://cwe.mitre.org/data/definitions/377.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attac | Using xml.etree.ElementTree.parse to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.parse with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/dotnet.py:86 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:92 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/golang.py:104 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/rust.py:94 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B301] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible secu | Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/parse.py:54 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B301] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible secu | Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/parse.py:42 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/utils.py:195 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/__init__.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/__init__.py:154 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_lua_builtins.py:225 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_lua_builtins.py:233 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_mysql_builtins.py:1297 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_mysql_builtins.py:1303 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_php_builtins.py:3299 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_postgres_builtins.py:642 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_postgres_builtins.py:647 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:4172 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B307] Use of possibly insecure function - consider using safer ast.literal_eval. | Use of possibly insecure function - consider using safer ast.literal_eval. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:4254 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/typing_inspection/typing_objects.py:101 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B102] Use of exec detected. | Use of exec detected. File: ./.venv/lib/python3.14/site-packages/typing_inspection/typing_objects.py:133 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🟡 MEDIUM | `bandit` | [B323] By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnec | By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnection. However, it still allows using an insecure context via the _create_unverified_context that  reverts to the previous behavior that does not validate certificates or perform hostname checks. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:376 CWE: 295 — https://cwe.mitre.org/data/definitions/295.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:401 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./vuln_scanner/tools/jsluice.py:98 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/masscan.py:43 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/nmap.py:40 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:83 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:101 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:119 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/openvas.py:172 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B310] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. | Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected. File: ./vuln_scanner/tools/restler.py:94 CWE: 22 — https://cwe.mitre.org/data/definitions/22.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/rustscan.py:55 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `bandit` | [B314] Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML  | Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree.fromstring with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called File: ./vuln_scanner/tools/sslscan.py:42 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🟡 MEDIUM | `semgrep` | [package_managers.uv.uv-missing-dependency-cooldown.uv-missing-dependency-cooldown] pyproject.toml:16 | This pyproject.toml configures uv but does not set a dependency cooldown. Newly published packages can be malicious or unstable. Add `exclude-newer = "7 days"` under `[tool.uv]` to wait 7 days before resolving newly published package versions. Added in: 0.9.17 Reference: https://docs.astral.sh/uv/concepts/resolution/#dependency-cooldowns | — |
-| 🟡 MEDIUM | `semgrep` | [python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected] vuln_scanner/tools/jsluice.py:98 | Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead. | — |
-| 🟡 MEDIUM | `semgrep` | [python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected] vuln_scanner/tools/restler.py:94 | Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead. | — |
-| 🟡 MEDIUM | `testssl` | [engine_problem] No engine or GOST support via engine with your /usr/sbin/openssl | No engine or GOST support via engine with your /usr/sbin/openssl | — |
-| 🟡 MEDIUM | `testssl` | [scanTime] Scan interrupted | Scan interrupted | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:270 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:331 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:544 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:582 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:595 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:601 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:609 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:617 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:625 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:791 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:862 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/code.py:864 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_code/source.py:217 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/pprint.py:274 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/pprint.py:275 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_io/terminalwriter.py:85 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:396 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:844 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:879 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1164 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1165 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1169 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1404 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/_py/path.py:1411 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/_compare_any.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:149 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:150 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:563 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:741 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:841 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/rewrite.py:859 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/util.py:127 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/assertion/util.py:131 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:320 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:420 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:432 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:468 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:571 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/cacheprovider.py:604 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:199 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:208 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:396 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:452 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:661 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:664 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:685 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:772 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/capture.py:802 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/compat.py:287 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:434 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:511 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:765 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:897 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1203 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1514 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1673 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1752 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1911 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:2005 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:2072 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:172 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/argparsing.py:440 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/config/findpaths.py:341 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:181 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:185 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:296 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/debugging.py:392 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/doctest.py:351 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/doctest.py:354 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/faulthandler.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/faulthandler.py:84 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:227 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:548 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:631 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:850 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:940 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:1210 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:1221 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:2094 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/fixtures.py:2289 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/helpconfig.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:18 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:196 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:209 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:216 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/junitxml.py:238 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/legacypath.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/legacypath.py:390 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/logging.py:117 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/logging.py:710 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:918 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:963 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/main.py:1029 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:122 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:296 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/mark/structures.py:486 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:180 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:196 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:262 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:568 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:571 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:573 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:588 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/nodes.py:763 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pastebin.py:119 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:220 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:233 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:419 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:712 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:1018 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pathlib.py:1019 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:26 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:129 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:162 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:319 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:432 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:437 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:793 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:962 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1005 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1204 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1288 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1324 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1377 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1379 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester.py:1382 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester_assertions.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/pytester_assertions.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:223 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:307 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:453 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:761 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:770 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:961 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1371 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1384 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python.py:1696 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/python_api.py:162 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:704 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1150 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1151 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1168 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1229 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1291 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1375 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1408 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1473 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1482 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/raises.py:1490 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/recwarn.py:242 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/recwarn.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:277 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:284 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:392 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:415 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:420 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:535 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/reports.py:574 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:191 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:247 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:422 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:424 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:430 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:527 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:532 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:546 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:547 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:548 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/runner.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/skipping.py:285 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:63 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/stepwise.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:703 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:721 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:768 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1020 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1021 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1356 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1357 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1358 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1400 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1401 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1585 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1586 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1690 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1691 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1729 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1737 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1762 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/terminal.py:1777 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/tmpdir.py:226 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/tmpdir.py:348 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:385 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:400 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:487 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/unittest.py:653 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/_pytest/warnings.py:61 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/compat.py:615 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:58 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/index.py:193 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/locators.py:970 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:114 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:315 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/manifest.py:327 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/markers.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/metadata.py:918 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/metadata.py:980 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/distlib/scripts.py:305 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:21 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:275 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:362 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:539 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:603 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:652 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:669 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:847 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1111 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1116 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1339 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1347 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1348 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1357 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1448 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/distlib/util.py:1785 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/version.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/version.py:35 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/distlib/wheel.py:435 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:231 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B606] Starting a process without a shell. | Starting a process without a shell. File: ./.venv/lib/python3.14/site-packages/dotenv/cli.py:236 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/dotenv/main.py:367 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/filelock/_soft.py:178 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/filelock/_soft_rw/_sync.py:530 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/identify/identify.py:81 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/identify/identify.py:82 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '-i' | Possible hardcoded password: '-i' File: ./.venv/lib/python3.14/site-packages/identify/identify.py:171 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/idna/core.py:500 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/iniconfig/_parse.py:58 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:24 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/nodeenv.py:190 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:190 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:817 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/nodeenv.py:942 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_manylinux.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:52 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_musllinux.py:79 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:121 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/_tokenizer.py:147 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: 'with' | Possible hardcoded password: 'with' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:130 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '(' | Possible hardcoded password: '(' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:133 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: ')' | Possible hardcoded password: ')' File: ./.venv/lib/python3.14/site-packages/packaging/licenses/__init__.py:136 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:179 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:241 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/markers.py:274 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:228 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:234 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/metadata.py:380 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/packaging/specifiers.py:630 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/packaging/tags.py:12 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/packaging/tags.py:608 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:414 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:506 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:527 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:547 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_hooks.py:583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:209 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:211 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:225 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_manager.py:336 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pluggy/_tracing.py:59 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/autoupdate.py:147 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:4 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:56 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:61 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hazmat.py:70 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:46 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:117 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:143 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:152 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/hook_impl.py:164 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/run.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/commands/run.py:317 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B311] Standard pseudo-random generators are not suitable for security/cryptographic purposes. | Standard pseudo-random generators are not suitable for security/cryptographic purposes. File: ./.venv/lib/python3.14/site-packages/pre_commit/lang_base.py:148 CWE: 330 — https://cwe.mitre.org/data/definitions/330.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/coursier.py:41 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/dotnet.py:7 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/languages/node.py:80 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/repository.py:71 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:9 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:137 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:149 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:168 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:177 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pre_commit/util.py:180 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pre_commit/xargs.py:8 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:694 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_decorators.py:787 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_discriminated_union.py:163 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1384 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:1599 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2021 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2088 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2486 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generate_schema.py:2649 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_generics.py:297 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_git.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:658 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_typing_extra.py:481 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/_internal/_validators.py:361 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/dataclasses.py:145 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/dataclasses.py:146 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/decorator.py:122 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/pydantic/deprecated/parse.py:4 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:396 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:558 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:569 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:584 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:631 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/experimental/pipeline.py:638 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/json_schema.py:2562 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:181 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:205 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:367 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:403 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:682 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:866 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:911 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:914 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:917 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/mypy.py:1349 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/networks.py:1327 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/type_adapter.py:732 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/type_adapter.py:786 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:212 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:258 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:268 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:271 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:289 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:305 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:318 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:321 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:339 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:346 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/_hypothesis_plugin.py:377 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/class_validators.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/decorator.py:105 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:763 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:768 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:853 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:856 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1103 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1124 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1135 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/fields.py:1179 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:293 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:389 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/generics.py:393 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:167 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:182 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:183 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/mypy.py:860 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:277 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:365 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/networks.py:738 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B403] Consider possible security implications associated with pickle module. | Consider possible security implications associated with pickle module. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/parse.py:2 CWE: 502 — https://cwe.mitre.org/data/definitions/502.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/schema.py:526 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/schema.py:715 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/v1/utils.py:665 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic/validate_call_decorator.py:36 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/sources/base.py:303 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/sources/providers/cli.py:119 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pydantic_settings/utils.py:21 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/pygments/cmdline.py:522 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:93 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pygments/formatters/img.py:93 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:514 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:531 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:538 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:546 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:551 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:555 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:556 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:564 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:578 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:744 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexer.py:831 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3055 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3061 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/_scilab_builtins.py:3061 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: 'root' | Possible hardcoded password: 'root' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/int_fiction.py:728 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '[^\W\d]\w*' | Possible hardcoded password: '[^\W\d]\w*' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/jsonnet.py:17 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lilypond.py:43 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '
-      (?=
-        \s         # whitespace
-        \| ;        # commen | Possible hardcoded password: '       (?=         \s         # whitespace         \| ;        # comment         \| \#[;\|!] # fancy comments         \| [)\]]    # end delimiters         \| $        # end of file       )     ' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lisp.py:50 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '(?=\s\|#\|[)\]]\|$)' | Possible hardcoded password: '(?=\s\|#\|[)\]]\|$)' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/lisp.py:3047 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B105] Possible hardcoded password: '[A-Z]\w*' | Possible hardcoded password: '[A-Z]\w*' File: ./.venv/lib/python3.14/site-packages/pygments/lexers/parsers.py:334 CWE: 259 — https://cwe.mitre.org/data/definitions/259.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/scripting.py:1499 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/scripting.py:1583 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/lexers/sql.py:236 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/pygments/style.py:79 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:18 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/python_discovery/_cached_py_info.py:200 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/python_discovery/_py_info.py:513 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:66 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:76 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:78 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:85 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/__init__.py:90 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/_internal_utils.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:375 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:481 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:581 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/adapters.py:659 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/cookies.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:317 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:318 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:350 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:637 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/requests/sessions.py:770 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:13 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:17 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B606] Starting a process without a shell. | Starting a process without a shell. File: ./.venv/lib/python3.14/site-packages/ruff/__main__.py:23 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:515 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:632 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:633 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:1921 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2128 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2608 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2609 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2619 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:2620 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:3448 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/typing_extensions.py:3520 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/_collections.py:335 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/connection.py:260 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/connection.py:313 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/http2/probe.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/response.py:437 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/response.py:969 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/urllib3/util/connection.py:129 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B311] Standard pseudo-random generators are not suitable for security/cryptographic purposes. | Standard pseudo-random generators are not suitable for security/cryptographic purposes. File: ./.venv/lib/python3.14/site-packages/urllib3/util/retry.py:325 CWE: 330 — https://cwe.mitre.org/data/definitions/330.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/util/ssltransport.py:137 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/urllib3/util/ssltransport.py:160 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B110] Try, Except, Pass detected. | Try, Except, Pass detected. File: ./.venv/lib/python3.14/site-packages/virtualenv/app_data/via_disk_folder.py:136 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/creator.py:223 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:8 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B607] Starting a process with a partial executable path | Starting a process with a partial executable path File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:53 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:53 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:138 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:201 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/create/via_global_ref/builtin/cpython/mac_os.py:266 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/activators.py:68 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/base.py:70 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/base.py:74 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/creators.py:84 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/creators.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/virtualenv/run/plugin/seeders.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/pip_invoke.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/pip_invoke.py:37 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/pip_install/symlink.py:5 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/pip_install/symlink.py:23 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/embed/via_app_data/via_app_data.py:10 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/acquire.py:10 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/acquire.py:135 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:14 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/seed/wheels/periodic_update.py:246 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./.venv/lib/python3.14/site-packages/virtualenv/util/subprocess/__init__.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./.venv/lib/python3.14/site-packages/virtualenv/util/subprocess/__init__.py:27 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/yaml/parser.py:185 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./.venv/lib/python3.14/site-packages/yaml/parser.py:186 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:21 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:22 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:23 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:24 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:29 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:34 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:39 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:45 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:51 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:57 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:64 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:65 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:72 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_config.py:82 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:44 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:46 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:47 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:52 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:57 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:62 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:67 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:72 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:77 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:83 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:89 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:90 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:96 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:103 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:104 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:110 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_nmap.py:111 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:29 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:35 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:42 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:50 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:51 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:59 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:60 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:68 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:69 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:76 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:88 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:94 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:105 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:106 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:107 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B101] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. | Use of assert detected. The enclosed code will be removed when compiling to optimised byte code. File: ./tests/test_reports.py:108 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/arachni.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/arachni.py:88 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/arachni.py:112 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/base.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/base.py:150 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/hakrawler.py:2 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/hakrawler.py:73 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/jsluice.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/jsluice.py:108 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/masscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/nmap.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/openvas.py:11 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/openvas.py:13 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/openvas.py:42 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/restler.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B112] Try, Except, Continue detected. | Try, Except, Continue detected. File: ./vuln_scanner/tools/restler.py:97 CWE: 703 — https://cwe.mitre.org/data/definitions/703.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/restler.py:107 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/restler.py:137 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/rustscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B405] Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Re | Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called. File: ./vuln_scanner/tools/sslscan.py:1 CWE: 20 — https://cwe.mitre.org/data/definitions/20.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/theharvester.py:15 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/theharvester.py:103 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B404] Consider possible security implications associated with the subprocess module. | Consider possible security implications associated with the subprocess module. File: ./vuln_scanner/tools/wapiti.py:3 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| 🔵 LOW | `bandit` | [B603] subprocess call - check for execution of untrusted input. | subprocess call - check for execution of untrusted input. File: ./vuln_scanner/tools/wapiti.py:107 CWE: 78 — https://cwe.mitre.org/data/definitions/78.html | — |
-| ⚪ INFO | `gau` | Archived URL: http://webgoat/WebGoat/attack | URL found in web archives for webgoat: http://webgoat/WebGoat/attack | — |
-| ⚪ INFO | `gau` | Archived URL: http://webgoat/WebGoat/attack&quot; | URL found in web archives for webgoat: http://webgoat/WebGoat/attack&quot; | — |
-| ⚪ INFO | `nmap` | Open port 8080/tcp — http (Apache Tomcat ) | Port 8080/tcp is open on 172.20.0.3. Service detected: http (Apache Tomcat ). | — |
-| ⚪ INFO | `nmap` | Open port 9090/tcp — http (Apache Tomcat ) | Port 9090/tcp is open on 172.20.0.3. Service detected: http (Apache Tomcat ). | — |
-| ⚪ INFO | `semgrep` | [dockerfile.security.missing-user-entrypoint.missing-user-entrypoint] Dockerfile:113 | By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'. | — |
-| ⚪ INFO | `semgrep` | Semgrep error: ['PartialParsing', [{'path': 'Dockerfile', 'start': {'line': 79, 'col': 5, 'offset': 0}, 'end': {'line': 79, 'col': 6, 'offset': 1}}, {'path': 'Dockerfile', 'start': {'line': 93, 'col': 5, 'offset': 0}, 'end': {'line': 93, 'col': 6, 'offset': 1}}, {'path': 'Dockerfile', 'start': {'line': 98, 'col': 5, 'offset': 0}, 'end': {'line': 98, 'col': 6, 'offset': 1}}]] | Syntax error at line Dockerfile:79:  `[` was unexpected | — |
-| ⚪ INFO | `testssl` | [scanProblem] Can't connect to '172.20.0.3:443' Make sure a firewall is not between you and your scanning target! | Can't connect to '172.20.0.3:443' Make sure a firewall is not between you and your scanning target! | — |
+---
+
+# VULNERABILITY ASSESSMENT REPORT
+
+---
+
+| | |
+|:---|:---|
+| **Classification** | CONFIDENTIAL |
+| **Report Date** | 2026-07-16 |
+| **Assessment Type** | Automated Security Scan |
+| **Targets Assessed** | 3 |
+| **Total Findings** | 53 |
+| **Report Version** | 1.0 |
+
+> **CONFIDENTIAL** — This report contains sensitive security information.
+> Distribution is restricted to authorized recipients only.
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Scope and Methodology](#scope-and-methodology)
+3. [Severity Rating Guide](#severity-rating-guide)
+4. [Findings Overview](#findings-overview)
+5. [Vulnerability Clusters](#vulnerability-clusters)
+6. [Detailed Findings](#detailed-findings)
+   - [Target: dvwa](#target-dvwa)
+   - [Target: juice-shop](#target-juice-shop)
+   - [Target: webgoat](#target-webgoat)
+
+Appendix A — [Scan Errors](#appendix-a--scan-errors)
+
+---
+
+## 1. Executive Summary
+
+The findings are primarily reconnaissance and exposure observations rather than confirmed vulnerabilities. One cluster shows publicly reachable web services on Apache Tomcat and Apache HTTPD across multiple ports, which increases attack surface and should be validated for hardening, patch level, and access restrictions. The second cluster consists of passive subdomain discoveries for several domains, indicating a broader DNS footprint that may reveal additional assets if those hosts resolve and expose services. Overall risk is currently low to informational, but the exposed services and published subdomains warrant follow-up validation to prevent them from becoming actionable entry points.
+
+---
+
+## 2. Scope and Methodology
+
+### 2.1 Assessment Scope
+
+The following targets were included in this assessment:
+
+| # | Target | Type |
+|---|--------|------|
+| 1 | `dvwa` | HOST |
+| 2 | `juice-shop` | HOST |
+| 3 | `webgoat` | HOST |
+
+### 2.2 Tools Executed
+
+| Tool | Findings | Status |
+|------|:--------:|--------|
+| `subfinder` | 45 | Success |
+| `nmap` | 4 | Success |
+| `rustscan` | 4 | Success |
+
+### 2.3 Scan Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| Scan duration | 259 seconds |
+| Tools run | 29 |
+| Tools with errors | 3 |
+| Tools skipped (binary not found) | 9 |
+
+---
+
+## 3. Severity Rating Guide
+
+| Rating | CVSS Range | Description |
+|--------|:----------:|-------------|
+| **🔴 CRITICAL** | 9.0 – 10.0 | Immediate exploitation likely; maximum business impact. |
+| **🟠 HIGH** | 7.0 – 8.9 | Significant risk; exploitation probable with minimal effort. |
+| **🟡 MEDIUM** | 4.0 – 6.9 | Moderate risk; exploitation requires specific conditions. |
+| **🔵 LOW** | 0.1 – 3.9 | Limited risk; exploitation is difficult or low-impact. |
+| **⚪ INFO** | N/A | Informational; no direct exploitability demonstrated. |
+
+---
+
+## 4. Findings Overview
+
+### 4.1 Risk Distribution
+
+| Severity | Count | Distribution |
+|----------|------:|:-------------|
+| 🔴 CRITICAL | 0 | — |
+| 🟠 HIGH | 0 | — |
+| 🟡 MEDIUM | 0 | — |
+| 🔵 LOW | 0 | — |
+| ⚪ INFO | 53 | ████████████████████ |
+
+### 4.2 Findings by Target
+
+| Target | INFO | Total |
+|--------|:------:|------:|
+| `dvwa` | 3 | **3** |
+| `juice-shop` | 3 | **3** |
+| `webgoat` | 12 | **12** |
+
+---
+
+## 5. Vulnerability Clusters
+
+### Cluster 1 — Exposed web services and application ports
+
+| | |
+|:---|:---|
+| **Severity** | ⚪ INFO |
+| **Affected Findings** | 12 |
+| **Tags** | exposure, web, tomcat, apache, attack-surface |
+
+These findings all indicate TCP ports exposing web-facing services rather than confirmed vulnerabilities. The common root cause is service exposure on Apache Tomcat or Apache HTTPD endpoints without evidence of hardening, access control, or version-specific validation. Further assessment is needed to determine whether any of the exposed applications or configurations introduce real attack paths.
+
+**Shared Remediation**
+
+Confirm the necessity of each exposed service and restrict access with host firewalls, security groups, or reverse proxies. Identify the exact application and version behind each port, remove unused listeners, and apply vendor patches and hardening guidance. Where appropriate, enforce authentication, disable default/sample applications, and perform follow-up web and configuration testing to validate that no sensitive interfaces are exposed.
+
+
+### Cluster 2 — Passive subdomain and namespace reconnaissance
+
+| | |
+|:---|:---|
+| **Severity** | ⚪ INFO |
+| **Affected Findings** | 14 |
+| **Tags** | reconnaissance, dns, subdomain-enumeration, attack-surface, information-disclosure |
+
+These findings stem from passive enumeration of subdomains from public DNS sources. The underlying root cause is the presence of discoverable DNS records that expand the organization’s attack surface, but none of the findings alone prove a reachable service or weakness. They become actionable only if the discovered hosts resolve to live systems with exposed applications, administrative interfaces, or misconfigurations.
+
+**Shared Remediation**
+
+Inventory all externally discoverable subdomains and validate which ones should remain public. Remove stale DNS records, segregate internal or administrative hosts from public DNS, and ensure exposed subdomains use appropriate access controls, authentication, and monitoring. Continuously monitor for newly published records and verify that sensitive services are not inadvertently exposed through DNS.
+
+
+---
+
+## 6. Detailed Findings
+
+### Target: dvwa
+
+| ID | Severity | Finding | Tool(s) | Confidence |
+|----|----------|---------|---------|:----------:|
+| F-001 | INFO | Open port 80/tcp — http (Apache httpd 2.4.67) | nmap, rustscan | High |
+| F-002 | INFO | Subdomain: img.dvwa | subfinder | High |
+| F-003 | INFO | Subdomain: mail.dvwa | subfinder | High |
+
+#### F-001 — Open port 80/tcp — http (Apache httpd 2.4.67)
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-001 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | 172.20.0.8 |
+| **Detected By** | nmap, rustscan |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-1 |
+
+**Description**
+
+Port 80/tcp is open on 172.20.0.8. Service detected: http (Apache httpd 2.4.67).
+
+**Business Impact**
+
+This is not a vulnerability by itself; it indicates a reachable web service on port 80. Exploitability depends entirely on the web application and any Apache or application-layer misconfigurations or flaws discovered during further testing.
+
+**Analyst Note**
+
+> Informational finding only: Apache httpd 2.4.67 is listening on TCP/80. No CVE or misconfiguration is demonstrated by the scan output, so this should be treated as service discovery rather than a security issue.
+
+**Short-term Mitigation**
+
+1. **Restrict exposure immediately**: If the HTTP service is not required, block inbound access to **172.20.0.8:80/tcp** at the host firewall, security group, or upstream network ACL.
+
+```bash
+# Example using UFW
+sudo ufw deny 80/tcp
+sudo ufw reload
+
+# Example using iptables
+sudo iptables -A INPUT -p tcp --dport 80 -j DROP
+```
+
+2. **Limit access to trusted sources**: If the service must remain available, temporarily allow only approved administrative or application subnets.
+
+```bash
+# Example: allow only a management subnet
+sudo ufw allow from 10.10.10.0/24 to any port 80 proto tcp
+sudo ufw deny 80/tcp
+```
+
+3. **Place behind a reverse proxy or WAF**: If public access is not required, front the service with a controlled gateway and restrict direct access to the backend Apache host.
+
+4. **Disable unnecessary virtual hosts or applications**: Remove any nonessential sites, sample content, default pages, or staging applications that may be exposed on port 80.
+
+5. **Confirm no sensitive content is exposed**: Review the site for default pages, directory listings, debug endpoints, backup files, and administrative interfaces, and remove any immediately exposed sensitive resources.
+
+6. **Increase monitoring**: Enable access logging and alerting for unusual request patterns, repeated 404s, directory traversal indicators, or POST requests to unexpected paths.
+
+```apache
+# Example Apache logging
+CustomLog logs/access_log combined
+ErrorLog logs/error_log
+```
+
+7. **Verify version and patch status**: Apache httpd 2.4.67 should be assessed against current vendor advisories and package updates; if the service cannot be patched immediately, reduce exposure using the controls above.
+
+**Permanent Remediation**
+
+1. **Confirm business requirement for HTTP service**: Determine whether port **80/tcp** is needed at all. If the application has no legitimate need for cleartext HTTP, retire the listener and expose only the required service endpoints.
+
+2. **Enforce least-exposure network design**: Implement firewall rules so Apache is reachable only from the networks that require it. Prefer deny-by-default policies and document allowed sources.
+
+```bash
+# Example nftables policy allowing only a trusted subnet
+nft add rule inet filter input ip saddr 10.10.10.0/24 tcp dport 80 accept
+nft add rule inet filter input tcp dport 80 drop
+```
+
+3. **Migrate to HTTPS**: If the service is externally or internally consumed, terminate TLS on **443/tcp** and redirect HTTP to HTTPS. Use valid certificates and disable plaintext-only access where feasible.
+
+```apache
+# Example redirect from HTTP to HTTPS
+<VirtualHost *:80>
+    ServerName example.internal
+    Redirect permanent / https://example.internal/
+</VirtualHost>
+```
+
+4. **Harden Apache httpd configuration**: Apply secure baseline settings to reduce attack surface and limit information disclosure.
+
+```apache
+ServerTokens Prod
+ServerSignature Off
+TraceEnable Off
+Options -Indexes
+```
+
+5. **Remove or isolate unnecessary modules and content**: Disable unused Apache modules, sample applications, and default documents. Segment administrative applications onto separate virtual hosts, hosts, or networks.
+
+```bash
+# Debian/Ubuntu example: disable an unused module
+sudo a2dismod status
+sudo systemctl reload apache2
+```
+
+6. **Patch and maintain Apache and dependencies**: Upgrade Apache httpd and related libraries to the latest vendor-supported release. Establish routine patch management to address future CVEs promptly.
+
+```bash
+# Example package update workflow
+sudo apt update
+sudo apt upgrade apache2
+```
+
+7. **Implement secure application controls**: Review the web application for authentication, authorization, input validation, CSRF protections, and secure session handling. Fix any issues identified during application-layer testing, since the open port itself is only an entry point.
+
+8. **Add operational safeguards**: Deploy centralized logging, file integrity monitoring, vulnerability scanning, and periodic review of exposed services. Re-scan after remediation to confirm that only approved services remain reachable.
+
+9. **Validate the final state**: Confirm that port 80 is closed if not required, or that it only redirects to HTTPS and serves no sensitive content. Document the approved exposure and keep firewall and Apache configurations under change control.
+
+---
+
+#### F-002 — Subdomain: img.dvwa
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-002 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | dvwa |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: img.dvwa via rapiddns
+
+**Business Impact**
+
+This is not directly exploitable by itself; it is only evidence that a subdomain exists. Exploitability depends entirely on whether img.dvwa resolves to a live service with a vulnerable application or misconfiguration.
+
+**Analyst Note**
+
+> Informational subdomain discovery from subfinder via rapiddns. No vulnerability is demonstrated and no CVE is associated. Treat as reconnaissance data only unless the subdomain hosts an exposed service worth assessing.
+
+**Short-term Mitigation**
+
+1. **Verify exposure**: Confirm whether `img.dvwa` currently resolves in public DNS and whether it serves any application or static content.
+2. **Reduce unnecessary visibility**: If the subdomain is not required, temporarily remove or disable the DNS record until ownership and purpose are confirmed.
+3. **Restrict access**: If the host is required but not meant for public use, place it behind network controls such as a VPN, IP allowlist, or firewall rules.
+4. **Disable nonessential services**: Shut down any unnecessary web services, test instances, or preview deployments on the host until a proper security review is completed.
+5. **Apply temporary hardening**: Ensure the server is patched, default accounts are removed, and directory listing is disabled.
+6. **Monitor for abuse**: Review web server, DNS, and access logs for unexpected traffic to `img.dvwa` and alert on anomalous requests.
+7. **Document ownership**: Assign an application owner and operational contact so the subdomain can be tracked and remediated promptly.
+
+Example verification commands:
+```bash
+nslookup img.dvwa
+curl -I http://img.dvwa
+```
+
+Example temporary access control concept:
+```nginx
+location / {
+    allow 10.0.0.0/8;
+    allow 192.168.0.0/16;
+    deny all;
+}
+```
+
+**Permanent Remediation**
+
+1. **Confirm asset legitimacy**: Validate whether `img.dvwa` is an approved subdomain and map it to an owner, purpose, and data classification.
+2. **Inventory and register**: Add the subdomain to the official asset inventory, CMDB, or DNS governance process so it is tracked going forward.
+3. **Harden DNS management**: Restrict who can create or modify DNS records, require change approval, and review zone updates regularly.
+4. **Implement lifecycle controls**: Ensure subdomains are created only through a controlled request process and removed when no longer needed.
+5. **Secure the hosted service**: If the subdomain is live, apply baseline web and host hardening, patching, least privilege, secure headers, TLS, and authenticated administrative access.
+6. **Segment and isolate**: Host the service in a segmented network or dedicated environment so a compromise does not expose internal systems.
+7. **Continuously monitor**: Add the subdomain to vulnerability scanning, certificate monitoring, and DNS monitoring to detect drift, exposure, or unauthorized changes.
+8. **Retire unused records**: If `img.dvwa` has no business need, permanently remove the DNS record and any associated backend services, certificates, and routing entries.
+
+Example DNS governance workflow:
+```text
+Request -> Security review -> Approval -> DNS change -> Validation -> Asset registry update
+```
+
+Example removal command for a controlled DNS environment:
+```bash
+# Remove the DNS record using your authorized DNS management tooling
+# Example only; replace with your platform-specific command
+```
+
+Example validation after remediation:
+```bash
+nslookup img.dvwa
+curl -I https://img.dvwa
+```
+
+---
+
+#### F-003 — Subdomain: mail.dvwa
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-003 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | dvwa |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: mail.dvwa via rapiddns
+
+**Business Impact**
+
+Very low on its own; discovering a subdomain is reconnaissance information and does not indicate a direct vulnerability. It could only become useful if the subdomain exposes a misconfiguration or vulnerable service, which is not shown here.
+
+**Analyst Note**
+
+> This is an informational subdomain enumeration result from subfinder/rapiddns. There is no evidence of exposed functionality, misconfiguration, or impact beyond asset discovery, so it should not be treated as a security issue by itself.
+
+**Short-term Mitigation**
+
+1. **Validate the subdomain**: Confirm whether `mail.dvwa` is an intended and active service. If it is not required, temporarily **disable DNS resolution** or remove any public-facing references to reduce further discovery.
+2. **Restrict exposure**: If the subdomain must remain available, place it behind **network controls** such as a VPN, IP allowlist, firewall rules, or reverse-proxy authentication to limit access while it is reviewed.
+3. **Reduce reconnaissance value**: Remove unnecessary information leakage from the host, including **banner details**, verbose error pages, and directory listings.
+4. **Harden the service quickly**: Apply current patches to the mail stack and ensure secure defaults are enabled (TLS, strong auth, disabled anonymous access where applicable).
+5. **Review DNS records**: Check for unintended records such as stale `A`, `AAAA`, `CNAME`, `MX`, or wildcard entries that expose internal or deprecated infrastructure.
+6. **Monitor for abuse**: Enable logging and alerting on the subdomain to detect unexpected requests, brute-force attempts, or enumeration activity.
+
+```bash
+# Example: verify DNS records and identify stale entries
+nslookup mail.dvwa
+
+# Example: temporarily restrict access at a reverse proxy or firewall
+# Allow only trusted management IPs
+iptables -A INPUT -p tcp --dport 443 -s 203.0.113.10 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j DROP
+```
+
+**Permanent Remediation**
+
+1. **Inventory and ownership**: Establish whether `mail.dvwa` is a business-required service. Assign an owner, document its purpose, and classify whether it is meant to be public, internal-only, or retired.
+2. **Remove or retire unused subdomains**: If the subdomain is not needed, **delete the DNS record** and decommission the underlying host, application, or mail service to eliminate the attack surface.
+3. **Secure the mail service**: If the subdomain is required, apply a full hardening baseline:
+   - Keep the mail server and dependencies **fully patched**.
+   - Enforce **TLS 1.2+ / 1.3** and disable weak ciphers.
+   - Require **authenticated access**; disable anonymous SMTP relay, default accounts, and legacy protocols where possible.
+   - Apply **rate limiting**, lockout controls, and anti-brute-force protections.
+4. **Minimize DNS exposure**: Publish only the records necessary for operation. Avoid exposing internal hostnames, development endpoints, or unnecessary aliases. Review SPF, DKIM, and DMARC configuration to ensure mail infrastructure is intentional and properly controlled.
+5. **Implement segmentation and access control**: Place the mail service in a restricted network zone, expose only required ports, and use a reverse proxy or mail gateway where appropriate. Limit administrative interfaces to trusted management networks.
+6. **Harden host and application configuration**: Disable unnecessary services, remove default content, hide version banners, and ensure web/mail admin consoles are not accessible from the public internet unless explicitly required.
+7. **Create a subdomain lifecycle process**: Add a formal workflow for provisioning, reviewing, and decommissioning subdomains so stale DNS entries are not left behind.
+8. **Continuous monitoring and reassessment**: Add the subdomain to asset inventory, vulnerability scanning, and log monitoring. Periodically review whether it remains necessary and whether its exposure still matches policy.
+
+```bash
+# Example: remove an unused DNS record from a BIND zone file
+mail    IN    A     192.0.2.25
+# delete the record, then reload DNS
+rndc reload
+
+# Example: verify mail-related security settings (illustrative)
+# Ensure only TLS-capable services are enabled and legacy protocols are disabled
+ss -tulpn | grep -E ':(25|465|587|993|995)\b'
+```
+
+---
+
+### Target: juice-shop
+
+| ID | Severity | Finding | Tool(s) | Confidence |
+|----|----------|---------|---------|:----------:|
+| F-004 | INFO | Open port 3000/tcp — ppp | nmap | High |
+| F-005 | INFO | Subdomain: mail.juice-shop | subfinder | High |
+| F-006 | INFO | Subdomain: www.juice-shop | subfinder | High |
+
+#### F-004 — Open port 3000/tcp — ppp
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-004 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | 172.20.0.3 |
+| **Detected By** | nmap |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-1 |
+
+**Description**
+
+Port 3000/tcp is open on 172.20.0.3. Service detected: ppp.
+
+**Business Impact**
+
+Low by itself: this is only an open TCP port with an identified service, not a vulnerability. Exploitability depends entirely on what application is listening on 3000/tcp and whether it has an actual weakness.
+
+**Analyst Note**
+
+> Informational finding only. Port 3000 is commonly used by web apps and development services; 'ppp' is likely an imprecise service fingerprint from nmap rather than a confirmed protocol. No CVE or misconfiguration is established from the scan alone.
+
+**Short-term Mitigation**
+
+1. **Identify the listening process** on `172.20.0.3:3000` immediately to confirm whether the service is expected and to determine exposure scope.
+   ```bash
+   sudo ss -ltnp | grep ':3000'
+   sudo lsof -iTCP:3000 -sTCP:LISTEN -Pn
+   ```
+
+2. **Restrict network access** to port `3000/tcp` at the host, container, or network firewall until the service is verified.
+   ```bash
+   sudo ufw deny 3000/tcp
+   # or, if using iptables
+   sudo iptables -A INPUT -p tcp --dport 3000 -j DROP
+   ```
+
+3. **Limit exposure to trusted sources only** if the service must remain temporarily available. Allow only specific management IPs, a VPN subnet, or an internal security group.
+   ```bash
+   sudo iptables -A INPUT -p tcp -s 10.0.0.0/24 --dport 3000 -j ACCEPT
+   sudo iptables -A INPUT -p tcp --dport 3000 -j DROP
+   ```
+
+4. **If the service is non-essential, stop it immediately** to eliminate the exposure while validation is performed.
+   ```bash
+   sudo systemctl stop <service-name>
+   sudo systemctl disable <service-name>
+   ```
+
+5. **Place the application behind a reverse proxy or access gateway** if remote access is required, enforcing authentication, rate limiting, and TLS at the edge rather than exposing `3000/tcp` directly.
+
+6. **Monitor logs and connection attempts** for the port to determine whether the service is being actively used or probed.
+   ```bash
+   sudo journalctl -u <service-name> --since '24 hours ago'
+   sudo tcpdump -ni any tcp port 3000
+   ```
+
+7. **Document the business justification** for the open port and assign ownership so the service is not left exposed without an accountable system owner.
+
+**Permanent Remediation**
+
+1. **Perform a full service identification and risk assessment** for the application bound to `3000/tcp`.
+   - Determine the exact daemon, version, startup mechanism, and whether it is intended to be reachable from the network.
+   - Validate whether the service is a development interface, admin console, API endpoint, or a production dependency.
+   - Review the application’s authentication, authorization, and transport security controls.
+
+2. **Remove unnecessary network exposure** by binding the service to localhost or an internal interface only if remote access is not required.
+   ```ini
+   # Example application binding
+   HOST=127.0.0.1
+   PORT=3000
+   ```
+   If the service is running in a container, publish the port only to the loopback interface or an internal network.
+   ```bash
+   docker run -p 127.0.0.1:3000:3000 <image>
+   ```
+
+3. **Enforce least-privilege network controls** at the host, orchestration, and perimeter layers.
+   - Add explicit allowlists for approved clients.
+   - Deny all other inbound traffic to `3000/tcp`.
+   - In Kubernetes or similar platforms, use NetworkPolicies or security groups to restrict access.
+   ```yaml
+   apiVersion: networking.k8s.io/v1
+   kind: NetworkPolicy
+   metadata:
+     name: allow-only-trusted-clients
+   spec:
+     podSelector:
+       matchLabels:
+         app: my-app
+     policyTypes:
+       - Ingress
+     ingress:
+       - from:
+           - ipBlock:
+               cidr: 10.0.0.0/24
+         ports:
+           - protocol: TCP
+             port: 3000
+   ```
+
+4. **Place the service behind a hardened reverse proxy or API gateway** if external access is required.
+   - Terminate TLS at the proxy.
+   - Require authentication and authorization.
+   - Add request throttling, size limits, and logging.
+   - Disable direct exposure of the backend port to the network.
+
+5. **Harden the application itself** if it is a web service or API.
+   - Remove default credentials and unauthenticated administrative endpoints.
+   - Patch to a supported version.
+   - Disable debug, dev, or test modes.
+   - Ensure sensitive endpoints are protected by role-based access control.
+   - Validate that only intended protocols and methods are permitted.
+
+6. **Implement secure service management** so the port state is controlled by configuration rather than ad hoc changes.
+   - Create a documented systemd unit, container manifest, or orchestration manifest.
+   - Ensure the service starts only on approved hosts.
+   - Use configuration management to prevent drift.
+   ```ini
+   [Unit]
+   Description=My Service
+   After=network.target
+
+   [Service]
+   ExecStart=/opt/myapp/bin/myapp --host 127.0.0.1 --port 3000
+   Restart=always
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+7. **Add continuous validation and alerting** for unexpected listening ports.
+   - Baseline approved ports per host role.
+   - Alert on new or changed listeners.
+   - Include `3000/tcp` in routine vulnerability and configuration compliance checks.
+
+8. **Document the approved use case and ownership** for any service that must remain on `3000/tcp`.
+   - Record the application name, owner, data classification, and justification.
+   - Define review dates and decommission criteria.
+   - Reassess the port during change management and patch cycles.
+
+9. **Verify remediation after implementation**.
+   - Confirm the service is no longer exposed externally or is accessible only from approved sources.
+   - Re-scan the host and validate firewall rules.
+   ```bash
+   nmap -p 3000 172.20.0.3
+   sudo ss -ltnp | grep ':3000' || true
+   ```
+
+---
+
+#### F-005 — Subdomain: mail.juice-shop
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-005 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | juice-shop |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: mail.juice-shop via rapiddns
+
+**Business Impact**
+
+Low. This is passive subdomain discovery from public DNS data and does not indicate a vulnerability by itself; exploitation would require an associated misconfiguration or exposed service on the discovered host.
+
+**Analyst Note**
+
+> Informational asset discovery only. 'mail.juice-shop' appears to be a hostname returned by OSINT sources and does not demonstrate impact without further validation of DNS resolution, service exposure, or trust relationships.
+
+**Short-term Mitigation**
+
+1. **Validate the asset**: Confirm whether **mail.juice-shop** is an intended, authorized host and document its business purpose, owner, and exposed services.
+2. **Restrict exposure if not required**: If the subdomain is not meant to be publicly reachable, remove or suspend its public DNS record and/or place it behind **VPN**, **allowlisting**, or a **reverse proxy** with access controls.
+3. **Harden the service immediately**: If the host is required, ensure only the minimum necessary ports are open and disable any unnecessary listeners, admin panels, test endpoints, or default services.
+4. **Apply TLS and secure headers**: Ensure the subdomain uses a valid certificate and enforces **HTTPS-only** access where applicable.
+5. **Review authentication and default access**: Verify there are no default credentials, anonymous access, directory listing, or permissive CORS settings on the mail service or related web interface.
+6. **Monitor for abuse**: Add the host to logging and alerting to detect unexpected connections, brute-force attempts, or service enumeration.
+7. **Check for shadow IT dependencies**: Identify whether any email, SMTP, IMAP, or webmail functionality is unintentionally exposed and temporarily disable it if it is not actively needed.
+
+```bash
+# Example: verify which services are exposed on the host
+nmap -Pn -sT -sV -p- mail.juice-shop
+
+# Example: block public access at the edge if the host is not needed
+# (Illustrative firewall concept; adapt to your environment)
+ufw deny in on eth0 to any port 25,465,587,80,443
+```
+
+8. **Re-scan after changes**: Re-run passive and active checks to confirm the subdomain is no longer publicly exposed or only exposes the intended service set.
+
+**Permanent Remediation**
+
+1. **Establish asset ownership and lifecycle management**: Add **mail.juice-shop** to the official asset inventory with an assigned owner, environment tag, purpose, and decommission date if applicable.
+2. **Define DNS governance**: Implement a controlled process for creating, modifying, and removing subdomains, including approval requirements and periodic review of DNS zones for stale records.
+3. **Remove or correct unnecessary DNS records**: If the subdomain is not required, delete the record from authoritative DNS and verify that related aliases, CNAMEs, and wildcard entries do not recreate exposure.
+4. **Segregate email infrastructure**: If the subdomain supports mail services, host it on a dedicated, hardened mail platform separated from general web applications and production test systems.
+5. **Enforce network-layer controls**: Restrict access to administrative and mail protocols using firewalls, security groups, or private connectivity so that only intended sources can reach the service.
+6. **Harden the mail stack**: Apply vendor security baselines, disable legacy protocols, enforce strong authentication, and ensure services such as SMTP, IMAP, POP3, and webmail are configured securely.
+7. **Implement continuous exposure monitoring**: Add recurring external attack-surface scans and DNS enumeration checks to detect newly published subdomains, stale records, and unintended service exposure.
+8. **Centralize certificate and DNS management**: Use automation to provision, renew, and revoke certificates and DNS records through controlled pipelines with peer review.
+9. **Document and test decommissioning procedures**: When a subdomain is retired, ensure DNS records, certificates, load balancer entries, firewall rules, and application configurations are all removed together.
+10. **Set alerting for unauthorized DNS changes**: Integrate DNS change events into SIEM/monitoring so that unexpected subdomain creation or modification is investigated promptly.
+
+```bash
+# Example: remove a stale DNS record (provider-specific command placeholders)
+# aws route53 change-resource-record-sets --hosted-zone-id ZONEID --change-batch file://delete-mail-record.json
+
+# Example: verify the subdomain no longer resolves
+nslookup mail.juice-shop
+```
+
+11. **Perform a post-change validation**: After implementing the permanent fix, confirm from an external vantage point that the record is absent or that the service is intentionally restricted and securely configured.
+
+---
+
+#### F-006 — Subdomain: www.juice-shop
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-006 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | juice-shop |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: www.juice-shop via rapiddns
+
+**Business Impact**
+
+Low; this is passive subdomain discovery and does not by itself indicate a vulnerability. It only becomes actionable if the subdomain resolves to an exposed service with additional weaknesses.
+
+**Analyst Note**
+
+> Informational finding only. The subdomain was identified via public DNS intelligence and does not demonstrate impact on its own. No CWE applies unless follow-on issues are found on the discovered host.
+
+**Short-term Mitigation**
+
+1. **Validate the subdomain**: Confirm whether `www.juice-shop` is intended to be publicly reachable and whether it currently resolves to an active host, load balancer, or virtual host.
+2. **Restrict exposure if not required**: If the subdomain is not meant to be publicly accessible, temporarily block it at the edge (DNS, reverse proxy, or firewall) until its purpose is confirmed.
+3. **Serve a safe default response**: If the hostname must remain resolvable, configure the web server or CDN to return a non-sensitive generic page or `404/403` for unapproved hostnames.
+4. **Review active services behind the host**: Check for unintended applications, admin panels, test environments, or outdated virtual hosts exposed under `www.juice-shop`.
+5. **Monitor access logs**: Enable heightened logging on DNS, reverse proxy, and web server layers to detect probing, unexpected traffic, or host-header misuse.
+6. **Document ownership**: Assign an owner for the subdomain and record whether it is production, staging, or deprecated.
+
+Example NGINX host-based deny rule:
+```nginx
+server {
+    listen 80;
+    server_name www.juice-shop;
+    return 404;
+}
+```
+
+Example DNS temporary control:
+```bash
+# Remove or suspend the public DNS record until validation is complete
+# (performed in your DNS provider or IaC workflow)
+```
+
+
+**Permanent Remediation**
+
+1. **Inventory and classify the subdomain**: Add `www.juice-shop` to the authoritative asset inventory, marking its business purpose, environment, and owner. Remove any ambiguity about whether it is production, testing, or legacy infrastructure.
+2. **Enforce least exposure**: If the subdomain is unnecessary, permanently decommission it by removing DNS records, disabling associated virtual hosts, and revoking any certificates or routes tied to it.
+3. **Harden web-server host handling**: Configure all front-end services to use explicit `server_name`/virtual host allowlists and reject unknown host headers by default.
+4. **Apply secure DNS and routing controls**: Ensure DNS entries point only to approved infrastructure. Use split-horizon DNS or internal-only resolution for non-public environments.
+5. **Standardize deployment controls**: Manage subdomain creation through infrastructure-as-code and change control so new hostnames cannot be published without review and approval.
+6. **Implement continuous asset discovery**: Integrate subdomain enumeration into routine monitoring and compare results against the approved inventory to detect rogue or forgotten hostnames.
+7. **Validate security posture of any active service**: If `www.juice-shop` is intended to host an application, perform a separate security review covering TLS configuration, authentication, access controls, patching, and common web vulnerabilities.
+8. **Retire legacy endpoints**: If the hostname was used for a previous application, fully remove backend mappings, storage, and credentials to prevent accidental reuse or shadow exposure.
+
+Example NGINX default-deny virtual host configuration:
+```nginx
+server {
+    listen 80 default_server;
+    listen 443 ssl default_server;
+    server_name _;
+    return 444;
+}
+
+server {
+    listen 80;
+    server_name www.juice-shop;
+    return 301 https://juice-shop.example.com$request_uri;
+}
+```
+
+Example DNS/IaC lifecycle control:
+```hcl
+resource "aws_route53_record" "juice_shop_www" {
+  zone_id = var.zone_id
+  name    = "www.juice-shop"
+  type    = "A"
+  ttl     = 300
+  records = [var.lb_ip]
+}
+```
+
+Operationally, the permanent fix is to ensure the hostname is either fully removed or explicitly approved, protected, and monitored as part of the organization’s managed asset baseline.
+
+---
+
+### Target: webgoat
+
+| ID | Severity | Finding | Tool(s) | Confidence |
+|----|----------|---------|---------|:----------:|
+| F-007 | INFO | Open port 8080/tcp — http (Apache Tomcat ) | nmap, rustscan | High |
+| F-008 | INFO | Open port 9090/tcp — http (Apache Tomcat ) | rustscan | High |
+| F-009 | INFO | Subdomain: srv1.webgoat | subfinder | High |
+| F-010 | INFO | Subdomain: scottdemo.webgoat | subfinder | High |
+| F-011 | INFO | Subdomain: leonardtestnew.webgoat | subfinder | High |
+| F-012 | INFO | Subdomain: beta.webgoat | subfinder | High |
+| F-013 | INFO | Subdomain: webdisk.acag.webgoat | subfinder | High |
+| F-014 | INFO | Subdomain: webmail.leonardtestnew.webgoat | subfinder | High |
+| F-015 | INFO | Subdomain: ns2.webgoat | subfinder | High |
+| F-016 | INFO | Subdomain: cpanel.scottdemo.webgoat | subfinder | High |
+| F-017 | INFO | Subdomain: donna.webgoat | subfinder | High |
+| F-018 | INFO | Subdomain: 220-khan.webgoat | subfinder | High |
+
+#### F-007 — Open port 8080/tcp — http (Apache Tomcat )
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-007 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | 172.20.0.7 |
+| **Detected By** | nmap, rustscan |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-1 |
+
+**Description**
+
+Port 8080/tcp is open on 172.20.0.7. Service detected: http (Apache Tomcat ).
+
+**Business Impact**
+
+No exploitation is implied by the finding itself; it only confirms an Apache Tomcat service is reachable on TCP/8080. Any real risk depends on the specific Tomcat version, deployed applications, authentication state, and misconfigurations.
+
+**Analyst Note**
+
+> This is an informational exposure finding, not a vulnerability. Port 8080 open on a Tomcat instance is common for web apps, but it increases attack surface and should be reviewed for versioning, default apps, management interfaces, and access controls.
+
+**Short-term Mitigation**
+
+1. **Confirm exposure scope**: Verify whether `172.20.0.7:8080/tcp` is intended to be reachable from the current network segment. If Tomcat is only meant for local or internal administration, treat it as an unnecessary exposure and restrict access immediately.
+2. **Restrict network access**: Apply an emergency firewall or security-group rule to allow `8080/tcp` only from approved management hosts, application tiers, or VPN ranges.
+
+```bash
+# Example using iptables: allow only a trusted admin subnet
+iptables -A INPUT -p tcp -s 10.10.10.0/24 --dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -j DROP
+```
+
+3. **Limit to localhost if possible**: If Tomcat is used only by a local reverse proxy or a co-located application, bind it to `127.0.0.1` or the internal interface only.
+
+```xml
+<!-- conf/server.xml: bind connector to loopback -->
+<Connector address="127.0.0.1" port="8080" protocol="HTTP/1.1" />
+```
+
+4. **Place behind a reverse proxy/WAF**: If external access is required, expose Tomcat only through a hardened reverse proxy (for example, NGINX/Apache) with TLS, access controls, and request filtering.
+5. **Disable or remove unused applications**: Remove sample apps, test apps, and any management endpoints not required for current operations.
+6. **Verify authentication controls**: Ensure any administrative interfaces, manager apps, or custom applications require strong authentication and are not anonymously accessible.
+7. **Check for known vulnerabilities**: Identify the exact Tomcat version and quickly assess whether it is affected by any critical CVEs; if so, prioritize patching or temporary isolation.
+8. **Monitor for abuse**: Enable/confirm logging on the host and reverse proxy, and watch for repeated access attempts, unusual request patterns, or unexpected source addresses.
+
+**Permanent Remediation**
+
+1. **Inventory and baseline the service**: Determine the exact Tomcat version, installation source, deployed applications, connector configuration, and whether `8080/tcp` is required for business operation.
+2. **Upgrade Tomcat to a supported release**: Move to the latest vendor-supported Apache Tomcat version that is approved by your environment and compatible with the application stack. Apply current security updates and establish a patch cadence.
+3. **Reduce exposed surface area**: Reconfigure Tomcat so it is not directly reachable from untrusted networks unless absolutely necessary.
+
+```xml
+<!-- conf/server.xml: bind to a private interface or localhost -->
+<Connector address="127.0.0.1" port="8080" protocol="HTTP/1.1"
+           connectionTimeout="20000"
+           redirectPort="8443" />
+```
+
+If external service is needed, front Tomcat with a reverse proxy and keep the Tomcat connector private.
+4. **Enforce TLS externally**: Terminate HTTPS at the reverse proxy or configure secure connectors so credentials and session data are never sent in cleartext over the network.
+5. **Harden authentication and authorization**: Require strong, unique credentials for administrative access; integrate with centralized identity management where possible; remove default accounts; and ensure manager/admin applications are restricted to approved roles and IP ranges.
+6. **Remove unnecessary components**: Delete sample, documentation, example, and test applications from production deployments. Disable modules and endpoints not required by the application.
+7. **Apply secure configuration settings**: Review `server.xml`, deployed application descriptors, and JVM/system settings for insecure defaults. Disable directory listings, verbose error pages, and unnecessary HTTP methods.
+8. **Implement host and network controls**: Maintain host-based firewall rules and upstream ACLs so the service is only reachable from approved sources. Add segmentation if the service is in a shared subnet.
+9. **Add continuous vulnerability management**: Include Tomcat in routine configuration scanning and patch management. Track version drift and revalidate exposure after every deployment or infrastructure change.
+10. **Establish logging and alerting**: Centralize Tomcat access/error logs and alert on authentication failures, repeated 4xx/5xx responses, unusual user agents, and unexpected remote hosts.
+11. **Validate the fix**: After changes, rescan the target and confirm that `8080/tcp` is either closed or reachable only from authorized systems, and that any remaining access is protected by authentication and TLS.
+
+```bash
+# Example validation checks
+ss -ltnp | grep ':8080'
+nmap -sV -p 8080 172.20.0.7
+```
+
+12. **Document and operationalize**: Record the approved exposure model for Tomcat, the owners of the service, and the required review steps for future deployments so the port is not re-exposed inadvertently.
+
+---
+
+#### F-008 — Open port 9090/tcp — http (Apache Tomcat )
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-008 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | 172.20.0.7 |
+| **Detected By** | rustscan |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-1 |
+
+**Description**
+
+Port 9090/tcp is open on 172.20.0.7. Service: http (Apache Tomcat ).
+
+**Business Impact**
+
+Very low; this is only an exposed TCP/HTTP service identification on port 9090 with no vulnerability evidence. Exploitation would require a separate Tomcat misconfiguration or known CVE, none of which are indicated here.
+
+**Analyst Note**
+
+> Informational finding only. The scan confirms port 9090 is open and appears to run Apache Tomcat, but no weakness, version, or accessible endpoint was identified, so this is not a security issue by itself.
+
+**Short-term Mitigation**
+
+1. **Restrict network exposure immediately**: If Tomcat on **9090/tcp** is not required for external access, block it at the host firewall, security group, or network ACL so only trusted administrative sources can reach it.
+
+   ```bash
+   # Example: block inbound TCP/9090 on Linux (iptables)
+   iptables -A INPUT -p tcp --dport 9090 -j DROP
+   ```
+
+2. **Limit access to trusted IPs/VPN only**: If the service must remain available short-term, allow traffic only from approved management networks, jump hosts, or VPN ranges.
+
+   ```bash
+   # Example: allow only a trusted subnet and deny everyone else
+   iptables -A INPUT -p tcp -s 10.10.0.0/24 --dport 9090 -j ACCEPT
+   iptables -A INPUT -p tcp --dport 9090 -j DROP
+   ```
+
+3. **Verify what is listening on the port**: Confirm the process, container, or reverse proxy bound to **172.20.0.7:9090** and determine whether it is required.
+
+   ```bash
+   ss -ltnp | grep ':9090'
+   lsof -iTCP:9090 -sTCP:LISTEN -n -P
+   ```
+
+4. **Reduce immediate attack surface**: If this is Tomcat’s management or administrative interface, disable any unused management applications, sample apps, or remote administration features until a proper hardening review is completed.
+
+5. **Monitor for unexpected access**: Review logs for inbound connections to **9090/tcp** and alert on any access outside authorized sources.
+
+   ```bash
+   journalctl -u tomcat --since '24 hours ago'
+   ```
+
+**Permanent Remediation**
+
+1. **Determine business requirement**: Confirm whether Apache Tomcat on **9090/tcp** is necessary. If it is not required, remove the exposure entirely by stopping the service, disabling the listener, and preventing it from starting at boot.
+
+   ```bash
+   systemctl stop tomcat
+   systemctl disable tomcat
+   ```
+
+2. **Bind Tomcat to a private interface or localhost**: If Tomcat must remain active, configure it to listen only on a non-routable interface or loopback, or place it behind a reverse proxy that exposes only approved endpoints.
+
+   ```xml
+   <!-- Example server.xml connector bound to localhost -->
+   <Connector port="9090" protocol="HTTP/1.1"
+              address="127.0.0.1"
+              connectionTimeout="20000"
+              redirectPort="8443" />
+   ```
+
+3. **Enforce network segmentation**: Place the service in a restricted management network or internal VLAN and ensure routing/firewall policy prevents direct access from untrusted networks. Only required application tiers or admin jump hosts should be permitted.
+
+4. **Harden Tomcat configuration**: Remove or disable default apps, manager/host-manager interfaces, and any unnecessary examples. Ensure the server is not exposing version banners or debug endpoints, and confirm that directory listings and test applications are not accessible.
+
+5. **Implement authentication and authorization controls**: If administration is required, restrict it with strong authentication, role-based access, and IP allowlisting. Prefer centralized identity integration and multi-factor authentication for administrative access.
+
+6. **Upgrade and patch Tomcat regularly**: Keep Apache Tomcat and the Java runtime at supported, vendor-patched versions. Establish a patch cadence and verify that security updates are applied promptly to reduce the risk of future CVE exposure.
+
+   ```bash
+   # Example validation commands
+   catalina.sh version
+   java -version
+   ```
+
+7. **Use TLS for any required remote access**: If the service must be reachable over a network, terminate HTTPS with a valid certificate and disable cleartext HTTP where possible. Ensure weak ciphers and legacy protocols are disabled.
+
+8. **Add continuous asset and port monitoring**: Integrate host and network monitoring to detect unexpected listeners on **9090/tcp**, configuration drift, and unauthorized exposure. Alert on new services bound to externally reachable interfaces.
+
+9. **Document and test the exposure controls**: Record the approved access model for the service, validate firewall and Tomcat binding settings after every change, and include the port in routine vulnerability and configuration compliance checks.
+
+10. **Re-scan to verify closure**: After changes, confirm that **9090/tcp** is no longer exposed externally or is only reachable from approved sources.
+
+   ```bash
+   rustscan -a 172.20.0.7 -p 9090
+   ```
+
+---
+
+#### F-009 — Subdomain: srv1.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-009 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: srv1.webgoat via rapiddns
+
+**Business Impact**
+
+This is only passive subdomain discovery, so there is no direct exploit path from the finding itself. Any risk depends on whether the discovered host resolves, is reachable, and exposes vulnerable services or sensitive admin interfaces.
+
+**Analyst Note**
+
+> Info-only reconnaissance result from subfinder/rapiddns. The presence of srv1.webgoat indicates possible additional attack surface, but this finding alone is not a vulnerability and should be treated as asset inventory data.
+
+**Short-term Mitigation**
+
+1. **Validate the host**: Confirm whether `srv1.webgoat` currently resolves in DNS and whether it is reachable from untrusted networks. If it is not required, **remove or disable the DNS record** immediately.
+2. **Restrict exposure**: If the subdomain must remain active, place it behind **access controls** such as VPN, IP allowlisting, or authentication at the reverse proxy/WAF layer.
+3. **Review services for sensitive interfaces**: Check the host for exposed admin consoles, debug endpoints, default pages, or management ports. Temporarily **block unnecessary ports** at the firewall/security group level.
+4. **Limit information disclosure**: Ensure banners, version strings, and directory listings are disabled on any web services running on the host.
+5. **Monitor for access**: Enable logging and alerting for DNS queries, HTTP/S requests, and authentication failures to detect reconnaissance or abuse.
+6. **Short-term containment example**: If the service should only be used internally, restrict access to internal networks only.
+
+```bash
+# Example: firewall allowlist for internal network only
+iptables -A INPUT -p tcp --dport 80 -s 10.0.0.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -s 10.0.0.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 80 -j DROP
+iptables -A INPUT -p tcp --dport 443 -j DROP
+```
+
+
+**Permanent Remediation**
+
+1. **Inventory and ownership**: Assign an owner to `srv1.webgoat` and document its purpose, required users, backend services, and data classification.
+2. **Determine necessity**: If the subdomain is no longer required, **decommission it fully** by removing the DNS record, shutting down associated infrastructure, and revoking certificates or credentials tied to the host.
+3. **Harden DNS management**: Maintain an authoritative inventory of approved subdomains and implement change control so new records cannot be created without review.
+4. **Apply least exposure by design**: For any required service, place it behind an authenticated access layer, network segmentation, and only the minimum ports needed for operation.
+5. **Harden the host and applications**: Patch the OS and services, remove unused software, disable default accounts, enforce strong authentication, and ensure TLS is configured correctly.
+6. **Protect administrative interfaces**: Move admin panels off public DNS where possible; otherwise restrict them to VPN, bastion hosts, or private network ranges and require MFA.
+7. **Implement continuous external attack surface monitoring**: Periodically scan for new or changed subdomains, open ports, and exposed services. Alert on unapproved findings.
+8. **Document and test decommissioning procedures**: Ensure removed DNS records do not leave dangling hosts or orphaned certificates that could be re-claimed later.
+9. **Example DNS cleanup**: Remove the record in the zone file or DNS provider console.
+
+```dns
+; Example BIND zone removal
+;srv1.webgoat.    IN    A     203.0.113.10
+;srv1.webgoat.    IN    AAAA  2001:db8::10
+```
+
+10. **Verification after remediation**: Re-run subdomain enumeration and confirm the host no longer resolves or, if retained, that it is only reachable under the approved access controls.
+
+```bash
+subfinder -d webgoat -silent
+nslookup srv1.webgoat
+curl -I https://srv1.webgoat
+```
+
+---
+
+#### F-010 — Subdomain: scottdemo.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-010 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: scottdemo.webgoat via rapiddns
+
+**Business Impact**
+
+This is a passive recon finding only. Enumerating a subdomain does not provide a direct attack path by itself; exploitation would depend on whether the host resolves and exposes a vulnerable service, misconfiguration, or sensitive content.
+
+**Analyst Note**
+
+> Subfinder/rapiddns discovered scottdemo.webgoat as part of public DNS/subdomain enumeration. This is informational and not a vulnerability unless the subdomain hosts an exposed asset with additional issues. The raw output suggests multiple related subdomains, so the main value is attack surface discovery.
+
+**Short-term Mitigation**
+
+1. **Validate ownership and necessity** of `scottdemo.webgoat` immediately. Confirm whether this subdomain is intentionally published and which team owns it.
+2. **Restrict exposure if not required** by removing or pausing the DNS record until its purpose is confirmed.
+3. **Limit access at the edge** using temporary controls such as IP allowlisting, basic authentication, or a WAF rule if the host must remain online.
+4. **Disable non-essential services** on the host and confirm that no administrative, staging, or debug interfaces are publicly accessible.
+5. **Review the content served** by the subdomain for sensitive data, environment details, or test functionality that should not be public.
+6. **Monitor logs and alerts** for requests to the subdomain to identify unexpected scanning or abuse.
+7. **Document the asset** in the inventory and mark it as either approved, deprecated, or pending decommissioning.
+
+Example temporary DNS removal if the subdomain is not needed:
+```dns
+; Remove or comment out the record until approved
+; scottdemo.webgoat. IN A 203.0.113.10
+```
+
+Example temporary web-layer restriction:
+```nginx
+server {
+    server_name scottdemo.webgoat;
+
+    allow 192.0.2.0/24;
+    deny all;
+}
+```
+
+**Permanent Remediation**
+
+1. **Establish authoritative asset management** for all subdomains, including business owner, technical owner, environment type, and lifecycle status.
+2. **Create and enforce a subdomain approval workflow** so new DNS records cannot be published without security review and documented purpose.
+3. **Remove or decommission unused subdomains** by deleting DNS records, disabling hosting, and revoking associated certificates, credentials, and infrastructure resources.
+4. **Harden any required host** behind the subdomain by applying least-privilege network access, secure configuration baselines, patch management, and authenticated access controls.
+5. **Eliminate sensitive exposure** by ensuring no debug pages, test data, internal tools, directory listings, or verbose error messages are reachable from the public Internet.
+6. **Implement continuous external attack surface monitoring** to detect newly published subdomains and validate that they match approved inventories.
+7. **Automate DNS and certificate lifecycle management** so retired hosts are fully removed and orphaned records do not persist.
+8. **Perform periodic recon-style reviews** against your own domains to identify unexpected subdomains and correct drift quickly.
+9. **Add ownership and expiration controls** for demo, staging, or temporary systems, including automatic shutdown dates and review checkpoints.
+10. **Update operational procedures** so subdomains are treated as Internet-facing assets and undergo security review before publication.
+
+Example of a controlled DNS and hosting lifecycle process:
+```yaml
+subdomain_lifecycle:
+  request:
+    required_fields:
+      - business_owner
+      - technical_owner
+      - purpose
+      - environment
+      - expiration_date
+  approval:
+    security_review: required
+    dns_admin: required
+  retirement:
+    steps:
+      - disable service
+      - remove dns record
+      - revoke certificate
+      - archive logs
+      - verify no traffic
+```
+
+Example decommission checklist:
+```bash
+# 1. Stop the service
+sudo systemctl stop scottdemo-web
+
+# 2. Disable startup
+sudo systemctl disable scottdemo-web
+
+# 3. Remove DNS record in authoritative zone
+# 4. Revoke/expire TLS certificate
+# 5. Confirm resolution no longer returns the host
+nslookup scottdemo.webgoat
+```
+
+---
+
+#### F-011 — Subdomain: leonardtestnew.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-011 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: leonardtestnew.webgoat via rapiddns
+
+**Business Impact**
+
+None; this is passive subdomain discovery only and does not indicate a reachable service or misconfiguration by itself. Exploitation would require the discovered host to expose vulnerable content or services, which is not shown here.
+
+**Analyst Note**
+
+> Informational DNS reconnaissance result from subfinder/rapiddns. The presence of leonardtestnew.webgoat indicates an externally discoverable hostname, but no vulnerability is evidenced beyond asset enumeration.
+
+**Short-term Mitigation**
+
+1. **Validate exposure**: Confirm whether `leonardtestnew.webgoat` is publicly resolvable and whether it points to an active host, application, or test environment.
+2. **Restrict access immediately if unintended**: If the subdomain should not be public, remove or disable the DNS record temporarily, or point it to a non-routable/internal address while you assess necessity.
+3. **Apply access controls**: If the host must remain online, restrict access via **VPN**, **IP allowlisting**, **basic authentication**, or a **WAF/reverse proxy** until the environment is reviewed.
+4. **Banner/page hardening**: If the host is intended only for internal testing, ensure it does not expose sensitive version information, debug pages, or administrative interfaces.
+5. **Inventory and ownership check**: Identify the business owner, hosting platform, and purpose of the subdomain to determine whether it is approved and should remain active.
+6. **Certificate review**: Verify any TLS certificate issued for the subdomain is expected; revoke or replace any certificate that was created without approval.
+7. **Monitoring**: Add temporary monitoring for requests, DNS queries, and access logs to detect unexpected activity against the host.
+
+```bash
+# Example: verify current DNS resolution
+nslookup leonardtestnew.webgoat
+
+# Example: check HTTP/S exposure
+curl -I http://leonardtestnew.webgoat
+curl -Ik https://leonardtestnew.webgoat
+```
+
+8. **Communicate risk internally**: Inform the application and infrastructure owners that the host is discoverable externally and may be cataloged by attackers, even if it currently has no known vulnerability.
+
+**Permanent Remediation**
+
+1. **Confirm asset legitimacy and lifecycle**: Determine whether `leonardtestnew.webgoat` is a sanctioned production, staging, or lab asset. If it is not required, formally decommission it and remove all associated DNS, hosting, and certificate artifacts.
+2. **Remove unnecessary DNS records**: Delete obsolete `A`, `AAAA`, `CNAME`, and related records from authoritative DNS zones and any third-party DNS providers to prevent future discovery and reduce attack surface.
+
+```dns
+; Example of a record to remove in zone management tools
+leonardtestnew.webgoat.   IN   CNAME   old-host.example.internal.
+```
+
+3. **Enforce subdomain governance**: Establish a documented approval workflow for new subdomains, including business justification, owner assignment, expiration date, and environment classification (production vs. non-production).
+4. **Implement asset inventory management**: Maintain a centralized inventory of all domains, subdomains, IPs, and certificates. Reconcile DNS records against this inventory on a scheduled basis to identify stale or unauthorized entries.
+5. **Segregate non-production environments**: If the host is intended for testing or training, move it behind private network boundaries or require authenticated access through VPN, bastion, or zero-trust access controls.
+6. **Harden exposed services**: For any subdomain that must remain public, ensure the underlying service is fully patched, minimally exposed, and protected by least-privilege firewall rules, secure headers, and strong authentication where applicable.
+7. **Certificate and TLS hygiene**: Ensure certificates are issued only for approved hosts, rotate certificates as needed, and remove unused SAN entries associated with retired subdomains.
+8. **Periodic external reconnaissance checks**: Continuously test your own perimeter using approved passive and active discovery to identify newly exposed or orphaned subdomains before they are found by others.
+
+```bash
+# Example: locate DNS records during cleanup/review
+subfinder -d webgoat -silent
+
+# Example: compare discovered hosts to approved inventory
+comm -23 discovered.txt approved-subdomains.txt
+```
+
+9. **Document exception handling**: If the subdomain must remain public for a valid reason, document the acceptable risk, owner, scope, and compensating controls, and review it regularly.
+
+---
+
+#### F-012 — Subdomain: beta.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-012 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: beta.webgoat via rapiddns
+
+**Business Impact**
+
+Not directly exploitable by itself; this is passive subdomain discovery only. Any risk depends on whether beta.webgoat resolves and exposes services, which would require separate probing and enumeration.
+
+**Analyst Note**
+
+> Informational finding from subfinder/radiddns indicating the presence of the beta.webgoat hostname. No vulnerability is demonstrated; treat as attack-surface discovery that may warrant follow-up resolution and service checks.
+
+**Short-term Mitigation**
+
+1. **Validate exposure immediately**: Confirm whether `beta.webgoat` is intended to exist and whether it currently resolves publicly. If it is not meant to be externally reachable, remove or disable the DNS record until a review is completed.
+2. **Restrict access at the edge**: If the subdomain must remain available for testing, place it behind **IP allowlisting**, **VPN**, **SSO**, or a **reverse proxy** requiring authentication so only authorized users can reach it.
+3. **Apply temporary DNS controls**: Lower the risk of opportunistic discovery by changing the record to a non-public target where appropriate, or point it to a controlled maintenance page if the service is not ready for exposure.
+4. **Harden the hosting endpoint**: Ensure the underlying host is patched, service banners are minimized, and default/debug/test content is removed to reduce follow-on enumeration risk.
+5. **Monitor access attempts**: Enable or verify logging on DNS, reverse proxy, WAF, and application layers to identify unexpected traffic to `beta.webgoat` and support rapid containment if exposed.
+6. **Review certificate and perimeter rules**: Confirm there are no wildcard certificates, firewall rules, or load balancer listeners unintentionally advertising the subdomain or forwarding traffic to an internal environment.
+
+```bash
+# Example: verify DNS resolution and current exposure
+nslookup beta.webgoat
+curl -I https://beta.webgoat
+```
+7. **Communicate ownership**: Notify the service owner and infrastructure team so the record is tracked as an exposure item rather than ignored as a low-priority informational finding.
+
+**Permanent Remediation**
+
+1. **Inventory and ownership**: Create or update an authoritative inventory of all approved subdomains for `webgoat`, including business owner, environment, purpose, and lifecycle status. Remove any record that is not explicitly approved.
+2. **Eliminate unnecessary public DNS records**: Permanently delete obsolete or unapproved DNS entries for `beta.webgoat` from the authoritative zone and any delegated DNS providers.
+3. **Implement DNS change control**: Require ticketed approval, peer review, and expiration dates for new subdomain creation. Treat test or beta hostnames as time-bound assets that must be decommissioned when no longer needed.
+4. **Separate environments**: Host beta/test services in isolated infrastructure and, where possible, use internal-only DNS zones so non-production assets are not publicly discoverable.
+5. **Enforce access controls by design**: If `beta.webgoat` must remain public-facing, protect it with strong authentication, least-privilege network policy, and explicit allowlists for administrative or pre-release access.
+6. **Reduce passive discovery surface**: Review what external sources index the subdomain (DNS providers, CT logs, vendor portals, monitoring pages). Remove accidental references and ensure no public documentation exposes non-production hostnames.
+7. **Automate continuous asset discovery**: Add recurring scans and alerts for newly observed subdomains so unapproved records are detected quickly and routed to ownership for validation.
+8. **Decommission safely**: If the subdomain is no longer needed, follow a formal retirement process: remove application bindings, revoke certificates, delete DNS records, clear load balancer listeners, and confirm it no longer resolves publicly.
+9. **Document and verify**: Update architecture diagrams, runbooks, and CMDB entries to reflect the final state. Re-test after changes to confirm the subdomain is either removed or properly protected.
+
+```bash
+# Example verification after remediation
+nslookup beta.webgoat || true
+curl -I https://beta.webgoat
+```
+10. **Acceptance criteria**: The issue is considered remediated when `beta.webgoat` is either absent from public DNS or is intentionally published with documented ownership and enforced access restrictions, with monitoring in place for future changes.
+
+---
+
+#### F-013 — Subdomain: webdisk.acag.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-013 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: webdisk.acag.webgoat via rapiddns
+
+**Business Impact**
+
+This is only an information disclosure finding. A discovered subdomain is typically easy to enumerate once found, but it is not itself directly exploitable without an actual service or misconfiguration behind the host.
+
+**Analyst Note**
+
+> subfinder/rapiddns enumerated an additional subdomain under webgoat. As reported, this does not indicate a vulnerability by itself; it is useful for attack surface mapping only. No evidence of exposed service, misconfiguration, or sensitive data on the host was provided.
+
+**Short-term Mitigation**
+
+1. **Validate the subdomain’s purpose**: Confirm whether `webdisk.acag.webgoat` is an approved, business-required host or an orphaned entry.
+2. **Restrict exposure if not needed**: If the host is not intended for public use, temporarily remove or disable the DNS record to prevent further discovery.
+3. **Apply access controls**: If the service must remain online, restrict access via firewall, reverse proxy, VPN, or IP allowlisting until a permanent decision is made.
+4. **Disable unnecessary service features**: Remove any publicly reachable directory listings, admin panels, test endpoints, or default pages associated with the host.
+5. **Review for misconfiguration**: Check for accidental exposure of internal content, backup directories, credentials, or debug interfaces behind the subdomain.
+6. **Monitor for abuse**: Add temporary logging and alerting for requests to this host to detect scanning, enumeration, or unexpected access patterns.
+7. **Harden DNS visibility**: Ensure the subdomain is not published in unnecessary external documentation, public code repositories, or automation outputs.
+8. **Document ownership**: Assign an owner and ticket for the host so it is either formally approved or decommissioned.
+
+```bash
+# Example: identify DNS record source and remove if unnecessary
+nslookup webdisk.acag.webgoat
+# then update DNS zone or provider to delete the record
+```
+
+```nginx
+# Example: temporary access restriction at reverse proxy
+server {
+    server_name webdisk.acag.webgoat;
+    allow 10.0.0.0/8;
+    allow 192.168.0.0/16;
+    deny all;
+}
+```
+
+**Permanent Remediation**
+
+1. **Establish authoritative subdomain governance**: Create a formal process for requesting, approving, documenting, and decommissioning subdomains so unmanaged records do not persist.
+2. **Inventory all DNS assets**: Maintain a complete, regularly reconciled inventory of public DNS zones, subdomains, and their owning teams to prevent orphaned exposures.
+3. **Remove unnecessary public records**: Permanently delete any subdomain that does not support a valid business function or that has no associated service lifecycle ownership.
+4. **Implement DNS change control**: Require peer review and approval for DNS changes, including creation, modification, and deletion of subdomain records.
+5. **Enforce least exposure**: Publish only the minimal set of hostnames required for business operations; keep internal, test, and administrative hosts off public DNS whenever possible.
+6. **Standardize service hardening**: For approved hosts, ensure the associated application uses secure defaults, authentication, and network restrictions appropriate to the data exposed.
+7. **Decommission stale infrastructure**: If the subdomain points to retired infrastructure, remove the service, clean up certificates, delete associated load balancer entries, and revoke any unused credentials.
+8. **Integrate continuous discovery monitoring**: Add recurring external attack surface monitoring to detect newly exposed or resurrected subdomains and alert owners immediately.
+9. **Protect against future leaks**: Review CI/CD pipelines, documentation, third-party vendors, and code repositories to ensure subdomains are not inadvertently disclosed.
+10. **Verify closure**: After remediation, re-scan external DNS and confirm the subdomain no longer resolves or is intentionally restricted.
+
+```bash
+# Example: confirm record removal after cleanup
+dig webdisk.acag.webgoat any
+# Expected: no answer / NXDOMAIN / no public resolution, depending on DNS design
+```
+
+```text
+DNS governance checklist:
+- Business owner assigned
+- Technical owner assigned
+- Exposure approved
+- Security review completed
+- Decommission date defined
+- Revalidation scheduled
+```
+
+---
+
+#### F-014 — Subdomain: webmail.leonardtestnew.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-014 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: webmail.leonardtestnew.webgoat via rapiddns
+
+**Business Impact**
+
+This is only passive subdomain discovery and does not indicate a reachable service, misconfiguration, or vulnerable application. Exploitation is not applicable until the hostname is resolved and an exposed service is verified.
+
+**Analyst Note**
+
+> Informational asset discovery result from subfinder/rapiddns. The presence of webmail.leonardtestnew.webgoat suggests a DNS record exists, but no proof of HTTP(S), SMTP, or any other service exposure is provided.
+
+**Short-term Mitigation**
+
+1. **Verify ownership and exposure**: Confirm whether `webmail.leonardtestnew.webgoat` is an intended and authorized asset. If it is not required, treat it as an unapproved discovery and document it for asset inventory review.
+2. **Check DNS resolution and reachability**: Validate whether the hostname resolves publicly and whether any service is exposed.
+```bash
+nslookup webmail.leonardtestnew.webgoat
+dig webmail.leonardtestnew.webgoat A +short
+dig webmail.leonardtestnew.webgoat CNAME +short
+```
+3. **Reduce immediate exposure**: If the subdomain is not needed, remove or disable the public DNS record(s) temporarily, or point them to a non-routable sink until ownership is confirmed.
+```dns
+; Example placeholder actions (implementation depends on DNS provider)
+; Delete A/AAAA/CNAME record for webmail.leonardtestnew.webgoat
+; Or replace with a controlled internal-only target
+```
+4. **Restrict access if the service exists**: If a webmail service is active, place it behind access controls such as VPN, IP allowlisting, or authentication gateway until a full review is completed.
+5. **Audit certificates and virtual host configuration**: Check whether TLS certificates or reverse proxy configurations unintentionally expose the hostname.
+6. **Update the asset inventory**: Add the hostname to the asset register as either approved, deprecated, or pending removal so it is tracked during remediation.
+7. **Monitor for external access attempts**: Review DNS logs, reverse proxy logs, and web server logs for requests to this hostname to determine whether it is being probed or used.
+8. **Communicate with relevant stakeholders**: Notify DNS, infrastructure, and application owners that the subdomain was discovered and requires validation to avoid accidental service exposure.
+
+**Permanent Remediation**
+
+1. **Establish authoritative asset ownership**: Assign a clear owner for `webmail.leonardtestnew.webgoat` and determine whether the subdomain is required for business or lab operations. If it is not required, formally decommission it.
+2. **Remove unused DNS records**: Delete all unnecessary public DNS records associated with the hostname, including `A`, `AAAA`, and `CNAME` entries, and verify that no wildcard records or delegated zones continue to expose it.
+```bash
+dig webmail.leonardtestnew.webgoat ANY +short
+```
+3. **Harden DNS governance**: Implement change control for DNS creation and modification so that subdomains cannot be published without approval, documentation, and an owner.
+4. **Inventory and classify subdomains**: Maintain a continuously updated subdomain inventory with classification tags such as **public**, **internal-only**, **lab**, or **retired**. Reconcile new discoveries against this inventory regularly.
+5. **Deploy DNS monitoring and alerting**: Use passive DNS, certificate transparency monitoring, and external attack surface management to detect newly introduced subdomains and unauthorized DNS changes.
+6. **Limit exposure of webmail services**: If a webmail portal is legitimately required, host it only on hardened infrastructure and restrict it via VPN, SSO, conditional access, or IP allowlists where possible.
+7. **Implement secure reverse proxy controls**: Ensure only intended hostnames are routed by the load balancer or reverse proxy, and reject unknown host headers or unexpected virtual hosts.
+```nginx
+server {
+    listen 443 ssl;
+    server_name webmail.leonardtestnew.webgoat;
+    # enforce authentication and access restrictions here
+}
+```
+8. **Review TLS and email-related infrastructure**: Confirm that certificates, mail gateways, and webmail front ends do not expose staging, test, or deprecated hostnames in SANs, redirects, or configuration files.
+9. **Perform periodic external attack surface assessments**: Schedule recurring subdomain enumeration and validation to catch forgotten assets before they become publicly exposed.
+10. **Document decommissioning procedures**: For retired subdomains, remove DNS entries, disable related services, revoke certificates if needed, and confirm the hostname returns NXDOMAIN or a controlled non-public response.
+```bash
+dig webmail.leonardtestnew.webgoat A
+# Expected after removal: no public resolution / NXDOMAIN, depending on DNS design
+```
+
+---
+
+#### F-015 — Subdomain: ns2.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-015 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: ns2.webgoat via rapiddns
+
+**Business Impact**
+
+This is not directly exploitable by itself; it is only evidence that a subdomain record exists. Practical impact depends on whether ns2.webgoat resolves to a live service and exposes misconfigured DNS or administrative functionality, which is not shown here.
+
+**Analyst Note**
+
+> Informational subdomain discovery from passive DNS enumeration. The specific host ns2.webgoat appears to be a nameserver-style label, but no service validation, response data, or security weakness is demonstrated, so this should not be treated as a vulnerability on its own.
+
+**Short-term Mitigation**
+
+1. **Validate the subdomain**: Confirm whether `ns2.webgoat` is intentionally published and whether it resolves to an active host.
+2. **Restrict exposure if unintended**: If the subdomain is not required, temporarily remove or disable the DNS record to prevent further enumeration and reduce attack surface.
+3. **Limit service access**: If `ns2.webgoat` is a live nameserver or administrative endpoint, restrict inbound access to trusted IP ranges only.
+4. **Harden DNS management access**: Ensure that only authorized administrators can modify DNS records and related infrastructure.
+5. **Monitor for abuse**: Review DNS query logs and server logs for unusual activity targeting `ns2.webgoat`.
+6. **Assess for related findings**: Check whether the subdomain is associated with exposed zone transfer, misconfigured DNS recursion, or outdated management interfaces.
+
+Example temporary ACL for a DNS or admin service:
+```bash
+# Allow only internal/admin networks
+iptables -A INPUT -p tcp -s 10.0.0.0/8 --dport 53 -j ACCEPT
+iptables -A INPUT -p udp -s 10.0.0.0/8 --dport 53 -j ACCEPT
+iptables -A INPUT -p tcp --dport 53 -j DROP
+iptables -A INPUT -p udp --dport 53 -j DROP
+```
+
+**Permanent Remediation**
+
+1. **Inventory and ownership**: Maintain an authoritative inventory of all subdomains, their business purpose, and their assigned owners so that every DNS record is justified and reviewed.
+2. **Remove unused records**: Permanently delete obsolete or unintended records for `ns2.webgoat` from the DNS zone to prevent continued exposure during recon and reduce attack surface.
+3. **Implement DNS change control**: Require peer review and approval for all DNS changes, including creation, modification, and deletion of subdomains.
+4. **Harden DNS servers**: If `ns2.webgoat` is intended to be a nameserver, ensure it is configured securely:
+   - disable open recursion unless explicitly required;
+   - restrict zone transfers to approved secondary servers;
+   - patch and update DNS software regularly;
+   - separate authoritative DNS from management interfaces.
+5. **Protect administrative interfaces**: If the host exposes admin panels or control planes, move them behind VPN, SSO, or IP allowlisting and enforce MFA.
+6. **Apply least privilege**: Limit who can administer DNS and server infrastructure, using role-based access control and just-in-time access where possible.
+7. **Monitor and alert**: Enable centralized logging for DNS queries, configuration changes, and authentication attempts, with alerts for suspicious activity such as zone transfer attempts or unexpected access.
+8. **Validate externally**: After changes, re-scan the domain to confirm `ns2.webgoat` no longer appears if removed, or verify that any remaining exposure is intentionally limited and secured.
+
+Example BIND hardening snippet:
+```conf
+options {
+    recursion no;
+    allow-transfer { 10.0.0.2; 10.0.0.3; };
+};
+
+controls {
+    inet 127.0.0.1 port 953 allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+```
+
+Example operational verification:
+```bash
+# Confirm the record is gone or intentional
+nslookup ns2.webgoat
+# Check for unauthorized zone transfers
+nmap --script dns-zone-transfer -p 53 ns2.webgoat
+```
+
+---
+
+#### F-016 — Subdomain: cpanel.scottdemo.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-016 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: cpanel.scottdemo.webgoat via rapiddns
+
+**Business Impact**
+
+Low; this is passive subdomain discovery with no direct vulnerability demonstrated. Exploitation would require the discovered host to resolve and expose a service with a weakness, which is not established by this finding alone.
+
+**Analyst Note**
+
+> Informational asset discovery only. The host cpanel.scottdemo.webgoat appears to be a subdomain enumerated via passive DNS (rapiddns); this does not by itself indicate misconfiguration, exposure, or a security flaw.
+
+**Short-term Mitigation**
+
+1. **Verify exposure**: Confirm whether `cpanel.scottdemo.webgoat` resolves publicly and whether any services are reachable from the internet.
+2. **Restrict access immediately**: If the host is not intended for public use, place it behind IP allowlisting, VPN, or a firewall rule set that blocks external access.
+3. **Disable unused service exposure**: If the subdomain is unused or obsolete, remove or pause the DNS record to prevent further discovery and connection attempts.
+4. **Harden the service if it must remain public**: Ensure the administrative interface is protected with strong authentication, MFA, and rate limiting; require HTTPS only.
+5. **Monitor for abuse**: Review logs for unsolicited traffic, brute-force attempts, or scanning activity against the host and related infrastructure.
+6. **Temporarily deindex and reduce discoverability**: If applicable, add `X-Robots-Tag` headers and ensure no public links reference the hostname, though this does not replace access control.
+7. **Validate DNS hygiene**: Check for stale, orphaned, or wildcard DNS entries that may expose legacy services unintentionally.
+
+```bash
+# Example: confirm resolution and basic exposure
+nslookup cpanel.scottdemo.webgoat
+curl -Ik https://cpanel.scottdemo.webgoat
+```
+
+```text
+# Example firewall approach
+Allow: trusted admin IP ranges only
+Deny: all other source addresses
+```
+
+
+**Permanent Remediation**
+
+1. **Inventory ownership and purpose**: Determine who owns `cpanel.scottdemo.webgoat`, what service it is meant to provide, and whether it is still required.
+2. **Remove unnecessary subdomains**: If the hostname is obsolete, delete the DNS record and decommission any associated host or virtual service to eliminate attack surface.
+3. **Implement least-exposure DNS design**: Publish only the subdomains that are needed, avoid broad wildcard records where possible, and maintain an authoritative DNS inventory with change control.
+4. **Place administrative interfaces behind controlled access**: Administrative portals such as cPanel should not be exposed broadly to the internet unless absolutely necessary. Use a VPN, reverse proxy with strong auth, or network ACLs to limit access.
+5. **Enforce secure service configuration**: Require TLS, disable legacy protocols and weak ciphers, and ensure the administrative portal is configured according to vendor hardening guidance.
+6. **Protect with identity controls**: Enable MFA for all administrative accounts, strong password policy, account lockout, and role-based access control.
+7. **Introduce continuous monitoring**: Add DNS change monitoring, host discovery monitoring, and alerting for newly observed subdomains so unintended exposure is detected quickly.
+8. **Establish decommissioning procedures**: When services are retired, remove DNS entries, disable certificates, revoke credentials, and delete associated infrastructure artifacts to prevent stale exposure.
+9. **Review certificates and hostnames**: Ensure certificates, virtual host mappings, and backend services are aligned so that dormant hostnames do not continue to respond unexpectedly.
+10. **Validate after changes**: Re-scan external DNS and web exposure to confirm the hostname is no longer publicly reachable or is properly constrained.
+
+```bash
+# Example: remove an obsolete DNS record (provider-specific syntax varies)
+# After deletion, confirm no resolution remains
+nslookup cpanel.scottdemo.webgoat
+```
+
+```nginx
+# Example: restrict access to an admin portal at the reverse proxy
+location / {
+    allow 203.0.113.10;
+    allow 198.51.100.0/24;
+    deny all;
+    proxy_pass https://backend_admin;
+}
+```
+
+```apache
+# Example: require authenticated access (illustrative)
+<Directory "/var/www/admin">
+    Require ip 203.0.113.10 198.51.100.0/24
+</Directory>
+```
+
+
+---
+
+#### F-017 — Subdomain: donna.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-017 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: donna.webgoat via rapiddns
+
+**Business Impact**
+
+Low. This is passive subdomain enumeration with no direct attack surface demonstrated; exploitation would require resolving the host and finding an actual exposed service or misconfiguration.
+
+**Analyst Note**
+
+> The finding only confirms discovery of the subdomain via DNS intelligence sources. By itself it does not indicate a vulnerability, just potential additional attack surface that should be validated separately.
+
+**Short-term Mitigation**
+
+1. **Validate exposure immediately**: Resolve `donna.webgoat` from trusted internal and external vantage points and confirm whether it points to a live service, stale record, parked host, or sinkhole.
+2. **Restrict access if a service is active**: If the subdomain resolves to an operational system, place it behind **temporary access controls** such as IP allowlisting, VPN-only access, or an upstream reverse proxy with authentication.
+3. **Disable unnecessary services**: Shut down any service bound to the host that is not required for business purposes, especially if it is a test, staging, or forgotten environment.
+4. **Remove or quarantine sensitive content**: If the host exposes admin consoles, debug pages, backups, or default content, remove them immediately or isolate the host from public access until hardened.
+5. **Verify DNS records**: Review the DNS entry for `donna.webgoat` and remove any record that is no longer needed. If the host must remain reserved, point it to a controlled landing page or sinkhole that does not expose infrastructure details.
+6. **Check for linked assets**: Inspect web server logs, certificate transparency logs, and content references to determine whether other related subdomains or services are exposed and should also be protected.
+7. **Monitor for abuse**: Add temporary monitoring for requests to the hostname and alert on unexpected traffic, scanning, or authentication failures.
+
+Example containment checks:
+```bash
+nslookup donna.webgoat
+curl -I https://donna.webgoat
+```
+
+Example temporary access control concept:
+```nginx
+location / {
+    allow 10.0.0.0/8;
+    allow 192.168.0.0/16;
+    deny all;
+}
+```
+
+**Permanent Remediation**
+
+1. **Perform a subdomain inventory**: Establish an authoritative inventory of all approved DNS names for the environment, including ownership, purpose, hosting location, and lifecycle status.
+2. **Classify `donna.webgoat`**: Determine whether the subdomain is **active, deprecated, or unauthorized**. Assign an owner and confirm whether it is intended to be publicly reachable.
+3. **Remove unused DNS entries**: Permanently delete stale or abandoned records from the DNS zone file and from any third-party DNS providers or automation pipelines that may re-create them.
+4. **Harden any required service**: If the host must remain public, apply standard hardening: patch the OS and application, remove default accounts, enforce strong authentication, use TLS, disable directory listing, and restrict administrative interfaces.
+5. **Implement least-privilege publishing**: Only publish DNS records for systems with a defined business need. Use separate naming conventions for internal, staging, and production hosts to avoid accidental exposure.
+6. **Protect future DNS changes**: Put DNS updates under change control with peer review, ticketing, and expiry dates for temporary records so they are automatically revisited and removed.
+7. **Add continuous discovery and monitoring**: Integrate passive and active subdomain discovery into recurring security reviews so new or unexpected hostnames are detected early.
+8. **Document ownership and decommissioning**: Maintain a formal decommission process that includes DNS removal, certificate revocation where applicable, log retention, and validation that no services remain reachable.
+9. **Validate external exposure after remediation**: Re-scan the domain namespace from an external perspective to confirm that `donna.webgoat` is no longer exposed or is only reachable through approved controls.
+
+Example DNS zone cleanup workflow:
+```bash
+# Review zone entries
+named-checkzone webgoat.example /etc/bind/zones/db.webgoat
+
+# After approval, remove stale record from the zone file and reload
+rndc reload webgoat.example
+```
+
+Example lifecycle control policy:
+```yaml
+subdomain_management:
+  owner_required: true
+  purpose_required: true
+  expiry_required_for_temporary_records: true
+  quarterly_review: true
+  remove_unused_records: true
+```
+
+---
+
+#### F-018 — Subdomain: 220-khan.webgoat
+
+| Field | Detail |
+|:------|--------|
+| **Identifier** | F-018 |
+| **Severity** | ⚪ INFO |
+| **Status** | Open |
+| **Affected System** | webgoat |
+| **Detected By** | subfinder |
+| **Confidence** | High |
+| **CWE** | — |
+| **CVEs** | — |
+| **Cluster** | cluster-2 |
+
+**Description**
+
+Discovered subdomain: 220-khan.webgoat via rapiddns
+
+**Business Impact**
+
+This is a passive discovery finding; by itself a subdomain record is not directly exploitable. Any risk depends on whether the host resolves, is publicly reachable, and exposes vulnerable services or misconfigurations.
+
+**Analyst Note**
+
+> Subfinder has enumerated an additional subdomain under webgoat from public DNS/OSINT sources. This is informational inventory data rather than a security vulnerability, but it can expand the attack surface if the host is active and unprotected.
+
+**Short-term Mitigation**
+
+1. **Verify exposure**: Confirm whether `220-khan.webgoat` actually resolves in DNS and whether it is reachable from untrusted networks. If it is not required, temporarily **disable the DNS record** or point it to a non-routable/internal address.
+2. **Restrict access immediately**: If the host must remain online, apply **network controls** to limit access to trusted IP ranges only.
+   ```bash
+   # Example: allow only corporate/VPN source addresses
+   ufw default deny incoming
+   ufw allow from <trusted_cidr> to any port 80,443 proto tcp
+   ufw enable
+   ```
+3. **Reduce service exposure**: Shut down or disable any unnecessary services on the host until a full review is complete.
+   ```bash
+   # Example service review
+   ss -tulpn
+   systemctl list-units --type=service --state=running
+   ```
+4. **Harden DNS visibility**: If the subdomain is intended for internal use, move it to a **private DNS zone** or split-horizon DNS so it is not publicly resolvable.
+5. **Add temporary monitoring**: Enable logging and alerting for requests to the host to detect unexpected access or scanning activity.
+6. **Validate TLS and app behavior**: If the subdomain serves web content, ensure it is not exposing admin panels, debug endpoints, or default pages while investigation is ongoing.
+7. **Document ownership**: Identify the business owner, system owner, and intended purpose of the subdomain to determine whether it should exist at all.
+
+**Permanent Remediation**
+
+1. **Establish asset ownership and lifecycle management**: Create an authoritative inventory of approved subdomains, including owner, purpose, environment, and retirement date. Remove orphaned or unused entries from DNS and infrastructure records.
+2. **Implement DNS governance**: Require change control for all new subdomain creation and deletion requests. Enforce review/approval before adding public records.
+   ```text
+   Change request fields:
+   - Subdomain name
+   - Business owner
+   - Technical owner
+   - Purpose
+   - Expected IP/target
+   - Public or internal-only
+   - Expiration/review date
+   ```
+3. **Use private DNS for internal services**: Any host not meant for public access should be migrated to **internal DNS** only. For externally needed names, ensure only the minimum necessary records are published.
+4. **Apply least-exposure architecture**: Place public-facing applications behind a reverse proxy, WAF, or load balancer and restrict direct origin access with firewall rules or security groups.
+   ```bash
+   # Example cloud security group principle
+   # Allow 80/443 only from load balancer/WAF IPs
+   # Deny all other inbound access to origin
+   ```
+5. **Standardize service hardening**: Build and enforce hardened baselines for web servers and application hosts, including disabled directory listing, removed default content, patched components, and secure headers.
+   ```nginx
+   server_tokens off;
+   add_header X-Content-Type-Options nosniff always;
+   add_header X-Frame-Options DENY always;
+   add_header Content-Security-Policy "default-src 'self'" always;
+   ```
+6. **Continuously monitor DNS and internet exposure**: Integrate subdomain discovery into routine attack surface management so newly published or forgotten hosts are identified quickly and reviewed.
+7. **Retire unused subdomains**: When a subdomain is no longer needed, remove its DNS record, shut down the service, revoke certificates, and clear any associated infrastructure to prevent stale exposure.
+8. **Perform periodic validation**: Schedule recurring checks to confirm that every public subdomain is intentional, reachable only as designed, and free of unnecessary services or misconfigurations.
+9. **Add detection and alerting**: Forward DNS changes, web access logs, and firewall events to the SIEM so unexpected public exposure is detected and investigated promptly.
+
+---
+
+## Appendix A — Scan Errors
+
+The following tools encountered errors during the assessment.
+These are tool execution failures, not security findings.
+
+| Target | Tool | Error |
+|--------|------|-------|
+| `dvwa` | `smbmap` | Exit code 2: usage: smbmap [-h] (-H HOST \| --host-file FILE) [-u USERNAME] [-p PASSWORD \|               --prompt] [-k] [--no-pass] [--dc-ip IP or Host] [-s SHARE]               [-d DOMAIN] [-P PORT] [ |
+| `juice-shop` | `smbmap` | Exit code 2: usage: smbmap [-h] (-H HOST \| --host-file FILE) [-u USERNAME] [-p PASSWORD \|               --prompt] [-k] [--no-pass] [--dc-ip IP or Host] [-s SHARE]               [-d DOMAIN] [-P PORT] [ |
+| `webgoat` | `smbmap` | Exit code 2: usage: smbmap [-h] (-H HOST \| --host-file FILE) [-u USERNAME] [-p PASSWORD \|               --prompt] [-k] [--no-pass] [--dc-ip IP or Host] [-s SHARE]               [-d DOMAIN] [-P PORT] [ |
+
+---
+
+
+---
+
+*Report generated by vuln-scanner · 2026-07-16 22:57:08 UTC*

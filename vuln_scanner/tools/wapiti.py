@@ -90,6 +90,18 @@ class WapitiTool(AbstractTool):
         ]
         if modules:
             cmd += ["-m", modules]
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.username and auth.password:
+                cmd += ["-a", f"{auth.username}%{auth.password}"]
+            if auth.cookie_string:
+                cmd += ["--cookie", auth.cookie_string]
+            for k, v in auth.headers.items():
+                cmd += ["--header", f"{k}: {v}"]
+            if auth.bearer_token and "Authorization" not in auth.headers:
+                cmd += ["--header", f"Authorization: Bearer {auth.bearer_token}"]
+            if auth.login_url:
+                cmd += ["--form-cred", auth.login_url]
         cmd += scan_input.extra_args
 
         import logging

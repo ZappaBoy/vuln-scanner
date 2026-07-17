@@ -38,6 +38,12 @@ class FeroxbusterTool(AbstractTool):
         ]
         if scan_input.rate_limit is not None:
             cmd += ["--rate-limit", str(scan_input.rate_limit)]
+        auth = scan_input.auth
+        if auth.is_configured:
+            for k, v in auth.effective_headers.items():
+                cmd += ["-H", f"{k}: {v}"]
+            if auth.cookie_string:
+                cmd += ["--cookies", auth.cookie_string]
         cmd += scan_input.extra_args
         return cmd
 

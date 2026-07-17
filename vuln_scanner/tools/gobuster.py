@@ -34,6 +34,16 @@ class GobusterTool(AbstractTool):
             cmd += ["-x", "php,asp,aspx,jsp,html,txt,bak,old,zip"]
         if scan_input.rate_limit is not None:
             cmd += ["-t", str(min(scan_input.rate_limit, 50))]
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.cookie_string:
+                cmd += ["-c", auth.cookie_string]
+            for k, v in auth.headers.items():
+                cmd += ["-H", f"{k}: {v}"]
+            if auth.bearer_token:
+                cmd += ["-H", f"Authorization: Bearer {auth.bearer_token}"]
+            if auth.username and auth.password:
+                cmd += ["-U", auth.username, "-P", auth.password]
         cmd += scan_input.extra_args
         return cmd
 

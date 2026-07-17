@@ -33,6 +33,16 @@ class WPScanTool(AbstractTool):
         if scan_input.rate_limit is not None:
             throttle_ms = max(1, 1000 // scan_input.rate_limit)
             cmd += ["--throttle", str(throttle_ms)]
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.username and auth.password:
+                cmd += ["--http-auth", f"{auth.username}:{auth.password}"]
+            if auth.cookie_string:
+                cmd += ["--cookie", auth.cookie_string]
+            for k, v in auth.headers.items():
+                cmd += ["--header", f"{k}: {v}"]
+            if auth.bearer_token and "Authorization" not in auth.headers:
+                cmd += ["--header", f"Authorization: Bearer {auth.bearer_token}"]
         cmd += scan_input.extra_args
         return cmd
 

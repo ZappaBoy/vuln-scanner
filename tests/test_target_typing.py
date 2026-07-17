@@ -1,5 +1,4 @@
 """Tests for classify_target() and tool.applies_to() — no real tool execution."""
-import pytest
 
 from vuln_scanner.tools.enums import TargetType
 from vuln_scanner.tools.target import classify_target

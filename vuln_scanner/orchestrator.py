@@ -1,5 +1,6 @@
+import asyncio
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 from vuln_scanner.config.models import AppConfig
 from vuln_scanner.tools.enums import ScanStatus
@@ -36,14 +37,43 @@ class ScanOrchestrator:
 
         return result
 
-    def run(self) -> list[ScanResult]:
+    async def _run_task(
+        self,
+        loop: asyncio.AbstractEventLoop,
+        executor: ThreadPoolExecutor,
+        tool: AbstractTool,
+        target: str,
+        scan_input: ScanInput,
+    ) -> ScanResult:
+        try:
+            result = await loop.run_in_executor(executor, tool.run, target, scan_input)
+        except Exception as exc:
+            log.exception("Unexpected error from tool '%s' on target '%s'.", tool.name, target)
+            result = ScanResult(
+                tool=tool.name,
+                target=target,
+                status=ScanStatus.FAILED,
+                error=str(exc),
+            )
+        icon = "✓" if result.status == ScanStatus.SUCCESS else "✗"
+        log.info(
+            "  [%s] %s → %s (%s, %.1fs, %d finding(s))",
+            icon,
+            tool.name,
+            target,
+            result.status.value,
+            result.duration,
+            len(result.findings),
+        )
+        return result
+
+    async def _run_async(self) -> list[ScanResult]:
         active_tools = self._filter_tools()
         targets = self._config.scan.targets
 
         if not active_tools:
             log.warning("No tools selected after filtering.")
             return []
-
         if not targets:
             log.warning("No targets specified.")
             return []
@@ -53,9 +83,9 @@ class ScanOrchestrator:
             timeout=self._config.scan.timeout,
             mode=self._config.scan.mode,
             rate_limit=self._config.scan.rate_limit,
+            auth=self._config.auth,
         )
 
-        # Build task matrix gated by target-type applicability (Phase 2)
         tasks: list[tuple[AbstractTool, str]] = []
         skipped_count = 0
         for tool in active_tools:
@@ -69,6 +99,7 @@ class ScanOrchestrator:
                     )
                     skipped_count += 1
 
+        max_workers = max(1, self._config.scan.max_concurrent)
         log.info(
             "Starting scan: %d tool(s) × %d target(s) = %d task(s) "
             "(%d type-gated skips) | mode=%s | workers=%d",
@@ -77,40 +108,28 @@ class ScanOrchestrator:
             len(tasks),
             skipped_count,
             scan_input.mode.value,
-            self._config.scan.max_concurrent,
+            max_workers,
         )
 
-        results: list[ScanResult] = []
-        max_workers = max(1, self._config.scan.max_concurrent)
-
+        loop = asyncio.get_event_loop()
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_task = {
-                executor.submit(tool.run, target, scan_input): (tool.name, target)
+            coroutines = [
+                self._run_task(loop, executor, tool, target, scan_input)
                 for tool, target in tasks
-            }
-            for future in as_completed(future_to_task):
-                tool_name, target = future_to_task[future]
-                try:
-                    result = future.result()
-                except Exception as exc:
-                    log.exception("Unexpected error from tool '%s' on target '%s'.", tool_name, target)
-                    result = ScanResult(
-                        tool=tool_name,
-                        target=target,
-                        status=ScanStatus.FAILED,
-                        error=str(exc),
-                    )
+            ]
+            results = await asyncio.gather(*coroutines)
 
-                icon = "✓" if result.status == ScanStatus.SUCCESS else "✗"
-                log.info(
-                    "  [%s] %s → %s (%s, %.1fs, %d finding(s))",
-                    icon,
-                    tool_name,
-                    target,
-                    result.status.value,
-                    result.duration,
-                    len(result.findings),
-                )
-                results.append(result)
+        return list(results)
 
-        return results
+    def run(self) -> list[ScanResult]:
+        """Run all tool×target pairs concurrently. Blocking entry point."""
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # Already inside an event loop (e.g. Jupyter / tests)
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+                    return ex.submit(asyncio.run, self._run_async()).result()
+            return loop.run_until_complete(self._run_async())
+        except RuntimeError:
+            return asyncio.run(self._run_async())

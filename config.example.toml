@@ -22,6 +22,21 @@ max_concurrent = 3       # parallel tool executions
 mode           = "passive" # paranoid | passive | active | aggressive
 # rate_limit   = 50      # requests/s for tools that honour it
 
+# ─── Authenticated scanning ───────────────────────────────────────────────────
+# Credentials are forwarded to all applicable web tools (nuclei, ffuf, nikto, …).
+# env equivalents: VS_AUTH_BEARER_TOKEN, VS_AUTH_USERNAME, VS_AUTH_PASSWORD, VS_AUTH_LOGIN_URL
+# CLI: --auth-bearer TOKEN  --auth-user USER  --auth-pass PASS
+#      --auth-cookie name=value  --auth-header Name=Value
+[scan.auth]
+# bearer_token = ""               # Authorization: Bearer <token>
+# username     = ""               # HTTP Basic / Digest username
+# password     = ""               # HTTP Basic / Digest password
+# login_url    = ""               # Form-based login URL
+# [scan.auth.cookies]
+# session = "abc123"              # Cookie name = value pairs
+# [scan.auth.headers]
+# X-API-Key = "secret"            # Extra request headers
+
 # ─── Tool / category filtering ────────────────────────────────────────────────
 [categories]
 include = []   # non-empty = run ONLY these categories
@@ -30,6 +45,15 @@ exclude = []   # always skip these categories
 [tools]
 include = []   # non-empty = run ONLY these tools by name
 exclude = []   # always skip these tools by name
+
+# ─── Plugin system ────────────────────────────────────────────────────────────
+# Drop a .py file defining one or more AbstractTool subclasses into ./plugins/
+# (or ~/.vuln-scanner/plugins/) and they are registered automatically at startup.
+# env: VS_PLUGINS_ENABLED, VS_PLUGINS_DIRS
+# CLI: --no-plugins  --plugin-dir /path/to/dir
+[plugins]
+enabled = true
+# dirs = ["/opt/my-scanners"]     # extra directories beyond ./plugins/ and ~/.vuln-scanner/plugins/
 
 # ─── Reporting ────────────────────────────────────────────────────────────────
 [report]

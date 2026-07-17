@@ -43,6 +43,7 @@ class TargetType(str, Enum):
     PATH = "path"    # local filesystem path
     IMAGE = "image"  # container image reference (name:tag)
     REPO = "repo"    # git repository URL or path
+    CLOUD = "cloud"  # cloud account/project (AWS ARN, GCP project, Azure subscription)
 
 
 def _parse_severity(s: str) -> Severity:

@@ -30,6 +30,13 @@ class WfuzzTool(AbstractTool):
         ]
         if scan_input.rate_limit is not None:
             cmd += ["-t", str(min(scan_input.rate_limit, 40))]
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.cookie_string:
+                cmd += ["-b", auth.cookie_string]
+            for k, v in auth.effective_headers.items():
+                if k.lower() != "cookie":
+                    cmd += ["-H", f"{k}: {v}"]
         cmd += scan_input.extra_args
         return cmd
 

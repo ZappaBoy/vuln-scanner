@@ -1,5 +1,26 @@
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.acunetix import AcunetixTool
+from vuln_scanner.tools.alterx import AlterxTool
+from vuln_scanner.tools.bearer import BearerTool
+from vuln_scanner.tools.brakeman import BrakemanTool
+from vuln_scanner.tools.cariddi import CariddiTool
+from vuln_scanner.tools.crlfuzz import CRLFuzzTool
+from vuln_scanner.tools.detect_secrets import DetectSecretsTool
+from vuln_scanner.tools.flawfinder import FlawfinderTool
+from vuln_scanner.tools.govulncheck import GovulncheckTool
+from vuln_scanner.tools.hadolint import HadolintTool
+from vuln_scanner.tools.horusec import HorusecTool
+from vuln_scanner.tools.httprobe import HttprobeTool
+from vuln_scanner.tools.kubebench import KubeBenchTool
+from vuln_scanner.tools.linkfinder import LinkFinderTool
+from vuln_scanner.tools.noseyparker import NoseyParkerTool
+from vuln_scanner.tools.npm_audit import NpmAuditTool
+from vuln_scanner.tools.osv_scanner import OSVScannerTool
+from vuln_scanner.tools.prowler import ProwlerTool
+from vuln_scanner.tools.puredns import PureDNSTool
+from vuln_scanner.tools.smuggler import SmugglerTool
+from vuln_scanner.tools.terrascan import TerrascanTool
+from vuln_scanner.tools.waybackurls import WaybackURLsTool
 from vuln_scanner.tools.amass import AmassTool
 from vuln_scanner.tools.apifuzzer import APIFuzzerTool
 from vuln_scanner.tools.arachni import ArachniTool
@@ -141,6 +162,33 @@ TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     "apifuzzer":          APIFuzzerTool,
     "restler":            RESTlerTool,
     "cherrybomb":         CherrybombTool,
+    # Cloud & IaC
+    "prowler":            ProwlerTool,
+    "kube-bench":         KubeBenchTool,
+    "terrascan":          TerrascanTool,
+    "hadolint":           HadolintTool,
+    # SCA (additional)
+    "osv-scanner":        OSVScannerTool,
+    "npm-audit":          NpmAuditTool,
+    "govulncheck":        GovulncheckTool,
+    # Web (additional)
+    "crlfuzz":            CRLFuzzTool,
+    "smuggler":           SmugglerTool,
+    "linkfinder":         LinkFinderTool,
+    "cariddi":            CariddiTool,
+    # DNS / Recon (additional)
+    "puredns":            PureDNSTool,
+    "alterx":             AlterxTool,
+    "waybackurls":        WaybackURLsTool,
+    "httprobe":           HttprobeTool,
+    # SAST (additional)
+    "bearer":             BearerTool,
+    "horusec":            HorusecTool,
+    "brakeman":           BrakemanTool,
+    "flawfinder":         FlawfinderTool,
+    # Secrets (additional)
+    "detect-secrets":     DetectSecretsTool,
+    "noseyparker":        NoseyParkerTool,
 }
 
 __all__ = [
@@ -211,5 +259,26 @@ __all__ = [
     "WPScanTool",
     "XSStrikeTool",
     "ZAPTool",
+    "AlterxTool",
+    "BearerTool",
+    "BrakemanTool",
+    "CariddiTool",
+    "CRLFuzzTool",
+    "DetectSecretsTool",
+    "FlawfinderTool",
+    "GovulncheckTool",
+    "HadolintTool",
+    "HorusecTool",
+    "HttprobeTool",
+    "KubeBenchTool",
+    "LinkFinderTool",
+    "NoseyParkerTool",
+    "NpmAuditTool",
+    "OSVScannerTool",
+    "ProwlerTool",
+    "PureDNSTool",
+    "SmugglerTool",
+    "TerrascanTool",
+    "WaybackURLsTool",
     "TOOL_REGISTRY",
 ]

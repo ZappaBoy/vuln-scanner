@@ -23,6 +23,12 @@ class NucleiTool(AbstractTool):
         if scan_input.rate_limit is not None:
             cmd += ["-rate-limit", str(scan_input.rate_limit)]
         cmd += ["-timeout", str(max(5, scan_input.timeout // 10))]
+        auth = scan_input.auth
+        if auth.is_configured:
+            for k, v in auth.effective_headers.items():
+                cmd += ["-H", f"{k}: {v}"]
+            if auth.username and auth.password:
+                cmd += ["-auth-type", "basic", "-auth-cred", f"{auth.username}:{auth.password}"]
         cmd += scan_input.extra_args
         return cmd
 

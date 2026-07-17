@@ -1,12 +1,9 @@
 """Tests for orchestrator target-type gating — mocked subprocess, no real tools."""
-from unittest.mock import MagicMock, patch
 
-import pytest
 
 from vuln_scanner.config.models import AppConfig, ScanConfig
-from vuln_scanner.model import Assessment
 from vuln_scanner.orchestrator import ScanOrchestrator
-from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
+from vuln_scanner.tools.enums import ScanStatus, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
 

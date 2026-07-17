@@ -9,6 +9,8 @@ if TYPE_CHECKING:
 
 from pydantic import BaseModel, Field
 
+from vuln_scanner.tools.models import AuthConfig  # noqa: E402  (used below)
+
 
 class ReportFormat(str, Enum):
     MARKDOWN = "markdown"
@@ -51,6 +53,13 @@ class ReportConfig(BaseModel):
         if isinstance(data, dict) and "format" in data and "formats" not in data:
             data = {**data, "formats": [data.pop("format")]}
         return super().model_validate(data, **kwargs)
+
+
+class PluginsConfig(BaseModel):
+    """Plugin auto-discovery configuration."""
+    enabled: bool = True
+    # Extra directories to scan for plugin .py files (in addition to ./plugins/)
+    dirs: list[Path] = Field(default_factory=list)
 
 
 class DefectDojoConfig(BaseModel):
@@ -108,6 +117,8 @@ class AppConfig(BaseModel):
     report: ReportConfig = Field(default_factory=ReportConfig)
     defectdojo: DefectDojoConfig = Field(default_factory=DefectDojoConfig)
     llm: AppLLMConfig = Field(default_factory=AppLLMConfig)
+    auth: AuthConfig = Field(default_factory=AuthConfig)
+    plugins: PluginsConfig = Field(default_factory=PluginsConfig)
 
     def build_llm_config(self) -> "LLMConfig":
         """Convert AppLLMConfig → typed LLMConfig (lazy, avoids circular imports)."""

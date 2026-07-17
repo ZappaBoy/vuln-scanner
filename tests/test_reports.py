@@ -1,13 +1,11 @@
 """Tests for all three reporters. All host-safe — no real tool execution."""
-from pathlib import Path
 
-import pytest
 
 from vuln_scanner.model import Assessment, Cluster
 from vuln_scanner.reports.html import HTMLReporter
 from vuln_scanner.reports.json_reporter import JSONReporter
 from vuln_scanner.reports.markdown import MarkdownReporter
-from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity
+from vuln_scanner.tools.enums import ScanStatus, Severity
 from vuln_scanner.tools.models import Finding, ScanResult
 
 

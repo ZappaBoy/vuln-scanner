@@ -1,12 +1,11 @@
 """Tests for LLM analyzer and PoC runner — mocked OpenAI client, no real network calls."""
-import json
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
 from vuln_scanner.llm.features import LLMFeatures, resolve_features
-from vuln_scanner.llm.models import LLMConfig, PocConfig
+from vuln_scanner.llm.models import LLMConfig
 from vuln_scanner.model import Assessment
 from vuln_scanner.poc.models import PocVerdict
 from vuln_scanner.poc.runner import PocRunner, _is_in_container

@@ -1,6 +1,6 @@
 # vuln-scanner
 
-An automated vulnerability assessment platform that orchestrates **65 open-source security tools**, aggregates and deduplicates findings, runs an optional **OpenAI-compatible LLM analysis layer** for triage, clustering, and remediation, generates **proof-of-concept scripts**, and produces professional **Markdown, HTML, and JSON reports** — all from a single BlackArch Linux Docker image.
+An automated vulnerability assessment platform that orchestrates **86 open-source security tools**, aggregates and deduplicates findings, runs an optional **OpenAI-compatible LLM analysis layer** for triage, clustering, and remediation, generates **proof-of-concept scripts**, and produces professional **Markdown, HTML, and JSON reports** — all from a single BlackArch Linux Docker image.
 
 ---
 
@@ -10,16 +10,18 @@ An automated vulnerability assessment platform that orchestrates **65 open-sourc
 2. [Tools](#tools)
 3. [Target Type Gating](#target-type-gating)
 4. [Scan Modes](#scan-modes)
-5. [LLM Analysis](#llm-analysis)
-6. [PoC Generation and Execution](#poc-generation-and-execution)
-7. [Report Formats](#report-formats)
-8. [Quick Start](#quick-start)
-9. [Configuration](#configuration)
-10. [Environment Variables](#environment-variables)
-11. [Project Structure](#project-structure)
-12. [Adding a New Tool](#adding-a-new-tool)
-13. [Development](#development)
-14. [DefectDojo Integration](#defectdojo-integration)
+5. [Authenticated Scanning](#authenticated-scanning)
+6. [LLM Analysis](#llm-analysis)
+7. [PoC Generation and Execution](#poc-generation-and-execution)
+8. [Plugin System](#plugin-system)
+9. [Report Formats](#report-formats)
+10. [Quick Start](#quick-start)
+11. [Configuration](#configuration)
+12. [Environment Variables](#environment-variables)
+13. [Project Structure](#project-structure)
+14. [Adding a New Tool](#adding-a-new-tool)
+15. [Development](#development)
+16. [DefectDojo Integration](#defectdojo-integration)
 
 ---
 
@@ -30,10 +32,13 @@ config.toml / env vars / CLI args
              ↓
        AppConfig (pydantic, 3-layer merge: TOML < env < CLI)
              ↓
+     Plugin loader — auto-discovers ./plugins/ + ~/.vuln-scanner/plugins/
+             ↓
      ScanOrchestrator
       • classify_target() → TargetType
       • tool.applies_to(target) — skips mismatched pairs
-      • ThreadPoolExecutor — parallel (tool × target) tasks
+      • asyncio + ThreadPoolExecutor — parallel (tool × target) tasks
+      • AuthConfig forwarded to every applicable tool
              ↓
       ScanResult[]  →  Assessment
              ↓
@@ -58,7 +63,7 @@ All scanning tools and PoC execution run inside a **BlackArch Linux** Docker con
 
 ## Tools
 
-65 tools organized by category. Each tool declares the target types it supports; the orchestrator skips incompatible pairings automatically.
+86 tools organized by category. Each tool declares the target types it supports; the orchestrator skips incompatible pairings automatically.
 
 ### Network & Port Scanning
 | Tool | Notes |
@@ -99,6 +104,10 @@ All scanning tools and PoC execution run inside a **BlackArch Linux** Docker con
 | `gau` | Known URL collector (AlienVault, WaybackMachine) |
 | `jsluice` | JavaScript secrets and URL extractor |
 | `corscanner` | CORS misconfiguration scanner |
+| `crlfuzz` | CRLF injection scanner |
+| `smuggler` | HTTP request smuggling detector |
+| `linkfinder` | Endpoint discovery in JavaScript/HTML source |
+| `cariddi` | Web crawler with secret and endpoint detection |
 
 ### API & GraphQL
 | Tool | Notes |
@@ -120,6 +129,10 @@ All scanning tools and PoC execution run inside a **BlackArch Linux** Docker con
 | `dnsrecon` | DNS enumeration and zone transfer |
 | `fierce` | DNS reconnaissance and host discovery |
 | `theharvester` | OSINT: emails, names, hosts, subdomains |
+| `puredns` | Fast subdomain brute-forcer with wildcard filtering |
+| `alterx` | Subdomain permutation engine |
+| `waybackurls` | Historical URL collection from Wayback Machine |
+| `httprobe` | Live HTTP/HTTPS host prober |
 
 ### TLS / SSL
 | Tool | Notes |
@@ -145,8 +158,19 @@ All scanning tools and PoC execution run inside a **BlackArch Linux** Docker con
 | `bandit` | Python SAST — common security anti-patterns |
 | `semgrep` | Multi-language SAST with community rules |
 | `gosec` | Go security checker |
+| `bearer` | Data-flow SAST with privacy and security rules |
+| `horusec` | Multi-language SAST engine |
+| `brakeman` | Ruby on Rails SAST scanner |
+| `flawfinder` | C/C++ static analysis for common flaws |
 | `dependency_check` | OWASP dependency vulnerability scanner |
 | `pip_audit` | Python package vulnerability checker |
+
+### Software Composition Analysis (SCA)
+| Tool | Notes |
+|------|-------|
+| `osv-scanner` | Open Source Vulnerability database scanner |
+| `npm-audit` | Node.js package vulnerability audit |
+| `govulncheck` | Go module vulnerability checker |
 
 ### Secrets Detection
 | Tool | Notes |
@@ -154,12 +178,22 @@ All scanning tools and PoC execution run inside a **BlackArch Linux** Docker con
 | `gitleaks` | Git history secret scanner |
 | `trufflehog` | Deep entropy-based secret finder |
 | `secretfinder` | Secrets in JS files and endpoints |
+| `detect-secrets` | Baseline-based secret scanner |
+| `noseyparker` | High-speed secret scanner with pattern rules |
 
 ### IaC & Configuration
 | Tool | Notes |
 |------|-------|
 | `checkov` | Terraform/K8s/Dockerfile IaC scanner |
 | `tfsec` | Terraform static analysis |
+| `terrascan` | Multi-cloud IaC security scanner |
+| `hadolint` | Dockerfile best-practice linter |
+
+### Cloud Infrastructure
+| Tool | Notes |
+|------|-------|
+| `prowler` | AWS/GCP/Azure security posture assessment |
+| `kube-bench` | CIS Kubernetes Benchmark checker |
 
 ### Container & Supply Chain
 | Tool | Notes |
@@ -179,11 +213,18 @@ The orchestrator classifies each target into one or more types and only runs too
 | `IP` | `10.0.0.1` | Network, port, SMB tools |
 | `CIDR` | `10.0.0.0/24` | Network scanners |
 | `URL` | `https://app.example.com` | Web, API, SSL tools |
-| `PATH` | `/src/myapp` | SAST, secrets, IaC tools |
-| `REPO` | `https://github.com/org/repo` | Secrets, SAST tools |
+| `PATH` | `/src/myapp` | SAST, SCA, secrets, IaC tools |
+| `REPO` | `https://github.com/org/repo` | Secrets, SAST, SCA tools |
 | `IMAGE` | `myapp:latest` | Container scanners |
+| `CLOUD` | `aws:profile=prod`, `arn:aws:…` | Cloud posture tools (prowler, kube-bench, terrascan) |
 
 Classification is automatic — just pass the target string; the scanner figures out the type.
+
+Cloud target formats recognised:
+- AWS ARN: `arn:aws:iam::123456789012:root`
+- Named profile shorthand: `aws:profile=production`
+- GCP project: `projects/my-project-id`
+- Azure subscription UUID: `00000000-0000-0000-0000-000000000000`
 
 ---
 
@@ -195,6 +236,46 @@ Classification is automatic — just pass the target string; the scanner figures
 | `passive` | No active attacks — enumeration and banner grabbing only **(default)** |
 | `active` | Standard vulnerability checks enabled |
 | `aggressive` | Full scan: all templates, brute-force, fast timing |
+
+---
+
+## Authenticated Scanning
+
+Credentials are defined once and forwarded to all applicable web tools (nuclei, ffuf, feroxbuster, gobuster, nikto, sqlmap, dalfox, wpscan, wapiti, katana, hakrawler, arjun, wfuzz, corscanner, kiterunner, httpx).
+
+**Via config:**
+```toml
+[scan.auth]
+bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# HTTP Basic
+username = "admin"
+password = "secret"
+
+# Cookies
+[scan.auth.cookies]
+session = "abc123"
+csrftoken = "xyz789"
+
+# Extra headers
+[scan.auth.headers]
+X-API-Key = "my-api-key"
+```
+
+**Via environment variables:**
+```bash
+VS_AUTH_BEARER_TOKEN=eyJ...
+VS_AUTH_USERNAME=admin
+VS_AUTH_PASSWORD=secret
+```
+
+**Via CLI:**
+```bash
+vuln-scanner --targets https://app.example.com \
+  --auth-bearer eyJ... \
+  --auth-cookie session=abc123 \
+  --auth-header X-API-Key=secret
+```
 
 ---
 
@@ -331,6 +412,47 @@ VS_LLM_FEATURE_EXECUTE_POC=true docker compose ... run --rm scanner ...
 
 ---
 
+## Plugin System
+
+Drop a `.py` file defining one or more `AbstractTool` subclasses into `./plugins/` (or `~/.vuln-scanner/plugins/`) and they are auto-discovered at startup — no code changes needed.
+
+**Discovery order** (later entries override on name collision):
+1. `./plugins/` (relative to CWD)
+2. `~/.vuln-scanner/plugins/`
+3. Extra dirs configured via `[plugins] dirs` or `--plugin-dir`
+
+**Example plugin** (`plugins/my_scanner.py`):
+```python
+from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
+
+class MyScannerTool(AbstractTool):
+    name: str = "my-scanner"
+    category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+
+    def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
+        return ["my-scanner", "--target", target, "--json"]
+
+    def parse_output(self, raw: str, target: str) -> list[Finding]:
+        ...
+```
+
+**Config:**
+```toml
+[plugins]
+enabled = true
+dirs    = ["/opt/company-scanners"]
+```
+
+**CLI:**
+```bash
+vuln-scanner --plugin-dir /opt/company-scanners --targets https://app.example.com
+```
+
+---
+
 ## Report Formats
 
 Three formats are generated in parallel. Select any combination:
@@ -443,11 +565,26 @@ mode       = "passive"   # paranoid | passive | active | aggressive
 timeout    = 300         # per-tool timeout in seconds
 rate_limit = null        # requests/sec; null = no limit
 
+# Authenticated scanning — forwarded to all applicable web tools
+[scan.auth]
+bearer_token = ""        # Authorization: Bearer <token>
+username     = ""        # HTTP Basic username
+password     = ""        # HTTP Basic password
+login_url    = ""        # Form-based login URL
+# [scan.auth.cookies]
+# session = "abc123"
+# [scan.auth.headers]
+# X-API-Key = "secret"
+
 [tools]
 exclude = ["nikto"]      # skip specific tools by name
 
 [categories]
 include = ["web", "ssl"] # limit to these categories; empty = all
+
+[plugins]
+enabled = true
+# dirs = ["/opt/company-scanners"]
 
 [report]
 formats    = ["markdown", "html", "json"]
@@ -538,6 +675,24 @@ allow_git_clone = false
 | `VS_LLM_FEATURE_<NAME>` | `--llm-feature NAME=on` | Global feature toggle, e.g. `VS_LLM_FEATURE_GENERATE_POC=false` |
 | `VS_LLM_FEATURE_EXECUTE_POC` | `--llm-poc-execute` | Enable PoC execution (container-only) |
 
+### Authenticated Scanning
+
+| Variable | CLI flag | Description |
+|----------|----------|-------------|
+| `VS_AUTH_BEARER_TOKEN` | `--auth-bearer` | Bearer token (`Authorization: Bearer …`) |
+| `VS_AUTH_USERNAME` | `--auth-user` | HTTP Basic username |
+| `VS_AUTH_PASSWORD` | `--auth-pass` | HTTP Basic password |
+| `VS_AUTH_LOGIN_URL` | `--auth-login-url` | Form-based login URL |
+
+Cookies and extra headers must be set via config file or `--auth-cookie` / `--auth-header` CLI flags.
+
+### Plugins
+
+| Variable | CLI flag | Description |
+|----------|----------|-------------|
+| `VS_PLUGINS_ENABLED` | `--no-plugins` | Enable/disable plugin auto-discovery |
+| `VS_PLUGINS_DIRS` | `--plugin-dir` | Extra plugin directories (space-separated) |
+
 ### DefectDojo
 
 | Variable | CLI flag | Description |
@@ -554,16 +709,16 @@ allow_git_clone = false
 ```
 vuln_scanner/
 ├── config/
-│   ├── models.py        # AppConfig, AppLLMConfig, ReportConfig (pydantic)
+│   ├── models.py        # AppConfig, AppLLMConfig, PluginsConfig (pydantic)
 │   └── loader.py        # 3-layer merge: TOML + env (VS_*) + CLI
 │
 ├── tools/
 │   ├── enums.py         # Severity, Confidence, ScanStatus, ScanMode, TargetType
-│   ├── models.py        # Finding, ScanInput, ScanResult (pydantic)
+│   ├── models.py        # Finding, ScanInput, ScanResult, AuthConfig (pydantic)
 │   ├── target.py        # classify_target() — maps target string to TargetType set
 │   ├── abstract.py      # AbstractTool ABC + subprocess execution helpers
-│   ├── __init__.py      # TOOL_REGISTRY (65 tools)
-│   └── <tool>.py        # One file per tool (65 total)
+│   ├── __init__.py      # TOOL_REGISTRY (86 tools)
+│   └── <tool>.py        # One file per tool (86 total)
 │
 ├── llm/
 │   ├── models.py        # LLMConfig, LLMFeatures, PocConfig (pydantic)
@@ -586,9 +741,11 @@ vuln_scanner/
 ├── defectdojo/
 │   └── client.py        # DefectDojoClient — push findings via REST API
 │
+├── plugins.py           # Plugin auto-discovery (./plugins/, ~/.vuln-scanner/plugins/)
 ├── model.py             # Assessment, Cluster, AssessmentStats
-└── orchestrator.py      # ScanOrchestrator — type-gated, concurrent execution
+└── orchestrator.py      # ScanOrchestrator — type-gated, async concurrent execution
 
+plugins/                 # Drop .py plugin files here (auto-discovered at startup)
 main.py                  # Entry point
 config.example.toml      # Fully documented configuration template
 .env.example             # Environment variable reference
@@ -602,6 +759,8 @@ poc.sh                            # End-to-end quick-start script
 ---
 
 ## Adding a New Tool
+
+For one-off or private tools, use the [Plugin System](#plugin-system) — drop a `.py` file into `./plugins/` with no code changes. For tools that should ship with the project:
 
 1. Create `vuln_scanner/tools/mytool.py`:
 

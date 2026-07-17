@@ -42,6 +42,10 @@ class KiterunnerTool(AbstractTool):
         ]
         if scan_input.rate_limit is not None:
             cmd += ["--max-connection-per-host", str(min(scan_input.rate_limit, 20))]
+        auth = scan_input.auth
+        if auth.is_configured:
+            for k, v in auth.effective_headers.items():
+                cmd += ["-H", f"{k}: {v}"]
         cmd += scan_input.extra_args
         return cmd
 

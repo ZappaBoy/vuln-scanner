@@ -21,6 +21,15 @@ class DalfoxTool(AbstractTool):
         if scan_input.rate_limit is not None:
             cmd += ["--delay", str(max(0, 1000 // scan_input.rate_limit))]  # ms between reqs
 
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.cookie_string:
+                cmd += ["--cookie", auth.cookie_string]
+            for k, v in auth.headers.items():
+                cmd += ["--header", f"{k}: {v}"]
+            if auth.bearer_token and "Authorization" not in auth.headers:
+                cmd += ["--header", f"Authorization: Bearer {auth.bearer_token}"]
+
         cmd += scan_input.extra_args
         return cmd
 

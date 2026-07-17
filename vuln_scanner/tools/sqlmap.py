@@ -44,6 +44,18 @@ class SQLMapTool(AbstractTool):
             cmd += ["--technique=B"]   # boolean-based only (least intrusive)
         if scan_input.rate_limit is not None:
             cmd += [f"--delay={max(1, 1 // scan_input.rate_limit)}"]
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.cookie_string:
+                cmd += [f"--cookie={auth.cookie_string}"]
+            if auth.username and auth.password:
+                cmd += ["--auth-type=Basic", f"--auth-cred={auth.username}:{auth.password}"]
+            extra_headers = {k: v for k, v in auth.headers.items() if k.lower() not in ("cookie",)}
+            if auth.bearer_token:
+                extra_headers["Authorization"] = f"Bearer {auth.bearer_token}"
+            if extra_headers:
+                header_str = "\n".join(f"{k}: {v}" for k, v in extra_headers.items())
+                cmd += [f"--headers={header_str}"]
         cmd += scan_input.extra_args
         return cmd
 

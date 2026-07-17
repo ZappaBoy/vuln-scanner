@@ -59,6 +59,14 @@ class _EnvSettings(BaseSettings):
     llm_poc_languages: list[str] | None = None
     llm_poc_timeout: int | None = None
     llm_poc_max_pocs: int | None = None
+    # Auth (VS_AUTH_*)
+    auth_bearer_token: str | None = None
+    auth_username: str | None = None
+    auth_password: str | None = None
+    auth_login_url: str | None = None
+    # Plugins
+    plugins_enabled: str | None = None
+    plugins_dirs: list[str] | None = None
 
 
 def _parse_bool_env(v: str | None) -> bool | None:
@@ -118,6 +126,27 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--llm-poc-execute", action="store_true",
                         help="Enable PoC execution (container-only).")
+    # Auth flags
+    parser.add_argument("--auth-bearer", metavar="TOKEN",
+                        help="Bearer token for authenticated scanning. (env: VS_AUTH_BEARER_TOKEN)")
+    parser.add_argument("--auth-user", metavar="USERNAME",
+                        help="HTTP Basic username. (env: VS_AUTH_USERNAME)")
+    parser.add_argument("--auth-pass", metavar="PASSWORD",
+                        help="HTTP Basic password. (env: VS_AUTH_PASSWORD)")
+    parser.add_argument("--auth-login-url", metavar="URL",
+                        help="Form login URL. (env: VS_AUTH_LOGIN_URL)")
+    parser.add_argument("--auth-cookie", nargs="+", metavar="NAME=VALUE",
+                        dest="auth_cookies",
+                        help="Cookies for authenticated scanning, e.g. --auth-cookie session=abc")
+    parser.add_argument("--auth-header", nargs="+", metavar="NAME=VALUE",
+                        dest="auth_headers",
+                        help="Extra request headers, e.g. --auth-header X-API-Key=secret")
+    # Plugin flags
+    parser.add_argument("--no-plugins", action="store_true",
+                        help="Disable plugin auto-discovery.")
+    parser.add_argument("--plugin-dir", nargs="+", metavar="DIR",
+                        dest="plugin_dirs",
+                        help="Extra directories to scan for plugins.")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Enable debug logging.")
     return parser
@@ -258,6 +287,24 @@ def load_config(args: Namespace) -> AppConfig:
     if env.llm_poc_max_pocs is not None:
         llm["poc"]["max_pocs"] = env.llm_poc_max_pocs
 
+    # Auth env layer (VS_AUTH_*)
+    data.setdefault("auth", {})
+    if env.auth_bearer_token is not None:
+        data["auth"]["bearer_token"] = env.auth_bearer_token
+    if env.auth_username is not None:
+        data["auth"]["username"] = env.auth_username
+    if env.auth_password is not None:
+        data["auth"]["password"] = env.auth_password
+    if env.auth_login_url is not None:
+        data["auth"]["login_url"] = env.auth_login_url
+
+    # Plugins env layer
+    data.setdefault("plugins", {})
+    if env.plugins_enabled is not None:
+        data["plugins"]["enabled"] = _parse_bool_env(env.plugins_enabled)
+    if env.plugins_dirs is not None:
+        data["plugins"]["dirs"] = env.plugins_dirs
+
     # --- layer 3: CLI args ---
     if args.targets:
         data["scan"]["targets"] = args.targets
@@ -298,5 +345,29 @@ def load_config(args: Namespace) -> AppConfig:
     cli_feature_overrides = _parse_feature_flags(getattr(args, "llm_features", None))
     if cli_feature_overrides:
         data["llm"].setdefault("features", {}).update(cli_feature_overrides)
+
+    # Auth CLI layer
+    data.setdefault("auth", {})
+    if getattr(args, "auth_bearer", None):
+        data["auth"]["bearer_token"] = args.auth_bearer
+    if getattr(args, "auth_user", None):
+        data["auth"]["username"] = args.auth_user
+    if getattr(args, "auth_pass", None):
+        data["auth"]["password"] = args.auth_pass
+    if getattr(args, "auth_login_url", None):
+        data["auth"]["login_url"] = args.auth_login_url
+    if getattr(args, "auth_cookies", None):
+        cookies = {k: v for k, v in (c.split("=", 1) for c in args.auth_cookies if "=" in c)}
+        data["auth"].setdefault("cookies", {}).update(cookies)
+    if getattr(args, "auth_headers", None):
+        headers = {k: v for k, v in (h.split("=", 1) for h in args.auth_headers if "=" in h)}
+        data["auth"].setdefault("headers", {}).update(headers)
+
+    # Plugins CLI layer
+    data.setdefault("plugins", {})
+    if getattr(args, "no_plugins", False):
+        data["plugins"]["enabled"] = False
+    if getattr(args, "plugin_dirs", None):
+        data["plugins"]["dirs"] = args.plugin_dirs
 
     return AppConfig.model_validate(data)

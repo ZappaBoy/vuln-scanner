@@ -5,6 +5,7 @@ FROM blackarchlinux/blackarch:latest
 RUN pacman -Syu --noconfirm && \
     pacman -S --noconfirm --needed \
         python python-pip unzip curl go cargo git jdk-openjdk \
+        nodejs npm ruby \
         nmap nikto nuclei wapiti wpscan zaproxy arachni \
         sqlmap ffuf feroxbuster gobuster wfuzz \
         dalfox commix xsstrike nosqlmap \
@@ -23,18 +24,27 @@ RUN pacman -Syu --noconfirm && \
     pacman -Scc --noconfirm && \
     rm -rf /var/cache/pacman/pkg /tmp/pacman*
 
-# Install Go-based tools
+# Install Go-based tools (all in one layer; cache cleaned at the end)
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest && \
     go install github.com/projectdiscovery/katana/cmd/katana@latest && \
+    go install github.com/securego/gosec/v2/cmd/gosec@latest && \
+    go install github.com/aquasecurity/kube-bench@latest && \
+    go install github.com/google/osv-scanner/cmd/osv-scanner@latest && \
+    go install golang.org/x/vuln/cmd/govulncheck@latest && \
+    go install github.com/hahwul/dalfox/v2@latest 2>/dev/null || true && \
+    go install github.com/dwisiswant0/crlfuzz@latest && \
+    go install github.com/edoardottt/cariddi/cmd/cariddi@latest && \
+    go install github.com/d3mondev/puredns/v2@latest && \
+    go install github.com/projectdiscovery/alterx/cmd/alterx@latest && \
+    go install github.com/tomnomnom/waybackurls@latest && \
+    go install github.com/tomnomnom/httprobe@latest && \
     ( go install github.com/trufflesecurity/jsluice/cmd/jsluice@latest 2>/dev/null || \
       ( curl -sL https://github.com/trufflesecurity/jsluice/releases/latest/download/jsluice_Linux_x86_64.tar.gz \
           -o /tmp/jsluice.tar.gz && \
         tar -xzf /tmp/jsluice.tar.gz -C /tmp jsluice && \
         mv /tmp/jsluice /usr/local/bin/jsluice && \
         rm -f /tmp/jsluice.tar.gz ) ) && \
-    go install github.com/securego/gosec/v2/cmd/gosec@latest && \
-    cp /root/go/bin/httpx /root/go/bin/katana /root/go/bin/gosec /usr/local/bin/ 2>/dev/null || true && \
-    cp /root/go/bin/jsluice /usr/local/bin/jsluice 2>/dev/null || true && \
+    find /root/go/bin -maxdepth 1 -type f -exec cp {} /usr/local/bin/ \; && \
     # Clean Go cache in the same layer
     go clean -cache -modcache && \
     rm -rf /root/go/pkg
@@ -46,8 +56,61 @@ RUN pip install --break-system-packages --no-cache-dir \
         jsbeautifier \
         requests \
         pip-audit \
-        gvm-tools && \
+        gvm-tools \
+        prowler \
+        flawfinder \
+        detect-secrets && \
     pip install --break-system-packages --no-cache-dir --no-deps apifuzzer
+
+# Install terrascan (IaC scanner)
+RUN TERRASCAN_URL=$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest \
+        | grep '"browser_download_url"' | grep 'Linux_x86_64.tar.gz"' | head -1 | cut -d'"' -f4) && \
+    [ -n "$TERRASCAN_URL" ] && \
+    curl -sL "$TERRASCAN_URL" -o /tmp/terrascan.tar.gz && \
+    tar -xzf /tmp/terrascan.tar.gz -C /usr/local/bin terrascan && \
+    rm /tmp/terrascan.tar.gz || true
+
+# Install hadolint (Dockerfile linter)
+RUN curl -sLo /usr/local/bin/hadolint \
+        https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64 && \
+    chmod +x /usr/local/bin/hadolint
+
+# Install bearer (SAST / data-flow scanner)
+RUN curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh \
+        | sh -s -- -b /usr/local/bin
+
+# Install horusec (multi-language SAST)
+RUN HORUSEC_URL=$(curl -s https://api.github.com/repos/ZupIT/horusec/releases/latest \
+        | grep '"browser_download_url"' | grep 'linux_x64"' | head -1 | cut -d'"' -f4) && \
+    [ -n "$HORUSEC_URL" ] && \
+    curl -sLo /usr/local/bin/horusec "$HORUSEC_URL" && \
+    chmod +x /usr/local/bin/horusec || true
+
+# Install noseyparker (secret scanner, Rust binary)
+RUN NOSEY_URL=$(curl -s https://api.github.com/repos/praetorian-inc/noseyparker/releases/latest \
+        | grep '"browser_download_url"' | grep 'x86_64-unknown-linux' | grep '\.tar\.gz"' | head -1 | cut -d'"' -f4) && \
+    [ -n "$NOSEY_URL" ] && \
+    curl -sL "$NOSEY_URL" -o /tmp/noseyparker.tar.gz && \
+    tar -xzf /tmp/noseyparker.tar.gz -C /tmp && \
+    find /tmp -name 'noseyparker' -type f | head -1 | xargs -I{} mv {} /usr/local/bin/noseyparker && \
+    chmod +x /usr/local/bin/noseyparker && \
+    rm -f /tmp/noseyparker.tar.gz || true
+
+# Install brakeman (Ruby on Rails SAST)
+RUN gem install brakeman --no-document && \
+    gem cleanup
+
+# Install smuggler (HTTP request smuggling)
+RUN git clone --depth 1 https://github.com/defparam/smuggler /opt/smuggler && \
+    pip install --break-system-packages --no-cache-dir -r /opt/smuggler/requirements.txt 2>/dev/null || true && \
+    printf '#!/bin/sh\nexec python3 /opt/smuggler/smuggler.py "$@"\n' > /usr/local/bin/smuggler && \
+    chmod +x /usr/local/bin/smuggler && \
+    rm -rf /opt/smuggler/.git
+
+# Install LinkFinder (endpoint discovery in JS)
+RUN git clone --depth 1 https://github.com/GerbenJavado/LinkFinder /opt/LinkFinder && \
+    pip install --break-system-packages --no-cache-dir -r /opt/LinkFinder/requirements.txt 2>/dev/null || true && \
+    rm -rf /opt/LinkFinder/.git
 
 # Install humble (HTTP header analyser) from source
 RUN git clone --depth 1 https://github.com/rfc-st/humble /opt/humble && \

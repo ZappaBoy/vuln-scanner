@@ -8,6 +8,7 @@ from vuln_scanner.config.models import ReportFormat
 from vuln_scanner.defectdojo import DefectDojoClient
 from vuln_scanner.model import Assessment
 from vuln_scanner.orchestrator import ScanOrchestrator
+from vuln_scanner.plugins import load_plugins
 from vuln_scanner.reports import get_reporter
 from vuln_scanner.tools import TOOL_REGISTRY
 
@@ -36,6 +37,10 @@ def main() -> None:
 
     config = load_config(args)
 
+    # Load plugins (extends TOOL_REGISTRY in-place)
+    plugin_registry = dict(TOOL_REGISTRY)
+    load_plugins(config.plugins, plugin_registry)
+
     if not config.scan.targets:
         log.error("No targets specified. Use --targets or set VS_TARGETS.")
         sys.exit(1)
@@ -55,7 +60,7 @@ def main() -> None:
         log.info("LLM analysis: disabled")
 
     # Run scan
-    tools = [cls() for cls in TOOL_REGISTRY.values()]
+    tools = [cls() for cls in plugin_registry.values()]
     orchestrator = ScanOrchestrator(config=config, tools=tools)
     results = orchestrator.run()
 

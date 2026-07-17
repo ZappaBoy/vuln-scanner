@@ -27,6 +27,14 @@ class NiktoTool(AbstractTool):
             "-nointeractive",
         ]
         cmd += _MODE_TUNING.get(scan_input.mode, [])
+        auth = scan_input.auth
+        if auth.is_configured:
+            if auth.cookie_string:
+                cmd += ["-cookies", auth.cookie_string]
+            if auth.username and auth.password:
+                cmd += ["-id", f"{auth.username}:{auth.password}"]
+            for k, v in auth.headers.items():
+                cmd += ["-useragent", v] if k.lower() == "user-agent" else []
         cmd += scan_input.extra_args
         return cmd
 

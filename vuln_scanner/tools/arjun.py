@@ -29,6 +29,11 @@ class ArjunTool(AbstractTool):
             cmd += ["-m", "GET,POST,JSON,XML", "--stable"]
         if scan_input.rate_limit is not None:
             cmd += ["-d", str(max(0, 1000 // scan_input.rate_limit))]
+        auth = scan_input.auth
+        if auth.is_configured:
+            import json as _json
+            headers = dict(auth.effective_headers)
+            cmd += ["--headers", _json.dumps(headers)]
         cmd += scan_input.extra_args
         return cmd
 

@@ -19,6 +19,12 @@ class HakrawlerTool(AbstractTool):
             cmd += ["-subs"]    # include subdomains
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-depth", "3"]
+        auth = scan_input.auth
+        if auth.is_configured:
+            for k, v in auth.effective_headers.items():
+                cmd += ["-h", f"{k}: {v}"]
+            if auth.cookie_string:
+                cmd += ["-c", auth.cookie_string]
         cmd += scan_input.extra_args
         return cmd
 

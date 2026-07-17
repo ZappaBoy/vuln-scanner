@@ -34,6 +34,11 @@ class CORScannerTool(AbstractTool):
         elif scan_input.mode in (ScanMode.ACTIVE,):
             cmd += ["-t", "5"]
 
+        auth = scan_input.auth
+        if auth.is_configured:
+            for k, v in auth.effective_headers.items():
+                cmd += ["-H", f"{k}: {v}"]
+
         cmd += scan_input.extra_args
         return cmd
 

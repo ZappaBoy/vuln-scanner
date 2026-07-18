@@ -24,18 +24,52 @@ mode           = "passive" # paranoid | passive | active | aggressive
 
 # ─── Authenticated scanning ───────────────────────────────────────────────────
 # Credentials are forwarded to all applicable web tools (nuclei, ffuf, nikto, …).
-# env equivalents: VS_AUTH_BEARER_TOKEN, VS_AUTH_USERNAME, VS_AUTH_PASSWORD, VS_AUTH_LOGIN_URL
-# CLI: --auth-bearer TOKEN  --auth-user USER  --auth-pass PASS
-#      --auth-cookie name=value  --auth-header Name=Value
+# Global defaults apply to every target unless a per-target override is defined.
+#
+# env (global only): VS_AUTH_BEARER_TOKEN, VS_AUTH_USERNAME, VS_AUTH_PASSWORD,
+#                    VS_AUTH_LOGIN_URL
+# CLI (global only): --auth-bearer TOKEN  --auth-user USER  --auth-pass PASS
+#                    --auth-cookie name=value  --auth-header Name=Value
+#
+# Per-target overrides are config-file only and take full precedence for that
+# target — they are not merged with the global config.
+
 [scan.auth]
-# bearer_token = ""               # Authorization: Bearer <token>
-# username     = ""               # HTTP Basic / Digest username
-# password     = ""               # HTTP Basic / Digest password
-# login_url    = ""               # Form-based login URL
+# Global default credentials (applied when no per-target entry matches)
+# bearer_token = ""
+# username     = ""
+# password     = ""
+# login_url    = ""
 # [scan.auth.cookies]
-# session = "abc123"              # Cookie name = value pairs
+# session = "abc123"
 # [scan.auth.headers]
-# X-API-Key = "secret"            # Extra request headers
+# X-API-Key = "global-key"
+
+# Per-target auth — keyed by the exact target string.
+# Each entry is a full AuthConfig; it replaces the global config for that target.
+
+# Example: JWT for the main web app
+[scan.auth.targets."https://app.example.com"]
+bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# Example: cookie-based session for a legacy admin panel
+[scan.auth.targets."https://admin.example.com"]
+[scan.auth.targets."https://admin.example.com".cookies]
+session    = "s%3Aabc123"
+csrftoken  = "xyz789"
+
+# Example: HTTP Basic for an internal API
+[scan.auth.targets."10.0.0.50"]
+username = "apiuser"
+password = "s3cret"
+
+# Example: form login (scanner POSTs credentials, then carries the session)
+[scan.auth.targets."https://legacy.example.com"]
+login_url  = "https://legacy.example.com/login"
+username   = "admin"
+password   = "password123"
+[scan.auth.targets."https://legacy.example.com".login_data]
+_token = "csrf-value-here"
 
 # ─── Tool / category filtering ────────────────────────────────────────────────
 [categories]
@@ -49,11 +83,28 @@ exclude = []   # always skip these tools by name
 # ─── Plugin system ────────────────────────────────────────────────────────────
 # Drop a .py file defining one or more AbstractTool subclasses into ./plugins/
 # (or ~/.vuln-scanner/plugins/) and they are registered automatically at startup.
+#
 # env: VS_PLUGINS_ENABLED, VS_PLUGINS_DIRS
 # CLI: --no-plugins  --plugin-dir /path/to/dir
+#
+# Per-target behaviour is controlled by each plugin's applicable_targets field,
+# not by config.  A plugin that declares:
+#
+#   applicable_targets = frozenset({TargetType.URL})
+#
+# will only run against URL targets and be skipped for IPs, paths, etc. —
+# the orchestrator enforces this automatically, exactly like built-in tools.
+# To restrict a plugin to specific targets beyond type-gating, add logic
+# inside build_command() or run() that returns ScanStatus.SKIPPED.
+
 [plugins]
 enabled = true
-# dirs = ["/opt/my-scanners"]     # extra directories beyond ./plugins/ and ~/.vuln-scanner/plugins/
+# dirs = ["/opt/company-scanners", "~/my-plugins"]
+#
+# Discovery order (later entries override on name collision):
+#   1. ./plugins/
+#   2. ~/.vuln-scanner/plugins/
+#   3. dirs listed above
 
 # ─── Reporting ────────────────────────────────────────────────────────────────
 [report]

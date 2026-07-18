@@ -189,6 +189,11 @@ def load_config(args: Namespace) -> AppConfig:
     data.setdefault("defectdojo", {})
     data.setdefault("llm", {})
 
+    # [scan.auth] in TOML nests under scan for readability, but AppConfig.auth
+    # is a top-level field.  Hoist it out before the env/CLI layers write to it.
+    if "auth" not in data and "auth" in data["scan"]:
+        data["auth"] = data["scan"].pop("auth")
+
     # scan
     if env.targets is not None:
         data["scan"]["targets"] = env.targets

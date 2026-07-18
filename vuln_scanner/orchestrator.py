@@ -78,13 +78,19 @@ class ScanOrchestrator:
             log.warning("No targets specified.")
             return []
 
-        scan_input = ScanInput(
-            targets=targets,
-            timeout=self._config.scan.timeout,
-            mode=self._config.scan.mode,
-            rate_limit=self._config.scan.rate_limit,
-            auth=self._config.auth,
-        )
+        # Build per-target ScanInputs so each carries the right auth credentials.
+        # Per-target auth overrides the global config for that specific target.
+        base_auth = self._config.auth
+        scan_inputs: dict[str, ScanInput] = {
+            target: ScanInput(
+                targets=targets,
+                timeout=self._config.scan.timeout,
+                mode=self._config.scan.mode,
+                rate_limit=self._config.scan.rate_limit,
+                auth=base_auth.for_target(target),
+            )
+            for target in targets
+        }
 
         tasks: list[tuple[AbstractTool, str]] = []
         skipped_count = 0
@@ -107,14 +113,14 @@ class ScanOrchestrator:
             len(targets),
             len(tasks),
             skipped_count,
-            scan_input.mode.value,
+            self._config.scan.mode.value,
             max_workers,
         )
 
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             coroutines = [
-                self._run_task(loop, executor, tool, target, scan_input)
+                self._run_task(loop, executor, tool, target, scan_inputs[target])
                 for tool, target in tasks
             ]
             results = await asyncio.gather(*coroutines)

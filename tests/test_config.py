@@ -119,3 +119,22 @@ def test_build_llm_config_no_model_raises():
     llm = config.build_llm_config()
     with pytest.raises(ValueError):
         llm.validate_active()
+
+
+def test_scan_auth_hoisted_from_toml(tmp_path):
+    """[scan.auth] in config.toml must populate AppConfig.auth (top-level field)."""
+    toml = tmp_path / "config.toml"
+    toml.write_text(
+        '[scan.auth]\nbearer_token = "toml-token"\n'
+        '[scan.auth.cookies]\nsession = "abc"\n'
+    )
+    config = load_config(_args(config=str(toml)))
+    assert config.auth.bearer_token == "toml-token"
+    assert config.auth.cookies == {"session": "abc"}
+
+
+def test_cli_auth_overrides_toml(tmp_path):
+    toml = tmp_path / "config.toml"
+    toml.write_text('[scan.auth]\nbearer_token = "toml-token"\n')
+    config = load_config(_args(config=str(toml), auth_bearer="cli-token"))
+    assert config.auth.bearer_token == "cli-token"

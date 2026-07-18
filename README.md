@@ -241,41 +241,75 @@ Cloud target formats recognised:
 
 ## Authenticated Scanning
 
-Credentials are defined once and forwarded to all applicable web tools (nuclei, ffuf, feroxbuster, gobuster, nikto, sqlmap, dalfox, wpscan, wapiti, katana, hakrawler, arjun, wfuzz, corscanner, kiterunner, httpx).
+Credentials are forwarded to all applicable web tools (nuclei, ffuf, feroxbuster, gobuster, nikto, sqlmap, dalfox, wpscan, wapiti, katana, hakrawler, arjun, wfuzz, corscanner, kiterunner, httpx).
+
+### Global credentials
+
+Applied to every target unless a per-target override exists.
 
 **Via config:**
 ```toml
 [scan.auth]
 bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+username     = "admin"
+password     = "secret"
 
-# HTTP Basic
-username = "admin"
-password = "secret"
-
-# Cookies
 [scan.auth.cookies]
 session = "abc123"
-csrftoken = "xyz789"
 
-# Extra headers
 [scan.auth.headers]
 X-API-Key = "my-api-key"
 ```
 
-**Via environment variables:**
+**Via environment variables** (global only):
 ```bash
 VS_AUTH_BEARER_TOKEN=eyJ...
 VS_AUTH_USERNAME=admin
 VS_AUTH_PASSWORD=secret
 ```
 
-**Via CLI:**
+**Via CLI** (global only):
 ```bash
 vuln-scanner --targets https://app.example.com \
   --auth-bearer eyJ... \
   --auth-cookie session=abc123 \
   --auth-header X-API-Key=secret
 ```
+
+### Per-target credentials
+
+When scanning multiple targets that require different credentials, define per-target overrides under `[scan.auth.targets."<target>"]`. A matching entry **replaces** the global config for that target entirely — there is no merge. Per-target auth is config-file only (env vars and CLI flags only set the global default).
+
+```toml
+[scan.auth]
+# Global fallback — used for any target without a specific entry
+bearer_token = "default-token"
+
+# JWT for the main app
+[scan.auth.targets."https://app.example.com"]
+bearer_token = "app-specific-jwt"
+
+# Cookie session for the admin panel
+[scan.auth.targets."https://admin.example.com"]
+[scan.auth.targets."https://admin.example.com".cookies]
+session   = "s%3Aabc123"
+csrftoken = "xyz789"
+
+# HTTP Basic for an internal API
+[scan.auth.targets."10.0.0.50"]
+username = "apiuser"
+password = "s3cret"
+
+# Form login for a legacy app
+[scan.auth.targets."https://legacy.example.com"]
+login_url = "https://legacy.example.com/login"
+username  = "admin"
+password  = "password123"
+[scan.auth.targets."https://legacy.example.com".login_data]
+_token = "csrf-value-here"
+```
+
+**Resolution:** `per-target config > global config`
 
 ---
 
@@ -424,12 +458,13 @@ Drop a `.py` file defining one or more `AbstractTool` subclasses into `./plugins
 **Example plugin** (`plugins/my_scanner.py`):
 ```python
 from vuln_scanner.tools.abstract import AbstractTool
-from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.enums import Severity, ScanStatus, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 class MyScannerTool(AbstractTool):
     name: str = "my-scanner"
     category: str = "web"
+    # Only runs against URL targets — skipped automatically for IPs, paths, etc.
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
@@ -450,6 +485,21 @@ dirs    = ["/opt/company-scanners"]
 ```bash
 vuln-scanner --plugin-dir /opt/company-scanners --targets https://app.example.com
 ```
+
+### Per-target behaviour
+
+Plugin tools are registered globally but the orchestrator's type-gating controls which targets each plugin actually runs against. A plugin declaring `applicable_targets = frozenset({TargetType.URL})` will never fire against an IP or a filesystem path.
+
+To restrict a plugin to specific target strings beyond type-gating (e.g., only run against a known staging host), return `ScanStatus.SKIPPED` inside `run()`:
+
+```python
+def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+    if "staging" not in target:
+        return ScanResult(tool=self.name, target=target, status=ScanStatus.SKIPPED)
+    return super().run(target, scan_input)
+```
+
+There is no config-level per-target plugin filter — that logic belongs in the plugin itself.
 
 ---
 

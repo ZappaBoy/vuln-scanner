@@ -50,14 +50,14 @@ class ProwlerTool(AbstractTool):
             region = item.get("Resources", [{}])[0].get("Region", "") if item.get("Resources") else ""
             resource = item.get("Resources", [{}])[0].get("Id", target) if item.get("Resources") else target
 
+            rec_url = item.get("Remediation", {}).get("Recommendation", {}).get("Url", "")
             findings.append(Finding(
                 title=title,
                 severity=sev,
                 description=f"{desc}\nResource: {resource}" + (f"\nRegion: {region}" if region else ""),
                 tool=self.name,
                 target=target,
-                cve=item.get("Remediation", {}).get("Recommendation", {}).get("Url", []),
-                references=[item.get("Remediation", {}).get("Recommendation", {}).get("Url", "")],
+                references=[rec_url] if rec_url else [],
                 raw=item,
             ))
         return findings

@@ -5,20 +5,34 @@ from vuln_scanner.tools.enums import Confidence, ScanMode, ScanStatus, Severity
 
 
 class AuthConfig(BaseModel):
-    """Credentials carried with every scan task for authenticated scanning."""
-    # HTTP cookies forwarded verbatim (name → value)
+    """Credentials for authenticated scanning.
+
+    Global defaults live at [scan.auth]; per-target overrides live under
+    [scan.auth.targets."<target>"] and take full precedence for that target.
+    Call ``for_target(target)`` to get the resolved config for a specific target.
+    """
     cookies: dict[str, str] = Field(default_factory=dict)
-    # Extra request headers, e.g. {"Authorization": "Bearer <token>"}
     headers: dict[str, str] = Field(default_factory=dict)
-    # Convenience shorthand for Authorization: Bearer <token>
     bearer_token: str = ""
-    # HTTP Basic / Digest credentials
     username: str = ""
     password: str = ""
-    # Form-based login: POST login_url with login_data to obtain a session
     login_url: str = ""
     login_data: dict[str, str] = Field(default_factory=dict)
     verify_ssl: bool = True
+    # Per-target overrides keyed by exact target string.
+    # A matching entry completely replaces the global config for that target.
+    targets: dict[str, "AuthConfig"] = Field(default_factory=dict)
+
+    def for_target(self, target: str) -> "AuthConfig":
+        """Return the auth config to use for *target*.
+
+        If a per-target entry exists it is returned as-is (it already carries
+        its own cookies/headers/etc.).  Otherwise the global config (self,
+        minus the ``targets`` dict) is returned.
+        """
+        if target in self.targets:
+            return self.targets[target]
+        return self
 
     @property
     def cookie_string(self) -> str:

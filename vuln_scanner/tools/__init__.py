@@ -86,6 +86,7 @@ from vuln_scanner.tools.wfuzz import WfuzzTool
 from vuln_scanner.tools.wpscan import WPScanTool
 from vuln_scanner.tools.xsstrike import XSStrikeTool
 from vuln_scanner.tools.zap import ZAPTool
+from vuln_scanner.tools.gowitness import GowitnesssTool
 
 TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Web application scanning
@@ -95,6 +96,7 @@ TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     "wapiti":             WapitiTool,
     "wpscan":             WPScanTool,
     "zap":                ZAPTool,
+    "gowitness":          GowitnesssTool,
     "drheader":           DrheaderTool,
     "arachni":            ArachniTool,
     "acunetix":           AcunetixTool,
@@ -280,5 +282,6 @@ __all__ = [
     "SmugglerTool",
     "TerrascanTool",
     "WaybackURLsTool",
+    "GowitnesssTool",
     "TOOL_REGISTRY",
 ]

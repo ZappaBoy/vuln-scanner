@@ -7,19 +7,53 @@ services:
     env_file: .env
     environment:
       VS_DEFECTDOJO_URL: http://nginx:8080
-      # LLM analysis — override via .env or environment
-      # VS_LLM_API_KEY: ""          # or OPENAI_API_KEY
-      # VS_LLM_BASE_URL: ""         # or OPENAI_BASE_URL (for non-OpenAI endpoints)
+      # ── Config file ──────────────────────────────────────────────────────────
+      # The scanner auto-loads /app/config.toml (mounted below).
+      # Override the path with VS_CONFIG, e.g. VS_CONFIG=/app/my-scan.toml
+      # VS_CONFIG: "/app/config.toml"
+      #
+      # ── LLM analysis ─────────────────────────────────────────────────────────
+      # VS_LLM_API_KEY: ""          # or OPENAI_API_KEY in .env
+      # VS_LLM_BASE_URL: ""         # or OPENAI_BASE_URL (Ollama/vLLM/OpenRouter)
       # VS_LLM_MODEL: "gpt-4o"      # required when LLM active
-      # VS_LLM_FEATURE_EXECUTE_POC: "false"  # set "true" for in-container PoC execution
+      # VS_LLM_MIN_SEVERITY: "medium"   # skip info/low findings (default)
+      # VS_LLM_FEATURE_EXECUTE_POC: "false"  # "true" for in-container PoC execution
+      #
+      # ── Authenticated scanning ────────────────────────────────────────────────
+      # Global defaults only; per-target auth requires config.toml [scan.auth.targets]
+      # VS_AUTH_BEARER_TOKEN: ""
+      # VS_AUTH_USERNAME: ""
+      # VS_AUTH_PASSWORD: ""
+      # VS_AUTH_LOGIN_URL: ""
+      #
+      # ── Plugin system ─────────────────────────────────────────────────────────
+      # VS_PLUGINS_ENABLED: "true"
+      # VS_PLUGINS_DIRS: "/app/plugins"
     volumes:
       - ./reports:/app/reports
+      - ./plugins:/app/plugins:ro
+      # config.toml is mounted read-only so all scan parameters, auth overrides,
+      # nuclei config, scope rules, and LLM settings can live in one file.
+      # Run `cp config.example.toml config.toml` to create it.
+      # The scanner skips this file gracefully if it does not exist.
+      - ./config.toml:/app/config.toml:ro
     networks:
       - vuln_net
-    # Scanner is a one-shot command: pass arguments via docker compose run.
-    # Example:
+    # ── Usage ─────────────────────────────────────────────────────────────────
+    # Scanner is a one-shot service: pass runtime arguments via `docker compose run`.
+    #
+    # Basic scan (config.toml drives targets + settings):
     #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
-    #     run --rm scanner --targets 192.168.1.1 --mode active
+    #     run --rm scanner
+    #
+    # Override targets on the CLI (env vars + config.toml still apply):
+    #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+    #     run --rm scanner --targets 192.168.1.1 https://app.example.com --mode active
+    #
+    # Use an alternative config file:
+    #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+    #     run --rm -v $(pwd)/prod.toml:/app/prod.toml:ro \
+    #     -e VS_CONFIG=/app/prod.toml scanner
 
 networks:
   vuln_net:

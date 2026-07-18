@@ -43,6 +43,8 @@ class WPScanTool(AbstractTool):
                 cmd += ["--header", f"{k}: {v}"]
             if auth.bearer_token and "Authorization" not in auth.headers:
                 cmd += ["--header", f"Authorization: Bearer {auth.bearer_token}"]
+        if scan_input.proxy:
+            cmd += ["--proxy", scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

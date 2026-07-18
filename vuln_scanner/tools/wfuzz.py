@@ -37,6 +37,8 @@ class WfuzzTool(AbstractTool):
             for k, v in auth.effective_headers.items():
                 if k.lower() != "cookie":
                     cmd += ["-H", f"{k}: {v}"]
+        if scan_input.proxy:
+            cmd += ["--proxy", scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

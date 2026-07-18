@@ -5,6 +5,7 @@ FROM blackarchlinux/blackarch:latest
 RUN pacman -Syu --noconfirm && \
     pacman -S --noconfirm --needed \
         python python-pip unzip curl go cargo git jdk-openjdk \
+        make gcc \
         nodejs npm ruby \
         nmap nikto nuclei wapiti wpscan zaproxy arachni \
         sqlmap ffuf feroxbuster gobuster wfuzz \
@@ -32,18 +33,14 @@ RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest && \
     go install github.com/google/osv-scanner/cmd/osv-scanner@latest && \
     go install golang.org/x/vuln/cmd/govulncheck@latest && \
     go install github.com/hahwul/dalfox/v2@latest 2>/dev/null || true && \
-    go install github.com/dwisiswant0/crlfuzz@latest && \
+    go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest && \
     go install github.com/edoardottt/cariddi/cmd/cariddi@latest && \
     go install github.com/d3mondev/puredns/v2@latest && \
     go install github.com/projectdiscovery/alterx/cmd/alterx@latest && \
     go install github.com/tomnomnom/waybackurls@latest && \
     go install github.com/tomnomnom/httprobe@latest && \
-    ( go install github.com/trufflesecurity/jsluice/cmd/jsluice@latest 2>/dev/null || \
-      ( curl -sL https://github.com/trufflesecurity/jsluice/releases/latest/download/jsluice_Linux_x86_64.tar.gz \
-          -o /tmp/jsluice.tar.gz && \
-        tar -xzf /tmp/jsluice.tar.gz -C /tmp jsluice && \
-        mv /tmp/jsluice /usr/local/bin/jsluice && \
-        rm -f /tmp/jsluice.tar.gz ) ) && \
+    ( go install github.com/sensepost/gowitness@latest 2>/dev/null || true ) && \
+    ( go install github.com/trufflesecurity/jsluice/cmd/jsluice@latest 2>/dev/null || true ) && \
     find /root/go/bin -maxdepth 1 -type f -exec cp {} /usr/local/bin/ \; && \
     # Clean Go cache in the same layer
     go clean -cache -modcache && \
@@ -59,6 +56,7 @@ RUN pip install --break-system-packages --no-cache-dir \
         gvm-tools \
         prowler \
         flawfinder \
+        drheader \
         detect-secrets && \
     pip install --break-system-packages --no-cache-dir --no-deps apifuzzer
 

@@ -44,6 +44,8 @@ class GobusterTool(AbstractTool):
                 cmd += ["-H", f"Authorization: Bearer {auth.bearer_token}"]
             if auth.username and auth.password:
                 cmd += ["-U", auth.username, "-P", auth.password]
+        if scan_input.proxy:
+            cmd += ["--proxy", scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

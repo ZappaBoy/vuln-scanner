@@ -15,6 +15,7 @@ from vuln_scanner.config.models import AppConfig, ReportFormat, ScanMode
 class _EnvSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="VS_", env_ignore_empty=True)
 
+    config: str | None = None           # VS_CONFIG — path to TOML config file
     targets: list[str] | None = None
     timeout: int | None = None
     max_concurrent: int | None = None
@@ -45,6 +46,7 @@ class _EnvSettings(BaseSettings):
     llm_frequency_penalty: float | None = None
     llm_presence_penalty: float | None = None
     llm_seed: int | None = None
+    llm_min_severity: str | None = None   # VS_LLM_MIN_SEVERITY=medium
     # Per-feature toggles: VS_LLM_FEATURE_<NAME>=true|false
     llm_feature_logs_analysis: str | None = None
     llm_feature_enrich: str | None = None
@@ -67,6 +69,17 @@ class _EnvSettings(BaseSettings):
     # Plugins
     plugins_enabled: str | None = None
     plugins_dirs: list[str] | None = None
+    # Proxy (VS_PROXY)
+    proxy: str | None = None
+    # Scope (VS_SCOPE_INCLUDE / VS_SCOPE_EXCLUDE — space-separated patterns)
+    scope_include: str | None = None
+    scope_exclude: str | None = None
+    # Nuclei (VS_NUCLEI_*)
+    nuclei_update_templates: str | None = None
+    nuclei_headless: str | None = None
+    nuclei_new_templates: str | None = None
+    # Recon (VS_NO_RECON)
+    no_recon: str | None = None
 
 
 def _parse_bool_env(v: str | None) -> bool | None:
@@ -80,7 +93,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
         prog="vuln-scanner",
         description="Automated vulnerability assessment scanner and report generator.",
     )
-    parser.add_argument("--config", metavar="FILE", help="Path to a TOML config file.")
+    parser.add_argument(
+        "--config", metavar="FILE",
+        help="Path to a TOML config file (default: config.toml). (env: VS_CONFIG)",
+    )
     parser.add_argument(
         "--targets", nargs="+", metavar="TARGET",
         help="IPs, CIDR ranges, hostnames, URLs, or paths to scan. (env: VS_TARGETS)",
@@ -120,6 +136,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-llm", action="store_true",
                         help="Disable LLM analysis entirely.")
     parser.add_argument(
+        "--llm-min-severity",
+        choices=["info", "low", "medium", "high", "critical"],
+        metavar="LEVEL", dest="llm_min_severity",
+        help="Minimum finding severity to send to LLM (default: medium). "
+             "(env: VS_LLM_MIN_SEVERITY)",
+    )
+    parser.add_argument(
         "--llm-feature", nargs="+", metavar="NAME=on|off",
         dest="llm_features",
         help="Override a global LLM feature flag, e.g. --llm-feature generate_poc=on",
@@ -147,6 +170,49 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--plugin-dir", nargs="+", metavar="DIR",
                         dest="plugin_dirs",
                         help="Extra directories to scan for plugins.")
+
+    # Scope
+    parser.add_argument("--scope-include", nargs="+", metavar="PATTERN",
+                        dest="scope_include",
+                        help="In-scope patterns: *.example.com, 10.0.0.0/8. "
+                             "Discovered assets outside this list are dropped.")
+    parser.add_argument("--scope-exclude", nargs="+", metavar="PATTERN",
+                        dest="scope_exclude",
+                        help="Out-of-scope patterns (always denied, even if in include).")
+
+    # Proxy
+    parser.add_argument("--proxy", metavar="URL",
+                        help="Route all tool traffic through this proxy "
+                             "(e.g. http://127.0.0.1:8080 for Burp Suite).")
+
+    # Nuclei
+    parser.add_argument("--nuclei-update-templates", action="store_true",
+                        dest="nuclei_update_templates",
+                        help="Run nuclei -update-templates before scanning.")
+    parser.add_argument("--nuclei-tags", nargs="+", metavar="TAG",
+                        dest="nuclei_tags",
+                        help="Override Nuclei tag filter (replaces mode defaults).")
+    parser.add_argument("--nuclei-etags", nargs="+", metavar="TAG",
+                        dest="nuclei_etags",
+                        help="Additional Nuclei tags to exclude.")
+    parser.add_argument("--nuclei-severity", nargs="+", metavar="SEVERITY",
+                        dest="nuclei_severity",
+                        help="Comma-separated severity list override (info,low,medium,high,critical).")
+    parser.add_argument("--nuclei-templates", metavar="DIR",
+                        dest="nuclei_templates_dir",
+                        help="Custom nuclei templates directory.")
+    parser.add_argument("--nuclei-headless", action="store_true",
+                        dest="nuclei_headless",
+                        help="Enable headless browser mode in Nuclei.")
+    parser.add_argument("--nuclei-new-templates", action="store_true",
+                        dest="nuclei_new_templates",
+                        help="Only run templates new since last update.")
+
+    # Recon pipeline
+    parser.add_argument("--no-recon", action="store_true",
+                        dest="no_recon",
+                        help="Disable the asset-discovery recon pipeline.")
+
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Enable debug logging.")
     return parser
@@ -173,21 +239,33 @@ def load_config(args: Namespace) -> AppConfig:
     """Build AppConfig by merging sources: TOML < env vars < CLI args."""
 
     # --- layer 1: TOML ---
+    # Priority: CLI --config > VS_CONFIG env var > config.toml in cwd
     toml_data: dict[str, Any] = {}
-    config_path = Path(args.config) if args.config else Path("config.toml")
-    if config_path.exists():
+    env_cfg = _EnvSettings()  # type: ignore[call-arg]
+    _cfg_path_str = args.config or env_cfg.config or "config.toml"
+    config_path = Path(_cfg_path_str)
+    if config_path.is_file():
         toml_data = _load_toml(config_path)
+    elif args.config or env_cfg.config:
+        # Explicitly requested but not found — warn rather than silently skip
+        import logging as _logging
+        _logging.getLogger(__name__).warning(
+            "Config file not found: %s — using defaults.", config_path
+        )
 
     # --- layer 2: env vars ---
-    env = _EnvSettings()  # type: ignore[call-arg]
+    env = env_cfg  # already constructed above
 
     data = toml_data.copy()
     data.setdefault("scan", {})
+    data.setdefault("scope", {})
     data.setdefault("categories", {})
     data.setdefault("tools", {})
     data.setdefault("report", {})
     data.setdefault("defectdojo", {})
     data.setdefault("llm", {})
+    data.setdefault("nuclei", {})
+    data.setdefault("recon", {})
 
     # [scan.auth] in TOML nests under scan for readability, but AppConfig.auth
     # is a top-level field.  Hoist it out before the env/CLI layers write to it.
@@ -269,6 +347,8 @@ def load_config(args: Namespace) -> AppConfig:
         llm["presence_penalty"] = env.llm_presence_penalty
     if env.llm_seed is not None:
         llm["seed"] = env.llm_seed
+    if env.llm_min_severity is not None:
+        llm["min_severity"] = env.llm_min_severity
 
     # Per-feature env overrides
     llm.setdefault("features", {})
@@ -310,6 +390,28 @@ def load_config(args: Namespace) -> AppConfig:
     if env.plugins_dirs is not None:
         data["plugins"]["dirs"] = env.plugins_dirs
 
+    # Proxy env layer
+    if env.proxy is not None:
+        data.setdefault("scan", {})["proxy"] = env.proxy
+
+    # Scope env layer (space-separated patterns)
+    if env.scope_include is not None:
+        data["scope"]["include"] = env.scope_include.split()
+    if env.scope_exclude is not None:
+        data["scope"]["exclude"] = env.scope_exclude.split()
+
+    # Nuclei env layer
+    if env.nuclei_update_templates is not None:
+        data["nuclei"]["update_templates"] = _parse_bool_env(env.nuclei_update_templates)
+    if env.nuclei_headless is not None:
+        data["nuclei"]["headless"] = _parse_bool_env(env.nuclei_headless)
+    if env.nuclei_new_templates is not None:
+        data["nuclei"]["only_new_templates"] = _parse_bool_env(env.nuclei_new_templates)
+
+    # Recon env layer
+    if env.no_recon is not None and _parse_bool_env(env.no_recon):
+        data["recon"]["enabled"] = False
+
     # --- layer 3: CLI args ---
     if args.targets:
         data["scan"]["targets"] = args.targets
@@ -343,6 +445,8 @@ def load_config(args: Namespace) -> AppConfig:
         data["llm"]["enabled"] = False
     if getattr(args, "llm_model", None):
         data["llm"]["model"] = args.llm_model
+    if getattr(args, "llm_min_severity", None):
+        data["llm"]["min_severity"] = args.llm_min_severity
     if getattr(args, "llm_poc_execute", False):
         data["llm"].setdefault("features", {})["execute_poc"] = True
 
@@ -374,5 +478,35 @@ def load_config(args: Namespace) -> AppConfig:
         data["plugins"]["enabled"] = False
     if getattr(args, "plugin_dirs", None):
         data["plugins"]["dirs"] = args.plugin_dirs
+
+    # Scope CLI layer
+    if getattr(args, "scope_include", None):
+        data["scope"]["include"] = args.scope_include
+    if getattr(args, "scope_exclude", None):
+        data["scope"]["exclude"] = args.scope_exclude
+
+    # Proxy CLI layer
+    if getattr(args, "proxy", None):
+        data.setdefault("scan", {})["proxy"] = args.proxy
+
+    # Nuclei CLI layer
+    if getattr(args, "nuclei_update_templates", False):
+        data["nuclei"]["update_templates"] = True
+    if getattr(args, "nuclei_tags", None):
+        data["nuclei"]["tags"] = args.nuclei_tags
+    if getattr(args, "nuclei_etags", None):
+        # Merge with existing exclude_tags rather than replace
+        existing = data["nuclei"].get("exclude_tags", [])
+        data["nuclei"]["exclude_tags"] = list({*existing, *args.nuclei_etags})
+    if getattr(args, "nuclei_templates_dir", None):
+        data["nuclei"]["templates_dir"] = args.nuclei_templates_dir
+    if getattr(args, "nuclei_headless", False):
+        data["nuclei"]["headless"] = True
+    if getattr(args, "nuclei_new_templates", False):
+        data["nuclei"]["only_new_templates"] = True
+
+    # Recon CLI layer
+    if getattr(args, "no_recon", False):
+        data["recon"]["enabled"] = False
 
     return AppConfig.model_validate(data)

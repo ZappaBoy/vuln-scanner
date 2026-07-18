@@ -44,6 +44,8 @@ class FeroxbusterTool(AbstractTool):
                 cmd += ["-H", f"{k}: {v}"]
             if auth.cookie_string:
                 cmd += ["--cookies", auth.cookie_string]
+        if scan_input.proxy:
+            cmd += ["--proxy", scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

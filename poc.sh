@@ -34,7 +34,7 @@ DD_ADMIN_USER="${DD_ADMIN_USER:-admin}"
 DD_ADMIN_PASSWORD="${DD_ADMIN_PASSWORD:-admin}"
 DD_PRODUCT="${DD_PRODUCT:-vuln-scanner-poc}"
 DD_ENGAGEMENT="${DD_ENGAGEMENT:-PoC Automated Scan}"
-SCAN_MODE="${SCAN_MODE:-active}"
+SCAN_MODE="${SCAN_MODE:-aggressive}"
 MAX_WAIT_SECS="${MAX_WAIT_SECS:-300}"
 
 # ---------------------------------------------------------------------------
@@ -73,6 +73,12 @@ load_env() {
     if [ ! -f .env ]; then
         warn ".env not found — copying from .env.example"
         cp .env.example .env
+    fi
+
+    # Ensure config.toml exists so Docker bind-mount doesn't create a directory.
+    if [ ! -f config.toml ]; then
+        warn "config.toml not found — copying from config.example.toml"
+        cp config.example.toml config.toml
     fi
 
     # Export variables from .env (skip comments and empty lines)
@@ -177,16 +183,28 @@ get_api_token() {
 # Vulnerable targets
 # ---------------------------------------------------------------------------
 start_targets() {
+    if [ "${USE_REMOTE_TARGETS:-0}" = "1" ]; then
+        info "Using remote pentest-ground.com targets — skipping local container start."
+        return
+    fi
     banner "Starting vulnerable targets"
     docker compose -f docker-compose.target.yaml up -d
     success "Target containers started"
 }
 
 wait_for_targets() {
-    info "Waiting for targets to become available..."
-    wait_for_http "http://localhost:3000" "Juice Shop" 120
-    wait_for_http "http://localhost:4280" "DVWA"       180
-    wait_for_http "http://localhost:8888/WebGoat" "WebGoat" 120
+    if [ "${USE_REMOTE_TARGETS:-0}" = "1" ]; then
+        info "Checking remote pentest-ground.com targets..."
+        wait_for_http "https://pentest-ground.com:4280" "DVWA (remote)"        60
+        wait_for_http "https://pentest-ground.com:5013" "DVGQL (remote)"       60
+        wait_for_http "https://pentest-ground.com:9000" "RestFlaw (remote)"    60
+        wait_for_http "https://pentest-ground.com:81"   "GuardianLeaks (remote)" 60
+    else
+        info "Waiting for local targets to become available..."
+        wait_for_http "http://localhost:3000" "Juice Shop" 120
+        wait_for_http "http://localhost:4280" "DVWA"       180
+        wait_for_http "http://localhost:8888/WebGoat" "WebGoat" 120
+    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -200,8 +218,22 @@ build_scanner() {
 
 run_scanner() {
     banner "Running scanner (mode: ${SCAN_MODE})"
-    info "Targets: juice-shop, dvwa, webgoat"
     info "DefectDojo product: ${DD_PRODUCT}"
+
+    if [ "${USE_REMOTE_TARGETS:-0}" = "1" ]; then
+        info "Targets: pentest-ground.com (remote lab)"
+        local -a targets=(
+            "https://pentest-ground.com:4280"
+            "https://pentest-ground.com:5013"
+            "https://pentest-ground.com:9000"
+            "https://pentest-ground.com:7001"
+            "pentest-ground.com:6379"
+            "https://pentest-ground.com:81"
+        )
+    else
+        info "Targets: juice-shop, dvwa, webgoat (local containers)"
+        local -a targets=("juice-shop" "dvwa" "webgoat")
+    fi
 
     docker compose \
         -f docker-compose.yml \
@@ -210,7 +242,7 @@ run_scanner() {
         -e VS_DEFECTDOJO_PRODUCT="$DD_PRODUCT" \
         -e VS_DEFECTDOJO_ENGAGEMENT="$DD_ENGAGEMENT" \
         scanner \
-            --targets juice-shop dvwa webgoat \
+            --targets "${targets[@]}" \
             --mode "$SCAN_MODE" \
             --defectdojo-url http://nginx:8080
 
@@ -222,16 +254,18 @@ run_scanner() {
 # ---------------------------------------------------------------------------
 print_summary() {
     banner "PoC complete"
-
     cat <<EOF
   ${BOLD}DefectDojo${NC}
     URL:      ${DD_URL}
     User:     ${DD_ADMIN_USER} / ${DD_ADMIN_PASSWORD}
     Product:  ${DD_PRODUCT}
 
-  ${BOLD}Targets${NC}
+  ${BOLD}Targets (pentest-ground.com remote lab)${NC}
+    DVWA          →  https://pentest-ground.com:4280
+    DVGQL         →  https://pentest-ground.com:5013
+    RestFlaw      →  https://pentest-ground.com:9000
+    GuardianLeaks →  https://pentest-ground.com:81
     Juice Shop  →  http://localhost:3000
-    DVWA        →  http://localhost:4280
     WebGoat     →  http://localhost:8888/WebGoat
 
   ${BOLD}Reports${NC}

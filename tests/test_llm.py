@@ -156,11 +156,10 @@ class TestLLMAnalyzer:
         analyzer = LLMAnalyzer(cfg)
 
         call_responses = [
-            # Pass 1 (triage)
+            # Single combined triage + mitigation call
             {"cwe": [], "confidence": "medium", "false_positive": False,
-             "exploitability": "", "notes": "", "poc_plan": ""},
-            # Pass 3 (mitigation)
-            {"mitigation": "Use WAF.", "remediation": "Use prepared statements."},
+             "exploitability": "", "notes": "", "poc_plan": "",
+             "mitigation": "Use WAF.", "remediation": "Use prepared statements."},
         ]
         analyzer._client = MagicMock()
         analyzer._client.complete_json.side_effect = call_responses
@@ -176,8 +175,8 @@ class TestLLMAnalyzer:
         analyzer = LLMAnalyzer(cfg)
 
         triage_resp = {"cwe": [], "confidence": "high", "false_positive": False,
-                       "exploitability": "", "notes": "", "poc_plan": ""}
-        mit_resp = {"mitigation": "fix it", "remediation": "fix properly"}
+                       "exploitability": "", "notes": "", "poc_plan": "",
+                       "mitigation": "fix it", "remediation": "fix properly"}
         cluster_resp = {
             "executive_summary": "One critical finding.",
             "clusters": [{
@@ -191,7 +190,7 @@ class TestLLMAnalyzer:
             }],
         }
         analyzer._client = MagicMock()
-        analyzer._client.complete_json.side_effect = [triage_resp, mit_resp, cluster_resp]
+        analyzer._client.complete_json.side_effect = [triage_resp, cluster_resp]
         result = analyzer.analyze(assessment)
         assert result.executive_summary == "One critical finding."
         assert len(result.clusters) == 1

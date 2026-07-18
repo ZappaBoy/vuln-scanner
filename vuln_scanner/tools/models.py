@@ -65,6 +65,10 @@ class Finding(BaseModel):
     references: list[str] = Field(default_factory=list)
     raw: dict = Field(default_factory=dict)
 
+    # Evidence: raw HTTP request/response that triggered the finding
+    request: str = ""
+    response: str = ""
+
     # LLM-enriched fields (all optional/defaulted for backward compatibility)
     cwe: list[str] = Field(default_factory=list)
     mitigation: str = ""
@@ -76,6 +80,10 @@ class Finding(BaseModel):
     exploitability: str = ""
     poc_ids: list[str] = Field(default_factory=list)
 
+    # CVSS v3.1
+    cvss_vector: str = ""          # e.g. "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+    cvss_score: float | None = None
+
 
 class ScanInput(BaseModel):
     targets: list[str]
@@ -84,6 +92,7 @@ class ScanInput(BaseModel):
     rate_limit: int | None = None
     extra_args: list[str] = Field(default_factory=list)
     auth: AuthConfig = Field(default_factory=AuthConfig)
+    proxy: str | None = None   # e.g. "http://127.0.0.1:8080"
 
 
 class ScanResult(BaseModel):

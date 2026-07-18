@@ -102,6 +102,8 @@ class WapitiTool(AbstractTool):
                 cmd += ["--header", f"Authorization: Bearer {auth.bearer_token}"]
             if auth.login_url:
                 cmd += ["--form-cred", auth.login_url]
+        if scan_input.proxy:
+            cmd += ["--proxy", scan_input.proxy]
         cmd += scan_input.extra_args
 
         import logging

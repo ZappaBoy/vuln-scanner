@@ -35,6 +35,8 @@ class NiktoTool(AbstractTool):
                 cmd += ["-id", f"{auth.username}:{auth.password}"]
             for k, v in auth.headers.items():
                 cmd += ["-useragent", v] if k.lower() == "user-agent" else []
+        if scan_input.proxy:
+            cmd += ["-useproxy", scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

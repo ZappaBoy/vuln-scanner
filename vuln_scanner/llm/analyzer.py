@@ -7,15 +7,26 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
 
 from vuln_scanner.model import Assessment, Cluster
-from vuln_scanner.tools.enums import Confidence, ScanStatus
+from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanResult
 
 if TYPE_CHECKING:
     from vuln_scanner.llm.models import LLMConfig
     from vuln_scanner.llm.client import LLMClient
-    from vuln_scanner.tools.enums import Severity
 
 log = logging.getLogger(__name__)
+
+# Ordered from lowest to highest — used for min_severity comparisons.
+_SEVERITY_ORDER = [
+    Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH, Severity.CRITICAL,
+]
+
+
+def _severity_at_least(finding_sev: Severity, min_sev: Severity) -> bool:
+    try:
+        return _SEVERITY_ORDER.index(finding_sev) >= _SEVERITY_ORDER.index(min_sev)
+    except ValueError:
+        return True
 
 _TRUNCATE_RAW = 2000  # chars of raw_output to send to LLM
 
@@ -75,19 +86,6 @@ class LLMAnalyzer:
         # The poc_plans dict is stored in assessment.metadata for the generator to consume.
         assessment.metadata["llm_poc_plans"] = poc_plans
 
-        # Mitigation (per finding with poc evidence placeholder)
-        with ThreadPoolExecutor(max_workers=4) as ex:
-            futures_mit = {
-                ex.submit(self._mitigation_for_result, r, poc_plans): r
-                for r in in_scope
-            }
-            for fut in as_completed(futures_mit):
-                r = futures_mit[fut]
-                try:
-                    fut.result()
-                except Exception as exc:
-                    log.warning("LLM mitigation failed for %s/%s: %s", r.tool, r.target, exc)
-
         # Clustering + executive summary
         features = self._config.features
         if features.cluster:
@@ -121,6 +119,7 @@ class LLMAnalyzer:
         if not features.enrich:
             return {}
 
+        min_sev = _parse_severity(cfg.min_severity)
         client = self._get_client()
         poc_plans: dict[str, str] = {}
         raw_snippet = ""
@@ -128,6 +127,8 @@ class LLMAnalyzer:
             raw_snippet = result.raw_output[:_TRUNCATE_RAW]
 
         for finding in result.findings:
+            if not _severity_at_least(finding.severity, min_sev):
+                continue
             try:
                 system = cfg.prompts.get("enrich_system")
                 user = cfg.prompts.get("enrich_user").format(
@@ -150,6 +151,17 @@ class LLMAnalyzer:
                 finding.false_positive = data.get("false_positive")
                 finding.exploitability = data.get("exploitability", "")
                 finding.llm_notes = data.get("notes", "")
+                cvss_vec = data.get("cvss_vector", "")
+                if isinstance(cvss_vec, str) and cvss_vec.startswith("CVSS:"):
+                    finding.cvss_vector = cvss_vec
+                cvss_score = data.get("cvss_score")
+                if isinstance(cvss_score, (int, float)) and 0.0 <= cvss_score <= 10.0:
+                    finding.cvss_score = float(cvss_score)
+
+                # Mitigation fields are included in the same response — no second call needed
+                if features.mitigation:
+                    finding.mitigation = data.get("mitigation", "")
+                    finding.remediation = data.get("remediation", "")
 
                 poc_plan = data.get("poc_plan", "")
                 if poc_plan and features.generate_poc:
@@ -174,9 +186,12 @@ class LLMAnalyzer:
         if not features.mitigation:
             return
 
+        min_sev = _parse_severity(cfg.min_severity)
         client = self._get_client()
         for finding in result.findings:
             if finding.false_positive:
+                continue
+            if not _severity_at_least(finding.severity, min_sev):
                 continue
             try:
                 poc_evidence = ""
@@ -208,6 +223,7 @@ class LLMAnalyzer:
         if not all_findings:
             return
 
+        min_sev = _parse_severity(self._config.min_severity)
         findings_payload = [
             {
                 "tool": tool,
@@ -219,7 +235,7 @@ class LLMAnalyzer:
                 "exploitability": f.exploitability,
             }
             for tool, f in all_findings
-            if not f.false_positive
+            if not f.false_positive and _severity_at_least(f.severity, min_sev)
         ]
 
         if not findings_payload:

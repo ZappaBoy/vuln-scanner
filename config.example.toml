@@ -13,10 +13,21 @@
 #   image:tag             → container tools (trivy, grype)
 #   git URL / .git path   → secret / repo tools (trufflehog, gitleaks)
 targets = [
-    "http://dvwa",
+    "http://example.com",
     "192.168.1.1",
     "/path/to/project",
 ]
+
+# ─── Lab / practice targets (pentest-ground.com) ─────────────────────────────
+# Publicly available intentionally-vulnerable systems — safe to scan for testing.
+# Uncomment to use these as default targets for tool validation and PoC runs.
+#
+# targets = [
+#     "https://pentest-ground.com:4280",   # DVWA      — CSRF, XSS, SQLi
+#     "https://pentest-ground.com:5013",   # DVGQL     — GraphQL CMDi/XSS/SQLi
+#     "https://pentest-ground.com:9000",   # RestFlaw  — REST API SQLi/XXE/Code Injection
+#     "https://pentest-ground.com:81",     # GuardianLeaks — XSS/SSRF/Code Injection
+# ]
 timeout        = 300     # seconds per tool per target
 max_concurrent = 3       # parallel tool executions
 mode           = "passive" # paranoid | passive | active | aggressive
@@ -151,7 +162,13 @@ engagement_name = "Automated Scan"
 # include_categories = []
 # exclude_categories = []
 
-# ─── LLM feature matrix ───────────────────────────────────────────────────────
+# ── Severity gate — findings below this level are not sent to the LLM ────────
+# Default: "medium" — INFO and LOW findings are skipped (noise reduction).
+# Set "low" or "info" to include everything; "high" to analyse only high+critical.
+# env: VS_LLM_MIN_SEVERITY   CLI: --llm-min-severity
+# min_severity = "medium"
+
+# ─── LLM feature matrix ─────────────────��─────────────────────────────────────
 # Each flag can be overridden per-tool or per-category (see below).
 [llm.features]
 logs_analysis         = true   # feed tool raw_output/error into LLM analysis

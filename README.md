@@ -590,11 +590,32 @@ docker compose -f docker-compose.target.yaml down -v
 
 ## Vulnerable Targets
 
+### Local (Docker — started by `poc.sh`)
+
 | App | URL | Description |
 |-----|-----|-------------|
 | [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) | http://localhost:3000 | Modern Node.js app covering OWASP Top 10 |
-| [DVWA](https://github.com/digininja/DVWA) | http://localhost:4280 | Classic PHP/MySQL vulnerable app |
 | [WebGoat](https://owasp.org/www-project-webgoat/) | http://localhost:8888/WebGoat | Java/Spring intentionally insecure app |
+
+### Remote Lab — [pentest-ground.com](https://pentest-ground.com)
+
+Publicly available, intentionally-vulnerable systems maintained by pentest-ground.com. No setup required — scan directly to validate tools and PoC generation.
+
+| System | URL | Type | Vulnerability Classes |
+|--------|-----|------|----------------------|
+| DVWA | `https://pentest-ground.com:4280` | Classic Web App | CSRF, XSS, SQLi |
+| DVGQL | `https://pentest-ground.com:5013` | GraphQL API | CMDi, XSS, SQLi |
+| RestFlaw | `https://pentest-ground.com:9000` | REST API | SQLi, Code Injection, XXE |
+| GuardianLeaks | `https://pentest-ground.com:81` | Web App | XSS, SSRF, Code Injection |
+
+```bash
+vuln-scanner --targets \
+  https://pentest-ground.com:4280 \
+  https://pentest-ground.com:5013 \
+  https://pentest-ground.com:9000 \
+  https://pentest-ground.com:81 \
+  --mode active
+```
 
 ---
 
@@ -802,7 +823,7 @@ config.example.toml      # Fully documented configuration template
 Dockerfile               # BlackArch-based image; bakes VS_IN_CONTAINER=1
 docker-compose.yml                # DefectDojo stack
 docker-compose.scanner.yml        # Scanner service
-docker-compose.target.yaml        # Vulnerable test targets (Juice Shop, DVWA, WebGoat)
+docker-compose.target.yaml        # Vulnerable test targets (Juice Shop, WebGoat)
 poc.sh                            # End-to-end quick-start script
 ```
 

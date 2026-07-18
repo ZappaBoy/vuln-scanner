@@ -8,7 +8,7 @@
 # Then scan them:
 #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
 #     run --rm scanner \
-#       --targets juice-shop dvwa webgoat \
+#       --targets juice-shop webgoat \
 #       --mode active
 
 services:
@@ -25,44 +25,6 @@ services:
         aliases:
           - juice-shop
 
-  # DVWA (Damn Vulnerable Web Application) — classic PHP/MySQL target
-  # https://github.com/digininja/DVWA
-  dvwa:
-    image: ghcr.io/digininja/dvwa:latest
-    ports:
-      - "4280:80"
-    environment:
-      DB_SERVER: dvwa-db
-      DB_DATABASE: dvwa
-      DB_USER: dvwa
-      DB_PASSWORD: dvwa
-    depends_on:
-      dvwa-db:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      vuln_net:
-        aliases:
-          - dvwa
-
-  dvwa-db:
-    image: mariadb:11-jammy
-    environment:
-      MYSQL_DATABASE: dvwa
-      MYSQL_USER: dvwa
-      MYSQL_PASSWORD: dvwa
-      MYSQL_ROOT_PASSWORD: dvwaroot
-    volumes:
-      - dvwa_db:/var/lib/mysql
-    restart: unless-stopped
-    networks:
-      - vuln_net
-    healthcheck:
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # OWASP WebGoat — Java/Spring intentionally insecure app
   # https://owasp.org/www-project-webgoat/
   webgoat:
@@ -75,9 +37,6 @@ services:
       vuln_net:
         aliases:
           - webgoat
-
-volumes:
-  dvwa_db:
 
 networks:
   vuln_net:

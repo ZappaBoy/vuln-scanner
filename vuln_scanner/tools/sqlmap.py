@@ -56,6 +56,8 @@ class SQLMapTool(AbstractTool):
             if extra_headers:
                 header_str = "\n".join(f"{k}: {v}" for k, v in extra_headers.items())
                 cmd += [f"--headers={header_str}"]
+        if scan_input.proxy:
+            cmd += ["--proxy=" + scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

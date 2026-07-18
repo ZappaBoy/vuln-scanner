@@ -34,6 +34,8 @@ class ArjunTool(AbstractTool):
             import json as _json
             headers = dict(auth.effective_headers)
             cmd += ["--headers", _json.dumps(headers)]
+        if scan_input.proxy:
+            cmd += ["--proxy", scan_input.proxy]
         cmd += scan_input.extra_args
         return cmd
 

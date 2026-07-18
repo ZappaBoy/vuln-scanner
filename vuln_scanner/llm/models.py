@@ -65,6 +65,10 @@ class LLMConfig(BaseModel):
     # Non-standard params (e.g. top_k for Ollama/vLLM) go here as extra_body
     extra_body: dict[str, Any] = Field(default_factory=dict)
 
+    # Minimum severity to analyse — findings below this threshold are skipped.
+    # Default "medium" means INFO and LOW findings are not sent to the LLM.
+    min_severity: str = "medium"
+
     # Scope filters (mirror orchestrator include/exclude semantics)
     include_tools: list[str] = Field(default_factory=list)
     exclude_tools: list[str] = Field(default_factory=list)

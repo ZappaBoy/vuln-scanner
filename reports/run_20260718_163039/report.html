@@ -1,0 +1,4708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vulnerability Assessment Report</title>
+<style>
+:root {
+  --bg: #f8f9fa; --surface: #fff; --border: #dee2e6;
+  --text: #212529; --muted: #6c757d; --accent: #1976d2;
+  --crit: #d32f2f; --high: #e64a19; --med: #f9a825; --low: #1565c0; --info: #546e7a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121212; --surface: #1e1e1e; --border: #333; --text: #e0e0e0; --muted: #9e9e9e; }
+}
+:root[data-theme="dark"]  { --bg: #121212; --surface: #1e1e1e; --border: #333; --text: #e0e0e0; --muted: #9e9e9e; }
+:root[data-theme="light"] { --bg: #f8f9fa; --surface: #fff; --border: #dee2e6; --text: #212529; --muted: #6c757d; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 0; font-family: system-ui,-apple-system,sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { color: var(--accent); }
+h1,h2,h3,h4 { margin: 1.2rem 0 0.4rem; }
+.container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem; }
+.hero { background: var(--accent); color: #fff; padding: 2rem; margin-bottom: 2rem; border-radius: 0.5rem; }
+.hero h1 { margin: 0 0 0.5rem; font-size: 1.8rem; }
+.hero .meta { opacity: 0.85; font-size: 0.9rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; text-align: center; }
+.stat-card .num { font-size: 2rem; font-weight: 700; }
+.stat-card .label { font-size: 0.8rem; color: var(--muted); }
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+.exec-summary { border-left: 4px solid var(--accent); padding-left: 1rem; color: var(--text); }
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; overflow-x: auto; display: block; }
+th { background: var(--border); padding: 0.5rem 0.75rem; text-align: left; white-space: nowrap; }
+td { padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--bg); }
+.badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 0.25rem; color: #fff; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.cluster-card { border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.cluster-card h4 { margin: 0 0 0.5rem; }
+details summary { cursor: pointer; font-weight: 600; padding: 0.25rem 0; }
+details[open] summary { margin-bottom: 0.75rem; }
+.finding-detail { background: var(--bg); border: 1px solid var(--border); border-radius: 0.4rem; padding: 0.75rem 1rem; margin-top: 0.5rem; font-size: 0.875rem; }
+.finding-detail h5 { margin: 0.5rem 0 0.25rem; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.finding-detail pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+code { background: var(--border); padding: 0.1rem 0.3rem; border-radius: 0.2rem; font-size: 0.85em; }
+.theme-toggle { float: right; cursor: pointer; background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 0.3rem 0.75rem; border-radius: 0.25rem; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+
+<div class="hero">
+  <button class="theme-toggle" onclick="toggleTheme()">Toggle theme</button>
+  <h1>Vulnerability Assessment Report</h1>
+  <div class="meta">
+    Generated: 2026-07-18T16:57:38.019169+00:00 &nbsp;|&nbsp;
+    Targets: 6 &nbsp;|&nbsp;
+    Findings: <strong>223</strong> &nbsp;|&nbsp;
+    Duration: 4391s
+  </div>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card"><div class="num" style="color:#d32f2f">0</div><div class="label">Critical</div></div>
+<div class="stat-card"><div class="num" style="color:#e64a19">8</div><div class="label">High</div></div>
+<div class="stat-card"><div class="num" style="color:#f9a825">22</div><div class="label">Medium</div></div>
+<div class="stat-card"><div class="num" style="color:#1565c0">117</div><div class="label">Low</div></div>
+<div class="stat-card"><div class="num" style="color:#546e7a">76</div><div class="label">Info</div></div>
+</div>
+
+<div class="section">
+  <h2>Executive Summary</h2>
+  <div class="exec-summary">Findings show widespread TLS/SSL misconfigurations across multiple endpoints, creating MITM risk and potential data exposure due to missing HSTS, certificate transparency gaps, weak cipher suites, and insecure renegotiation. CSP policy gaps and mirrored client-side vulnerabilities (reflected XSS) along with stack-trace disclosures expand the attack surface and enable content injection, session data leakage, and information exposure. Top priority actions are to harden TLS across all endpoints (enable HSTS, enforce certificate transparency, enable OCSP stapling, use strong ciphers, disable insecure renegotiation, secure cookies) and implement robust CSP policies (object-src, base-uri, frame-ancestors) while mitigating XSS vectors and production error disclosures.</div>
+</div>
+
+<div class="section"><h2>Findings</h2>
+<details open><summary><code>https://pentest-ground.com:4280</code> — 110 finding(s)</summary>
+<p style="color:var(--high)"><strong>arjun error:</strong> Tool timed out after 300s</p>
+<p style="color:var(--high)"><strong>cariddi error:</strong> Exit code 2: flag provided but not defined: -u
+Usage of cariddi:
+  -c int
+    	Concurrency level. (default 20)
+  -cache
+    	Use the .cariddi_cache folder as cache.
+  -d int
+    	Delay between a page crawled and a</p>
+<p style="color:var(--high)"><strong>whatweb error:</strong> Tool timed out after 300s</p>
+
+<table>
+<thead><tr>
+  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+</tr></thead><tbody>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate transparency: No
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS/SSL misconfig and missing security headers expose cookie and path-disclosure risks.</p><h5>Exploitability</h5><p>Remote attacker with network access can exploit the misconfig without authentication to steal cookies or leverage missing headers; requires no user interaction.</p><h5>Mitigation</h5><pre>1) Harden TLS ciphers and protocols to disable CBC and weak SSL versions. 2) Ensure the server presents a complete certificate chain and supports TLS 1.2/1.3. 3) Enable Certificate Transparency for issued certificates (CT-logged certs with SCTs) and verify SCT delivery. 4) Deploy security headers and secure cookies to mitigate data leakage and clickjack/CSRF risks.
+
+```lang
+# nginx example - modern TLS config snippet
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets off;
+
+# nginx - security headers
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+add_header X-Content-Type-Options &quot;nosniff&quot;;
+add_header X-Frame-Options &quot;SAMEORIGIN&quot;;
+```
+
+```lang
+# openssl verification (check chain and TLS negotiation)
+openssl s_client -connect pentest-ground.com:4280 -servername pentest-ground.com 2&gt;/dev/null | openssl x509 -text -noout
+```
+
+```lang
+# CT/cert renewal workflow (example steps)
+# 1) Request CT-enabled certificate from CA
+# 2) Ensure SCTs are embedded or delivered via TLS extension/OCSP stapling
+# 3) Verify CT presence via crt.sh or certificate details
+```
+
+```lang
+# security headers - nginx additional example
+add_header Referrer-Policy &quot;no-referrer-when-downgrade&quot; always;
+```</pre><h5>Remediation</h5><pre>1) Implement permanent TLS hardening across all front-end servers (Nginx/Apache/Load Balancer):
+
+```lang
+# nginx production TLS hardening
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets off;
+```
+
+2) Serve complete certificate chain and verify with external tests; ensure no missing intermediates and support TLS 1.2/1.3:
+
+```lang
+# verify chain and supported protocols
+openssl s_client -connect pentest-ground.com:4280 -servername pentest-ground.com -servername pentest-ground.com 2&gt;/dev/null | grep -E &#x27;Server Temp|Cipher|SSL-Session|Verify return&#x27;
+```
+
+3) Reissue certificates with Certificate Transparency (CT): contact CA to enable CT logging and obtain embedded SCTs. Verify delivery using crt.sh or certificate details and enable OCSP stapling if available.
+
+```lang
+# verification (example)
+curl -s https://crt.sh/?q=pentest-ground.com | head -n 20
+```
+
+4) Enforce security headers and secure cookies site-wide; test with automated scanners and ensure HSTS, X-Content-Type-Options, X-Frame-Options, Content-Security-Policy are present. Example:
+
+```lang
+# nginx headers (production)
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+add_header X-Content-Type-Options &quot;nosniff&quot;;
+add_header X-Frame-Options &quot;SAMEORIGIN&quot;;
+add_header Content-Security-Policy &quot;default-src &#x27;self&#x27;; img-src &#x27;self&#x27; data:;&quot;;
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-006</code></p>
+    </div>
+  </td>
+  <td>CWE-16</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Strict Transport Security (HSTS) is not set
+Path: /</p>
+      <h5>Analyst notes</h5><p>Wapiti 3.3.0 reports multiple TLS/SSL misconfigurations and missing security headers, including potential full path disclosure in several endpoints.</p><h5>Exploitability</h5><p>Attacker needs network access to the target. With no HSTS, CSP, HttpOnly and Secure flags on cookies, as well as missing X-Frame-Options and X-Content-Type-Options, the attacker can steal session data or perform information disclosure in a MITM environment.</p><h5>Mitigation</h5><pre>1. Enable HTTP Strict Transport Security (HSTS) on all responses to force HTTPS. 2. Ensure all cookies use Secure and HttpOnly flags. 3. Disable CBC/TLS cipher suites and enforce modern TLS (TLS 1.2+ and TLS 1.3) with GCM ciphers. 4. Deploy additional headers to reduce MITM risk: X-Frame-Options, X-Content-Type-Options, and a Content-Security-Policy as appropriate. 
+
+Code examples (NGINX):
+```nginx
+# Enable HSTS, ensure on all responses
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+
+# TLS configuration (prefer modern ciphers; disable CBC)
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_timeout 1d;
+ssl_session_cache shared:SSL:10m;
+
+# Security headers
+add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;
+add_header X-Content-Type-Options &quot;nosniff&quot; always;
+```
+</pre><h5>Remediation</h5><pre>1. Implement a permanent TLS hardening policy and bake it into deployment configs. 2. Ensure all application cookies are Secure and HttpOnly; review framework/app configs to enforce flags. 3. Validate that HSTS is present on production responses and remove any insecure fallback behavior. 4. Re-scan after deployment and verify no CBC ciphers are accepted; confirm TLS 1.2/1.3 are used with GCM suites.
+
+Code example (NGINX, permanent):
+```nginx
+# Permanent TLS hardening and headers
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_timeout 1d;
+ssl_session_cache shared:SSL:10m;
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;
+add_header X-Content-Type-Options &quot;nosniff&quot; always;
+# Ensure app sets cookies with Secure and HttpOnly in code/config
+```
+</pre>
+      <h5>PoC scripts</h5><p><code>poc-007</code></p>
+    </div>
+  </td>
+  <td>CWE-200</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP attribute &quot;object-src&quot; is missing for URL: https://pentest-ground.com:4280/vulnerabilities/csp/
+Path: /vulnerabilities/csp/</p>
+      <h5>Analyst notes</h5><p>CSP and cookie flags misconfig on the web app expose multiple attack surfaces.</p><h5>Exploitability</h5><p>Attacker could exploit if they can inject or control content on the page (e.g., via XSS) to embed resources from attacker-controlled domains. Missing object-src CSP means &lt;object&gt;/&lt;embed&gt; content isn&#x27;t restricted, enabling potential drive-by content delivery in a trust context.</p><h5>Mitigation</h5><pre>1. Configure a site-wide Content-Security-Policy that includes object-src &#x27;none&#x27; to block all plugin/object/embed usage. 2. Apply the CSP header to all responses, including the /vulnerabilities/csp/ path. 3. Enable CSP violation reporting (report-uri or report-to) to capture violations during rollout. 4. Verify the header is present and object-src is restricted using curl -I https://pentest-ground.com:4280/vulnerabilities/csp/ and by checking browser console for CSP violations.</pre><h5>Remediation</h5><pre>1. Implement a centralized CSP in the codebase or framework middleware with object-src &#x27;none&#x27; (or restricted to trusted domains). 2. If embedding is required, whitelist only trusted domains in object-src (e.g., object-src &#x27;self&#x27; https://trusted.example.com). 3. Add CSP violation reporting (report-to or report-uri) and monitor results; adjust policy as needed. 4. Re-test across all endpoints; ensure the vulnerable path /vulnerabilities/csp/ shows the policy in effect and no CSP warnings.</pre>
+      <h5>PoC scripts</h5><p><code>poc-001</code></p>
+    </div>
+  </td>
+  <td>CWE-XXX</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP attribute &quot;base-uri&quot; is missing for URL: https://pentest-ground.com:4280/vulnerabilities/csp/
+Path: /vulnerabilities/csp/</p>
+      <h5>Analyst notes</h5><p>CSP not configured; HttpOnly and Secure flags are missing on cookies; multiple header misconfigurations indicate broad security posture weaknesses (XSS/resource loading risk).</p><h5>Exploitability</h5><p>Prereq: victim visits a page on the domain. Attacker can deliver inline or external script payloads since CSP is not enforced; this enables script execution and potential cookie/session data exfiltration. No special privileges required.</p><h5>Mitigation</h5><pre>1. Nginx: add a CSP header with base-uri &#x27;self&#x27; to all responses.
+```nginx
+# In the server block
+add_header Content-Security-Policy &quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; img-src &#x27;self&#x27; data:; connect-src &#x27;self&#x27;; font-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;self&#x27;; form-action &#x27;self&#x27;&quot;;
+```
+2. Apache: apply the same CSP header at vhost or .htaccess level.
+```apache
+# In vhost or .htaccess
+Header always set Content-Security-Policy &quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; img-src &#x27;self&#x27; data:; connect-src &#x27;self&#x27;; font-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;self&#x27;; form-action &#x27;self&#x27;&quot;
+```
+3. PHP: ensure CSP header is emitted from application bootstrap for dynamic pages.
+```php
+header(&quot;Content-Security-Policy: default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; img-src &#x27;self&#x27; data:; connect-src &#x27;self&#x27;; font-src &#x27;self&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;self&#x27;; form-action &#x27;self&#x27;&quot;);
+```
+4. Validation: verify header presence on vulnerable path and across pages.
+```bash
+curl -sI https://pentest-ground.com:4280/vulnerabilities/csp/ | grep -i Content-Security-Policy
+```</pre><h5>Remediation</h5><pre>1. Implement per-request nonce-based CSP and refactor inline scripts:
+```php
+$nonce = base64_encode(random_bytes(16));
+header(&quot;Content-Security-Policy: default-src &#x27;self&#x27;; script-src &#x27;self&#x27; &#x27;nonce-$nonce&#x27;; style-src &#x27;self&#x27; &#x27;nonce-$nonce&#x27;; base-uri &#x27;self&#x27;; object-src &#x27;none&#x27;; form-action &#x27;self&#x27;;&quot;);
+// Example of inline script now using nonce
+echo &quot;&lt;script nonce=&#x27;$nonce&#x27;&gt;/* JS code */&lt;/script&gt;&quot;;
+```
+2. Enforce a strict, centralized CSP across all servers and applications (no reliance on report-only). Apply the same policy to Nginx, Apache, and app layers so every response includes base-uri &#x27;self&#x27;.
+```nginx
+add_header Content-Security-Policy &quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27; &#x27;nonce-{nonce}&#x27;; style-src &#x27;self&#x27; &#x27;nonce-{nonce}&#x27;; base-uri &#x27;self&#x27;; form-action &#x27;self&#x27;; object-src &#x27;none&#x27;&quot;;
+```
+3. Replace or remove inline scripts where possible; serve external JS/CSS with proper nonce/hash support enabled in CSP. If inline is required, use per-page nonces or hashed scripts per CSP.
+4. Enable CSP violation reporting to monitor remaining issues:
+```http
+Content-Security-Policy-Report-Only: default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; report-uri https://your-monitoring.example.com/csp-report; base-uri &#x27;self&#x27;;
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-002</code></p>
+    </div>
+  </td>
+  <td>CWE-16</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP attribute &quot;frame-ancestors&quot; is missing for URL: https://pentest-ground.com:4280/vulnerabilities/csp/
+Path: /vulnerabilities/csp/</p>
+      <h5>Analyst notes</h5><p>Security headers misconfiguration detected: CSP not set, frame options and other headers missing; remediate CSP, X-Frame-Options, X-Content-Type-Options, HSTS, and cookie security flags.</p><h5>Exploitability</h5><p>No CSP frame-ancestors and missing X-Frame-Options enable clickjacking via an attacker-controlled page embedding the site; no authentication required, user visits the attacker page.</p><h5>Mitigation</h5><pre>1. Configure the web server to send clickjacking protections on all responses: X-Frame-Options SAMEORIGIN. 2. Add a Content-Security-Policy header that includes frame-ancestors to prevent framing: Content-Security-Policy: frame-ancestors &#x27;self&#x27;. 3. Ensure any reverse proxy/CDN or application layer preserves these headers and does not strip or override them. 4. Validate by re-scanning and verifying headers in responses (e.g., curl -I https://pentest-ground.com:4280 | grep -i -E &#x27;frame-ancestors|x-frame-options&#x27;).</pre><h5>Remediation</h5><pre>1. Implement a site-wide CSP policy that includes frame-ancestors &#x27;self&#x27; and other prudent directives: default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; img-src &#x27;self&#x27; data:; frame-ancestors &#x27;self&#x27;. 2. Apply the policy at the web server or application framework level so it covers all endpoints and cannot be bypassed. 3. Retain X-Frame-Options as a fallback header for older clients. 4. Re-test with automated scanners and manual checks to confirm the CSP and X-Frame-Options headers are present on all responses and that the site cannot be embedded in iframes from external origins.</pre>
+      <h5>PoC scripts</h5><p><code>poc-003</code></p>
+    </div>
+  </td>
+  <td>CWE-16</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate doesn&#x27;t use Extended Validation
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS/SSL misconfig and missing security headers widen susceptibility to information disclosure and traffic manipulation.</p><h5>Exploitability</h5><p>Requires attacker to perform MITM or force traffic to HTTP; attacker must be able to intercept network communications or perform DNS spoofing; otherwise misconfig is informational.</p><h5>Mitigation</h5><pre>1. Disable CBC ciphers and enable AEAD ciphers; enforce TLS 1.2+/1.3. 
+
+```
+# Nginx example
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+2. Redirect HTTP to HTTPS to prevent MITM over cleartext and enable HSTS. 
+
+```
+# HTTP-&gt;HTTPS redirect (Nginx)
+server {
+  listen 80;
+  server_name pentest-ground.com www.pentest-ground.com;
+  return 301 https://$host$request_uri;
+}
+```
+
+3. Add HSTS and perform a quick verification afterwards. 
+
+```
+# Nginx
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+```
+
+4. Validate changes with TLS tests (and re-scan). 
+
+```
+openssl s_client -connect pentest-ground.com:4280 -servername pentest-ground.com -tls1_2
+```</pre><h5>Remediation</h5><pre>1. Obtain and install a valid certificate that matches the domain and policy (EV if required by business policy). Install the certificate and full chain on the server.
+
+```
+# Example (NGINX)
+ssl_certificate /etc/ssl/certs/pentest-ground.pem;
+ssl_certificate_key /etc/ssl/private/pentest-ground.key;
+```
+
+2. Harden TLS configuration and ensure modern suites are offered (TLS 1.2/1.3). 
+
+```
+# Nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets off;
+ssl_stapling on;
+ssl_stapling_verify on;
+```
+
+3. Enable security headers and ensure HTTPS-only policy remains enforced. 
+
+```
+# Nginx
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+```
+
+4. Validate deployment with external TLS tests (SSL Labs/openssl). 
+
+```
+openssl s_client -connect pentest-ground.com:4280 -tls1_2 -servername pentest-ground.com
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-004</code></p>
+    </div>
+  </td>
+  <td>CWE-16</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>OCSP Must-Staple extension is missing
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfiguration: OCSP Must-Staple is not enforced; address by enabling OCSP stapling and improving TLS headers (HSTS, CSP, Secure/HttpOnly cookies).</p><h5>Exploitability</h5><p>Requires network access to the target as an on-path attacker; without OCSP stapling, a compromised OCSP responder could mislead clients about certificate status, enabling a MITM under some conditions.</p><h5>Mitigation</h5><pre>1. Enable OCSP stapling on the TLS terminator to deliver OCSP responses to clients. Verify after enabling.\n\nNginx example:\n```nginx\nssl_stapling on;\nssl_stapling_verify on;\nresolver 8.8.8.8 8.8.4.4;\nssl_trusted_certificate /etc/ssl/certs/ca-bundle.crt;\n```\n\nApache example:\n```apache\nSSLUseStapling on\nSSLStaplingCache shmcb:/var/run/ssl_stapling(256k)\n```\n\n2. Disable CBC ciphers and enforce AEAD ciphers; enable TLSv1.2+ and TLSv1.3 where available.\n\nNginx:\n```nginx\nssl_protocols TLSv1.2 TLSv1.3;\nssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384&#x27;;\nssl_prefer_server_ciphers on;\n```\n\nApache:\n```apache\nSSLProtocol All -SSLv2 -SSLv3 -TLSv1 -TLSv1.1\nSSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384\nSSLHonorCipherOrder On\n```\n\n3. If possible, request a certificate with OCSP Must-Staple (TLS Feature: status_request) and redeploy.\n\n4. Validate with a quick check:\n```bash\nopenssl s_client -connect pentest-ground.com:4280 -servername pentest-ground.com -tls1_2 -status\n```</pre><h5>Remediation</h5><pre>1. Reissue certificate with OCSP Must-Staple (TLS Feature: status_request) and install the new chain on all hosts.\n\n2. Enable and verify OCSP stapling across all TLS endpoints (Nginx/Apache) using the same configs as mitigation, and confirm stapling is active.\n\n3. Harden TLS configuration across all environments: disable legacy protocols (SSLv2/SSLv3/TLSv1/TLSv1.1), enable TLSv1.2+ and TLSv1.3, and use AEAD ciphers.\n\nNginx:\n```nginx\nssl_protocols TLSv1.2 TLSv1.3;\nssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384&#x27;;\nssl_prefer_server_ciphers on;\n```\n\nApache:\n```apache\nSSLProtocol All -SSLv2 -SSLv3 -TLSv1 -TLSv1.1\nSSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384\nSSLHonorCipherOrder On\n```\n\n4. Validate deployment and monitor: run TLS/OCSP tests and set alerts for stapling failures or certificate issues.\n\nExample test:\n```bash\nopenssl s_client -connect pentest-ground.com:4280 -servername pentest-ground.com -status\n```</pre>
+      <h5>PoC scripts</h5><p><code>poc-005</code></p>
+    </div>
+  </td>
+  <td>CWE-200</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server doesn&#x27;t support secure renegotiations
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS secure renegotiation not supported; additional misconfigurations include missing security headers and cookie flags.</p><h5>Exploitability</h5><p>Requires network access in a MITM position; attacker can exploit insecure TLS renegotiation to influence the session without authentication.</p><h5>Mitigation</h5><pre>1. Disable insecure TLS renegotiation across all components and ensure secure renegotiation is negotiated. 2. Upgrade TLS stack to versions with RFC 5746 secure renegotiation support. 3. Apply consistent TLS renegotiation configuration on all front- and backend proxies/load balancers. 4. Validate configuration by re-running a renegotiation test and a mitigation scan (for example using testssl.sh). ```conf
+# Apache example (disable insecure renegotiation)
+SSLInsecureRenegotiation Off
+
+# Nginx/OpenSSL typically relies on the underlying stack; verify no insecure options are enabled and consult vendor docs for proxies
+```
+```bash
+# Debian/Ubuntu example: upgrade TLS stack
+sudo apt-get update
+sudo apt-get install --upgrade openssl libssl-dev
+# Upgrade web server components as needed
+sudo apt-get install --upgrade apache2 nginx
+# Restart services after upgrades
+sudo systemctl restart apache2
+sudo systemctl restart nginx
+```
+```bash
+# Re-test renegotiation support
+./testssl.sh --renegotiation https://pentest-ground.com:4280
+```
+</pre><h5>Remediation</h5><pre>1. Apply vendor patches and upgrade to the latest TLS stack (OpenSSL and web server) that implement secure renegotiation per RFC 5746. 2. Disable insecure renegotiation across all devices (web servers, reverse proxies, load balancers) and enforce secure renegotiation in their TLS profiles. 3. Re-test end-to-end renegotiation status with testssl.sh and verify that renegotiation is secure and that insecure renegotiation is not supported. 4. Document the change, implement a change-control process, and monitor for TLS configuration drift. ```bash
+# Example upgrade on a Debian/Ubuntu system
+sudo apt-get update
+sudo apt-get upgrade openssl libssl-dev
+sudo apt-get upgrade apache2 nginx
+sudo systemctl restart apache2 nginx
+```
+```conf
+# Apache example (disable insecure renegotiation)
+SSLInsecureRenegotiation Off
+```
+```bash
+# Re-test after remediation
+./testssl.sh --renegotiation https://pentest-ground.com:4280
+# Optional: verify with SSL Labs
+# https://www.ssllabs.com/ssltest/analyze.html?d=pentest-ground.com
+```
+</pre>
+      <h5>PoC scripts</h5><p><code>poc-008</code></p>
+    </div>
+  </td>
+  <td>CWE-327</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>The following ciphers are acceptable for TLSv1.2: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS config exposes CBC-based ciphers for TLS 1.2; prefer AEAD ciphers (AES-GCM/ChaCha20-Poly1305) and enable security headers and cookie flags.</p><h5>Exploitability</h5><p>Attacker with network access can attempt to negotiate a CBC-based TLS 1.2 cipher; success depends on client support and downgrade protections, but data confidentiality could be weakened due to weaker cipher suites.</p><h5>Mitigation</h5><pre>1. Harden edge/server TLS configuration to disable CBC and non-GCM ciphers, enforce TLS 1.2+ and prefer strong ephemeral ciphers. 
+2. Validate changes against the live service and document baseline in the security policy. 
+3. Limit negotiation to AEAD ciphers (GCM/ChaCha20-Poly1305) and ensure PFS via ECDHE. 
+4. Schedule periodic revalidation on deployment changes and monitor cipher suites ongoing.
+
+```nginx
+# nginx TLS hardening (example)
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+```apache
+# Apache SSL config (example)
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256
+SSLHonorCipherOrder on
+SSLCompression Off
+```
+
+```bash
+openssl s_client -connect pentest-ground.com:4280 -tls1_2 -servername pentest-ground.com
+```
+
+```bash
+systemctl reload nginx  # or systemctl reload httpd
+```</pre><h5>Remediation</h5><pre>1. Implement a centralized TLS hardening standard and apply it across all frontends (load balancers, reverse proxies) and application servers. Include a policy to disable CBC/non-GCM ciphers and require TLS 1.2+/TLS 1.3. 
+
+```nginx
+# nginx TLS hardening (permanent)
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+```apache
+# Apache SSL config (permanent)
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256
+SSLHonorCipherOrder on
+SSLCompression Off
+```
+
+2. Permanently remove CBC/RSA-CBC and other weak suites from all servers. Ensure only AEAD ciphers (AES-GCM/ChaCha20) and ECDHE key exchange are enabled. 
+
+3. Enable TLS 1.3 and keep TLS 1.2 as minimum, explicitly disabling TLS 1.0/1.1 across all platforms. 
+
+```bash
+# Validation after remediation
+nmap --script ssl-enum-ciphers -p 4280 pentest-ground.com
+openssl s_client -connect pentest-ground.com:4280 -tls1_2 -cipher &#x27;ECDHE-RSA-AES256-GCM-SHA384&#x27;
+```
+
+4. Integrate automated TLS posture checks into CI/CD and monthly baseline re-scans. Maintain a living configuration template and audit changelog after every patch or config update.</pre>
+      <h5>PoC scripts</h5><p><code>poc-009</code></p>
+    </div>
+  </td>
+  <td>CWE-327</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Stack Trace Disclosure</strong>
+    <div class="finding-detail">
+      <p>Response discloses a PHP stack trace or error message: Stack trace:
+#0
+Path: /vulnerabilities/sqli/</p>
+      <h5>Analyst notes</h5><p>PHP stack traces and full path disclosures indicate improper error handling and information leakage.</p><h5>Exploitability</h5><p>Attacker can trigger a server error by requesting a vulnerable URL to reveal a PHP stack trace and file paths; no authentication beyond HTTP(S) access is required.</p><h5>Mitigation</h5><pre>1. Disable display of errors in production and enable logging.
+2. Enforce runtime non-disclosure of errors in code.
+3. Ensure web server configuration does not leak error details.
+4. Route all errors to generic user-friendly pages.
+
+```ini
+; php.ini (production)
+display_errors = Off
+log_errors = On
+error_log = /var/log/php-errors.log
+```
+
+```php
+// Production bootstrap
+ini_set(&#x27;display_errors&#x27;, &#x27;0&#x27;);
+ini_set(&#x27;log_errors&#x27;, &#x27;1&#x27;);
+```
+
+```apache
+# Apache vhost
+php_flag display_errors Off
+```
+
+```php
+// Generic error response (do not reveal traces)
+http_response_code(500);
+echo &#x27;Internal Server Error&#x27;;
+```</pre><h5>Remediation</h5><pre>1. Implement centralized, non-disclosive error handling so no stack traces or internal paths are output to users.
+2. Patch PHP/frameworks to latest secure versions and apply all security updates.
+3. Audit application code to remove any code paths that print traces, var_dumps, or exception traces; use sanitized logs instead.
+4. Consider adding a WAF or reverse proxy that blocks verbose error disclosures and enforces generic error pages for 5xx responses.
+
+```php
+// Centralized non-disclosing error handling
+ini_set(&#x27;display_errors&#x27;, &#x27;0&#x27;);
+set_error_handler(function($severity, $message, $file, $line){
+  error_log(&quot;PHP[$severity] $message in $file:$line&quot;);
+  http_response_code(500);
+  echo &#x27;Internal Server Error&#x27;;
+});
+set_exception_handler(function($e){
+  error_log((string)$e);
+  http_response_code(500);
+  echo &#x27;Internal Server Error&#x27;;
+});
+```
+
+```bash
+# Patch and restart
+apt-get update &amp;&amp; apt-get upgrade -y
+systemctl restart php7.x-fpm
+```
+
+```php
+// Example: avoid leaking traces
+// Do not output $e-&gt;getTraceAsString() or $e-&gt;getMessage() to the client
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-010</code></p>
+    </div>
+  </td>
+  <td>CWE-209</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP is not set for URL: https://pentest-ground.com:4280/
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP attribute &quot;default-src&quot; is missing for URL: https://pentest-ground.com:4280/vulnerabilities/csp/
+Path: /vulnerabilities/csp/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP attribute &quot;form-action&quot; is missing for URL: https://pentest-ground.com:4280/vulnerabilities/csp/
+Path: /vulnerabilities/csp/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Command execution via page</strong>
+    <div class="finding-detail">
+      <p>PHP evaluation via injection in the parameter page
+Path: /vulnerabilities/fi/
+Parameter: page</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Clickjacking Protection</strong>
+    <div class="finding-detail">
+      <p>X-Frame-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HTTP Strict Transport Security (HSTS)</strong>
+    <div class="finding-detail">
+      <p>Strict-Transport-Security is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>MIME Type Confusion</strong>
+    <div class="finding-detail">
+      <p>X-Content-Type-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HttpOnly Flag cookie</strong>
+    <div class="finding-detail">
+      <p>HttpOnly flag is not set on the cookie &#x27;security&#x27; set at &#x27;https://pentest-ground.com:4280/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HttpOnly Flag cookie</strong>
+    <div class="finding-detail">
+      <p>HttpOnly flag is not set on the cookie &#x27;PHPSESSID&#x27; set at &#x27;https://pentest-ground.com:4280/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/fi/source/low.php
+Path: /vulnerabilities/fi/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/fi/index.php
+Path: /vulnerabilities/fi/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/dvwa/includes/Parsedown.php
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/instructions.php
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/dvwa/includes/dvwaPage.inc.php
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /etc/php/x.x/fpm/php.ini
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /etc/php/x.x/apache2/php.ini
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/log/apache2/
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/log/apache2/access.log
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/log/apache2/error.log
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/mydir/hello.txt
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/DVWA/
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/run/mysqld/mysqld.sock
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /etc/mysql/mysql.conf.d/mysqld.cnf
+Path: /instructions.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/config/config.inc.php
+Path: /setup.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/hackable/uploads/
+Path: /setup.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/config
+Path: /setup.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc/php
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc/php/conf.d
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/php.ini
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc/php/conf.d/docker-php-ext-gd.ini
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc/php/conf.d/docker-php-ext-mysqli.ini
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc/php/conf.d/docker-php-ext-pdo_mysql.ini
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/etc/php/conf.d/docker-php-ext-sodium.ini
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /etc/apache2
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/phpinfo.php
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/local/lib/php/extensions/no-debug-non-zts-20250925
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/sbin/sendmail
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/lib/ssl/openssl.cnf
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/log/apache2
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/run/apache2/apache2.pid
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/lock/apache2
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/run/apache2
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /etc/apache2/envvars
+Path: /phpinfo.php</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/sqli/source/low.php
+Path: /vulnerabilities/sqli/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/sqli/index.php
+Path: /vulnerabilities/sqli/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/v...
+Path: /vulnerabilities/sqli/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/xss_s/index.php
+Path: /vulnerabilities/xss_s/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/captcha/source/low.php
+Path: /vulnerabilities/captcha/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/external/recaptcha/recaptchalib.php
+Path: /vulnerabilities/captcha/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/brute/source/low.php
+Path: /vulnerabilities/brute/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/brute/index.php
+Path: /vulnerabilities/brute/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/csrf/source/low.php
+Path: /vulnerabilities/csrf/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/csrf/index.php
+Path: /vulnerabilities/csrf/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/sqli_blind/source/low.php
+Path: /vulnerabilities/sqli_blind/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /var/www/html/vulnerabilities/sqli_blind/index.php
+Path: /vulnerabilities/sqli_blind/</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Open Redirect via redirect</strong>
+    <div class="finding-detail">
+      <p>Open Redirect via injection in the parameter redirect
+Path: /vulnerabilities/open_redirect/source/low.php
+Parameter: redirect</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Open Redirect via redirect</strong>
+    <div class="finding-detail">
+      <p>Open Redirect via injection in the parameter redirect
+Path: /vulnerabilities/open_redirect/source/low.php
+Parameter: redirect</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Secure Flag cookie</strong>
+    <div class="finding-detail">
+      <p>Secure flag is not set on the cookie: &#x27;security&#x27; set at &#x27;https://pentest-ground.com:4280/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Secure Flag cookie</strong>
+    <div class="finding-detail">
+      <p>Secure flag is not set on the cookie: &#x27;PHPSESSID&#x27; set at &#x27;https://pentest-ground.com:4280/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>SQL Injection via username</strong>
+    <div class="finding-detail">
+      <p>SQL Injection (DBMS: MariaDB) via injection in the parameter username
+Path: /vulnerabilities/brute/
+Parameter: username</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>SQL Injection via id</strong>
+    <div class="finding-detail">
+      <p>SQL Injection (DBMS: MariaDB) via injection in the parameter id
+Path: /vulnerabilities/sqli_blind/
+Parameter: id</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>SQL Injection via id</strong>
+    <div class="finding-detail">
+      <p>SQL Injection (DBMS: MariaDB) via injection in the parameter id
+Path: /vulnerabilities/sqli/
+Parameter: id</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>SQL Injection via token</strong>
+    <div class="finding-detail">
+      <p>SQL Injection via injection in the parameter token
+Path: /vulnerabilities/javascript/
+Parameter: token</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>SQL Injection via Submit</strong>
+    <div class="finding-detail">
+      <p>SQL Injection via injection in the parameter Submit
+Path: /vulnerabilities/exec/
+Parameter: Submit</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server is vulnerable to OpenSSL CCS (CVE-2014-0224)
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter id</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter id</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter MAX_FILE_SIZE</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter seclev_submit</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter token</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter user_token</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter password</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter password_new</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter Submit</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter id</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter step</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter include</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter create_db</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter username</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter ip</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter token</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter seclev_submit</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter MAX_FILE_SIZE</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter seclev_submit</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter id</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter create_db</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter username</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter include</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter step</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter ip</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter Upload</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Anomaly: Internal Server Error</strong>
+    <div class="finding-detail">
+      <p>The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter redirect</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>alterx</code></td>
+  <td>
+    <strong>Permutation: flag provided but not defined: -d</strong>
+    <div class="finding-detail">
+      <p>Subdomain permutation generated: flag provided but not defined: -d</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Unable to execute massdns. Make sure it is present and that the</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Unable to execute massdns. Make sure it is present and that the</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: path to the binary is added to the PATH environment variable.</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: path to the binary is added to the PATH environment variable.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Alternatively, specify the path to massdns using --bin</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Alternatively, specify the path to massdns using --bin</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>wafw00f</code></td>
+  <td>
+    <strong>No WAF detected</strong>
+    <div class="finding-detail">
+      <p>No WAF was detected on https://pentest-ground.com:4280.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+</tbody></table>
+</details>
+<details open><summary><code>https://pentest-ground.com:5013</code> — 19 finding(s)</summary>
+<p style="color:var(--high)"><strong>arjun error:</strong> Tool timed out after 300s</p>
+<p style="color:var(--high)"><strong>cariddi error:</strong> Exit code 2: flag provided but not defined: -u
+Usage of cariddi:
+  -c int
+    	Concurrency level. (default 20)
+  -cache
+    	Use the .cariddi_cache folder as cache.
+  -d int
+    	Delay between a page crawled and a</p>
+<p style="color:var(--high)"><strong>whatweb error:</strong> Tool timed out after 300s</p>
+
+<table>
+<thead><tr>
+  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+</tr></thead><tbody>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate transparency: No
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfig and missing security headers observed; certificate uses 128-bit EC key and is near expiry; certificate transparency not enabled.</p><h5>Exploitability</h5><p>Remote attacker on the network can perform MITM or session hijacking due to missing HSTS, cookie flags, and TLS CT; no user interaction required.</p><h5>Mitigation</h5><pre>1. Enable HTTP Strict Transport Security (HSTS) to prevent protocol downgrades and MITM on subsequent requests. This should include subdomains and be submitted to the preload list where appropriate.
+
+```nginx
+add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+```
+
+2. Ensure session cookies use Secure, HttpOnly, and SameSite attributes to protect against cookie theft or hijacking.
+
+```text
+Set-Cookie: sessionId=REDACTED; Secure; HttpOnly; SameSite=Strict
+```
+
+3. Use a Certificate Transparency (CT) logged certificate and verify that SCTs are present. Reissue if necessary and ensure the certificate is logged in CT logs.
+
+```bash
+# Check for SCTs (if supported by OpenSSL/GUI tooling)
+openssl s_client -connect pentest-ground.com:5013 -servername pentest-ground.com &lt;/dev/null 2&gt;/dev/null | openssl x509 -noout -text | grep -i SCT -A 2
+```
+
+4. Harden TLS configuration by enabling TLS 1.2/1.3 and disabling legacy protocols/ciphers.
+
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256GCM-SHA384:ECDHE-RSA-AES256GCM-SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```</pre><h5>Remediation</h5><pre>1. Acquire and install a CT-logged certificate for pentest-ground.com (replacing the current cert if needed) and reload the web server.
+
+```bash
+sudo cp /path/to/new/fullchain.pem /etc/ssl/certs/pentest-ground.com.pem
+sudo cp /path/to/new/privkey.pem /etc/ssl/private/pentest-ground.com.key
+sudo systemctl reload nginx  # or: sudo systemctl reload apache2
+```
+
+2. Enforce HSTS and modern TLS settings across the deployment.
+
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256GCM-SHA384:ECDHE-RSA-AES256GCM-SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+```
+
+3. Update the application to set cookies with Secure, HttpOnly, and SameSite attributes on all session cookies.
+
+```text
+# Example for a Node.js/Express app
+res.cookie(&#x27;sessionId&#x27;, value, { secure: true, httpOnly: true, sameSite: &#x27;Strict&#x27; });
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-013</code></p>
+    </div>
+  </td>
+  <td>CWE-326</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Strict Transport Security (HSTS) is not set
+Path: /</p>
+      <h5>Analyst notes</h5><p>HSTS missing and multiple TLS/SSL misconfigurations; certificate nearing expiry; CCS vulnerability and weak cookie flags observed.</p><h5>Exploitability</h5><p>Exploit requires the attacker to be in a man-in-the-middle position during the initial connection to downgrade to HTTP; since HSTS is not set, subsequent connections are not forced to HTTPS, enabling eavesdropping and data tampering.</p><h5>Mitigation</h5><pre>1) Redirect HTTP to HTTPS with a 301 at the edge. 2) Enable HSTS on all HTTPS responses with max-age=31536000; includeSubDomains; preload. 3) Remove or disable any HTTP endpoints and guarantee that all assets are loaded over HTTPS. 4) Validate HSTS header is present on HTTPS responses and that no plaintext HTTP traffic can reach the app.\n\n```nginx\n# Redirect HTTP to HTTPS\nserver {\n  listen 80;\n  server_name pentest-ground.com www.pentest-ground.com;\n  return 301 https://$host$request_uri;\n}\n```\n\n```nginx\n# Enable HSTS on HTTPS\nserver {\n  listen 443 ssl;\n  server_name pentest-ground.com www.pentest-ground.com;\n  add_header Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot; always;\n}\n```\n\n```apache\n# HTTP-&gt;HTTPS Redirect\n&lt;VirtualHost *:80&gt;\n  ServerName pentest-ground.com\n  Redirect permanent / https://pentest-ground.com/\n&lt;/VirtualHost&gt;\n\n# HTTPS with HSTS\n&lt;VirtualHost *:443&gt;\n  ServerName pentest-ground.com\n  Header always set Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot;\n&lt;/VirtualHost&gt;\n```</pre><h5>Remediation</h5><pre>1) Deploy permanent HSTS on all HTTPS responses: add_header Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot; always; (Nginx) or Header always set Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot; (Apache). 2) Enforce HTTPS by redirecting HTTP to HTTPS (301) and disable any HTTP endpoints. 3) Verify deployment and readiness for preloading: curl -I https://pentest-ground.com:5013/ | grep -i Strict-Transport-Security; ensure all subdomains respond over HTTPS. 4) If ready for preload, submit to https://hstspreload.org/ and confirm all subdomains support HTTPS.</pre>
+      <h5>PoC scripts</h5><p><code>poc-014</code></p>
+    </div>
+  </td>
+  <td>CWE-200</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate doesn&#x27;t use Extended Validation
+Path: /</p>
+      <h5>Analyst notes</h5><p>Wapiti flags TLS misconfigs (no CSP, no HttpOnly/Secure cookies, no HSTS) plus a non-EV certificate and outdated OpenSSL CCS vulnerability reference; potential full path disclosure detected at /solutions: /usr/bin/env.</p><h5>Exploitability</h5><p>Remote attacker must intercept or impersonate TLS traffic (MITM) to exploit missing HttpOnly/Secure flags, CSP, X-Frame-Options, and HSTS; no direct code execution. Primary risk is information leakage and session hijacking.</p><h5>Mitigation</h5><pre>1. Enforce HttpOnly, Secure, and SameSite cookie attributes in the application. Use framework-specific settings to ensure cookies are not accessible via JavaScript and are transmitted only over HTTPS.
+```js
+# Node.js (Express)
+app.use((req, res, next) =&gt; {
+  res.cookie(&#x27;session&#x27;, req.sessionID, { httpOnly: true, secure: true, sameSite: &#x27;Lax&#x27; });
+  next();
+});
+```
+```py
+# Django
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = &#x27;Lax&#x27;
+```
+
+2. Enable HTTP Strict Transport Security (HSTS) on the web server.
+```nginx
+# nginx
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+```
+```apache
+# Apache
+Header always set Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot;
+```
+
+3. Add Content-Security-Policy (CSP) and X-Frame-Options to mitigate content-based attacks and clickjacking.
+```nginx
+# nginx
+add_header Content-Security-Policy &quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27; https:; object-src &#x27;none&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; frame-ancestors &#x27;self&#x27;&quot; always;
+add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;
+```
+```apache
+# Apache
+Header always set Content-Security-Policy &quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27; https:; object-src &#x27;none&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; frame-ancestors &#x27;self&#x27;&quot;
+Header always set X-Frame-Options &quot;SAMEORIGIN&quot;
+```
+
+4. Harden TLS configuration (disable weak protocols/ciphers and enable modern TLS).
+```nginx
+# nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```
+```apache
+# Apache
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite HIGH:!aNULL:!MD5:!3DES
+SSLHonorCipherOrder on
+```</pre><h5>Remediation</h5><pre>1. Obtain and install a valid CA-signed certificate (and serve the complete chain). If using Let’s Encrypt: 
+```bash
+certbot certonly --nginx -d pentest-ground.com -d www.pentest-ground.com
+```
+Then ensure the server points to the new chain:
+```nginx
+ssl_certificate /etc/letsencrypt/live/pentest-ground.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/pentest-ground.com/privkey.pem;
+```
+
+2. Enforce modern TLS on the server (TLS 1.2/1.3) and disable legacy protocols/ciphers.
+```nginx
+# nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+3. Implement security headers and ensure cookie attributes in code and server config.
+```nginx
+# nginx
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+add_header Content-Security-Policy &quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27; https:; object-src &#x27;none&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; frame-ancestors &#x27;self&#x27;&quot; always;
+add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;
+add_header X-Content-Type-Options &quot;nosniff&quot; always;
+```
+```py
+# Django (cookie hygiene reminder in code)
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = &#x27;Lax&#x27;
+```
+
+4. Verify and monitor post-remediation.
+```bash
+# TLS/headers verification
+openssl s_client -connect pentest-ground.com:5013 -servername pentest-ground.com
+curl -I https://pentest-ground.com:5013
+# Optional: SSL Labs test (external): https://www.ssllabs.com/ssltest/
+```
+</pre>
+      <h5>PoC scripts</h5><p><code>poc-011</code></p>
+    </div>
+  </td>
+  <td>CWE-200</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>OCSP Must-Staple extension is missing
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS configuration lacks OCSP stapling and HSTS; certificate uses EC 128-bit key, expires in ~34 days; CVE-2014-0224 (OpenSSL CCS) noted.</p><h5>Exploitability</h5><p>Requires a MITM or traffic interception to influence the TLS handshake; no direct server access is required.</p><h5>Mitigation</h5><pre>immediate workaround — 4 steps:
+1. Enable OCSP stapling on the TLS terminator. For Nginx:
+```nginx
+ssl_stapling on;
+ssl_stapling_verify on;
+resolver 8.8.8.8 1.1.1.1;
+ssl_trusted_certificate /etc/ssl/certs/ca-bundle.crt;
+```
+2. Ensure a complete certificate chain is presented (intermediates included). Example:
+```bash
+# Nginx/Apache-style references; adjust paths to your environment
+ssl_certificate /etc/ssl/certs/your_domain.crt;
+ssl_certificate_key /etc/ssl/private/your_domain.key;
+ssl_certificate /etc/ssl/certs/ca_chain.pem;  # intermediates
+```
+3. Verify OCSP stapling during TLS handshake:
+```bash
+openssl s_client -connect pentest-ground.com:5013 -servername pentest-ground.com &lt;/dev/null 2&gt;&amp;1 | grep -i ocsp
+```
+4. If you require OCSP Must-Staple, reissue the certificate to include the TLS Feature (OCSP Must-Staple) extension and verify the presence of the extension:
+```bash
+openssl x509 -in /path/to/cert.pem -text -noout | grep -A2 TLS-Feature
+```
+</pre><h5>Remediation</h5><pre>permanent fix — 4 steps:
+1. Reissue or obtain a certificate that includes OCSP Must-Staple (TLS Feature extension 1.3.6.1.5.5.7.1.24) from your CA, or request enabling Must-Staple on the certificate.
+2. Install the new certificate and complete chain on the TLS terminator (web server/load balancer):
+```bash
+# Example for Nginx
+ssl_certificate /etc/ssl/certs/your_domain_must_staple.crt;
+ssl_certificate_key /etc/ssl/private/your_domain.key;
+ssl_certificate /etc/ssl/certs/ca_chain.pem;
+```
+3. Ensure OCSP stapling remains enabled after reissue:
+```nginx
+ssl_stapling on;
+ssl_stapling_verify on;
+resolver 8.8.8.8 1.1.1.1;
+```
+4. Validate production configuration and certificate features:
+```bash
+openssl s_client -connect pentest-ground.com:5013 -servername pentest-ground.com -showcerts | openssl x509 -text -noout | grep -A2 TLS-Feature
+# Optional external check
+# SSL Labs/Equivalent: verify OCSP stapling = Yes and TLS Feature = OCSP Must-Staple
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-012</code></p>
+    </div>
+  </td>
+  <td>CWE-XXX</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server doesn&#x27;t support secure renegotiations
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS renegotiation not secure; patch OpenSSL and enable secure renegotiation per RFC 5746; consider additional TLS hardening (HSTS, secure cookies).</p><h5>Exploitability</h5><p>Network attacker (MITM) can trigger TLS renegotiation and potentially inject data into the TLS session; requires being on-path to the victim&#x27;s traffic.</p><h5>Mitigation</h5><pre>1. Disable insecure TLS renegotiation on affected servers to prevent MITM data injection. 2. Update OpenSSL and the web server to a version that supports secure renegotiation (RFC 5746) or TLS 1.3. 3. Enforce strong TLS configurations (TLS 1.2+/TLS 1.3, secure ciphers). 4. Validate the changes with a test tool and monitor for warnings. 
+
+Examples:
+```bash
+# Apache (example)
+SSLInsecureRenegotiation Off
+systemctl reload httpd
+```
+```bash
+# Debian/Ubuntu (OpenSSL upgrade)
+apt-get update
+apt-get install --only-upgrade openssl libssl1.1
+systemctl restart apache2
+```
+```bash
+# Apache TLS policy
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite HIGH:!aNULL:!MD5:!3DES
+SSLHonorCipherOrder On
+```
+```bash
+# Quick check
+openssl s_client -connect pentest-ground.com:5013 -tls1_2
+```</pre><h5>Remediation</h5><pre>1. Apply vendor patches and upgrade TLS stack to latest releases that support secure renegotiation by default. 2. Reconfigure all affected services to disable insecure renegotiation and enable secure renegotiation with TLS 1.2+/TLS 1.3. 3. Prefer TLS 1.3 where possible and disable legacy protocols/ciphers. 4. Re-scan with testssl.sh or OpenSSL to confirm secure renegotiation is enforced and no fallback to insecure renegotiation remains. 
+
+Commands you can run after patching:
+```bash
+# Debian/Ubuntu
+apt-get update
+apt-get upgrade --only-upgrade openssl libssl1.1
+systemctl restart apache2
+```
+```bash
+# Apache: enforce secure renegotiation and TLS policies (sample)
+SSLInsecureRenegotiation Off
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLHonorCipherOrder On
+```
+```bash
+# Validation
+./testssl.sh --reneg pentest-ground.com:5013
+openssl s_client -connect pentest-ground.com:5013 -tls1_2
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-015</code></p>
+    </div>
+  </td>
+  <td>CWE-310</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>The following ciphers are acceptable for TLSv1.2: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfig detected (HSTS, CSP, cookie flags missing) and OpenSSL CCS vulnerability CVE-2014-0224 present.</p><h5>Exploitability</h5><p>Requires network-level MITM to intercept TLS and craft a ChangeCipherSpec to trigger the OpenSSL CCS bug; no user interaction or privileges required.</p><h5>Mitigation</h5><pre>1. Disable CBC and legacy TLS ciphers at the edge and allow only TLS 1.2/1.3 with AEAD ciphers. 2. Enforce TLSv1.2/1.3 and disable TLS 1.0/1.1 across all services. 3. Use secure cipher suites (e.g., ECDHE-ECDSA-AES128-GCM-SHA256, ECDHE-RSA-AES128-GCM-SHA256, ECDHE-RSA-AES256-GCM-SHA384). 4. If patching the app layer isn&#x27;t possible, place a trusted TLS terminator (CDN/load balancer) in front to enforce the policy.
+
+```nginx
+# nginx example
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets off;
+```
+
+```apache
+# Apache example
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384
+SSLHonorCipherOrder On
+```
+</pre><h5>Remediation</h5><pre>1. Patch OpenSSL and the OS to the latest supported versions. 2. Update server TLS config to only allow TLS 1.2/1.3 with AEAD ciphers and reload services (nginx: systemctl reload nginx; apache: systemctl reload httpd). 3. Validate with testssl.sh or openssl s_client; remediate any failures. 4. Enable TLS hardening practices (HSTS, OCSP stapling) and establish periodic TLS config reviews.</pre>
+      <h5>PoC scripts</h5><p><code>poc-016</code></p>
+    </div>
+  </td>
+  <td>CWE-327</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP is not set for URL: https://pentest-ground.com:5013/
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Clickjacking Protection</strong>
+    <div class="finding-detail">
+      <p>X-Frame-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HTTP Strict Transport Security (HSTS)</strong>
+    <div class="finding-detail">
+      <p>Strict-Transport-Security is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>MIME Type Confusion</strong>
+    <div class="finding-detail">
+      <p>X-Content-Type-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HttpOnly Flag cookie</strong>
+    <div class="finding-detail">
+      <p>HttpOnly flag is not set on the cookie &#x27;env&#x27; set at &#x27;https://pentest-ground.com:5013/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Information Disclosure - Full Path</strong>
+    <div class="finding-detail">
+      <p>Response contains potential system path: /usr/bin/env
+Path: /solutions</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Secure Flag cookie</strong>
+    <div class="finding-detail">
+      <p>Secure flag is not set on the cookie: &#x27;env&#x27; set at &#x27;https://pentest-ground.com:5013/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server is vulnerable to OpenSSL CCS (CVE-2014-0224)
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>alterx</code></td>
+  <td>
+    <strong>Permutation: flag provided but not defined: -d</strong>
+    <div class="finding-detail">
+      <p>Subdomain permutation generated: flag provided but not defined: -d</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Unable to execute massdns. Make sure it is present and that the</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Unable to execute massdns. Make sure it is present and that the</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: path to the binary is added to the PATH environment variable.</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: path to the binary is added to the PATH environment variable.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Alternatively, specify the path to massdns using --bin</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Alternatively, specify the path to massdns using --bin</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>wafw00f</code></td>
+  <td>
+    <strong>No WAF detected</strong>
+    <div class="finding-detail">
+      <p>No WAF was detected on https://pentest-ground.com:5013.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+</tbody></table>
+</details>
+<details open><summary><code>https://pentest-ground.com:81</code> — 22 finding(s)</summary>
+<p style="color:var(--high)"><strong>arjun error:</strong> Tool timed out after 300s</p>
+<p style="color:var(--high)"><strong>cariddi error:</strong> Exit code 2: flag provided but not defined: -u
+Usage of cariddi:
+  -c int
+    	Concurrency level. (default 20)
+  -cache
+    	Use the .cariddi_cache folder as cache.
+  -d int
+    	Delay between a page crawled and a</p>
+<p style="color:var(--high)"><strong>whatweb error:</strong> Tool timed out after 300s</p>
+
+<table>
+<thead><tr>
+  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+</tr></thead><tbody>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate transparency: No
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfiguration and missing security headers/cookie flags elevate risk of credential/session theft.</p><h5>Exploitability</h5><p>Remote, no user interaction required. An attacker on the network path can attempt session hijacking or MITM due to insecure cookies (HttpOnly/Secure not set) and missing HSTS/certificate transparency.</p><h5>Mitigation</h5><pre>1. Set Secure, HttpOnly, and SameSite flags on all session cookies to prevent session hijacking. 
+
+```js
+// Express.js example
+res.cookie(&#x27;session&#x27;, value, { httpOnly: true, secure: true, sameSite: &#x27;Strict&#x27; });
+```
+
+2. Enforce HTTP Strict Transport Security (HSTS) to require TLS for all future requests. 
+
+```nginx
+server {
+  listen 443 ssl;
+  add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+  ssl_protocols TLSv1.2 TLSv1.3;
+}
+```
+
+3. Restrict TLS versions and ciphers to modern configurations to reduce MITM risk. 
+
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+4. Certificate Transparency: obtain or reissue certificates from a CT-enabled CA so SCTs are embedded and publicly auditable. 
+
+```bash
+# Reissue with CT-enabled CA and deploy
+certbot certonly --nginx -d pentest-ground.com --non-interactive --agree-tos -m admin@example.com
+systemctl reload nginx
+```</pre><h5>Remediation</h5><pre>1. Reissue all certificates from a CT-enabled CA and ensure SCTs are embedded in the cert. Install and configure the new certs, then reload web server. 
+
+```bash
+# Example (CT-enabled CA issuance via Certbot/Let&#x27;s Encrypt)
+certbot certonly --nginx -d pentest-ground.com --non-interactive --agree-tos -m admin@example.com
+systemctl reload nginx
+```
+
+2. Harden TLS configuration across the entire stack (web server and app servers): disable legacy protocols, enable TLS 1.3, and enforce strong ciphers. 
+
+```nginx
+# nginx.conf snippet
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+3. Enable and enforce HSTS in production with long max-age and preloading readiness; ensure the header is present on all responses. 
+
+```nginx
+# nginx.conf snippet
+add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+```
+
+4. Enforce secure cookies at the application level and ensure SameSite, HttpOnly, and Secure attributes are applied consistently. 
+
+```js
+// Example (Express.js)
+app.use((req, res, next) =&gt; {
+  res.cookie(&#x27;session&#x27;, req.sessionID, { httpOnly: true, secure: true, sameSite: &#x27;Strict&#x27; });
+  next();
+});
+```</pre>
+      
+    </div>
+  </td>
+  <td>CWE-327</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Strict Transport Security (HSTS) is not set
+Path: /</p>
+      <h5>Analyst notes</h5><p>HSTS missing plus insecure cookies and legacy TLS issues indicate weak TLS posture; fix by enabling HSTS, setting HttpOnly and Secure on cookies, configuring TLS properly, and addressing OpenSSL CCS and renegotiation protections.</p><h5>Exploitability</h5><p>Requires a network attacker in a position to intercept or downgrade user traffic; with HSTS off, an attacker can attempt protocol downgrade to HTTP and, combined with missing cookie safeguards, potentially access session cookies.</p><h5>Mitigation</h5><pre>1. Implement HSTS with a conservative max-age on all HTTPS responses for testing. Example (Nginx): ```nginx
+add_header Strict-Transport-Security &#x27;max-age=300; includeSubDomains&#x27; always;
+``` 2. Ensure edge/CDN or reverse proxy enforces HTTPS and redirects HTTP to HTTPS. Example (Nginx): ```nginx
+server {
+  listen 80;
+  return 301 https://$host$request_uri;
+}
+``` 3. Validate cookies have Secure and HttpOnly; SameSite attribute; set in app or framework config. Example (Cookie header): ```text
+Set-Cookie: session=...; Secure; HttpOnly; SameSite=Strict
+``` 4. After validation, consider enabling HSTS preload once confirmed stable.</pre><h5>Remediation</h5><pre>1. Enable HSTS with a long max-age (31536000) and includeSubDomains; preload across all HTTPS responses. Example (Nginx): ```nginx
+add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+``` Example (Apache): ```apache
+Header always set Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27;
+``` 2. Ensure 301 redirects from HTTP to HTTPS at the edge. Example (Nginx): ```nginx
+server {
+  listen 80;
+  return 301 https://$host$request_uri;
+}
+``` 3. Audit and fix mixed-content issues; update all assets to HTTPS. 4. Ensure cookies use Secure, HttpOnly, and SameSite attributes; configure at application level.</pre>
+      
+    </div>
+  </td>
+  <td>CWE-XXX</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Reflected Cross Site Scripting via title</strong>
+    <div class="finding-detail">
+      <p>Reflected Cross Site Scripting vulnerability found via injection in the parameter title
+Path: /2/edit
+Parameter: title</p>
+      <h5>Analyst notes</h5><p>Lack of CSP, X-Frame-Options, and X-Content-Type-Options; HttpOnly not set on SessionID cookie; cookies not marked Secure; HSTS not set; overall weak client-side protections increase risk of XSS and session hijacking.</p><h5>Exploitability</h5><p>Attacker crafts a URL to /2/edit?title=&lt;payload&gt; and lures a victim to click it; the payload executes in the victim&#x27;s browser in the site&#x27;s origin, enabling script execution and potential data leakage; no special prerequisites beyond user interaction.</p><h5>Mitigation</h5><pre>1. Ensure server-side escaping for all user input used in HTML rendering.\n2. Validate/sanitize the title at the input boundary with a whitelist (for example allow only letters, numbers, spaces, and .,_-).\n3. Enable a Content-Security-Policy (CSP) header to restrict script execution and disallow inline scripts.\n4. Deploy a Web Application Firewall (WAF) rule to block reflected XSS in the title query parameter and enable logging/alerting.</pre><h5>Remediation</h5><pre>1. Implement robust, consistent output encoding: treat title as data, escape before rendering in all templates; prefer framework auto-escaping.\n2. Centralize input validation with a strict allowlist (regex: ^[A-Za-z0-9 .,_-]+$) and reject any non-conforming values at the API boundary.\n3. Ensure application templates do not render raw user input; upgrade/patch templating engine to latest, enable auto-escaping by default.\n4. Add/verify security controls (CSP, WAF) and re-test with automated scanners to confirm removal of XSS vector.</pre>
+      
+    </div>
+  </td>
+  <td>CWE-79</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Reflected Cross Site Scripting via title</strong>
+    <div class="finding-detail">
+      <p>Reflected Cross Site Scripting vulnerability found via injection in the parameter title
+Path: /1/edit
+Parameter: title</p>
+      <h5>Analyst notes</h5><p>Reflected XSS in the title parameter on /1/edit; mitigations include input encoding, CSP, and proper output encoding.</p><h5>Exploitability</h5><p>Attacker can craft a payload that is reflected in the title parameter and executed in the victim&#x27;s browser when the affected page is loaded; requires the victim to visit a crafted URL.</p><h5>Mitigation</h5><pre>1. Ensure the title is output-escaped before rendering in HTML templates. Use the framework&#x27;s escaping function or a library (for example escapeHtml) to neutralize special characters. The goal is to render user input as text, not markup.
+2. Sanitize the title input on submission to remove dangerous tags/attributes. Prefer a strict whitelist approach.
+3. Add a Content-Security-Policy (CSP) header to limit script execution to trusted sources and disable inline scripts.
+4. Enable a Web Application Firewall (WAF) or runtime protection and add rules to block common reflected XSS patterns to /1/edit.
+
+Examples:
+```javascript
+// Node.js example (escaping on output)
+const escapeHtml = require(&#x27;escape-html&#x27;);
+app.get(&#x27;/1/edit&#x27;, (req, res) =&gt; {
+  const title = req.query.title || &#x27;&#x27;;
+  res.render(&#x27;edit&#x27;, { title: escapeHtml(title) });
+});
+```
+```nginx
+# Nginx CSP header to mitigate XSS
+add_header Content-Security-Policy &#x27;default-src self; script-src self; object-src none&#x27;;
+```
+```js
+// Server-side sanitization (strict allow-list)
+const sanitizeHtml = require(&#x27;sanitize-html&#x27;);
+const sanitized = sanitizeHtml(title, { allowedTags: [], allowedAttributes: {} });
+```</pre><h5>Remediation</h5><pre>1. Refactor rendering to always escape user input. Enable auto-escaping in templates by default for all user-supplied fields, including title. Verify with template tests.
+2. Apply strict input sanitization on the server for the title, using a strict allow-list (no HTML) unless business needs require safe tags.
+3. Enforce a robust CSP and X-Content-Type-Options to reduce risk of inline/script execution.
+4. Add automated tests and ongoing monitoring: regression tests for /1/edit, dynamic scanner tests (OWASP ZAP/Nessus), and alerting on reflected payloads.</pre>
+      
+    </div>
+  </td>
+  <td>CWE-79</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate doesn&#x27;t use Extended Validation
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS/SSL misconfig includes non-EV cert with short expiry and missing security headers/cookie flags; potential exposure includes session tokens and lack of defense-in-depth.</p><h5>Exploitability</h5><p>Remote, no authentication required; attacker on the network can attempt MITM to capture/modify traffic due to TLS misconfig, and lack of HttpOnly/Secure cookies enables session theft via XSS; OpenSSL CCS vulnerability and lack of secure renegotiation add risk.</p><h5>Mitigation</h5><pre>1. Update TLS stack to latest OpenSSL/SSL libraries and patch vendor packages to fix CCS vulnerability and secure renegotiation.
+```bash
+# Example (Debian/Ubuntu)
+sudo apt-get update
+sudo apt-get install --only-upgrade openssl	sudo systemctl restart nginx
+```
+2. Enforce modern TLS configuration and cipher suites; disable TLS 1.0/1.1, enable TLS 1.2/1.3, and use forward-secret ciphers.
+```nginx
+# nginx example
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_256_GCM_SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets off;
+```
+3. Harden cookies and headers: set HttpOnly and Secure on all cookies, enable SameSite, and enable HSTS.
+```nginx
+# nginx example
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains&quot; always;
+```
+```js
+// If app sets cookies, ensure flags are set
+response.cookie(&#x27;session&#x27;, value, { httpOnly: true, secure: true, sameSite: &#x27;Strict&#x27; });
+```
+4. Prefer standard HTTPS port and ensure a proper certificate chain; if currently on 81, redirect or move to 443.
+```nginx
+server {
+  listen 81;
+  server_name pentest-ground.com;
+  return 301 https://$host$request_uri;
+}
+```</pre><h5>Remediation</h5><pre>1. Deploy a production-grade TLS configuration with current libraries: disable old protocols, enable TLS 1.2/1.3, use strong ECDHE ciphers, and turn off session tickets.
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:TLS_AES_256_GCM_SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets off;
+```
+2. Obtain and install a trusted certificate (prefer DV/EV per policy) and bind to port 443 on a valid hostname; ensure full certificate chain is served.
+```bash
+# Example with Certbot (NGINX)
+sudo apt-get install certbot python3-certbot-nginx
+sudo certbot --nginx -d pentest-ground.com -d www.pentest-ground.com
+```
+Verify chain and validity:
+```bash
+openssl x509 -in /etc/letsencrypt/live/pentest-ground.com/fullchain.pem -noout -dates
+openssl s_client -connect pentest-ground.com:443 -servername pentest-ground.com
+```
+3. Secure cookies across the app: enforce HttpOnly, Secure, and SameSite, and enable cookie-based CSRF protections as appropriate.
+```js
+// Node.js Express example
+app.use(require(&#x27;cookie-session&#x27;)({ name: &#x27;session&#x27;, keys: [&#x27;KEY&#x27;], httpOnly: true, secure: true, sameSite: &#x27;Strict&#x27; }));
+```
+4. Validate after change: run post-deployment TLS/SSL checks and monitor for TLS renegotiation issues.
+```bash
+git clone https://github.com/drwetter/testssl.sh.git
+./testssl.sh pentest-ground.com:443
+```</pre>
+      
+    </div>
+  </td>
+  <td>CWE-310</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>OCSP Must-Staple extension is missing
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfig includes missing OCSP Must-Staple, no HSTS, insecure cookie flags and no CSP/X-Frame-Options; OpenSSL CCS vulnerability indicated but may depend on server/openssl version.</p><h5>Exploitability</h5><p>Requires network access and a MITM position to exploit OCSP revocation gaps; no user interaction needed.</p><h5>Mitigation</h5><pre>1. Enable OCSP stapling on the web server to return a stapled OCSP response during TLS handshakes.
+2. Verify stapling is active and the OCSP responder is reachable; fix DNS/resolver or firewall issues if stapling fails.
+3. If the certificate authority supports OCSP Must-Staple, ensure the certificate is issued with the TLS Feature extension status_request; otherwise use standard stapling.</pre><h5>Remediation</h5><pre>1. Reissue the certificate with TLS Feature: status_request (OCSP Must-Staple) and deploy across all endpoints.
+2. Confirm server configurations enable and enforce OCSP stapling and that the CA bundle/OCSP responders are reachable.
+3. Validate with:
+
+```bash
+openssl s_client -connect pentest-ground.com:81 -servername pentest-ground.com -status
+```
+4. Monitor and maintain revocation tooling and stapling health; plan annual revocation/renewal reviews.</pre>
+      
+    </div>
+  </td>
+  <td>CWE-XXX</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server doesn&#x27;t support secure renegotiations
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfig: CCS vulnerability present, HSTS not set, cookies without Secure/HttpOnly, no CSP/X-Frame-Options; certificate uses EC 128-bit, not EV; port 81 in use.</p><h5>Exploitability</h5><p>Network-based; requires a MITM position to trigger the CCS ChangeCipherSpec vulnerability (CVE-2014-0224) to reveal/alter TLS traffic.</p><h5>Mitigation</h5><pre>1. Patch OpenSSL and the web server to patched versions that disable insecure renegotiation (CVE-2014-0224). 2. Remove any insecure renegotiation directives (e.g., SSLInsecureRenegotiation) or ensure they are set to Off. 3. Restart affected services. 4. Validate secure renegotiation is enforced using quick checks.
+
+```bash
+# Debian/Ubuntu
+apt-get update
+apt-get install --only-upgrade openssl libssl-dev apache2
+systemctl restart apache2
+
+# CentOS/RHEL
+yum update openssl
+systemctl restart httpd
+```
+</pre><h5>Remediation</h5><pre>1. Establish a permanent patching process for OpenSSL and web servers to ensure timely security updates. 2. Harden TLS configuration by disabling legacy protocols (e.g., SSLv3, TLS &lt;= 1.0) and enabling TLS 1.2/1.3 with strong ciphers. 3. Enforce secure renegotiation by ensuring SSLInsecureRenegotiation is Off or removed, and that servers reject insecure renegotiation attempts. 4. Re-test thoroughly with testssl.sh or SSL Labs to confirm the vulnerability is mitigated and secure renegotiation is active.
+
+```bash
+# nginx example (as part of hardening)
+# 1) Update packages (example for Debian/Ubuntu)
+apt-get update
+apt-get install --only-upgrade openssl nginx
+systemctl restart nginx
+
+# 2) Harden TLS in nginx.conf
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:...&#x27;;
+ssl_prefer_server_ciphers on;
+
+# Apache example (ssl.conf)
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite HIGH:!aNULL:!MD5:!3DES
+SSLInsecureRenegotiation Off
+systemctl restart httpd
+```</pre>
+      
+    </div>
+  </td>
+  <td>CWE-327</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>The following ciphers are acceptable for TLSv1.2: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfiguration includes vulnerable OpenSSL CCS and lack of security headers (HSTS, Secure/HttpOnly cookies) and missing TLS v1.3 support.</p><h5>Exploitability</h5><p>Requires a network-level MITM on the path to the server; if a vulnerable OpenSSL/ChangeCipherSpec handling is triggered by the handshake, TLS traffic could be decrypted/modified. Prerequisites: attacker can position themselves between client and server and the server is using a vulnerable OpenSSL version (CVE-2014-0224) and TLS handshake is exposed.</p><h5>Mitigation</h5><pre>1) Disable TLS 0.x/1.1 and CBC-mode ciphers; enforce TLS 1.2+/TLS 1.3 with AEAD ciphers. Use per-server configs:
+```bash
+# Apache (mod_ssl)
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256
+SSLHonorCipherOrder On
+```
+```bash
+# Nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256;
+ssl_prefer_server_ciphers on;
+```
+
+2) Patch OpenSSL to latest and bounce services:
+```bash
+# Debian/Ubuntu
+apt-get update
+apt-get install --only-upgrade openssl
+systemctl restart apache2  # or nginx
+```
+
+3) Re-test with a TLS scanner to verify only TLSv1.2/1.3 and AEAD ciphers are advertised:
+```bash
+nmap --script ssl-enum-ciphers -p 81 pentest-ground.com
+```
+
+4) Optionally enable TLS 1.3 and HSTS for additional hardening.</pre><h5>Remediation</h5><pre>1) Deploy permanent TLS hardening: enable TLS 1.2 and TLS 1.3 across all front-ends; remove all CBC and legacy ciphers; ensure only AEAD suites are allowed. Use the same per-server blocks as above.
+
+2) Update OpenSSL and recompile/redeploy server software (Apache/Nginx) to ensure no CVE-2014-0224 exposure; restart services and verify with tests.
+
+3) Enforce TLS configuration in load balancers/reverse proxies and CI/CD pipelines; document change-management; enable TLS 1.3 where supported and enable HSTS.
+
+4) Implement ongoing validation: schedule regular automated TLS scans and implement alerting for weak ciphers or deprecated protocols; verify at least quarterly.</pre>
+      
+    </div>
+  </td>
+  <td>CWE-327</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP is not set for URL: https://pentest-ground.com:81/
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Clickjacking Protection</strong>
+    <div class="finding-detail">
+      <p>X-Frame-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HTTP Strict Transport Security (HSTS)</strong>
+    <div class="finding-detail">
+      <p>Strict-Transport-Security is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>MIME Type Confusion</strong>
+    <div class="finding-detail">
+      <p>X-Content-Type-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HttpOnly Flag cookie</strong>
+    <div class="finding-detail">
+      <p>HttpOnly flag is not set on the cookie &#x27;SessionID&#x27; set at &#x27;https://pentest-ground.com:81/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HttpOnly Flag cookie</strong>
+    <div class="finding-detail">
+      <p>HttpOnly flag is not set on the cookie &#x27;session&#x27; set at &#x27;https://pentest-ground.com:81/login&#x27;
+Path: /login</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Secure Flag cookie</strong>
+    <div class="finding-detail">
+      <p>Secure flag is not set on the cookie: &#x27;SessionID&#x27; set at &#x27;https://pentest-ground.com:81/&#x27;
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Secure Flag cookie</strong>
+    <div class="finding-detail">
+      <p>Secure flag is not set on the cookie: &#x27;session&#x27; set at &#x27;https://pentest-ground.com:81/login&#x27;
+Path: /login</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server is vulnerable to OpenSSL CCS (CVE-2014-0224)
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>alterx</code></td>
+  <td>
+    <strong>Permutation: flag provided but not defined: -d</strong>
+    <div class="finding-detail">
+      <p>Subdomain permutation generated: flag provided but not defined: -d</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Unable to execute massdns. Make sure it is present and that the</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Unable to execute massdns. Make sure it is present and that the</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: path to the binary is added to the PATH environment variable.</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: path to the binary is added to the PATH environment variable.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Alternatively, specify the path to massdns using --bin</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Alternatively, specify the path to massdns using --bin</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>wafw00f</code></td>
+  <td>
+    <strong>No WAF detected</strong>
+    <div class="finding-detail">
+      <p>No WAF was detected on https://pentest-ground.com:81.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+</tbody></table>
+</details>
+<details open><summary><code>https://pentest-ground.com:9000</code> — 16 finding(s)</summary>
+<p style="color:var(--high)"><strong>arjun error:</strong> Tool timed out after 300s</p>
+<p style="color:var(--high)"><strong>cariddi error:</strong> Exit code 2: flag provided but not defined: -u
+Usage of cariddi:
+  -c int
+    	Concurrency level. (default 20)
+  -cache
+    	Use the .cariddi_cache folder as cache.
+  -d int
+    	Delay between a page crawled and a</p>
+<p style="color:var(--high)"><strong>restler error:</strong> Binary not found: restler</p>
+<p style="color:var(--high)"><strong>whatweb error:</strong> Tool timed out after 300s</p>
+
+<table>
+<thead><tr>
+  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+</tr></thead><tbody>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate transparency: No
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfig: missing certificate transparency and HSTS, no OCSP stapling, CSP not set; certificate expires in ~34 days; CCS vulnerability flagged; supports legacy CBC ciphers in TLS 1.2.</p><h5>Exploitability</h5><p>Attacker must position themselves in the network path to perform a MITM; no user interaction or authentication is required.</p><h5>Mitigation</h5><pre>1) Implement HSTS immediately to protect HTTPS connections. 2) Harden TLS configuration on the public endpoint to TLS 1.2+/1.3 and modern ciphers. 3) Enable OCSP stapling and monitor TLS/CT status. 4) After changes, verify HSTS and TLS configuration with automated tests.</pre><h5>Remediation</h5><pre>1) Obtain or reissue TLS certificates with Certificate Transparency enabled; verify CT coverage (e.g., via crt.sh). 2) Configure HSTS with a long max-age and preload; apply in production and submit to hstspreload.org. 3) Harden TLS on all ingress: TLSv1.2+/TLSv1.3 only, strong ciphers, OCSP stapling. 4) Validate configuration with a trusted scanner and monitor CT logs and HSTS status. 
+
+```nginx
+# HSTS with preload (example)
+add_header Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot; always;
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-019</code></p>
+    </div>
+  </td>
+  <td>CWE-XXX</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#e64a19">HIGH</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Strict Transport Security (HSTS) is not set
+Path: /</p>
+      <h5>Analyst notes</h5><p>HSTS, CSP, X-Frame-Options, and X-Content-Type-Options are not configured; HSTS missing plus CCS vulnerability increases risk of passive/eavesdropping and downgrade/middle-man attacks.</p><h5>Exploitability</h5><p>Attacker with network access can perform a MITM to observe/tamper TLS traffic due to missing HSTS and weak TLS config; no authentication required. The OpenSSL CCS issue (CVE-2014-0224) may be exploitable on vulnerable server TLS stacks.</p><h5>Mitigation</h5><pre>1. Enable HSTS on all HTTPS responses immediately (Strict-Transport-Security header). 2. Disable TLS 1.0/1.1 and require TLS 1.2+ with strong ciphers. 3. Ensure the server presents a complete certificate chain and enables OCSP stapling. 4. If behind a load balancer or CDN, enforce HSTS at the edge and propagate to origin.</pre><h5>Remediation</h5><pre>1. Harden TLS configuration to TLS 1.2/1.3 only, with forward secrecy and strong ciphers, and remove outdated protocols from all frontends. 2. Implement HSTS with max-age of at least 31536000 seconds and includeSubDomains; plan to submit to the preload list after verification. 3. Ensure proper certificate chain installation (including intermediates), enable OCSP stapling, and enable certificate transparency where applicable. 4. Revalidate configuration with automated TLS scanners and periodic reviews; document changes and monitor for regressions.</pre>
+      <h5>PoC scripts</h5><p><code>poc-020</code></p>
+    </div>
+  </td>
+  <td>CWE-200</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Certificate doesn&#x27;t use Extended Validation
+Path: /</p>
+      <h5>Analyst notes</h5><p>EV not used; OCSP stapling, Certificate Transparency, and HSTS not set; CCS vulnerability present and secure renegotiation not supported.</p><h5>Exploitability</h5><p>Remote attacker in MITM position can trigger the CCS flaw in affected OpenSSL during TLS handshake; no user interaction or credentials required.</p><h5>Mitigation</h5><pre>1. Enable HSTS on HTTPS endpoints to enforce TLS usage and reduce MITM risks.
+   ```nginx
+   add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+   ```
+2. Redirect all HTTP traffic to HTTPS to ensure encrypted sessions.
+   ```nginx
+   server {
+     listen 80;
+     server_name pentest-ground.com www.pentest-ground.com;
+     return 301 https://$host$request_uri;
+   }
+   ```
+3. Enforce strong TLS by disabling legacy protocols/ciphers and requiring TLS 1.2/1.3.
+   ```nginx
+   ssl_protocols TLSv1.2 TLSv1.3;
+   ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384&#x27;;
+   ssl_prefer_server_ciphers on;
+   ```
+4. Patch OpenSSL and web server to latest versions and verify patches are applied.
+   ```bash
+   sudo apt-get update
+   sudo apt-get install --only-upgrade openssl nginx
+   openssl version
+   nginx -v
+   ```</pre><h5>Remediation</h5><pre>1. Obtain and install a valid TLS certificate from a trusted CA (DV/OV/EV as required) and configure it on the server.
+   ```nginx
+   ssl_certificate /etc/ssl/certs/pentest-ground_com.crt;
+   ssl_certificate_key /etc/ssl/private/pentest-ground_com.key;
+   ```
+2. Enable HSTS with includeSubDomains and preload to enforce TLS across all subdomains.
+   ```nginx
+   add_header Strict-Transport-Security &#x27;max-age=31536000; includeSubDomains; preload&#x27; always;
+   ```
+3. Harden TLS configuration and maintain patching cadence (disable legacy protocols, keep ciphers strong, patch promptly).
+   ```bash
+   sudo apt-get update
+   sudo apt-get install --only-upgrade openssl nginx
+   # Verify TLS configuration as part of hardening
+   openssl s_client -connect pentest-ground.com:9000 -tls1_2
+   ```
+4. Validate and monitor post-remediation using external tests.
+   ```bash
+   ./testssl.sh pentest-ground.com:9000
+   ```</pre>
+      <h5>PoC scripts</h5><p><code>poc-017</code></p>
+    </div>
+  </td>
+  <td>CWE-327</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>OCSP Must-Staple extension is missing
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS misconfig: OCSP Must-Staple missing, HSTS/CSP/X-Frame-Options/X-Content-Type-Options not set; certificate expires in ~34 days; CT and patch status uncertain.</p><h5>Exploitability</h5><p>Attacker must be on the network path to perform a MITM during TLS handshake; exploitation relies on a vulnerable OpenSSL CCS flow (CVE-2014-0224) and unpatched components.</p><h5>Mitigation</h5><pre>1) Enable HSTS header immediately on HTTPS responses. Use server config to set header. The following example is for Nginx:
+```nginx
+add_header Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot; always;
+```
+2) Enable TLS OCSP stapling to reduce MITM risk and improve TLS handshake resilience:
+```nginx
+ssl_stapling on;
+ssl_stapling_verify on;
+ssl_trusted_certificate /etc/ssl/certs/ca-bundle.crt;
+```
+3) Enforce strong TLS configuration and disable legacy protocols:
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```
+4) Verify the changes with quick checks:
+```bash
+curl -I https://pentest-ground.com:9000/ | grep -i Strict-Transport-Security
+openssl s_client -connect pentest-ground.com:9000 -servername pentest-ground.com -status
+```</pre><h5>Remediation</h5><pre>1) Patch and upgrade TLS components to latest versions (OpenSSL, web server, and libraries).
+```bash
+# Debian/Ubuntu
+sudo apt-get update
+sudo apt-get install --only-upgrade openssl nginx
+# RHEL/CentOS
+sudo dnf upgrade openssl nginx httpd
+```
+2) If CA supports OCSP Must-Staple, reissue certificate with that extension; otherwise ensure OCSP stapling is correctly configured and the CA-signed chain is complete.
+```bash
+# After reissue, install new certificate and reload server
+sudo cp new_cert.pem /etc/ssl/certs/server.pem
+sudo systemctl reload nginx
+```
+3) Harden TLS config permanently:
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384&#x27;;
+ssl_prefer_server_ciphers on;
+```
+4) Re-apply HSTS with preload after verification and monitor TLS/OCSP stapling status.
+```nginx
+add_header Strict-Transport-Security \&quot;max-age=31536000; includeSubDomains; preload\&quot; always;
+```</pre>
+      <h5>PoC scripts</h5><p><code>poc-018</code></p>
+    </div>
+  </td>
+  <td>CWE-327</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server doesn&#x27;t support secure renegotiations
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS insecure renegotiation detected along with OpenSSL CCS (CVE-2014-0224); HSTS not set; certificate uses EC-128 with 34 days remaining.</p><h5>Exploitability</h5><p>MITM access on the network path is required to trigger renegotiation; attacker could inject data during a TLS session if insecure renegotiation is accepted.</p><h5>Mitigation</h5><pre>1. Enable secure TLS renegotiation and disable insecure renegotiation; enforce TLS 1.2/1.3 and modern ciphers.
+
+```apache
+# Apache (ssl.conf)
+SSLInsecureRenegotiation off
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite HIGH:!aNULL:!MD5:!3DES
+Header always set Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot;
+```
+
+```nginx
+# Nginx (server block)
+server {
+  listen 443 ssl;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384&#x27;;
+  ssl_prefer_server_ciphers on;
+  add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+}
+```
+
+2. Ensure HSTS is present on all HTTPS responses and verify headers are returned.
+
+```apache
+# Apache (ssl.conf)
+Header always set Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot;
+```
+
+```nginx
+# Nginx (server block)
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+```
+
+3. Validate changes with quick checks after reloads:
+
+```bash
+curl -I https://pentest-ground.com:9000/ | grep -i Strict-Transport-Security
+openssl s_client -connect pentest-ground.com:9000 -tls1_2 &lt;/dev/null 2&gt;/dev/null | grep -i renegotiation
+```</pre><h5>Remediation</h5><pre>1. Patch and upgrade the TLS stack to the latest OpenSSL/vendor release; restart services.
+
+```bash
+# Debian/Ubuntu
+sudo apt-get update
+sudo apt-get install --only-upgrade openssl libssl1.1
+sudo systemctl restart apache2
+
+# RHEL/CentOS
+sudo yum update openssl
+sudo systemctl restart httpd
+```
+
+2. Enforce TLS hardening on the server (disable insecure renegotiation by default; enable TLS 1.2/1.3 and modern ciphers).
+
+```apache
+# Apache (ssl.conf)
+SSLInsecureRenegotiation off
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite HIGH:!aNULL:!MD5:!3DES
+```
+
+```nginx
+# Nginx (server block)
+server {
+  listen 443 ssl;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384&#x27;;
+  ssl_prefer_server_ciphers on;
+}
+```
+
+3. Deploy HSTS for all HTTPS responses and plan a staged rollout (then consider preload after traffic shift).
+
+```apache
+Header always set Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot;
+```
+
+```nginx
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains; preload&quot; always;
+```
+
+4. Re-test with external/ internal scanners and monitor for insecure renegotiation attempts.
+
+```bash
+curl -I https://pentest-ground.com:9000/
+openssl s_client -connect pentest-ground.com:9000 -tls1_2
+```</pre>
+      
+    </div>
+  </td>
+  <td>CWE-326</td><td>High</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#f9a825">MEDIUM</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>The following ciphers are acceptable for TLSv1.2: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+Path: /</p>
+      <h5>Analyst notes</h5><p>TLS config accepts CBC-based ciphers for TLSv1.2 and lacks HSTS, with a certificate expiring in about 34 days.</p><h5>Exploitability</h5><p>Requires network access to the TLS endpoint; an attacker can initiate a TLS handshake using a CBC or weak cipher to observe potential downgrade or data exposure.</p><h5>Mitigation</h5><pre>1. Enable HSTS on the HTTPS endpoint immediately to prevent protocol downgrades. 2. Remove CBC/weak ciphers and enforce modern TLS, ensuring TLS 1.2/1.3 is used. 3. Apply changes to all front-end proxies/load balancers and origin servers, then restart services. 4. Validate quickly that HSTS header is present and that only strong ciphers are negotiated.</pre><h5>Remediation</h5><pre>1. Harden TLS configuration across all endpoints (load balancers, reverse proxies, and web servers) to disable TLS 1.0/1.1 and CBC-based ciphers; prefer TLS 1.2+ and TLS 1.3 with ECDHE and AES-GCM.
+
+```
+# Nginx example
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers &#x27;ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256&#x27;;
+ssl_prefer_server_ciphers on;
+```
+
+```
+# Apache example
+SSLProtocol -all +TLSv1.2 +TLSv1.3
+SSLCipherSuite HIGH:!aNULL:!MD5:!3DES:!AES128-SHA:!RC4
+SSLHonorCipherOrder on
+```
+
+2. Enable HSTS with preload and apply to all subdomains; ensure responses set the header consistently.
+
+```
+# Nginx example
+add_header Strict-Transport-Security &quot;max-age=63072000; includeSubDomains; preload&quot; always;
+```
+
+```
+# Apache example
+Header always set Strict-Transport-Security &quot;max-age=63072000; includeSubDomains; preload&quot;
+```
+
+3. Deploy and verify changes across all tiers, then reload/restart services.
+
+```
+systemctl reload nginx
+# or
+systemctl reload httpd
+```
+
+4. Validate post-implementation using quick checks and a TLS scanner (e.g., testssl.sh or curl) to confirm HSTS presence and absence of weak ciphers.
+
+```
+curl -I https://pentest-ground.com:9000/ | grep -i Strict-Transport-Security
+```
+</pre>
+      
+    </div>
+  </td>
+  <td>CWE-327</td><td>Medium</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Content Security Policy Configuration</strong>
+    <div class="finding-detail">
+      <p>CSP is not set for URL: https://pentest-ground.com:9000/
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>Clickjacking Protection</strong>
+    <div class="finding-detail">
+      <p>X-Frame-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>HTTP Strict Transport Security (HSTS)</strong>
+    <div class="finding-detail">
+      <p>Strict-Transport-Security is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>MIME Type Confusion</strong>
+    <div class="finding-detail">
+      <p>X-Content-Type-Options is not set
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#1565c0">LOW</span></td>
+  <td><code>wapiti</code></td>
+  <td>
+    <strong>TLS/SSL misconfigurations</strong>
+    <div class="finding-detail">
+      <p>Server is vulnerable to OpenSSL CCS (CVE-2014-0224)
+Path: /</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>alterx</code></td>
+  <td>
+    <strong>Permutation: flag provided but not defined: -d</strong>
+    <div class="finding-detail">
+      <p>Subdomain permutation generated: flag provided but not defined: -d</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Unable to execute massdns. Make sure it is present and that the</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Unable to execute massdns. Make sure it is present and that the</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: path to the binary is added to the PATH environment variable.</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: path to the binary is added to the PATH environment variable.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Alternatively, specify the path to massdns using --bin</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Alternatively, specify the path to massdns using --bin</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>wafw00f</code></td>
+  <td>
+    <strong>No WAF detected</strong>
+    <div class="finding-detail">
+      <p>No WAF was detected on https://pentest-ground.com:9000.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+</tbody></table>
+</details>
+<details open><summary><code>juice-shop</code> — 12 finding(s)</summary>
+<p style="color:var(--high)"><strong>httprobe error:</strong> Tool timed out after 300s</p>
+
+<table>
+<thead><tr>
+  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+</tr></thead><tbody>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>alterx</code></td>
+  <td>
+    <strong>Permutation: flag provided but not defined: -d</strong>
+    <div class="finding-detail">
+      <p>Subdomain permutation generated: flag provided but not defined: -d</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>nmap</code></td>
+  <td>
+    <strong>Open port 3000/tcp — ppp</strong>
+    <div class="finding-detail">
+      <p>Port 3000/tcp is open on 172.20.0.6. Service detected: ppp.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Unable to execute massdns. Make sure it is present and that the</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Unable to execute massdns. Make sure it is present and that the</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: path to the binary is added to the PATH environment variable.</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: path to the binary is added to the PATH environment variable.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Alternatively, specify the path to massdns using --bin</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Alternatively, specify the path to massdns using --bin</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>rustscan</code></td>
+  <td>
+    <strong>Open port 3000/tcp — ppp</strong>
+    <div class="finding-detail">
+      <p>Port 3000/tcp is open on 172.20.0.6. Service: ppp.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: hostmaster.hostmaster.juice-shop</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: hostmaster.hostmaster.juice-shop via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: hostmaster.juice-shop</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: hostmaster.juice-shop via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.juice-shop</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.juice-shop via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mx1.juice-shop</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mx1.juice-shop via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mail.juice-shop</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mail.juice-shop via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: hostmaster.hostmaster.hostmaster.juice-shop</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: hostmaster.hostmaster.hostmaster.juice-shop via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+</tbody></table>
+</details>
+<details open><summary><code>webgoat</code> — 44 finding(s)</summary>
+<p style="color:var(--high)"><strong>httprobe error:</strong> Tool timed out after 300s</p>
+
+<table>
+<thead><tr>
+  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+</tr></thead><tbody>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>alterx</code></td>
+  <td>
+    <strong>Permutation: flag provided but not defined: -d</strong>
+    <div class="finding-detail">
+      <p>Subdomain permutation generated: flag provided but not defined: -d</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>nmap</code></td>
+  <td>
+    <strong>Open port 8080/tcp — http (Apache Tomcat )</strong>
+    <div class="finding-detail">
+      <p>Port 8080/tcp is open on 172.20.0.3. Service detected: http (Apache Tomcat ).</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>nmap</code></td>
+  <td>
+    <strong>Open port 9090/tcp — http (Apache Tomcat )</strong>
+    <div class="finding-detail">
+      <p>Port 9090/tcp is open on 172.20.0.3. Service detected: http (Apache Tomcat ).</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Unable to execute massdns. Make sure it is present and that the</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Unable to execute massdns. Make sure it is present and that the</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: path to the binary is added to the PATH environment variable.</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: path to the binary is added to the PATH environment variable.</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>puredns</code></td>
+  <td>
+    <strong>Subdomain: Alternatively, specify the path to massdns using --bin</strong>
+    <div class="finding-detail">
+      <p>Valid subdomain discovered: Alternatively, specify the path to massdns using --bin</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>rustscan</code></td>
+  <td>
+    <strong>Open port 8080/tcp — http (Apache Tomcat )</strong>
+    <div class="finding-detail">
+      <p>Port 8080/tcp is open on 172.20.0.3. Service: http (Apache Tomcat ).</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>rustscan</code></td>
+  <td>
+    <strong>Open port 9090/tcp — http (Apache Tomcat )</strong>
+    <div class="finding-detail">
+      <p>Port 9090/tcp is open on 172.20.0.3. Service: http (Apache Tomcat ).</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webmail.leonardtestnew.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webmail.leonardtestnew.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webmail.scottdemo.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webmail.scottdemo.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: cpanel.leonardtestnew.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: cpanel.leonardtestnew.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.leonardtestnew.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.leonardtestnew.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: cpanel.leonardtestfriday.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: cpanel.leonardtestfriday.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webdisk.acag.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webdisk.acag.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: acag.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: acag.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mail.leonardtestnew.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mail.leonardtestnew.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webdisk.leonardtestnew.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webdisk.leonardtestnew.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.acag.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.acag.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.leonardtestfriday.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.leonardtestfriday.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: cpanel.acag.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: cpanel.acag.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mx.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mx.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: leonardtestnew.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: leonardtestnew.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webdisk.leonardtestfriday.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webdisk.leonardtestfriday.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.beta.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.beta.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: donna.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: donna.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: 220-khan.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: 220-khan.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.donna.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.donna.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mail.leonardtestfriday.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mail.leonardtestfriday.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: www.scottdemo.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: www.scottdemo.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webdisk.scottdemo.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webdisk.scottdemo.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: ns1.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: ns1.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: srv1.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: srv1.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webmail.acag.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webmail.acag.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: ns2.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: ns2.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: cpanel.scottdemo.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: cpanel.scottdemo.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: admin.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: admin.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: beta.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: beta.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: scottdemo.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: scottdemo.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: webmail.leonardtestfriday.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: webmail.leonardtestfriday.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: khan.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: khan.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: leonardtestfriday.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: leonardtestfriday.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mail.scottdemo.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mail.scottdemo.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+
+<tr>
+  <td><span class="badge" style="background:#546e7a">INFO</span></td>
+  <td><code>subfinder</code></td>
+  <td>
+    <strong>Subdomain: mail.acag.webgoat</strong>
+    <div class="finding-detail">
+      <p>Discovered subdomain: mail.acag.webgoat via rapiddns</p>
+      
+      
+    </div>
+  </td>
+  <td>—</td><td>—</td><td>—</td>
+</tr>
+
+</tbody></table>
+</details>
+</div>
+<div class="section"><h2>PoC Assets</h2><ul>
+<li><code>reports/run_20260718_163039/poc/poc-001.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-002.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-003.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-004.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-005.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-006.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-007.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-008.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-009.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-010.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-011.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-012.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-013.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-014.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-015.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-016.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-017.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-018.sh</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-019.py</code></li>
+<li><code>reports/run_20260718_163039/poc/poc-020.sh</code></li>
+</ul></div>
+<script>
+function toggleTheme() {
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script></div></body></html>

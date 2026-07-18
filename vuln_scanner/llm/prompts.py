@@ -5,122 +5,115 @@ via config [llm.prompts] to fully customise the LLM behaviour.
 """
 
 ENRICH_SYSTEM = """\
-You are an expert penetration tester and vulnerability analyst. Your task is to triage
-security findings from automated scanning tools. Return ONLY valid JSON — no markdown fences,
-no commentary outside the JSON.
+You are a penetration tester triaging and remediating automated scanner findings.
+Be terse and technical. Return ONLY valid JSON — no markdown fences, no commentary outside the JSON.
 """
 
 ENRICH_USER = """\
-Analyze the following security finding from tool '{tool}' against target '{target}'.
+Triage and remediate this finding from tool '{tool}' on target '{target}'.
 
-Finding:
-  Title: {title}
-  Severity: {severity}
-  Description: {description}
-  CVEs: {cves}
-  Tool raw output (truncated): {raw_output}
+Title: {title}
+Severity: {severity}
+Description: {description}
+CVEs: {cves}
+Raw output: {raw_output}
 
-Return a JSON object with exactly these keys:
+Return JSON with exactly these keys:
 {{
-  "cwe": ["CWE-XXX"],          // list of applicable CWE IDs, empty list if none
+  "cwe": ["CWE-XXX"],
   "confidence": "high|medium|low|unknown",
-  "false_positive": true|false|null,  // null = cannot determine
-  "exploitability": "brief 1-2 sentence assessment of how easy this is to exploit in practice",
-  "notes": "brief analyst note explaining the severity and context",
-  "poc_plan": "concise description of a PoC script that would confirm/exploit this finding using CLI tools (curl, sqlmap, nuclei, etc.) or Python — or empty string if not applicable"
+  "false_positive": true|false|null,
+  "exploitability": "1-2 sentences — attacker steps and prerequisite access only",
+  "notes": "1 sentence analyst context",
+  "cvss_vector": "CVSS:3.1/AV:...",
+  "cvss_score": 0.0,
+  "poc_plan": "one-liner: CLI tool + flag + target that proves this, or empty string",
+  "mitigation": "immediate workaround — 2-4 numbered steps, commands/config only (under 200 words)",
+  "remediation": "permanent fix — 2-4 numbered steps, commands/config only (under 200 words)"
 }}
 """
 
 CLUSTER_SYSTEM = """\
-You are a senior security consultant producing a structured vulnerability assessment.
+You are a senior pentester writing a client report. Be concise and technical.
 Return ONLY valid JSON — no markdown fences, no commentary outside the JSON.
 """
 
 CLUSTER_USER = """\
-Group the following security findings into root-cause clusters for a professional report.
-Findings (JSON array):
+Cluster these findings by root cause. Findings:
 {findings_json}
 
-Return a JSON object with exactly these keys:
+Return JSON:
 {{
   "clusters": [
     {{
-      "id": "cluster-1",
-      "title": "short cluster title",
+      "id": "cluster-N",
+      "title": "short title",
       "severity": "critical|high|medium|low|info",
-      "summary": "2-3 sentence root-cause description",
-      "member_titles": ["exact finding title", ...],
-      "shared_remediation": "concrete remediation steps shared by all members",
-      "tags": ["injection", "auth", ...]
+      "summary": "2 sentences: root cause and exploitation path",
+      "member_titles": ["exact title", ...],
+      "shared_remediation": "2-3 bullet points, concrete actions only",
+      "tags": ["tag", ...]
     }}
   ],
-  "executive_summary": "3-5 sentence executive summary suitable for a client report"
+  "executive_summary": "3 sentences: what was found, business risk, top priority action"
 }}
 """
 
 MITIGATION_SYSTEM = """\
-You are a senior penetration tester writing a professional vulnerability report.
+You are writing the remediation section of a pentest report. Be direct and actionable.
 Return ONLY valid JSON — no markdown fences, no commentary outside the JSON.
 """
 
 MITIGATION_USER = """\
-Write a detailed mitigation and remediation plan for the following finding.
+Write remediation for this finding.
 {poc_evidence}
 
-Finding:
-  Title: {title}
-  Severity: {severity}
-  Description: {description}
-  CWE: {cwe}
-  Exploitability: {exploitability}
-  Tool: {tool}
-  Target: {target}
+Title: {title}
+Severity: {severity}
+Description: {description}
+CWE: {cwe}
+Exploitability: {exploitability}
+Tool: {tool} / Target: {target}
 
-Return a JSON object with exactly these keys:
+Return JSON with exactly these keys. Keep each field under 300 words.
+Use numbered lists and fenced code blocks (```lang\\n...\\n```) where helpful.
 {{
-  "mitigation": "immediate mitigation steps (short-term workarounds). Use Markdown formatting: numbered lists, bold for key terms, and fenced code blocks (```language ... ```) for any config or command examples.",
-  "remediation": "permanent fix with concrete implementation steps. Use Markdown formatting: numbered lists, bold for key terms, and fenced code blocks (```language ... ```) for any config, code, or command examples."
+  "mitigation": "immediate workaround — 2-4 numbered steps, commands/config only",
+  "remediation": "permanent fix — 2-4 numbered steps, commands/config only"
 }}
 """
 
 POC_SYSTEM = """\
-You are a penetration tester writing proof-of-concept exploit scripts.
-The scripts will run inside a BlackArch Linux Docker container that has these tools available:
+You are writing PoC scripts for a BlackArch container that has:
 curl, wget, python3, nmap, sqlmap, nuclei, dalfox, ffuf, feroxbuster, nikto, gobuster,
 commix, wfuzz, xsstrike, sslyze, sslscan, testssl.sh, amass, subfinder, dnsx, naabu,
 smbmap, enum4linux-ng, crackmapexec, semgrep, bandit, trivy, grype, gitleaks, trufflehog.
-Write ONLY self-contained, non-destructive scripts that CONFIRM the vulnerability exists.
+Write minimal, non-destructive confirmation scripts only.
 Return ONLY valid JSON — no markdown fences, no commentary outside the JSON.
 """
 
 POC_USER = """\
-Write a proof-of-concept script for the following vulnerability finding.
-The target is an isolated lab environment (intentionally vulnerable container).
+Write a PoC for this finding against an isolated lab target.
 
-Finding:
-  Title: {title}
-  Severity: {severity}
-  Description: {description}
-  CWE: {cwe}
-  Exploitability: {exploitability}
-  PoC plan: {poc_plan}
-  Target: {target}
+Title: {title}
+Severity: {severity}
+Description: {description}
+CWE: {cwe}
+Exploitability: {exploitability}
+PoC plan: {poc_plan}
+Target: {target}
 
 {git_clone_instruction}
 
-Return a JSON object with exactly these keys:
+Return JSON:
 {{
   "language": "python|bash",
-  "script": "complete self-contained script as a string",
-  "description": "what this PoC proves and how to interpret its output",
-  "expected_indicator": "string that appears in output when vulnerability is confirmed",
+  "script": "complete self-contained script",
+  "description": "one sentence: what confirmed output proves",
+  "expected_indicator": "string to look for in output",
   "safe_to_run": true|false,
-  "safety_notes": "any caveats (empty string if fully safe)"
+  "safety_notes": ""
 }}
 
-CRITICAL RULES:
-- Script must be NON-DESTRUCTIVE: no data deletion, no DoS, no fork bombs, no system-wide changes
-- Only test the specific target provided ({target})
-- No lateral movement, no persistence, no exfiltration of data outside the container
-- If you cannot write a safe PoC, set safe_to_run to false and explain in safety_notes
+Rules: non-destructive only, test only {target}, no persistence/exfiltration/lateral movement.
 """

@@ -13,7 +13,9 @@ def _args(**kwargs) -> Namespace:
     return base
 
 
-def test_defaults_when_no_source():
+def test_defaults_when_no_source(monkeypatch, tmp_path):
+    # Run from a temp dir so the project's config.toml is not picked up.
+    monkeypatch.chdir(tmp_path)
     config = load_config(_args())
     assert config.scan.targets == []
     assert config.scan.mode == ScanMode.PASSIVE

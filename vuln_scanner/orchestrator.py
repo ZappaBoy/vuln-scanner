@@ -88,6 +88,7 @@ class ScanOrchestrator:
                 mode=self._config.scan.mode,
                 rate_limit=self._config.scan.rate_limit,
                 auth=base_auth.for_target(target),
+                proxy=self._config.scan.proxy,
             )
             for target in targets
         }

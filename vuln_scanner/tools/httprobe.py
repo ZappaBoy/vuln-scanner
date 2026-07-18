@@ -9,7 +9,8 @@ class HttprobeTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.CIDR})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["httprobe", "-c", "20", "-prefer-https"]
+        # -prefer-https was removed in httprobe v0.2+; probe HTTPS explicitly via -p
+        cmd = ["httprobe", "-c", "20", "-p", "https:443"]
         cmd += scan_input.extra_args
         return cmd
 

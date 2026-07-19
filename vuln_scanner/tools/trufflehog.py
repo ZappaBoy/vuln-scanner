@@ -25,8 +25,7 @@ class TrufflehogTool(AbstractTool):
             subcommand = "filesystem"
             target = target if target.startswith("/") else "."
 
-        cmd = ["trufflehog", subcommand, "--json", "--no-update",
-               "--exclude-paths=.venv,.git,node_modules,dist,build"]
+        cmd = ["trufflehog", subcommand, "--json", "--no-update"]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
         cmd.append(target)

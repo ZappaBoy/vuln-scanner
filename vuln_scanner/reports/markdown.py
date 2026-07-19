@@ -12,7 +12,7 @@ from pathlib import Path
 
 from vuln_scanner.model import Assessment, Cluster
 from vuln_scanner.reports.base import AbstractReporter
-from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity
+from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity, severity_passes
 from vuln_scanner.tools.models import Finding, ScanResult
 
 # ── Severity ordering and labels ──────────────────────────────────────────────
@@ -131,7 +131,7 @@ class MarkdownReporter(AbstractReporter):
         target_groups: dict[str, list[_FindingGroup]] = {}
         target_errors: dict[str, list[tuple[str, str]]] = {}
         for target in sorted(by_target):
-            findings, errors = self._collect(by_target[target])
+            findings, errors = self._collect(by_target[target], self._min_severity)
             if findings or errors:
                 groups = _deduplicate(findings)
                 groups.sort(key=lambda g: _SEVERITY_ORDER.index(g.finding.severity))
@@ -585,6 +585,7 @@ class MarkdownReporter(AbstractReporter):
     @staticmethod
     def _collect(
         results: list[ScanResult],
+        min_severity: str = "none",
     ) -> tuple[list[tuple[str, Finding]], list[tuple[str, str]]]:
         findings: list[tuple[str, Finding]] = []
         errors: list[tuple[str, str]] = []
@@ -594,7 +595,7 @@ class MarkdownReporter(AbstractReporter):
             if r.error and r.status not in (ScanStatus.SKIPPED,):
                 errors.append((r.tool, r.error))
             for f in r.findings:
-                if not f.false_positive:
+                if not f.false_positive and severity_passes(f.severity, min_severity):
                     findings.append((r.tool, f))
         return findings, errors
 

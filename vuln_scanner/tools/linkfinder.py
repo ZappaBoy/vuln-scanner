@@ -9,7 +9,7 @@ class LinkFinderTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["python3", "/opt/LinkFinder/linkfinder.py", "-i", _as_url(target), "-o", "cli"]
+        cmd = ["linkfinder", "-i", _as_url(target), "-o", "cli"]
         if scan_input.mode in ("active", "aggressive"):
             cmd += ["-d"]  # domain crawl mode
         cmd += scan_input.extra_args

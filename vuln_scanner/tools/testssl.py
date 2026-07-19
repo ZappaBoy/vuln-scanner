@@ -28,7 +28,7 @@ class TestSSLTool(AbstractTool):
         if ":" not in host:
             host = f"{host}:443"
         cmd = [
-            "testssl.sh",
+            "testssl",
             "--jsonfile", OUTPUT_FILE_SENTINEL,
             "--quiet",
             "--nodns", "min",

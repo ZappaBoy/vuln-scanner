@@ -35,13 +35,15 @@ class KiterunnerTool(AbstractTool):
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
         wordlist = _WORDLISTS[scan_input.mode]
         cmd = [
-            "kr", "scan", url,
+            "kiterunner", "scan", url,
             "-w", wordlist,
             "--fail-status-codes", "404",
             "--ignore-length", "0",
+            "-o", "text",
+            "-q",
         ]
         if scan_input.rate_limit is not None:
-            cmd += ["--max-connection-per-host", str(min(scan_input.rate_limit, 20))]
+            cmd += ["-x", str(min(scan_input.rate_limit, 20))]
         auth = scan_input.auth
         if auth.is_configured:
             for k, v in auth.effective_headers.items():

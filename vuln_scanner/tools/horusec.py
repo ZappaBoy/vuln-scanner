@@ -1,7 +1,9 @@
 import json
+import subprocess
+import time
 
-from vuln_scanner.tools.enums import TargetType, _parse_severity
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.enums import ScanStatus, TargetType, _parse_severity
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
 
 
@@ -19,6 +21,28 @@ class HorusecTool(AbstractTool):
         ]
         cmd += scan_input.extra_args
         return cmd
+
+    def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+        # horusec is installed via yay with `|| true` — skip gracefully if absent.
+        cmd = self.build_command(target, scan_input)
+        start = time.monotonic()
+        try:
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=scan_input.timeout)
+            duration = time.monotonic() - start
+            findings = self.parse_output(proc.stdout + proc.stderr, target)
+            return ScanResult(
+                tool=self.name, target=target, findings=findings,
+                duration=duration, status=ScanStatus.SUCCESS,
+                raw_output=proc.stdout,
+            )
+        except FileNotFoundError:
+            return ScanResult(tool=self.name, target=target,
+                              duration=0.0, status=ScanStatus.SKIPPED)
+        except subprocess.TimeoutExpired:
+            return ScanResult(tool=self.name, target=target,
+                              duration=float(scan_input.timeout),
+                              status=ScanStatus.TIMEOUT,
+                              error=f"Tool timed out after {scan_input.timeout}s")
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         if not raw.strip():

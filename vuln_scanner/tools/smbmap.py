@@ -55,7 +55,8 @@ class SMBMapTool(AbstractTool):
             )
         except FileNotFoundError:
             return ScanResult(tool=self.name, target=target, duration=0.0,
-                              status=ScanStatus.SKIPPED)
+                              status=ScanStatus.FAILED,
+                              error="Binary not found: smbmap")
         except subprocess.TimeoutExpired:
             return ScanResult(
                 tool=self.name, target=target, duration=float(scan_input.timeout),

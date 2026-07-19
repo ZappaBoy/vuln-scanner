@@ -174,7 +174,7 @@ def main() -> None:
     for fmt in config.report.formats:
         ext = _REPORT_EXT.get(fmt, fmt.value)
         output_path = run_dir / f"report.{ext}"
-        reporter = get_reporter(fmt)
+        reporter = get_reporter(fmt, min_severity=config.report.min_severity)
         written = reporter.generate(assessment, output_path)
         log.info("Report written: %s", written)
 

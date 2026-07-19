@@ -48,6 +48,7 @@ class ToolsConfig(BaseModel):
 class ReportConfig(BaseModel):
     formats: list[ReportFormat] = Field(default_factory=lambda: [ReportFormat.MARKDOWN])
     output_dir: Path = Path("./reports")
+    min_severity: str = "none"  # "none"|"info"|"low"|"medium"|"high"|"critical"
 
     @classmethod
     def model_validate(cls, data: Any, **kwargs: Any) -> "ReportConfig":

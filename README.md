@@ -16,12 +16,13 @@ An automated vulnerability assessment platform that orchestrates **86 open-sourc
 8. [Plugin System](#plugin-system)
 9. [Report Formats](#report-formats)
 10. [Quick Start](#quick-start)
-11. [Configuration](#configuration)
-12. [Environment Variables](#environment-variables)
-13. [Project Structure](#project-structure)
-14. [Adding a New Tool](#adding-a-new-tool)
-15. [Development](#development)
-16. [DefectDojo Integration](#defectdojo-integration)
+11. [scanner.sh — Docker Wrapper](#scannersh--docker-wrapper)
+12. [Configuration](#configuration)
+13. [Environment Variables](#environment-variables)
+14. [Project Structure](#project-structure)
+15. [Adding a New Tool](#adding-a-new-tool)
+16. [Development](#development)
+17. [DefectDojo Integration](#defectdojo-integration)
 
 ---
 
@@ -619,6 +620,74 @@ vuln-scanner --targets \
 
 ---
 
+## scanner.sh — Docker Wrapper
+
+`scanner.sh` is the recommended day-to-day interface for running the scanner. It wraps `docker compose run` so you never need to type the compose invocation manually — just pass targets and flags directly.
+
+```bash
+./scanner.sh [OPTIONS] [-- SCANNER_ARGS...]
+```
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `-t`, `--targets HOST...` | One or more scan targets (URL, IP, CIDR, path, image) |
+| `-m`, `--mode MODE` | Scan mode: `passive` \| `active` \| `aggressive` \| `paranoid` |
+| `-c`, `--config FILE` | Config file to mount (default: `./config.toml`) |
+| `-f`, `--formats FMT` | Report formats, comma-separated: `markdown,html,json`; repeatable |
+| `--no-llm` | Disable LLM enrichment |
+| `--llm-model MODEL` | LLM model override (e.g. `gpt-4o`, `claude-sonnet-4-5`) |
+| `--llm-min-severity SEV` | Minimum severity for LLM: `info\|low\|medium\|high\|critical` |
+| `--include-tools TOOLS` | Comma-separated list of tools to run |
+| `--exclude-tools TOOLS` | Comma-separated list of tools to skip |
+| `-e`, `--env KEY=VALUE` | Pass an extra environment variable to the container |
+| `-b`, `--build` | Rebuild the Docker image before running |
+| `-n`, `--no-defectdojo` | Skip DefectDojo integration |
+| `--shell` | Open an interactive shell inside the container instead of scanning |
+| `-h`, `--help` | Show help |
+
+Everything after `--` is forwarded verbatim to the scanner entrypoint, bypassing all wrapper logic.
+
+### Examples
+
+```bash
+# Scan using ./config.toml (targets and mode come from the config)
+./scanner.sh
+
+# Quick scan with explicit targets and mode
+./scanner.sh -t https://app.example.com 192.168.1.0/24 -m active
+
+# Use a custom config file
+./scanner.sh -c /path/to/prod.toml
+
+# Enable LLM enrichment with a specific model
+./scanner.sh -t https://app.example.com --llm-model gpt-4o
+
+# Run only specific tools
+./scanner.sh -t https://app.example.com --include-tools nuclei,dalfox,ffuf
+
+# Rebuild the image first, then scan
+./scanner.sh --build -t https://app.example.com -m active
+
+# Full manual passthrough to the scanner entrypoint
+./scanner.sh -- --targets https://t.example.com --mode aggressive --formats markdown html json
+
+# Open an interactive shell (all tools, volumes, and env available)
+./scanner.sh --shell
+./scanner.sh --build --shell
+```
+
+### What it does automatically
+
+- Loads `.env` (copies from `.env.example` if missing)
+- Copies `config.example.toml` → `config.toml` if no config exists
+- Creates the `vuln_scanner_network` Docker network if not present
+- Mounts a custom `--config` file into the container at `/app/config.toml`
+- Rebuilds the image when `--build` is passed
+
+---
+
 ## Configuration
 
 Copy the annotated template:
@@ -824,7 +893,8 @@ Dockerfile               # BlackArch-based image; bakes VS_IN_CONTAINER=1
 docker-compose.yml                # DefectDojo stack
 docker-compose.scanner.yml        # Scanner service
 docker-compose.target.yaml        # Vulnerable test targets (Juice Shop, WebGoat)
-poc.sh                            # End-to-end quick-start script
+scanner.sh                        # Convenience wrapper — runs the scanner via docker compose
+poc.sh                            # End-to-end quick-start script (DefectDojo + targets + scanner)
 ```
 
 ---

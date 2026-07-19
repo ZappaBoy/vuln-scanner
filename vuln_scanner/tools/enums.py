@@ -57,3 +57,18 @@ def _parse_severity(s: str) -> Severity:
     if s in ("low", "l", "1"):
         return Severity.LOW
     return Severity.INFO
+
+
+def severity_passes(finding_sev: Severity, min_severity: str) -> bool:
+    """Return True if finding_sev is at or above min_severity.
+
+    min_severity="none" (the default) means every finding passes.
+    Lower sort_order = higher severity, so passes when sort_order <= threshold.
+    """
+    if not min_severity or min_severity.lower() in ("none", ""):
+        return True
+    try:
+        threshold = _parse_severity(min_severity)
+    except Exception:
+        return True
+    return finding_sev.sort_order <= threshold.sort_order

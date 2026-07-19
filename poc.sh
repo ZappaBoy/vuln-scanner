@@ -227,7 +227,6 @@ run_scanner() {
             "https://pentest-ground.com:5013"
             "https://pentest-ground.com:9000"
             "https://pentest-ground.com:7001"
-            "pentest-ground.com:6379"
             "https://pentest-ground.com:81"
         )
     else

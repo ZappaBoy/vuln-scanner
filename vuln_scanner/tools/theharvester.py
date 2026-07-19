@@ -126,7 +126,8 @@ class TheHarvesterTool(AbstractTool):
                               error=f"Timed out after {scan_input.timeout}s")
         except FileNotFoundError:
             return ScanResult(tool=self.name, target=domain,
-                              status=ScanStatus.SKIPPED)
+                              status=ScanStatus.FAILED,
+                              error="Binary not found: theHarvester")
         finally:
             for path in (outfile_base, outfile_base + ".json", outfile_base + ".xml"):
                 try:

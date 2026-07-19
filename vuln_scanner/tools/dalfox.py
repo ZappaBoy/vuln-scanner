@@ -11,24 +11,24 @@ class DalfoxTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["dalfox", "url", "--url", target, "--format", "json", "--silence"]
+        cmd = ["dalfox", "scan", target, "-f", "jsonl", "-S", "--no-color"]
 
         if scan_input.mode == ScanMode.PARANOID:
             cmd += ["--only-discovery"]
         elif scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["--deep-domxss", "--follow-redirects"]
+            cmd += ["--deep-scan", "-F"]
 
         if scan_input.rate_limit is not None:
-            cmd += ["--delay", str(max(0, 1000 // scan_input.rate_limit))]  # ms between reqs
+            cmd += ["--rate-limit", str(scan_input.rate_limit)]
 
         auth = scan_input.auth
         if auth.is_configured:
             if auth.cookie_string:
-                cmd += ["--cookie", auth.cookie_string]
+                cmd += ["--cookies", auth.cookie_string]
             for k, v in auth.headers.items():
-                cmd += ["--header", f"{k}: {v}"]
+                cmd += ["-H", f"{k}: {v}"]
             if auth.bearer_token and "Authorization" not in auth.headers:
-                cmd += ["--header", f"Authorization: Bearer {auth.bearer_token}"]
+                cmd += ["-H", f"Authorization: Bearer {auth.bearer_token}"]
 
         if scan_input.proxy:
             cmd += ["--proxy", scan_input.proxy]

@@ -1,7 +1,9 @@
 import json
+import subprocess
+import time
 
-from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 
@@ -11,15 +13,44 @@ class CariddiTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["cariddi", "-s", "-json", "-u", _as_url(target)]
-        if scan_input.mode in ("active", "aggressive"):
+        # cariddi reads URLs from stdin — target is injected via run(), not as a flag
+        cmd = ["cariddi", "-s", "-json"]
+        if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-intensive"]
         auth = scan_input.auth
         if auth.is_configured:
-            for k, v in auth.effective_headers.items():
-                cmd += ["-headers", f"{k}: {v}"]
+            header_str = ";;".join(f"{k}: {v}" for k, v in auth.effective_headers.items())
+            cmd += ["-headers", header_str]
         cmd += scan_input.extra_args
         return cmd
+
+    def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+        cmd = self.build_command(target, scan_input)
+        start = time.monotonic()
+        try:
+            proc = subprocess.run(
+                cmd,
+                input=_as_url(target) + "\n",
+                capture_output=True,
+                text=True,
+                timeout=scan_input.timeout,
+            )
+            duration = time.monotonic() - start
+            findings = self.parse_output(proc.stdout + proc.stderr, target)
+            return ScanResult(
+                tool=self.name, target=target, findings=findings,
+                duration=duration, status=ScanStatus.SUCCESS,
+                raw_output=proc.stdout,
+            )
+        except FileNotFoundError:
+            return ScanResult(tool=self.name, target=target,
+                              duration=0.0, status=ScanStatus.FAILED,
+                              error="Binary not found: cariddi")
+        except subprocess.TimeoutExpired:
+            return ScanResult(tool=self.name, target=target,
+                              duration=float(scan_input.timeout),
+                              status=ScanStatus.TIMEOUT,
+                              error=f"Tool timed out after {scan_input.timeout}s")
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

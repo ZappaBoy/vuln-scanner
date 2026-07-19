@@ -27,7 +27,7 @@ class CORScannerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
-        cmd = ["cors_scan", "-u", url]
+        cmd = ["corscanner", "-u", url]
 
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-t", "20"]  # more threads

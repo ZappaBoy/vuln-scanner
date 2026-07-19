@@ -77,8 +77,7 @@ class RESTlerTool(AbstractTool):
         start = time.monotonic()
 
         try:
-            # Phase 1: compile
-            compile_cmd = ["restler", "compile", "--api_spec", spec_file or "swagger.json"]
+            compile_cmd = ["restler-fuzzer", "compile", "--api_spec", spec_file or "swagger.json"]
             if spec_file is None:
                 # Try to fetch spec from common endpoints
                 for path in ("/swagger.json", "/openapi.json", "/api-docs"):
@@ -107,23 +106,35 @@ class RESTlerTool(AbstractTool):
                     error=f"RESTler compile failed: {proc.stderr[:300]}",
                 )
 
-            # Phase 2: fuzz-lean
             grammar = _os.path.join(workdir, "Compile", "grammar.py")
             dictionary = _os.path.join(workdir, "Compile", "dict.json")
+
+            fuzzing_mode_map = {
+                ScanMode.PASSIVE: ("bfs-minimal", "0.1"),
+                ScanMode.ACTIVE: ("bfs", "0.5"),
+                ScanMode.AGGRESSIVE: ("bfs-fast", "1"),
+                ScanMode.PARANOID: ("bfs-fast", "2"),
+            }
+            fuzzing_mode, time_budget = fuzzing_mode_map.get(
+                scan_input.mode, ("bfs", "0.5")
+            )
+
             fuzz_cmd = [
-                "restler", "fuzz-lean",
-                "--grammar_file", grammar,
-                "--dictionary", dictionary,
+                "restler-fuzzer",
+                "--restler_grammar", grammar,
+                "--custom_mutations", dictionary,
+                "--fuzzing_mode", fuzzing_mode,
+                "--time_budget", time_budget,
+                "--save_results_in_fixed_dirname", "True",
             ]
             if server_url:
                 from urllib.parse import urlparse
                 parsed = urlparse(server_url)
-                fuzz_cmd += ["--target_ip", parsed.hostname or target,
-                              "--target_port", str(parsed.port or 443)]
-            if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
-                fuzz_cmd += ["--time_budget", "0.1"]  # ~6 minutes
-            elif scan_input.mode == ScanMode.AGGRESSIVE:
-                fuzz_cmd += ["--time_budget", "1"]
+                host = parsed.hostname or target
+                port = parsed.port or (80 if server_url.startswith("http://") else 443)
+                fuzz_cmd += ["--target_ip", host, "--target_port", str(port)]
+                if server_url.startswith("http://"):
+                    fuzz_cmd.append("--no_ssl")
 
             fuzz_cmd += scan_input.extra_args
 
@@ -133,15 +144,16 @@ class RESTlerTool(AbstractTool):
             )
             duration = time.monotonic() - start
 
-            # Parse bug bucket JSON files
+            # Parse bug bucket JSON files — search recursively since the output
+            # directory name depends on the fuzzing mode and run timestamp.
+            import glob
             raw_findings = ""
-            bug_dir = _os.path.join(workdir, "FuzzLean", "BugBuckets")
-            if _os.path.isdir(bug_dir):
-                for fname in _os.listdir(bug_dir):
-                    if fname.endswith(".json"):
-                        fpath = _os.path.join(bug_dir, fname)
-                        with open(fpath, encoding="utf-8", errors="replace") as f:
-                            raw_findings += f.read() + "\n"
+            for fpath in glob.glob(
+                _os.path.join(workdir, "**", "BugBuckets", "*.json"),
+                recursive=True,
+            ):
+                with open(fpath, encoding="utf-8", errors="replace") as f:
+                    raw_findings += f.read() + "\n"
 
             findings = self.parse_output(raw_findings, target)
             return ScanResult(
@@ -158,7 +170,7 @@ class RESTlerTool(AbstractTool):
         except FileNotFoundError:
             return ScanResult(tool=self.name, target=target,
                               status=ScanStatus.FAILED,
-                              error="Binary not found: restler")
+                              error="restler / restler-fuzzer not found — image may need rebuilding")
         finally:
             import shutil
             shutil.rmtree(workdir, ignore_errors=True)

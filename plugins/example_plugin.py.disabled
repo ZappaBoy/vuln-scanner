@@ -1,0 +1,31 @@
+# Example plugin — rename to .py to activate.
+#
+# Drop any .py file here (or in ~/.vuln-scanner/plugins/) and it is
+# auto-discovered at startup.  Files starting with _ are skipped.
+#
+# Each plugin file may define one or more AbstractTool subclasses.
+# applicable_targets controls which target types the tool runs against;
+# the orchestrator enforces this automatically.
+
+from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import ScanStatus, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+
+
+class ExampleTool(AbstractTool):
+    name: str = "example-tool"
+    category: str = "web"
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+
+    def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
+        return ["my-scanner", "--target", target, "--json"]
+
+    def parse_output(self, raw: str, target: str) -> list[Finding]:
+        # Parse the tool's output and return a list of Finding objects.
+        return []
+
+    # Optional: override run() for full control (auth injection, custom logic).
+    # def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+    #     if "staging" not in target:
+    #         return ScanResult(tool=self.name, target=target, status=ScanStatus.SKIPPED)
+    #     return super().run(target, scan_input)

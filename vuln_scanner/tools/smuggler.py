@@ -9,7 +9,7 @@ class SmugglerTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["python3", "/opt/smuggler/smuggler.py", "-u", _as_url(target), "--no-color"]
+        cmd = ["smuggler", "-u", _as_url(target), "--no-color"]
         auth = scan_input.auth
         if auth.is_configured:
             for k, v in auth.effective_headers.items():

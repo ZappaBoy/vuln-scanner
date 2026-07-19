@@ -5,7 +5,7 @@ from vuln_scanner.reports.json_reporter import JSONReporter
 from vuln_scanner.reports.markdown import MarkdownReporter
 
 
-def get_reporter(fmt: ReportFormat) -> AbstractReporter:
+def get_reporter(fmt: ReportFormat, min_severity: str = "none") -> AbstractReporter:
     reporters: dict[ReportFormat, type[AbstractReporter]] = {
         ReportFormat.MARKDOWN: MarkdownReporter,
         ReportFormat.HTML: HTMLReporter,
@@ -14,7 +14,7 @@ def get_reporter(fmt: ReportFormat) -> AbstractReporter:
     cls = reporters.get(fmt)
     if cls is None:
         raise ValueError(f"Unsupported report format: {fmt!r}")
-    return cls()
+    return cls(min_severity=min_severity)
 
 
 __all__ = [

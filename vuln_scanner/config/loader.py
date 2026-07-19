@@ -28,6 +28,7 @@ class _EnvSettings(BaseSettings):
     report_format: str | None = None
     formats: list[str] | None = None
     output_dir: str | None = None
+    report_min_severity: str | None = None   # VS_REPORT_MIN_SEVERITY=medium
     defectdojo_url: str | None = None
     defectdojo_api_key: str | None = None
     defectdojo_product: str | None = None
@@ -128,6 +129,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--output-dir", metavar="DIR",
                         help="Directory where reports are written. (env: VS_OUTPUT_DIR)")
+    parser.add_argument(
+        "--report-min-severity",
+        choices=["none", "info", "low", "medium", "high", "critical"],
+        default=None, metavar="LEVEL", dest="report_min_severity",
+        help="Exclude findings below this severity from reports "
+             "(none = include all, default: none). (env: VS_REPORT_MIN_SEVERITY)",
+    )
     parser.add_argument("--defectdojo-url", metavar="URL")
     parser.add_argument("--defectdojo-api-key", metavar="KEY")
     # LLM flags
@@ -297,6 +305,8 @@ def load_config(args: Namespace) -> AppConfig:
         data["report"]["formats"] = [env.report_format]
     if env.output_dir is not None:
         data["report"]["output_dir"] = env.output_dir
+    if env.report_min_severity is not None:
+        data["report"]["min_severity"] = env.report_min_severity
     if env.defectdojo_url is not None:
         data["defectdojo"]["url"] = env.defectdojo_url
     if env.defectdojo_api_key is not None:
@@ -437,6 +447,8 @@ def load_config(args: Namespace) -> AppConfig:
         data["report"]["formats"] = [args.format]
     if args.output_dir:
         data["report"]["output_dir"] = args.output_dir
+    if getattr(args, "report_min_severity", None):
+        data["report"]["min_severity"] = args.report_min_severity
     if args.defectdojo_url:
         data["defectdojo"]["url"] = args.defectdojo_url
     if args.defectdojo_api_key:

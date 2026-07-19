@@ -119,8 +119,11 @@ enabled = true
 
 # ─── Reporting ────────────────────────────────────────────────────────────────
 [report]
-formats    = ["markdown", "html", "json"]   # any subset; all three recommended
-output_dir = "./reports"
+formats       = ["markdown", "html", "json"]   # any subset; all three recommended
+output_dir    = "./reports"
+# min_severity = "none"   # Filter findings below this level from all reports.
+                           # Choices: none (default, include all) | info | low | medium | high | critical
+                           # env: VS_REPORT_MIN_SEVERITY
 
 # ─── DefectDojo integration (optional) ───────────────────────────────────────
 [defectdojo]

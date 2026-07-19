@@ -92,12 +92,12 @@ class ArachniTool(AbstractTool):
             except FileNotFoundError:
                 return ScanResult(
                     tool=self.name, target=target, duration=0.0,
-                    status=ScanStatus.SKIPPED,
+                    status=ScanStatus.FAILED, error="Binary not found: arachni",
                 )
 
             # Step 2: convert .afr → JSON report
             report_cmd = [
-                "arachni_reporter", afr_path,
+                "arachni-reporter", afr_path,
                 f"--reporter=json:outfile={json_path}",
             ]
             log.debug("[arachni] Converting report: %s", " ".join(report_cmd))
@@ -107,14 +107,14 @@ class ArachniTool(AbstractTool):
                 return ScanResult(
                     tool=self.name, target=target,
                     duration=time.monotonic() - start,
-                    status=ScanStatus.SKIPPED,
+                    status=ScanStatus.FAILED, error="Binary not found: arachni-reporter",
                 )
             except subprocess.TimeoutExpired as exc:
                 return ScanResult(
                     tool=self.name, target=target,
                     duration=time.monotonic() - start,
                     status=ScanStatus.FAILED,
-                    error=f"arachni_reporter timed out: {exc}",
+                    error=f"arachni-reporter timed out: {exc}",
                 )
 
             raw = ""

@@ -12,7 +12,7 @@ skipped gracefully.
 
 Discovered URLs are scope-validated before being returned.
 """
-from __future__ import annotations
+
 
 import logging
 import shutil

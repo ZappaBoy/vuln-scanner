@@ -55,7 +55,12 @@ class ScanOrchestrator:
                 status=ScanStatus.FAILED,
                 error=str(exc),
             )
-        icon = "✓" if result.status == ScanStatus.SUCCESS else "✗"
+        if result.status == ScanStatus.SUCCESS:
+            icon = "✓"
+        elif result.status == ScanStatus.SKIPPED:
+            icon = "-"
+        else:
+            icon = "✗"
         log.info(
             "  [%s] %s → %s (%s, %.1fs, %d finding(s))",
             icon,

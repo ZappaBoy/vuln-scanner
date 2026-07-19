@@ -4,7 +4,7 @@ Produces a structured security assessment report following industry conventions:
 numbered sections, finding IDs, business impact, evidence, scope/methodology,
 and a clean appendix for scan errors and PoC assets.
 """
-from __future__ import annotations
+
 
 import re
 from collections import defaultdict

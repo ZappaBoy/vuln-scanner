@@ -54,14 +54,14 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [ ] kxss *(finds reflected XSS parameters in HTTP responses)*
 - [ ] CRLFsuite *(CRLF injection vulnerability scanner)*
 - [ ] crlfuzz *(fast CRLF injection scanner — Go)*
-- [ ] nomore403 *(advanced 403/40x restriction bypass tool)*
+- [x] nomore403 *(advanced 403/40x restriction bypass tool)*
 - [ ] SSRFmap *(automatic SSRF fuzzer and exploitation tool)*
 - [ ] Gopherus *(generates gopher links for SSRF exploitation across protocols)*
 - [ ] dotdotpwn *(directory traversal fuzzer — modular, supports many protocols)*
-- [ ] jwt_tool *(JWT security testing toolkit — decode, tamper, crack)*
-- [ ] h2csmuggler *(HTTP/2 cleartext request smuggling scanner)*
+- [x] jwt_tool *(JWT security testing toolkit — decode, tamper, crack)*
+- [x] h2csmuggler *(HTTP/2 cleartext request smuggling scanner)*
 - [ ] Oralyzer *(open redirect analyzer)*
-- [ ] tplmap *(server-side template injection detection and exploitation)*
+- [x] tplmap *(server-side template injection detection and exploitation)*
 - [ ] SSTImap *(SSTI detection with interactive exploitation interface)*
 - [ ] Corsy *(CORS misconfiguration scanner)*
 - [ ] ghauri *(advanced cross-platform SQL injection detection tool)*
@@ -109,7 +109,7 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] Enum4linux-ng *(SMB/Windows/Samba enumeration)*
 - [x] SMBMap *(SMB share enumeration and access check)*
 - [x] CrackMapExec *(Windows/Active Directory assessment)*
-- [ ] Hydra *(brute-force login: SSH, FTP, HTTP, SMB, ...)*
+- [x] Hydra *(brute-force login: SSH, FTP, HTTP, SMB, ...)*
 - [ ] Medusa *(parallel brute-force — complement to Hydra)*
 - [x] Netdiscover *(ARP-based network host discovery)*
 - [x] theHarvester *(OSINT — emails, subdomains, and hosts from public sources)*
@@ -119,7 +119,7 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [ ] massdns *(high-performance passive DNS resolver for bulk subdomain recon)*
 - [ ] shuffledns *(massdns wrapper with active bruteforce and wildcard filtering)*
 - [ ] puredns *(fast, accurate DNS resolver with reliable wildcard detection)*
-- [ ] bbot *(recursive internet scanner with 100+ modules — subdomain, port, web)*
+- [x] bbot *(recursive internet scanner with 100+ modules — subdomain, port, web)*
 - [ ] assetfinder *(find related domains and subdomains from passive sources)*
 - [ ] VHostScan *(virtual host scanner with reverse lookup and wordlist support)*
 - [ ] subdominator *(fast subdomain enumeration aggregating 50+ passive sources)*
@@ -162,10 +162,10 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [ ] Hadolint *(Dockerfile linter)*
 - [ ] Dockle *(container image security linting)*
 - [ ] Docker Bench Security *(CIS Docker benchmark)*
-- [ ] Kubescape *(K8s cluster security posture — NSA/MITRE)*
+- [x] Kubescape *(K8s cluster security posture — NSA/MITRE)*
 - [ ] Kubeaudit *(K8s RBAC and security audit)*
 - [ ] Kube-bench *(CIS K8s benchmark)*
-- [ ] Kube-hunter *(K8s penetration testing)*
+- [x] Kube-hunter *(K8s penetration testing)*
 - [ ] Kube-score *(K8s object static analysis)*
 - [ ] Kube-linter *(K8s YAML linting)*
 - [ ] Popeye *(K8s live cluster resource sanitizer)*
@@ -260,8 +260,8 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] SecretFinder *(JavaScript file secret scanner — works on live HTTP URLs)*
 - [ ] Gitrob *(GitHub organisation recon and secret hunting)*
 - [ ] git-secrets *(pre-commit credential pattern detection — AWS-focused)*
-- [ ] GitTools *(exploit exposed .git directories — dumper, finder, extractor)*
-- [ ] git-dumper *(dump a git repository from a misconfigured web server)*
+- [x] GitTools *(exploit exposed .git directories — dumper, finder, extractor)*
+- [x] git-dumper *(dump a git repository from a misconfigured web server)*
 - [ ] gitjacker *(leak git repositories from misconfigured websites)*
 - [ ] Gato *(GitHub Actions self-hosted runner enumeration and exploitation)*
 - [ ] zizmor *(static analysis for GitHub Actions workflow files)*
@@ -303,7 +303,7 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 ## System / Host Security
 
-- [ ] Lynis *(system security audit: Linux/macOS/Unix)*
+- [x] Lynis *(system security audit: Linux/macOS/Unix)*
 - [ ] OpenSCAP *(SCAP compliance scanner and hardening)*
 - [ ] ClamAV *(malware and virus scanning)*
 - [ ] YARA *(malware pattern matching)*
@@ -364,10 +364,10 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 ## Subdomain Takeover
 
-- [ ] subjack *(subdomain takeover detection tool written in Go)*
+- [x] subjack *(subdomain takeover detection tool written in Go)*
 - [ ] SubOver *(fast, concurrent subdomain takeover scanner)*
-- [ ] dnsReaper *(subdomain takeover detection — 50+ fingerprints)*
-- [ ] subzy *(subdomain takeover tool based on fingerprint matching)*
+- [x] dnsReaper *(subdomain takeover detection — 50+ fingerprints)*
+- [x] subzy *(subdomain takeover tool based on fingerprint matching)*
 - [ ] autoSubTakeover *(automated CNAME-based subdomain takeover checker)*
 - [ ] tko-subs *(detect and takeover subdomains with dead DNS records)*
 - [ ] second-order *(second-order subdomain takeover scanner)*
@@ -383,7 +383,7 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 ## Binary / Reverse Engineering
 
 - [ ] Binwalk *(firmware extraction and vulnerability analysis)*
-- [ ] checksec *(ELF/PE binary hardening checks — NX, PIE, RELRO, stack canary)*
+- [x] checksec *(ELF/PE binary hardening checks — NX, PIE, RELRO, stack canary)*
 - [~] Ghidra *(GUI reverse engineering tool — headless scripting exists but not a vulnerability scanner)*
 - [~] Radare2 *(interactive analysis tool — no standalone vulnerability-scan mode)*
 - [~] pwntools *(Python exploit development library — not a scanner)*

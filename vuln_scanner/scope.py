@@ -14,12 +14,12 @@ Evaluation order:
 This is intentionally conservative: when ``strict=True``, a target that
 cannot be parsed is treated as out of scope so it is never accidentally scanned.
 """
-from __future__ import annotations
 
 import fnmatch
 import ipaddress
 import logging
 from urllib.parse import urlparse
+from pydantic import BaseModel, Field
 
 log = logging.getLogger(__name__)
 
@@ -75,7 +75,9 @@ class ScopeValidator:
         # for user-provided targets, use check() which respects strict mode
     """
 
-    def __init__(self, include: list[str], exclude: list[str], strict: bool = False) -> None:
+    def __init__(
+        self, include: list[str], exclude: list[str], strict: bool = False
+    ) -> None:
         self._include = include
         self._exclude = exclude
         self._strict = strict
@@ -123,8 +125,6 @@ class ScopeValidator:
 
 
 # ─── Config model (imported by config/models.py) ──────────────────────────────
-
-from pydantic import BaseModel, Field  # noqa: E402
 
 
 class ScopeConfig(BaseModel):

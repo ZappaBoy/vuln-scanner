@@ -20,13 +20,15 @@ RUN yay -Syu --noconfirm && \
         theharvester fierce naabu kiterunner trivy grype semgrep bandit checkov tfsec prowler flawfinder gitleaks \
         trufflehog httpx crlfuzz cariddi puredns alterx waybackurls httprobe gowitness osv-scanner govulncheck \
         brakeman smuggler linkfinder graphql-cop detect-secrets python-jsbeautifier python-requests dotnet-runtime \
-        hadolint-bin terrascan-bin noseyparker secretfinder dependency-check restler-fuzzer && \
+        hadolint-bin terrascan-bin noseyparker secretfinder dependency-check restler-fuzzer hydra lynis subjack subzy \
+        tplmap checksec jwt-tool gittools git-dumper h2csmuggler kubescape-bin bbot kube-hunter && \
     yay -Scc --noconfirm
 
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest && \
     go install github.com/securego/gosec/v2/cmd/gosec@latest && \
     go install github.com/aquasecurity/kube-bench@latest && \
     ( go install github.com/trufflesecurity/jsluice/cmd/jsluice@latest 2>/dev/null || true ) && \
+    go install github.com/devploit/nomore403@latest && \
     go clean -cache -modcache && \
     rm -rf /home/builder/go/pkg
 
@@ -56,6 +58,18 @@ RUN pip install --break-system-packages --no-cache-dir \
         pip-audit \
         humble && \
     pip install --break-system-packages --no-cache-dir --no-deps apifuzzer
+
+# dnsreaper — google-cloud-dns uses pkg_resources which was dropped from setuptools 75+.
+# Patch the installed file to use importlib.metadata instead (available since Python 3.8).
+RUN git clone --depth 1 https://github.com/punk-security/dnsReaper /opt/dnsreaper && \
+    pip install --break-system-packages --no-cache-dir -r /opt/dnsreaper/requirements.txt && \
+    python3 -c "import glob; [open(p,'w').write(open(p).read().replace('from pkg_resources import get_distribution','from importlib.metadata import version as _iv\nget_distribution=lambda n:type(chr(95)+\"D\",(),{\"version\":_iv(n)})()')) for p in glob.glob('/usr/lib/python*/site-packages/google/cloud/dns/__init__.py')]" && \
+    printf '#!/bin/sh\nexec python3 /opt/dnsreaper/main.py "$@"\n' > /usr/local/bin/dnsreaper && \
+    chmod +x /usr/local/bin/dnsreaper && \
+    rm -rf /opt/dnsreaper/.git
+
+# git-dumper — requests_pkcs12 is an optional dep not listed in its install_requires
+RUN pip install --break-system-packages --no-cache-dir requests_pkcs12
 
 # humble
 RUN git clone --depth 1 https://github.com/rfc-st/humble /opt/humble && \

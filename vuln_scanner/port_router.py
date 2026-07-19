@@ -10,7 +10,7 @@ new scan targets:
 The returned URLs are scope-validated and deduped before being appended
 to the target list.
 """
-from __future__ import annotations
+
 
 import logging
 from typing import TYPE_CHECKING

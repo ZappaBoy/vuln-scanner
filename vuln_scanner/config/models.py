@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from vuln_scanner.llm.models import LLMConfig
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
-from vuln_scanner.tools.models import AuthConfig  # noqa: E402  (used below)
-from vuln_scanner.scope import ScopeConfig  # noqa: E402
+from vuln_scanner.tools.models import AuthConfig
+from vuln_scanner.scope import ScopeConfig
 
 
 class ReportFormat(str, Enum):
@@ -170,6 +170,16 @@ class AppLLMConfig(BaseModel):
     AppConfig without pulling in the openai dependency at import time.
     """
     enabled: Any = "auto"
+
+    @field_validator("enabled", mode="before")
+    @classmethod
+    def _coerce_enabled(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            if v.lower() in ("false", "0", "no", "off"):
+                return False
+            if v.lower() in ("true", "1", "yes", "on"):
+                return True
+        return v
     base_url: str = ""
     api_key: str = ""
     model: str = ""

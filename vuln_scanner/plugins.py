@@ -9,7 +9,7 @@ Discovery order (later entries override earlier on name collision):
 Each plugin file is imported as a module; all ``AbstractTool`` subclasses found
 in it (concrete, not abstract) are registered into the provided registry dict.
 """
-from __future__ import annotations
+
 
 import importlib.util
 import inspect

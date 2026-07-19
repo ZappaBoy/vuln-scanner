@@ -87,6 +87,20 @@ from vuln_scanner.tools.wpscan import WPScanTool
 from vuln_scanner.tools.xsstrike import XSStrikeTool
 from vuln_scanner.tools.zap import ZAPTool
 from vuln_scanner.tools.gowitness import GowitnesssTool
+from vuln_scanner.tools.hydra import HydraTool
+from vuln_scanner.tools.lynis import LynisTool
+from vuln_scanner.tools.subjack import SubjackTool
+from vuln_scanner.tools.subzy import SubzyTool
+from vuln_scanner.tools.dnsreaper import DnsReaperTool
+from vuln_scanner.tools.jwt_tool import JwtToolTool
+from vuln_scanner.tools.tplmap import TplmapTool
+from vuln_scanner.tools.git_dumper import GitDumperTool
+from vuln_scanner.tools.kubescape import KubescapeTool
+from vuln_scanner.tools.kube_hunter import KubeHunterTool
+from vuln_scanner.tools.bbot import BbotTool
+from vuln_scanner.tools.nomore403 import Nomore403Tool
+from vuln_scanner.tools.checksec import ChecksecTool
+from vuln_scanner.tools.h2csmuggler import H2cSmugglerTool
 
 TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Web application scanning
@@ -191,6 +205,28 @@ TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Secrets (additional)
     "detect-secrets":     DetectSecretsTool,
     "noseyparker":        NoseyParkerTool,
+    # Subdomain takeover
+    "subjack":            SubjackTool,
+    "subzy":              SubzyTool,
+    "dnsreaper":          DnsReaperTool,
+    # Web (additional)
+    "jwt-tool":           JwtToolTool,
+    "tplmap":             TplmapTool,
+    "nomore403":          Nomore403Tool,
+    "h2csmuggler":        H2cSmugglerTool,
+    # Secrets / exposed .git
+    "git-dumper":         GitDumperTool,
+    # Cloud / K8s
+    "kubescape":          KubescapeTool,
+    "kube-hunter":        KubeHunterTool,
+    # Recon
+    "bbot":               BbotTool,
+    # Network / brute force
+    "hydra":              HydraTool,
+    # System
+    "lynis":              LynisTool,
+    # Binary analysis
+    "checksec":           ChecksecTool,
 }
 
 __all__ = [
@@ -283,5 +319,19 @@ __all__ = [
     "TerrascanTool",
     "WaybackURLsTool",
     "GowitnesssTool",
+    "HydraTool",
+    "LynisTool",
+    "SubjackTool",
+    "SubzyTool",
+    "DnsReaperTool",
+    "JwtToolTool",
+    "TplmapTool",
+    "GitDumperTool",
+    "KubescapeTool",
+    "KubeHunterTool",
+    "BbotTool",
+    "Nomore403Tool",
+    "ChecksecTool",
+    "H2cSmugglerTool",
     "TOOL_REGISTRY",
 ]

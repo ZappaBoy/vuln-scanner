@@ -1,5 +1,5 @@
 .idea
-reports
+./reports
 config.toml
 
 # Byte-compiled / optimized / DLL files

@@ -18,6 +18,7 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - **Graph / visualisation tool** — populates a database or produces diagrams, not scan findings (e.g. Cartography, Maltego)
 - **Pre-commit hook** — designed to gate commits, not to scan an arbitrary target on demand
 - **Commercial / hosted platform** — self-hosted edition either unavailable or restricted (already covered by the original `[~]` meaning)
+- **Pipeline utility** — transforms or deduplicates stdin/stdout; produces no vulnerability findings (e.g. anew, unfurl)
 
 ---
 
@@ -50,33 +51,33 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] ParamSpider *(parameter mining from web archives — no interaction with target)*
 - [x] gau *(gather all known URLs — Wayback Machine, CommonCrawl, AlienVault OTX)*
 - [x] JSluice *(URL, path, and secret extraction from JavaScript files — Trufflesecurity)*
-- [ ] dirsearch *(web path discovery — Python, wordlist-based)*
-- [ ] kxss *(finds reflected XSS parameters in HTTP responses)*
-- [ ] CRLFsuite *(CRLF injection vulnerability scanner)*
-- [ ] crlfuzz *(fast CRLF injection scanner — Go)*
+- [x] dirsearch *(web path discovery — Python, wordlist-based)*
+- [x] kxss *(finds reflected XSS parameters in HTTP responses)*
+- [x] CRLFsuite *(CRLF injection vulnerability scanner)*
+- [x] crlfuzz *(fast CRLF injection scanner — Go)*
 - [x] nomore403 *(advanced 403/40x restriction bypass tool)*
-- [ ] SSRFmap *(automatic SSRF fuzzer and exploitation tool)*
-- [ ] Gopherus *(generates gopher links for SSRF exploitation across protocols)*
+- [x] SSRFmap *(automatic SSRF fuzzer and exploitation tool)*
+- [~] Gopherus *(payload generator — produces gopher:// URIs for manual use, no scan findings)*
 - [ ] dotdotpwn *(directory traversal fuzzer — modular, supports many protocols)*
 - [x] jwt_tool *(JWT security testing toolkit — decode, tamper, crack)*
 - [x] h2csmuggler *(HTTP/2 cleartext request smuggling scanner)*
-- [ ] Oralyzer *(open redirect analyzer)*
+- [x] Oralyzer *(open redirect analyzer)*
 - [x] tplmap *(server-side template injection detection and exploitation)*
-- [ ] SSTImap *(SSTI detection with interactive exploitation interface)*
-- [ ] Corsy *(CORS misconfiguration scanner)*
-- [ ] ghauri *(advanced cross-platform SQL injection detection tool)*
-- [ ] XSRFProbe *(CSRF audit and exploitation tool)*
-- [ ] mitmproxy *(TLS-capable interactive intercepting proxy with Python scripting)*
-- [ ] proxify *(HTTP/HTTPS traffic capture and manipulation proxy — ProjectDiscovery)*
-- [ ] joomscan *(OWASP Joomla vulnerability scanner)*
-- [ ] CMSmap *(open-source multi-CMS security scanner — WordPress, Joomla, Drupal)*
-- [ ] aemhacker *(Adobe Experience Manager vulnerability scanner)*
-- [ ] RouterSploit *(exploitation framework for routers and embedded/IoT devices)*
-- [ ] WhatWaf *(detect and bypass web application firewalls and protection systems)*
-- [ ] Jaeles *(Swiss Army knife for automated web application testing — Go, rule-based)*
-- [ ] BlackWidow *(Python web application scanner for OSINT and OWASP vulnerability discovery)*
-- [ ] JSParser *(parse relative URLs from JavaScript files using Tornado and JSBeautifier)*
-- [ ] Parameth *(brute-discover hidden GET and POST parameters)*
+- [x] SSTImap *(SSTI detection with interactive exploitation interface)*
+- [x] Corsy *(CORS misconfiguration scanner)*
+- [x] ghauri *(advanced cross-platform SQL injection detection tool)*
+- [x] XSRFProbe *(CSRF audit and exploitation tool)*
+- [~] mitmproxy *(TLS-capable interactive intercepting proxy — no standalone one-shot scan mode)*
+- [~] proxify *(HTTP/HTTPS traffic capture proxy — pipeline tool, not a scanner)*
+- [x] joomscan *(OWASP Joomla vulnerability scanner)*
+- [x] CMSmap *(open-source multi-CMS security scanner — WordPress, Joomla, Drupal)*
+- [x] aemhacker *(Adobe Experience Manager vulnerability scanner)*
+- [~] RouterSploit *(exploitation framework for routers — interactive session required)*
+- [x] WhatWaf *(detect and bypass web application firewalls and protection systems)*
+- [x] Jaeles *(Swiss Army knife for automated web application testing — Go, rule-based)*
+- [x] BlackWidow *(Python web application scanner for OSINT and OWASP vulnerability discovery)*
+- [x] JSParser *(parse relative URLs from JavaScript files using Tornado and JSBeautifier)*
+- [x] Parameth *(brute-discover hidden GET and POST parameters)*
 - [~] NucleiFuzzer *(thin wrapper around Nuclei + ParamSpider — not a standalone scanner)*
 - [~] Caido *(GUI-based proxy — no headless scan mode that produces parseable findings)*
 - [~] AppCheck Web Application Scanner
@@ -110,32 +111,32 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] SMBMap *(SMB share enumeration and access check)*
 - [x] CrackMapExec *(Windows/Active Directory assessment)*
 - [x] Hydra *(brute-force login: SSH, FTP, HTTP, SMB, ...)*
-- [ ] Medusa *(parallel brute-force — complement to Hydra)*
+- [x] Medusa *(parallel brute-force — complement to Hydra)*
 - [x] Netdiscover *(ARP-based network host discovery)*
 - [x] theHarvester *(OSINT — emails, subdomains, and hosts from public sources)*
 - [x] Fierce *(aggressive DNS enumeration, brute-force, and zone walking)*
 - [x] Naabu *(fast port scanner — ProjectDiscovery, pairs well with Nuclei)*
-- [ ] findomain *(fast cross-platform subdomain enumerator with certificate transparency)*
-- [ ] massdns *(high-performance passive DNS resolver for bulk subdomain recon)*
-- [ ] shuffledns *(massdns wrapper with active bruteforce and wildcard filtering)*
-- [ ] puredns *(fast, accurate DNS resolver with reliable wildcard detection)*
+- [x] findomain *(fast cross-platform subdomain enumerator with certificate transparency)*
+- [x] massdns *(high-performance passive DNS resolver for bulk subdomain recon)*
+- [x] shuffledns *(massdns wrapper with active bruteforce and wildcard filtering)*
+- [x] puredns *(fast, accurate DNS resolver with reliable wildcard detection)*
 - [x] bbot *(recursive internet scanner with 100+ modules — subdomain, port, web)*
-- [ ] assetfinder *(find related domains and subdomains from passive sources)*
-- [ ] VHostScan *(virtual host scanner with reverse lookup and wordlist support)*
-- [ ] subdominator *(fast subdomain enumeration aggregating 50+ passive sources)*
-- [ ] zmap *(stateless large-scale internet-wide port/network scanner)*
-- [ ] alterx *(fast, customizable subdomain wordlist generator — ProjectDiscovery)*
-- [ ] gotator *(DNS wordlist generator through permutations and mutations)*
-- [ ] ripgen *(high-performance domain permutation generator — Rust)*
-- [ ] dnsgen *(powerful DNS name permutation and mutation tool)*
-- [ ] gauplus *(extended URL gathering from Wayback, CommonCrawl, OTX with proxy support)*
-- [ ] haktrails *(SecurityTrails API client for subdomain and DNS history recon)*
-- [ ] csprecon *(discover new domains via Content Security Policy analysis)*
-- [ ] github-subdomains *(find subdomains via GitHub code search)*
-- [ ] chaos-client *(Go client for ProjectDiscovery Chaos DNS API — passive subdomain recon)*
-- [ ] Knockpy *(subdomain enumeration using dictionary attack and DNS queries)*
-- [ ] Sudomy *(automated subdomain enumeration combining passive and active techniques)*
-- [ ] httprobe *(take a list of domains and probe for working HTTP/HTTPS servers)*
+- [x] assetfinder *(find related domains and subdomains from passive sources)*
+- [x] VHostScan *(virtual host scanner with reverse lookup and wordlist support)*
+- [x] subdominator *(fast subdomain enumeration aggregating 50+ passive sources)*
+- [x] zmap *(stateless large-scale internet-wide port/network scanner)*
+- [x] alterx *(fast, customizable subdomain wordlist generator — ProjectDiscovery)*
+- [x] gotator *(DNS wordlist generator through permutations and mutations)*
+- [x] ripgen *(high-performance domain permutation generator — Rust)*
+- [x] dnsgen *(powerful DNS name permutation and mutation tool)*
+- [x] gauplus *(extended URL gathering from Wayback, CommonCrawl, OTX with proxy support)*
+- [x] haktrails *(SecurityTrails API client for subdomain and DNS history recon)*
+- [x] csprecon *(discover new domains via Content Security Policy analysis)*
+- [x] github-subdomains *(find subdomains via GitHub code search)*
+- [x] chaos-client *(Go client for ProjectDiscovery Chaos DNS API — passive subdomain recon)*
+- [x] Knockpy *(subdomain enumeration using dictionary attack and DNS queries)*
+- [~] Sudomy *(bash wrapper orchestrating 20+ external tools — not a standalone scanner)*
+- [x] httprobe *(take a list of domains and probe for working HTTP/HTTPS servers)*
 - [~] Recon-ng *(interactive framework — no subprocess-friendly CLI mode; requires module scripting)*
 - [~] Shodan CLI *(queries external SaaS — requires paid API key, no local execution)*
 - [~] Nexpose *(Rapid7)*
@@ -158,20 +159,20 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 - [x] Trivy *(image, filesystem, repo vuln + misconfiguration)*
 - [x] Grype *(Anchore — container/package SCA)*
-- [ ] Syft *(SBOM generation — pairs with Grype)*
-- [ ] Hadolint *(Dockerfile linter)*
-- [ ] Dockle *(container image security linting)*
-- [ ] Docker Bench Security *(CIS Docker benchmark)*
+- [x] Syft *(SBOM generation — pairs with Grype)*
+- [x] Hadolint *(Dockerfile linter)*
+- [x] Dockle *(container image security linting)*
+- [x] Docker Bench Security *(CIS Docker benchmark)*
 - [x] Kubescape *(K8s cluster security posture — NSA/MITRE)*
-- [ ] Kubeaudit *(K8s RBAC and security audit)*
-- [ ] Kube-bench *(CIS K8s benchmark)*
+- [x] Kubeaudit *(K8s RBAC and security audit)*
+- [x] Kube-bench *(CIS K8s benchmark)*
 - [x] Kube-hunter *(K8s penetration testing)*
-- [ ] Kube-score *(K8s object static analysis)*
-- [ ] Kube-linter *(K8s YAML linting)*
-- [ ] Popeye *(K8s live cluster resource sanitizer)*
+- [x] Kube-score *(K8s object static analysis)*
+- [x] Kube-linter *(K8s YAML linting)*
+- [x] Popeye *(K8s live cluster resource sanitizer)*
 - [~] Falco *(runtime monitoring daemon — not a one-shot CLI scanner; runs continuously as a system service)*
-- [ ] Dive *(Docker image layer analyser — finds wasted space and secrets left in layers)*
-- [ ] Terrascan *(see IaC / Cloud Security — also covers K8s/Helm manifests)*
+- [x] Dive *(Docker image layer analyser — finds wasted space and secrets left in layers)*
+- [x] Terrascan *(see IaC / Cloud Security — also covers K8s/Helm manifests)*
 - [~] Anchore Enterprise
 - [~] Aqua
 - [~] Clair *(requires running registry integration)*
@@ -188,25 +189,25 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] Bandit *(Python)*
 - [x] GoSec *(Go)*
 - [x] Nuclei *(template-based — web + SAST patterns)*
-- [ ] CodeQL *(GitHub semantic code analysis — runs locally via CLI)*
-- [ ] Brakeman *(Ruby on Rails)*
-- [ ] Bearer CLI *(multi-language with data-flow analysis)*
-- [ ] Horusec *(multi-language: Go, Java, Python, Ruby, JS, C#)*
-- [ ] SpotBugs *(Java bytecode analysis)*
-- [ ] PMD *(Java, Apex, PLSQL, XML, JS)*
-- [ ] Infer *(Facebook — Java, C, C++, Objective-C)*
-- [ ] Flawfinder *(C/C++ security scanner)*
-- [ ] Cppcheck *(C/C++ static analysis)*
-- [ ] DevSkim *(multi-language security linter — Microsoft)*
-- [ ] ESLint *(JavaScript/TypeScript — with security plugins)*
-- [ ] Psalm *(PHP static analysis with security checks)*
-- [ ] ProgPilot *(PHP SAST)*
-- [ ] RuboCop *(Ruby — with security cops)*
-- [ ] CodeChecker *(C/C++ — wraps Clang Static Analyzer)*
-- [ ] DawnScanner *(Ruby)*
-- [ ] Joern *(code property graph — multi-language semantic vulnerability analysis)*
-- [ ] Insider *(SAST for mobile and web: Swift, Kotlin, Java, JS, C#)*
-- [ ] weggli *(fast C/C++ semantic search — finds vulnerability patterns)*
+- [x] CodeQL *(GitHub semantic code analysis — runs locally via CLI)*
+- [x] Brakeman *(Ruby on Rails)*
+- [x] Bearer CLI *(multi-language with data-flow analysis)*
+- [x] Horusec *(multi-language: Go, Java, Python, Ruby, JS, C#)*
+- [x] SpotBugs *(Java bytecode analysis)*
+- [x] PMD *(Java, Apex, PLSQL, XML, JS)*
+- [x] Infer *(Facebook — Java, C, C++, Objective-C)*
+- [x] Flawfinder *(C/C++ security scanner)*
+- [x] Cppcheck *(C/C++ static analysis)*
+- [x] DevSkim *(multi-language security linter — Microsoft)*
+- [x] ESLint *(JavaScript/TypeScript — with security plugins)*
+- [x] Psalm *(PHP static analysis with security checks)*
+- [x] ProgPilot *(PHP SAST)*
+- [x] RuboCop *(Ruby — with security cops)*
+- [x] CodeChecker *(C/C++ — wraps Clang Static Analyzer)*
+- [x] DawnScanner *(Ruby)*
+- [x] Joern *(code property graph — multi-language semantic vulnerability analysis)*
+- [x] Insider *(SAST for mobile and web: Swift, Kotlin, Java, JS, C#)*
+- [x] weggli *(fast C/C++ semantic search — finds vulnerability patterns)*
 - [~] Checkmarx (One, CxFlow, OSA)
 - [~] Contrast
 - [~] Coverity
@@ -226,17 +227,17 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 - [x] Dependency Check *(OWASP — Java, Node, Python, Ruby, .NET)*
 - [x] pip-audit *(Python)*
-- [ ] OSV Scanner *(Google — multi-language, uses OSV database)*
-- [ ] Xeol *(end-of-life component detection)*
-- [ ] Retire.js *(JavaScript library vulnerability detection)*
-- [ ] npm audit *(Node.js — built into npm)*
-- [ ] Yarn audit *(Node.js — built into yarn)*
-- [ ] Bundler-audit *(Ruby gems)*
-- [ ] cargo-audit *(Rust crates)*
-- [ ] Govulncheck *(Go modules — official Go toolchain)*
-- [ ] Nancy *(Go — Sonatype OSS Index)*
-- [ ] CycloneDX CLI *(SBOM generation and analysis)*
-- [ ] License Finder *(OSS license compliance — detects GPL/AGPL/etc. in dependencies)*
+- [x] OSV Scanner *(Google — multi-language, uses OSV database)*
+- [x] Xeol *(end-of-life component detection)*
+- [x] Retire.js *(JavaScript library vulnerability detection)*
+- [x] npm audit *(Node.js — built into npm)*
+- [x] Yarn audit *(Node.js — built into yarn)*
+- [x] Bundler-audit *(Ruby gems)*
+- [x] cargo-audit *(Rust crates)*
+- [x] Govulncheck *(Go modules — official Go toolchain)*
+- [x] Nancy *(Go — Sonatype OSS Index)*
+- [x] CycloneDX CLI *(SBOM generation and analysis)*
+- [x] License Finder *(OSS license compliance — detects GPL/AGPL/etc. in dependencies)*
 - [~] FOSSA CLI *(requires FOSSA SaaS account and token — not locally self-contained)*
 - [~] Dependency Track *(server platform)*
 - [~] GitLab Dependency Scan *(CI/CD integration)*
@@ -252,19 +253,19 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 - [x] Gitleaks
 - [x] TruffleHog *(deep git history + verified secrets)*
-- [ ] detect-secrets *(Yelp — baseline + pre-commit scanning)*
-- [ ] NoseyParker *(fast Rust-based secret scanner)*
-- [ ] Whispers *(YAML, JSON, config file secret scanner)*
-- [ ] Rusty Hog *(Rust — git, S3, Jira, Confluence)*
-- [ ] Talisman *(pre-commit hook for outgoing secret detection)*
+- [x] detect-secrets *(Yelp — baseline + pre-commit scanning)*
+- [x] NoseyParker *(fast Rust-based secret scanner)*
+- [x] Whispers *(YAML, JSON, config file secret scanner)*
+- [x] Rusty Hog *(Rust — git, S3, Jira, Confluence)*
+- [~] Talisman *(pre-commit hook for outgoing secret detection — not a one-shot scanner)*
 - [x] SecretFinder *(JavaScript file secret scanner — works on live HTTP URLs)*
-- [ ] Gitrob *(GitHub organisation recon and secret hunting)*
-- [ ] git-secrets *(pre-commit credential pattern detection — AWS-focused)*
+- [x] Gitrob *(GitHub organisation recon and secret hunting)*
+- [~] git-secrets *(pre-commit credential pattern detection — hook-based, not a standalone scanner)*
 - [x] GitTools *(exploit exposed .git directories — dumper, finder, extractor)*
 - [x] git-dumper *(dump a git repository from a misconfigured web server)*
-- [ ] gitjacker *(leak git repositories from misconfigured websites)*
-- [ ] Gato *(GitHub Actions self-hosted runner enumeration and exploitation)*
-- [ ] zizmor *(static analysis for GitHub Actions workflow files)*
+- [x] gitjacker *(leak git repositories from misconfigured websites)*
+- [x] Gato *(GitHub Actions self-hosted runner enumeration and exploitation)*
+- [x] zizmor *(static analysis for GitHub Actions workflow files)*
 - [~] shhgit *(monitors public repos in real-time — not a local target scanner)*
 - [~] CredScan *(Microsoft — Azure DevOps only)*
 - [~] GGShield *(GitGuardian SaaS)*
@@ -277,20 +278,20 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 - [x] Checkov *(Terraform, K8s, Docker, ARM, CloudFormation)*
 - [x] tfsec *(Terraform-specific — fast)*
-- [ ] KICS *(Checkmarx open-source — Terraform, K8s, Docker, Ansible, CF)*
-- [ ] Terrascan *(Terraform, K8s, Helm, Kustomize, ARM)*
-- [ ] Regula *(Terraform, CloudFormation — OPA-based)*
-- [ ] cfn-nag *(AWS CloudFormation linting)*
-- [ ] Prowler *(AWS/GCP/Azure security posture — open source CLI)*
-- [ ] ScoutSuite *(multi-cloud audit: AWS, Azure, GCP, Alibaba)*
-- [ ] Cloudsploit *(open-source cloud security scanner)*
-- [ ] Threagile *(threat modeling as code)*
+- [x] KICS *(Checkmarx open-source — Terraform, K8s, Docker, Ansible, CF)*
+- [x] Terrascan *(Terraform, K8s, Helm, Kustomize, ARM)*
+- [x] Regula *(Terraform, CloudFormation — OPA-based)*
+- [x] cfn-nag *(AWS CloudFormation linting)*
+- [x] Prowler *(AWS/GCP/Azure security posture — open source CLI)*
+- [x] ScoutSuite *(multi-cloud audit: AWS, Azure, GCP, Alibaba)*
+- [x] Cloudsploit *(open-source cloud security scanner)*
+- [x] Threagile *(threat modeling as code)*
 - [~] Pacu *(interactive exploitation framework — requires active AWS session; not a passive scanner)*
-- [ ] Cloudfox *(AWS/Azure attack surface discovery for pentesting)*
-- [ ] ROADrecon *(Azure AD and Entra ID reconnaissance)*
-- [ ] S3Scanner *(scan for open and misconfigured AWS S3 buckets)*
-- [ ] AWSBucketDump *(enumerate S3 buckets for sensitive files and interesting content)*
-- [ ] CloudScraper *(enumerate cloud storage resources across AWS, Azure, GCP)*
+- [x] Cloudfox *(AWS/Azure attack surface discovery for pentesting)*
+- [x] ROADrecon *(Azure AD and Entra ID reconnaissance)*
+- [x] S3Scanner *(scan for open and misconfigured AWS S3 buckets)*
+- [x] AWSBucketDump *(enumerate S3 buckets for sensitive files and interesting content)*
+- [x] CloudScraper *(enumerate cloud storage resources across AWS, Azure, GCP)*
 - [~] Cartography *(populates a Neo4j graph database — not a CLI scanner with findings output)*
 - [~] AWS Inspector v2 *(AWS service)*
 - [~] AWS Security Hub / ASFF *(AWS service)*
@@ -304,31 +305,30 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 ## System / Host Security
 
 - [x] Lynis *(system security audit: Linux/macOS/Unix)*
-- [ ] OpenSCAP *(SCAP compliance scanner and hardening)*
-- [ ] ClamAV *(malware and virus scanning)*
-- [ ] YARA *(malware pattern matching)*
-- [ ] rkhunter *(rootkit, backdoor, and local exploit detection)*
-- [ ] chkrootkit *(rootkit detection)*
-- [ ] Vuls *(agentless vulnerability scanner for Linux/FreeBSD — CVE-based)*
-- [ ] Wappalyzer CLI *(technology fingerprinting from HTTP responses)*
+- [x] OpenSCAP *(SCAP compliance scanner and hardening)*
+- [x] ClamAV *(malware and virus scanning)*
+- [x] YARA *(malware pattern matching)*
+- [x] rkhunter *(rootkit, backdoor, and local exploit detection)*
+- [x] chkrootkit *(rootkit detection)*
+- [x] Vuls *(agentless vulnerability scanner for Linux/FreeBSD — CVE-based)*
+- [x] Wappalyzer CLI *(technology fingerprinting from HTTP responses)*
 
 ## Mobile Application Security
 
-- [ ] MobSF *(Mobile Security Framework — Android/iOS static + dynamic)*
-- [ ] AndroBugs *(Android app vulnerability scanner)*
-- [ ] QARK *(Android static analysis)*
-- [ ] APKiD *(Android APK packer/protector identification)*
-- [ ] APKLeaks *(scan APK files for URIs, endpoints, and secrets)*
-- [ ] Androwarn *(static code analyzer for Android — detects malicious behavior patterns)*
-- [ ] Quark-Engine *(Android malware scoring system based on obfuscation-tolerant analysis)*
-- [ ] MVT *(Mobile Verification Toolkit — forensic tool for detecting iOS/Android spyware)*
-- [ ] Drozer *(security testing framework for Android with CLI agent)*
+- [x] MobSF *(Mobile Security Framework — Android/iOS static + dynamic)*
+- [x] AndroBugs *(Android app vulnerability scanner)*
+- [x] QARK *(Android static analysis)*
+- [x] APKiD *(Android APK packer/protector identification)*
+- [x] APKLeaks *(scan APK files for URIs, endpoints, and secrets)*
+- [x] Androwarn *(static code analyzer for Android — detects malicious behavior patterns)*
+- [x] Quark-Engine *(Android malware scoring system based on obfuscation-tolerant analysis)*
+- [x] MVT *(Mobile Verification Toolkit — forensic tool for detecting iOS/Android spyware)*
+- [~] Drozer *(interactive Android security framework — requires device agent; no one-shot scan mode)*
 - [~] apktool *(decompiler/rebuilder — not a vulnerability scanner; produces no findings)*
 - [~] objection *(interactive runtime exploration via Frida — no standalone scan mode)*
 - [~] Frida *(dynamic instrumentation framework — requires custom scripts; not a scanner)*
 - [~] Jadx *(Dex-to-Java decompiler — produces source code, not vulnerability findings)*
 - [~] Androguard *(reverse engineering library/framework — no standalone scan mode)*
-- [~] Drozer *(interactive Android security framework — requires device agent; no one-shot scan mode)*
 - [~] House *(Frida-based GUI runtime analysis — no standalone scan mode)*
 - [~] apk-mitm *(patches APKs for HTTPS inspection — not a vulnerability scanner)*
 
@@ -344,16 +344,16 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 ## OSINT / Reconnaissance
 
-- [ ] SpiderFoot *(automated OSINT framework — 200+ modules, self-hostable CLI)*
-- [ ] Photon *(fast OSINT web crawler — extracts URLs, emails, keys, files)*
-- [ ] ReconFTW *(automated full-scope reconnaissance framework combining 35+ tools)*
-- [ ] waybackurls *(fetch all known URLs for a domain from the Wayback Machine)*
-- [ ] waymore *(extended Wayback Machine URL discovery with extended filters)*
-- [ ] xnLinkFinder *(endpoint and parameter discovery from responses and JavaScript)*
-- [ ] hakip2host *(resolve IP ranges to associated domain names via reverse DNS)*
-- [ ] WitnessMe *(web inventory tool — screenshots via Pyppeteer, identifies default credentials)*
-- [ ] anew *(append new unique lines from stdin to a file — pipeline deduplication utility)*
-- [ ] unfurl *(extract URL components from stdin — domains, paths, query params — for pivoting)*
+- [x] SpiderFoot *(automated OSINT framework — 200+ modules, self-hostable CLI)*
+- [x] Photon *(fast OSINT web crawler — extracts URLs, emails, keys, files)*
+- [x] ReconFTW *(automated full-scope reconnaissance framework combining 35+ tools)*
+- [x] waybackurls *(fetch all known URLs for a domain from the Wayback Machine)*
+- [x] waymore *(extended Wayback Machine URL discovery with extended filters)*
+- [x] xnLinkFinder *(endpoint and parameter discovery from responses and JavaScript)*
+- [x] hakip2host *(resolve IP ranges to associated domain names via reverse DNS)*
+- [x] WitnessMe *(web inventory tool — screenshots via Pyppeteer, identifies default credentials)*
+- [~] anew *(append new unique lines from stdin to a file — pipeline deduplication utility, not a scanner)*
+- [~] unfurl *(extract URL components from stdin — pipeline transformation utility, not a scanner)*
 - [~] theHarvester *(see Network & Infrastructure — already listed there)*
 - [~] Censys CLI *(queries external SaaS — requires paid API key)*
 - [~] Maltego CE *(GUI application — no CLI scan mode)*
@@ -365,12 +365,12 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 ## Subdomain Takeover
 
 - [x] subjack *(subdomain takeover detection tool written in Go)*
-- [ ] SubOver *(fast, concurrent subdomain takeover scanner)*
+- [x] SubOver *(fast, concurrent subdomain takeover scanner)*
 - [x] dnsReaper *(subdomain takeover detection — 50+ fingerprints)*
 - [x] subzy *(subdomain takeover tool based on fingerprint matching)*
-- [ ] autoSubTakeover *(automated CNAME-based subdomain takeover checker)*
-- [ ] tko-subs *(detect and takeover subdomains with dead DNS records)*
-- [ ] second-order *(second-order subdomain takeover scanner)*
+- [x] autoSubTakeover *(automated CNAME-based subdomain takeover checker)*
+- [x] tko-subs *(detect and takeover subdomains with dead DNS records)*
+- [x] second-order *(second-order subdomain takeover scanner)*
 
 ## Fuzzing
 
@@ -382,7 +382,7 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 ## Binary / Reverse Engineering
 
-- [ ] Binwalk *(firmware extraction and vulnerability analysis)*
+- [x] Binwalk *(firmware extraction and vulnerability analysis)*
 - [x] checksec *(ELF/PE binary hardening checks — NX, PIE, RELRO, stack canary)*
 - [~] Ghidra *(GUI reverse engineering tool — headless scripting exists but not a vulnerability scanner)*
 - [~] Radare2 *(interactive analysis tool — no standalone vulnerability-scan mode)*
@@ -410,11 +410,11 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 
 ## Generic / Multi-format
 
-- [ ] SARIF *(import reports in SARIF universal format)*
-- [ ] OpenSCAP *(XCCDF/OVAL compliance report import)*
-- [ ] Garak *(LLM security probe)*
+- [x] SARIF *(import reports in SARIF universal format)*
+- [x] OpenSCAP *(XCCDF/OVAL compliance report import)*
+- [x] Garak *(LLM security probe)*
 - [~] PyRIT *(Python library — not a CLI tool invocable against a target)*
-- [ ] Promptmap *(automated prompt injection testing for LLM apps)*
+- [x] Promptmap *(automated prompt injection testing for LLM apps)*
 - [~] JFrog Xray *(Artifactory integration)*
 - [~] ReversingLabs SpectraAssure
 - [~] Threat Composer *(AWS threat modeling)*

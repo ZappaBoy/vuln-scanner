@@ -102,6 +102,132 @@ from vuln_scanner.tools.nomore403 import Nomore403Tool
 from vuln_scanner.tools.checksec import ChecksecTool
 from vuln_scanner.tools.h2csmuggler import H2cSmugglerTool
 
+# Web
+from vuln_scanner.tools.dirsearch import DirsearchTool
+from vuln_scanner.tools.kxss import KxssTool
+from vuln_scanner.tools.crlfuite import CRLFsuiteTool
+from vuln_scanner.tools.ssrfmap import SSRFmapTool
+from vuln_scanner.tools.oralyzer import OralyzerTool
+from vuln_scanner.tools.sstimap import SSTImapTool
+from vuln_scanner.tools.corsy import CorsyTool
+from vuln_scanner.tools.ghauri import GhauriTool
+from vuln_scanner.tools.xsrfprobe import XSRFProbeTool
+from vuln_scanner.tools.joomscan import JoomscanTool
+from vuln_scanner.tools.cmsmap import CMSmapTool
+from vuln_scanner.tools.aemhacker import AEMHackerTool
+from vuln_scanner.tools.whatwaf import WhatWafTool
+from vuln_scanner.tools.jaeles import JaelesTool
+from vuln_scanner.tools.blackwidow import BlackWidowTool
+from vuln_scanner.tools.jsparser import JSParserTool
+from vuln_scanner.tools.parameth import ParamethTool
+# Network
+from vuln_scanner.tools.medusa import MedusaTool
+from vuln_scanner.tools.findomain import FindomainTool
+from vuln_scanner.tools.massdns import MassDNSTool
+from vuln_scanner.tools.shuffledns import ShuffleDNSTool
+from vuln_scanner.tools.assetfinder import AssetfinderTool
+from vuln_scanner.tools.vhostscan import VHostScanTool
+from vuln_scanner.tools.subdominator import SubdominatorTool
+from vuln_scanner.tools.zmap_tool import ZmapTool
+from vuln_scanner.tools.gotator import GotatorTool
+from vuln_scanner.tools.ripgen import RipgenTool
+from vuln_scanner.tools.dnsgen import DNSgenTool
+from vuln_scanner.tools.gauplus import GauplusTool
+from vuln_scanner.tools.haktrails import HaktrailsTool
+from vuln_scanner.tools.csprecon import CspreconTool
+from vuln_scanner.tools.github_subdomains import GithubSubdomainsTool
+from vuln_scanner.tools.chaos_client import ChaosClientTool
+from vuln_scanner.tools.knockpy import KnockpyTool
+# Container / K8s
+from vuln_scanner.tools.syft import SyftTool
+from vuln_scanner.tools.dockle import DockleTool
+from vuln_scanner.tools.docker_bench import DockerBenchTool
+from vuln_scanner.tools.kubeaudit import KubeauditTool
+from vuln_scanner.tools.kube_score import KubeScoreTool
+from vuln_scanner.tools.kube_linter import KubeLinterTool
+from vuln_scanner.tools.popeye import PopeyeTool
+from vuln_scanner.tools.dive import DiveTool
+# SAST
+from vuln_scanner.tools.codeql import CodeQLTool
+from vuln_scanner.tools.spotbugs import SpotBugsTool
+from vuln_scanner.tools.pmd import PMDTool
+from vuln_scanner.tools.infer import InferTool
+from vuln_scanner.tools.cppcheck import CppcheckTool
+from vuln_scanner.tools.devskim import DevSkimTool
+from vuln_scanner.tools.eslint import ESLintTool
+from vuln_scanner.tools.psalm import PsalmTool
+from vuln_scanner.tools.progpilot import ProgPilotTool
+from vuln_scanner.tools.rubocop import RuboCopTool
+from vuln_scanner.tools.codechecker import CodeCheckerTool
+from vuln_scanner.tools.dawnscanner import DawnScannerTool
+from vuln_scanner.tools.joern import JoernTool
+from vuln_scanner.tools.insider import InsiderTool
+from vuln_scanner.tools.weggli import WeggliTool
+# SCA
+from vuln_scanner.tools.xeol import XeolTool
+from vuln_scanner.tools.retire_js import RetireJSTool
+from vuln_scanner.tools.yarn_audit import YarnAuditTool
+from vuln_scanner.tools.bundler_audit import BundlerAuditTool
+from vuln_scanner.tools.cargo_audit import CargoAuditTool
+from vuln_scanner.tools.nancy import NancyTool
+from vuln_scanner.tools.cyclonedx import CycloneDXTool
+from vuln_scanner.tools.license_finder import LicenseFinderTool
+# Secrets
+from vuln_scanner.tools.whispers import WhispersTool
+from vuln_scanner.tools.rusty_hog import RustyHogTool
+from vuln_scanner.tools.gitrob import GitrobTool
+from vuln_scanner.tools.gitjacker import GitjackerTool
+from vuln_scanner.tools.gato import GatoTool
+from vuln_scanner.tools.zizmor import ZizmorTool
+# IaC / Cloud
+from vuln_scanner.tools.kics import KICSTool
+from vuln_scanner.tools.regula import RegulaToool
+from vuln_scanner.tools.cfn_nag import CfnNagTool
+from vuln_scanner.tools.scoutsuite import ScoutSuiteTool
+from vuln_scanner.tools.cloudsploit import CloudsploitTool
+from vuln_scanner.tools.threagile import ThreagileToool
+from vuln_scanner.tools.cloudfox import CloudfoxTool
+from vuln_scanner.tools.roadrecon import ROADreconTool
+from vuln_scanner.tools.s3scanner import S3ScannerTool
+from vuln_scanner.tools.awsbucketdump import AWSBucketDumpTool
+from vuln_scanner.tools.cloudscraper_tool import CloudScraperTool
+# System
+from vuln_scanner.tools.openscap import OpenSCAPTool
+from vuln_scanner.tools.clamav import ClamAVTool
+from vuln_scanner.tools.yara_tool import YARATool
+from vuln_scanner.tools.rkhunter import RkhunterTool
+from vuln_scanner.tools.chkrootkit import ChkrootkitTool
+from vuln_scanner.tools.vuls import VulsTool
+from vuln_scanner.tools.wappalyzer import WappalyzerTool
+# Mobile
+from vuln_scanner.tools.mobsf import MobSFTool
+from vuln_scanner.tools.androbugs import AndroBugsTool
+from vuln_scanner.tools.qark import QARKTool
+from vuln_scanner.tools.apkid import APKiDTool
+from vuln_scanner.tools.apkleaks import APKLeaksTool
+from vuln_scanner.tools.androwarn import AndrowarnTool
+from vuln_scanner.tools.quark_engine import QuarkEngineTool
+from vuln_scanner.tools.mvt import MVTTool
+# Subdomain takeover
+from vuln_scanner.tools.subover import SubOverTool
+from vuln_scanner.tools.autosub_takeover import AutoSubTakeoverTool
+from vuln_scanner.tools.tko_subs import TkoSubsTool
+from vuln_scanner.tools.second_order import SecondOrderTool
+# Binary
+from vuln_scanner.tools.binwalk import BinwalkTool
+# OSINT
+from vuln_scanner.tools.spiderfoot import SpiderFootTool
+from vuln_scanner.tools.photon import PhotonTool
+from vuln_scanner.tools.reconftw import ReconFTWTool
+from vuln_scanner.tools.waymore import WaymoreTool
+from vuln_scanner.tools.xnlinkfinder import XnLinkFinderTool
+from vuln_scanner.tools.hakip2host import HakIp2HostTool
+from vuln_scanner.tools.witnessme import WitnessMeTool
+# Generic
+from vuln_scanner.tools.sarif_importer import SARIFImporterTool
+from vuln_scanner.tools.garak import GarakTool
+from vuln_scanner.tools.promptmap import PromptmapTool
+
 TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Web application scanning
     "nmap":               NmapTool,
@@ -227,6 +353,132 @@ TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     "lynis":              LynisTool,
     # Binary analysis
     "checksec":           ChecksecTool,
+    # ── New tools ──────────────────────────────────────────────────────────────
+    # Web
+    "dirsearch":          DirsearchTool,
+    "kxss":               KxssTool,
+    "crlfuite":           CRLFsuiteTool,
+    "ssrfmap":            SSRFmapTool,
+    "oralyzer":           OralyzerTool,
+    "sstimap":            SSTImapTool,
+    "corsy":              CorsyTool,
+    "ghauri":             GhauriTool,
+    "xsrfprobe":          XSRFProbeTool,
+    "joomscan":           JoomscanTool,
+    "cmsmap":             CMSmapTool,
+    "aemhacker":          AEMHackerTool,
+    "whatwaf":            WhatWafTool,
+    "jaeles":             JaelesTool,
+    "blackwidow":         BlackWidowTool,
+    "jsparser":           JSParserTool,
+    "parameth":           ParamethTool,
+    # Network
+    "medusa":             MedusaTool,
+    "findomain":          FindomainTool,
+    "massdns":            MassDNSTool,
+    "shuffledns":         ShuffleDNSTool,
+    "assetfinder":        AssetfinderTool,
+    "vhostscan":          VHostScanTool,
+    "subdominator":       SubdominatorTool,
+    "zmap":               ZmapTool,
+    "gotator":            GotatorTool,
+    "ripgen":             RipgenTool,
+    "dnsgen":             DNSgenTool,
+    "gauplus":            GauplusTool,
+    "haktrails":          HaktrailsTool,
+    "csprecon":           CspreconTool,
+    "github-subdomains":  GithubSubdomainsTool,
+    "chaos-client":       ChaosClientTool,
+    "knockpy":            KnockpyTool,
+    # Container / K8s
+    "syft":               SyftTool,
+    "dockle":             DockleTool,
+    "docker-bench":       DockerBenchTool,
+    "kubeaudit":          KubeauditTool,
+    "kube-score":         KubeScoreTool,
+    "kube-linter":        KubeLinterTool,
+    "popeye":             PopeyeTool,
+    "dive":               DiveTool,
+    # SAST
+    "codeql":             CodeQLTool,
+    "spotbugs":           SpotBugsTool,
+    "pmd":                PMDTool,
+    "infer":              InferTool,
+    "cppcheck":           CppcheckTool,
+    "devskim":            DevSkimTool,
+    "eslint":             ESLintTool,
+    "psalm":              PsalmTool,
+    "progpilot":          ProgPilotTool,
+    "rubocop":            RuboCopTool,
+    "codechecker":        CodeCheckerTool,
+    "dawnscanner":        DawnScannerTool,
+    "joern":              JoernTool,
+    "insider":            InsiderTool,
+    "weggli":             WeggliTool,
+    # SCA
+    "xeol":               XeolTool,
+    "retire-js":          RetireJSTool,
+    "yarn-audit":         YarnAuditTool,
+    "bundler-audit":      BundlerAuditTool,
+    "cargo-audit":        CargoAuditTool,
+    "nancy":              NancyTool,
+    "cyclonedx":          CycloneDXTool,
+    "license-finder":     LicenseFinderTool,
+    # Secrets
+    "whispers":           WhispersTool,
+    "rusty-hog":          RustyHogTool,
+    "gitrob":             GitrobTool,
+    "gitjacker":          GitjackerTool,
+    "gato":               GatoTool,
+    "zizmor":             ZizmorTool,
+    # IaC / Cloud
+    "kics":               KICSTool,
+    "regula":             RegulaToool,
+    "cfn-nag":            CfnNagTool,
+    "scoutsuite":         ScoutSuiteTool,
+    "cloudsploit":        CloudsploitTool,
+    "threagile":          ThreagileToool,
+    "cloudfox":           CloudfoxTool,
+    "roadrecon":          ROADreconTool,
+    "s3scanner":          S3ScannerTool,
+    "awsbucketdump":      AWSBucketDumpTool,
+    "cloudscraper":       CloudScraperTool,
+    # System
+    "openscap":           OpenSCAPTool,
+    "clamav":             ClamAVTool,
+    "yara":               YARATool,
+    "rkhunter":           RkhunterTool,
+    "chkrootkit":         ChkrootkitTool,
+    "vuls":               VulsTool,
+    "wappalyzer":         WappalyzerTool,
+    # Mobile
+    "mobsf":              MobSFTool,
+    "androbugs":          AndroBugsTool,
+    "qark":               QARKTool,
+    "apkid":              APKiDTool,
+    "apkleaks":           APKLeaksTool,
+    "androwarn":          AndrowarnTool,
+    "quark-engine":       QuarkEngineTool,
+    "mvt":                MVTTool,
+    # Subdomain takeover
+    "subover":            SubOverTool,
+    "autosub-takeover":   AutoSubTakeoverTool,
+    "tko-subs":           TkoSubsTool,
+    "second-order":       SecondOrderTool,
+    # Binary
+    "binwalk":            BinwalkTool,
+    # OSINT
+    "spiderfoot":         SpiderFootTool,
+    "photon":             PhotonTool,
+    "reconftw":           ReconFTWTool,
+    "waymore":            WaymoreTool,
+    "xnlinkfinder":       XnLinkFinderTool,
+    "hakip2host":         HakIp2HostTool,
+    "witnessme":          WitnessMeTool,
+    # Generic
+    "sarif-import":       SARIFImporterTool,
+    "garak":              GarakTool,
+    "promptmap":          PromptmapTool,
 }
 
 __all__ = [
@@ -333,5 +585,46 @@ __all__ = [
     "Nomore403Tool",
     "ChecksecTool",
     "H2cSmugglerTool",
+    # Web
+    "DirsearchTool", "KxssTool", "CRLFsuiteTool", "SSRFmapTool", "OralyzerTool",
+    "SSTImapTool", "CorsyTool", "GhauriTool", "XSRFProbeTool", "JoomscanTool",
+    "CMSmapTool", "AEMHackerTool", "WhatWafTool", "JaelesTool", "BlackWidowTool",
+    "JSParserTool", "ParamethTool",
+    # Network
+    "MedusaTool", "FindomainTool", "MassDNSTool", "ShuffleDNSTool", "AssetfinderTool",
+    "VHostScanTool", "SubdominatorTool", "ZmapTool", "GotatorTool", "RipgenTool",
+    "DNSgenTool", "GauplusTool", "HaktrailsTool", "CspreconTool", "GithubSubdomainsTool",
+    "ChaosClientTool", "KnockpyTool",
+    # Container / K8s
+    "SyftTool", "DockleTool", "DockerBenchTool", "KubeauditTool", "KubeScoreTool",
+    "KubeLinterTool", "PopeyeTool", "DiveTool",
+    # SAST
+    "CodeQLTool", "SpotBugsTool", "PMDTool", "InferTool", "CppcheckTool",
+    "DevSkimTool", "ESLintTool", "PsalmTool", "ProgPilotTool", "RuboCopTool",
+    "CodeCheckerTool", "DawnScannerTool", "JoernTool", "InsiderTool", "WeggliTool",
+    # SCA
+    "XeolTool", "RetireJSTool", "YarnAuditTool", "BundlerAuditTool", "CargoAuditTool",
+    "NancyTool", "CycloneDXTool", "LicenseFinderTool",
+    # Secrets
+    "WhispersTool", "RustyHogTool", "GitrobTool", "GitjackerTool", "GatoTool", "ZizmorTool",
+    # IaC / Cloud
+    "KICSTool", "RegulaToool", "CfnNagTool", "ScoutSuiteTool", "CloudsploitTool",
+    "ThreagileToool", "CloudfoxTool", "ROADreconTool", "S3ScannerTool",
+    "AWSBucketDumpTool", "CloudScraperTool",
+    # System
+    "OpenSCAPTool", "ClamAVTool", "YARATool", "RkhunterTool", "ChkrootkitTool",
+    "VulsTool", "WappalyzerTool",
+    # Mobile
+    "MobSFTool", "AndroBugsTool", "QARKTool", "APKiDTool", "APKLeaksTool",
+    "AndrowarnTool", "QuarkEngineTool", "MVTTool",
+    # Subdomain takeover
+    "SubOverTool", "AutoSubTakeoverTool", "TkoSubsTool", "SecondOrderTool",
+    # Binary
+    "BinwalkTool",
+    # OSINT
+    "SpiderFootTool", "PhotonTool", "ReconFTWTool", "WaymoreTool",
+    "XnLinkFinderTool", "HakIp2HostTool", "WitnessMeTool",
+    # Generic
+    "SARIFImporterTool", "GarakTool", "PromptmapTool",
     "TOOL_REGISTRY",
 ]

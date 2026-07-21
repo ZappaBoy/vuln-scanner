@@ -6,6 +6,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class FindomainTool(AbstractTool):
     name: str = "findomain"
+    binary: str = "findomain"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

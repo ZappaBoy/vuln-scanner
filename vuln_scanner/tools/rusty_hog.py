@@ -11,6 +11,7 @@ _GIT_TARGET = re.compile(r"(?:\.git|github\.com|gitlab\.com|bitbucket\.org)")
 
 class RustyHogTool(AbstractTool):
     name: str = "rusty-hog"
+    binary: str = "choctaw_hog"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

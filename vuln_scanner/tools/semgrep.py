@@ -15,6 +15,7 @@ _MODE_CONFIG: dict[ScanMode, list[str]] = {
 
 class SemgrepTool(AbstractTool):
     name: str = "semgrep"
+    binary: str = "semgrep"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
     silent_flags: list[str] = ["--quiet"]

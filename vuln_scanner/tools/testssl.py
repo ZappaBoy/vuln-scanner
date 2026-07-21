@@ -20,6 +20,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class TestSSLTool(AbstractTool):
     name: str = "testssl"
+    binary: str = "testssl"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 

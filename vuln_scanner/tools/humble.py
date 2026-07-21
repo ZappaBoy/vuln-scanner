@@ -35,6 +35,7 @@ _DEPRECATED_SEV: dict[str, Severity] = {
 
 class HumbleTool(AbstractTool):
     name: str = "humble"
+    binary: str = "humble"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

@@ -24,6 +24,7 @@ _PASS_AGGRESSIVE = _PASS_ACTIVE + [
 
 class MedusaTool(AbstractTool):
     name: str = "medusa"
+    binary: str = "medusa"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

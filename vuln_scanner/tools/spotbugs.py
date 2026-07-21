@@ -11,6 +11,7 @@ _PRIORITY_MAP = {"1": Severity.HIGH, "2": Severity.MEDIUM, "3": Severity.LOW}
 
 class SpotBugsTool(AbstractTool):
     name: str = "spotbugs"
+    binary: str = "spotbugs"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

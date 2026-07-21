@@ -19,6 +19,7 @@ _BUG_TYPE_SEV = {
 
 class InferTool(AbstractTool):
     name: str = "infer"
+    binary: str = "infer"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

@@ -14,6 +14,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class GosecTool(AbstractTool):
     name: str = "gosec"
+    binary: str = "gosec"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

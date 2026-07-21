@@ -14,6 +14,7 @@ _PROBE_RE = re.compile(r"probe[:\s]+(.+?)\s+(?:failed|pass|score)", re.IGNORECAS
 
 class GarakTool(AbstractTool):
     name: str = "garak"
+    binary: str = "garak"
     category: str = "llm"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

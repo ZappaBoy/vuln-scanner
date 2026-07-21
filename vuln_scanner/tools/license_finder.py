@@ -11,6 +11,7 @@ _LINE_RE = re.compile(r"(\S+)\s+([\d.]+)\s+(.+)")
 
 class LicenseFinderTool(AbstractTool):
     name: str = "license-finder"
+    binary: str = "license_finder"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

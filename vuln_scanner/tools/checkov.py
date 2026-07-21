@@ -14,6 +14,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class CheckovTool(AbstractTool):
     name: str = "checkov"
+    binary: str = "checkov"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

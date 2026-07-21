@@ -12,6 +12,7 @@ _PACKET_RE = re.compile(r"Packet sniffer files.+?found:\s*(.+)", re.IGNORECASE)
 
 class ChkrootkitTool(AbstractTool):
     name: str = "chkrootkit"
+    binary: str = "chkrootkit"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.HOST})
 

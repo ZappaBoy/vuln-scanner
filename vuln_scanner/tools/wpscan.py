@@ -18,6 +18,7 @@ _MODE_ENUMERATE: dict[ScanMode, list[str]] = {
 
 class WPScanTool(AbstractTool):
     name: str = "wpscan"
+    binary: str = "wpscan"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
     verbose_flags: list[str] = ["-v"]

@@ -17,6 +17,7 @@ _OUTDATED = re.compile(
 
 class WappalyzerTool(AbstractTool):
     name: str = "wappalyzer"
+    binary: str = "wappalyzer"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

@@ -11,6 +11,7 @@ _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM,
 
 class ZizmorTool(AbstractTool):
     name: str = "zizmor"
+    binary: str = "zizmor"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

@@ -11,6 +11,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class YarnAuditTool(AbstractTool):
     name: str = "yarn-audit"
+    binary: str = "yarn"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

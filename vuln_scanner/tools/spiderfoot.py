@@ -14,6 +14,7 @@ _RISK_MAP = {"HIGH": Severity.HIGH, "MEDIUM": Severity.MEDIUM,
 
 class SpiderFootTool(AbstractTool):
     name: str = "spiderfoot"
+    binary: str = "sf"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.HOST, TargetType.URL, TargetType.IP,

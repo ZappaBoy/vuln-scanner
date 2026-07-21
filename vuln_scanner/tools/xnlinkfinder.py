@@ -15,6 +15,7 @@ _INTERESTING = re.compile(
 
 class XnLinkFinderTool(AbstractTool):
     name: str = "xnlinkfinder"
+    binary: str = "python3"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

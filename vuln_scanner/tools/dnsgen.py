@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class DNSgenTool(AbstractTool):
     name: str = "dnsgen"
+    binary: str = "dnsgen"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

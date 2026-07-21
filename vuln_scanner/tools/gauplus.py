@@ -14,6 +14,7 @@ _INTERESTING = __import__("re").compile(
 
 class GauplusTool(AbstractTool):
     name: str = "gauplus"
+    binary: str = "gauplus"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

@@ -12,6 +12,7 @@ _SEV_MAP = {"KubeLinterError": Severity.HIGH, "error": Severity.HIGH,
 
 class KubeLinterTool(AbstractTool):
     name: str = "kube-linter"
+    binary: str = "kube-linter"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

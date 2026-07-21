@@ -14,6 +14,7 @@ _TYPE_FLAGS: dict[ScanMode, list[str]] = {
 
 class DNSReconTool(AbstractTool):
     name: str = "dnsrecon"
+    binary: str = "dnsrecon"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

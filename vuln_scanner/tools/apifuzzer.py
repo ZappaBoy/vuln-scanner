@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 class APIFuzzerTool(AbstractTool):
     name: str = "apifuzzer"
+    binary: str = "APIFuzzer"
     category: str = "api"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

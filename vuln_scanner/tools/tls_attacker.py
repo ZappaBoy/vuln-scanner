@@ -34,6 +34,7 @@ _VULN_SEV: dict[str, tuple[Severity, list[str]]] = {
 
 class TLSAttackerTool(AbstractTool):
     name: str = "tls-attacker"
+    binary: str = "TLS-Scanner"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 

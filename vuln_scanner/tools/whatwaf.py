@@ -12,6 +12,7 @@ _PROTECTED_RE = re.compile(r"(?:protected by|behind)[:\s]+([^\n]+)", re.IGNORECA
 
 class WhatWafTool(AbstractTool):
     name: str = "whatwaf"
+    binary: str = "whatwaf"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

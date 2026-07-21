@@ -11,6 +11,7 @@ _SUMMARY_RE = re.compile(r"Infected files:\s+(\d+)")
 
 class ClamAVTool(AbstractTool):
     name: str = "clamav"
+    binary: str = "clamscan"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

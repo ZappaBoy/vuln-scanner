@@ -43,6 +43,9 @@ class AbstractTool(ABC, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
+    # The name of the executable that cmd[0] resolves to (used for binary-presence
+    # checks and error messages). Empty string for API-only tools with no local binary.
+    binary: str = ""
     category: str
 
     # Override in subclasses to restrict which target types this tool handles.
@@ -163,11 +166,12 @@ class AbstractTool(ABC, BaseModel):
                 error=f"Tool timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
-            log.error("[%s] binary not found: %r — tool must be installed in the image", self.name, cmd[0])
+            binary_name = self.binary or (cmd[0] if cmd else self.name)
+            log.error("[%s] binary not found: %r — tool must be installed in the image", self.name, binary_name)
             return ScanResult(
                 tool=self.name,
                 target=target,
                 duration=0.0,
                 status=ScanStatus.FAILED,
-                error=f"Binary not found: {cmd[0]}",
+                error=f"Binary not found: {binary_name}",
             )

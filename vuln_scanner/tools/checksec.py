@@ -30,6 +30,7 @@ def _check_mitigation(label: str, value: str, no_val: str, partial_val: str | No
 
 class ChecksecTool(AbstractTool):
     name: str = "checksec"
+    binary: str = "checksec"
     category: str = "binary"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

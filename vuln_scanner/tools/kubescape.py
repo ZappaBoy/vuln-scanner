@@ -15,6 +15,7 @@ _SEV_MAP: dict[str, Severity] = {
 
 class KubescapeTool(AbstractTool):
     name: str = "kubescape"
+    binary: str = "kubescape"
     category: str = "cloud"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.CLOUD})
 

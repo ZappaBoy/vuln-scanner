@@ -17,6 +17,7 @@ _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM,
 
 class CodeQLTool(AbstractTool):
     name: str = "codeql"
+    binary: str = "codeql"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

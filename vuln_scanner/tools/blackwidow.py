@@ -13,6 +13,7 @@ _URL_RE = re.compile(r"(https?://\S+)")
 
 class BlackWidowTool(AbstractTool):
     name: str = "blackwidow"
+    binary: str = "blackwidow"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

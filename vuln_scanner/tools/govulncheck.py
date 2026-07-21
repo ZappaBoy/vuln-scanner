@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class GovulncheckTool(AbstractTool):
     name: str = "govulncheck"
+    binary: str = "govulncheck"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

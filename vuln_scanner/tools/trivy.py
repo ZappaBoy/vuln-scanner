@@ -14,6 +14,7 @@ _MODE_SCANNERS: dict[ScanMode, str] = {
 
 class TrivyTool(AbstractTool):
     name: str = "trivy"
+    binary: str = "trivy"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
     silent_flags: list[str] = ["--quiet"]

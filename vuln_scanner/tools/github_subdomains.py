@@ -6,6 +6,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class GithubSubdomainsTool(AbstractTool):
     name: str = "github-subdomains"
+    binary: str = "github-subdomains"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

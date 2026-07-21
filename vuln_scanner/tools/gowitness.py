@@ -25,6 +25,7 @@ def configure(screenshot_dir: Path) -> None:
 
 class GowitnesssTool(AbstractTool):
     name: str = "gowitness"
+    binary: str = "gowitness"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

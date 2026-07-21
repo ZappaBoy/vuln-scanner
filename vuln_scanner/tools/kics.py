@@ -11,6 +11,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class KICSTool(AbstractTool):
     name: str = "kics"
+    binary: str = "kics"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

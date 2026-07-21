@@ -10,6 +10,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class RESTlerTool(AbstractTool):
     name: str = "restler"
+    binary: str = "restler-fuzzer"
     category: str = "api"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

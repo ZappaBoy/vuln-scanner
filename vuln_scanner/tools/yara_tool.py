@@ -18,6 +18,7 @@ _RULE_DIRS = [
 
 class YARATool(AbstractTool):
     name: str = "yara"
+    binary: str = "yara"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

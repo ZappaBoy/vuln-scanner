@@ -6,6 +6,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class ChaosClientTool(AbstractTool):
     name: str = "chaos-client"
+    binary: str = "chaos"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

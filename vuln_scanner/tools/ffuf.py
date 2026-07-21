@@ -16,6 +16,7 @@ _INTERESTING_CODES = {200, 201, 204, 301, 302, 307, 401, 403, 405, 500}
 
 class FfufTool(AbstractTool):
     name: str = "ffuf"
+    binary: str = "ffuf"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
     verbose_flags: list[str] = ["-v"]

@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 class CRLFuzzTool(AbstractTool):
     name: str = "crlfuzz"
+    binary: str = "crlfuzz"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

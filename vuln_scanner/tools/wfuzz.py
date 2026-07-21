@@ -14,6 +14,7 @@ _WORDLISTS: dict[ScanMode, str] = {
 
 class WfuzzTool(AbstractTool):
     name: str = "wfuzz"
+    binary: str = "wfuzz"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

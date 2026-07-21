@@ -14,6 +14,7 @@ _SENSITIVE = re.compile(
 
 class GitrobTool(AbstractTool):
     name: str = "gitrob"
+    binary: str = "gitrob"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.REPO})
 

@@ -19,6 +19,7 @@ _DEPTH: dict[ScanMode, int] = {
 
 class FeroxbusterTool(AbstractTool):
     name: str = "feroxbuster"
+    binary: str = "feroxbuster"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
     silent_flags: list[str] = ["--silent"]

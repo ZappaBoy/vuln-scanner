@@ -20,6 +20,7 @@ _VULN_RE = re.compile(
 
 class SubzyTool(AbstractTool):
     name: str = "subzy"
+    binary: str = "subzy"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

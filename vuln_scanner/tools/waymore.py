@@ -15,6 +15,7 @@ _INTERESTING = re.compile(
 
 class WaymoreTool(AbstractTool):
     name: str = "waymore"
+    binary: str = "waymore"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

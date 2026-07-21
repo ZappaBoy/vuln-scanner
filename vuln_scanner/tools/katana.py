@@ -12,6 +12,7 @@ _DEPTH: dict[ScanMode, int] = {
 
 class KatanaTool(AbstractTool):
     name: str = "katana"
+    binary: str = "katana"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

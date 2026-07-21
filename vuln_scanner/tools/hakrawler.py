@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class HakrawlerTool(AbstractTool):
     name: str = "hakrawler"
+    binary: str = "hakrawler"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

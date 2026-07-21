@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class SSLyzeTool(AbstractTool):
     name: str = "sslyze"
+    binary: str = "sslyze"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 

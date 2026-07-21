@@ -8,6 +8,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class CfnNagTool(AbstractTool):
     name: str = "cfn-nag"
+    binary: str = "cfn_nag_scan"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

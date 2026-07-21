@@ -23,6 +23,7 @@ _ACCESS_SEV: dict[str, Severity] = {
 
 class SMBMapTool(AbstractTool):
     name: str = "smbmap"
+    binary: str = "smbmap"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 

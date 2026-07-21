@@ -12,6 +12,7 @@ _VULN_RE = re.compile(r"\[CVE-\d{4}-\d+\]|\[OWASP[^\]]+\]", re.IGNORECASE)
 
 class DawnScannerTool(AbstractTool):
     name: str = "dawnscanner"
+    binary: str = "dawn"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

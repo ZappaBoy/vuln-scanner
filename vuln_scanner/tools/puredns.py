@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class PureDNSTool(AbstractTool):
     name: str = "puredns"
+    binary: str = "puredns"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

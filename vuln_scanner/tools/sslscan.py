@@ -16,6 +16,7 @@ _WEAK_BITS = 128  # cipher suites below this key length are flagged
 
 class SSLScanTool(AbstractTool):
     name: str = "sslscan"
+    binary: str = "sslscan"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 

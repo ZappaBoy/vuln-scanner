@@ -19,6 +19,7 @@ _LIKELIHOOD_SEV = {
 
 class ThreagileToool(AbstractTool):
     name: str = "threagile"
+    binary: str = "threagile"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

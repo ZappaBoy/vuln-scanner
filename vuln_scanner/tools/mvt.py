@@ -16,6 +16,7 @@ _IOC_RE = re.compile(r"(?:indicator|ioc|compromise|detection)[:\s]+(.+)", re.IGN
 
 class MVTTool(AbstractTool):
     name: str = "mvt"
+    binary: str = "mvt-android"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

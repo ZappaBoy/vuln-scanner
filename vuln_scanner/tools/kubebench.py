@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class KubeBenchTool(AbstractTool):
     name: str = "kube-bench"
+    binary: str = "kube-bench"
     category: str = "cloud"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD, TargetType.HOST})
 

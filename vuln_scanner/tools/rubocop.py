@@ -14,6 +14,7 @@ _SECURITY_COPS = {"Security/", "Rails/OutputSafety", "Rails/Eval"}
 
 class RuboCopTool(AbstractTool):
     name: str = "rubocop"
+    binary: str = "rubocop"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

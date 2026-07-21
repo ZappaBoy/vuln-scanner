@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 class AmassTool(AbstractTool):
     name: str = "amass"
+    binary: str = "amass"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

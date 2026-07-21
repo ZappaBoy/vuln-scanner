@@ -11,6 +11,7 @@ _RESOLVERS = "/usr/share/massdns/resolvers.txt"
 
 class ShuffleDNSTool(AbstractTool):
     name: str = "shuffledns"
+    binary: str = "shuffledns"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

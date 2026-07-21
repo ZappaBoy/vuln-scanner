@@ -16,6 +16,7 @@ _SECURITY_IDS = {"bufferAccessOutOfBounds", "bufferOverrun", "formatString",
 
 class CppcheckTool(AbstractTool):
     name: str = "cppcheck"
+    binary: str = "cppcheck"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

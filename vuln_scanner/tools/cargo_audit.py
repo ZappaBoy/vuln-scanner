@@ -11,6 +11,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class CargoAuditTool(AbstractTool):
     name: str = "cargo-audit"
+    binary: str = "cargo-audit"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

@@ -17,6 +17,7 @@ _INJECT_RE = re.compile(r"Tplmap identified the following injection", re.IGNOREC
 
 class TplmapTool(AbstractTool):
     name: str = "tplmap"
+    binary: str = "tplmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

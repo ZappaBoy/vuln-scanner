@@ -16,6 +16,7 @@ _VULN_RE = re.compile(r"(?:vulnerability|issue|finding)[:\s]+([^\n]+)", re.IGNOR
 
 class JoernTool(AbstractTool):
     name: str = "joern"
+    binary: str = "joern"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

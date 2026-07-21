@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class RipgenTool(AbstractTool):
     name: str = "ripgen"
+    binary: str = "ripgen"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

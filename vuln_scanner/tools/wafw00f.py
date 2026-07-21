@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 class WafW00fTool(AbstractTool):
     name: str = "wafw00f"
+    binary: str = "wafw00f"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 

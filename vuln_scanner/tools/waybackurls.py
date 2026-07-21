@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class WaybackURLsTool(AbstractTool):
     name: str = "waybackurls"
+    binary: str = "waybackurls"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

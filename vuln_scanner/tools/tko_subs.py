@@ -12,6 +12,7 @@ _SUB_RE = re.compile(r"(?:subdomain|domain)[:\s]+(\S+)", re.IGNORECASE)
 
 class TkoSubsTool(AbstractTool):
     name: str = "tko-subs"
+    binary: str = "tko-subs"
     category: str = "takeover"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

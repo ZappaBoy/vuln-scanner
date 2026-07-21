@@ -38,6 +38,7 @@ def _gvm(socket: str, user: str, password: str, xml: str, timeout: int = 60) -> 
 
 class OpenVASTool(AbstractTool):
     name: str = "openvas"
+    binary: str = "gvm-cli"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 

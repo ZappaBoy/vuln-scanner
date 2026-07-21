@@ -11,6 +11,7 @@ _STATUS_SEV = {"FAIL": Severity.HIGH, "WARN": Severity.MEDIUM,
 
 class CloudsploitTool(AbstractTool):
     name: str = "cloudsploit"
+    binary: str = "cloudsploit"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 

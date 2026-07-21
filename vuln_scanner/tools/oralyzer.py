@@ -12,6 +12,7 @@ _PARAM_RE = re.compile(r"parameter[:\s]+(\S+)", re.IGNORECASE)
 
 class OralyzerTool(AbstractTool):
     name: str = "oralyzer"
+    binary: str = "oralyzer"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

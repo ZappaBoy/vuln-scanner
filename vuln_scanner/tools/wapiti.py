@@ -22,6 +22,7 @@ _AGGRESSIVE_MODULES = ""               # empty = all modules
 
 class WapitiTool(AbstractTool):
     name: str = "wapiti"
+    binary: str = "wapiti"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

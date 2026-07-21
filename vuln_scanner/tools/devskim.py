@@ -11,6 +11,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "important": Severity.HIGH,
 
 class DevSkimTool(AbstractTool):
     name: str = "devskim"
+    binary: str = "devskim"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

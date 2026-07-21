@@ -17,34 +17,141 @@ USER builder
 # ── BlackArch / AUR packages ─────────────────────────────────────────────────
 RUN yay -Syu --noconfirm && \
     yay -S --noconfirm --needed \
-        nmap nikto nuclei wapiti wpscan zaproxy arachni sqlmap \
-        ffuf feroxbuster gobuster wfuzz \
-        dalfox commix xsstrike nosqlmap whatweb wafw00f \
-        hakrawler arjun paramspider gau \
-        testssl.sh sslyze sslscan tlsx \
-        ssh-audit amass openvas masscan rustscan \
-        subfinder dnsx dnsrecon enum4linux-ng smbmap crackmapexec netdiscover \
-        theharvester fierce naabu kiterunner \
-        trivy grype semgrep bandit checkov tfsec prowler flawfinder \
-        gitleaks trufflehog httpx crlfuzz cariddi \
-        puredns alterx waybackurls httprobe gowitness \
-        osv-scanner govulncheck brakeman \
-        detect-secrets noseyparker secretfinder \
-        python-jsbeautifier python-requests dotnet-runtime \
-        dependency-check restler-fuzzer \
-        hadolint-bin terrascan-bin \
-        hydra lynis subjack subzy tplmap checksec \
-        jwt-tool gittools git-dumper h2csmuggler \
-        kubescape-bin bbot kube-hunter \
-        dirsearch joomscan whatwaf medusa cppcheck \
-        clamav yara rkhunter chkrootkit binwalk \
-        findomain massdns shuffledns spiderfoot \
-        zmap ghauri  graphql-cop \
+        alterx \
+        amass \
+        arachni \
+        arjun \
+        assetfinder \
+        bandit \
+        bbot \
+        binwalk \
+        blackarch/androbugs \
+        blackarch/apkid \
+        blackarch/awsbucketdump \
+        blackarch/brakeman \
+        blackarch/dawnscanner \
+        blackarch/gitrob \
+        blackarch/horusec \
+        blackarch/jaeles  \
+        blackarch/secretfinder \
+        blackarch/theharvester \
+        blackarch/vuls \
+        blackarch/whispers \
+        brakeman \
+        cariddi \
+        checkov \
+        checksec \
+        chkrootkit \
+        clamav \
+        cmsmap  \
+        commix \
+        cppcheck \
+        crackmapexec \
+        crlfuzz \
+        dalfox \
+        dependency-check \
+        detect-secrets \
+        dirsearch \
+        dnsrecon \
+        dnsx \
         dockle-bin \
-        popeye-bin smuggler \
-        assetfinder subover linkfinder retire second-order \
-        gitjacker cmsmap syft wappalyzer-next-git \
-        s3scanner zizmor parameth blackarch/jaeles python-witnessme && \
+        dotnet-runtime \
+        enum4linux-ng \
+        extra/dive \
+        extra/kube-linter \
+        extra/psalm \
+        extra/rubocop \
+        feroxbuster \
+        ffuf \
+        fierce \
+        findomain \
+        flawfinder \
+        gau \
+        ghauri \
+        git-dumper \
+        gitjacker  \
+        gitleaks \
+        gittools \
+        gobuster \
+        govulncheck \
+        gowitness \
+        graphql-cop \
+        grype \
+        h2csmuggler \
+        hadolint-bin \
+        hakrawler \
+        httprobe \
+        httpx \
+        hydra \
+        joomscan \
+        jwt-tool \
+        kiterunner \
+        kube-hunter \
+        kubescape-bin \
+        linkfinder \
+        lynis \
+        masscan \
+        massdns \
+        medusa \
+        naabu \
+        netdiscover \
+        nikto \
+        nmap \
+        noseyparker \
+        nosqlmap \
+        nuclei \
+        openvas \
+        osv-scanner \
+        parameth  \
+        paramspider \
+        popeye-bin \
+        prowler \
+        puredns \
+        python-jsbeautifier \
+        python-requests \
+        python-witnessme  \
+        restler-fuzzer \
+        retire \
+        rkhunter \
+        rustscan \
+        s3scanner  \
+        second-order \
+        secretfinder \
+        semgrep \
+        shuffledns \
+        smbmap \
+        smuggler \
+        spiderfoot \
+        sqlmap \
+        ssh-audit \
+        sslscan \
+        sslyze \
+        subfinder \
+        subjack \
+        subover \
+        subzy \
+        syft  \
+        terrascan-bin \
+        testssl.sh \
+        tfsec \
+        theharvester \
+        tlsx \
+        tplmap \
+        trivy \
+        trufflehog \
+        wafw00f \
+        wapiti \
+        wappalyzer-next-git \
+        waybackurls \
+        wfuzz \
+        whatwaf \
+        whatweb \
+        wpscan \
+        xsstrike \
+        yara \
+        zaproxy \
+        zizmor  \
+        zmap && \
     yay -Scc --noconfirm
 
 # ── Go tools ─────────────────────────────────────────────────────────────────

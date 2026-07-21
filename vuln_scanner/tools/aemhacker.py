@@ -12,6 +12,7 @@ _CVE_RE = re.compile(r"(CVE-\d{4}-\d+)")
 
 class AEMHackerTool(AbstractTool):
     name: str = "aemhacker"
+    binary: str = "aemhacker"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

@@ -10,6 +10,7 @@ _SEV_MAP = {3: Severity.HIGH, 2: Severity.MEDIUM, 1: Severity.LOW}
 
 class AndrowarnTool(AbstractTool):
     name: str = "androwarn"
+    binary: str = "androwarn"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

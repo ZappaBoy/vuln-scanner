@@ -17,6 +17,7 @@ _TAKEOVER_RE = re.compile(r"(?:takeover|VULNERABLE)[:\s]+(.+)", re.IGNORECASE)
 
 class ReconFTWTool(AbstractTool):
     name: str = "reconftw"
+    binary: str = "reconftw.sh"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

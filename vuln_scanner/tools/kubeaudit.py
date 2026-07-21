@@ -11,6 +11,7 @@ _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM,
 
 class KubeauditTool(AbstractTool):
     name: str = "kubeaudit"
+    binary: str = "kubeaudit"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.CLOUD})
 

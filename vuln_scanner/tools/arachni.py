@@ -20,6 +20,7 @@ _CHECKS: dict[ScanMode, list[str]] = {
 
 class ArachniTool(AbstractTool):
     name: str = "arachni"
+    binary: str = "arachni"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

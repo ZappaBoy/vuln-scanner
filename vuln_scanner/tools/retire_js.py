@@ -12,6 +12,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class RetireJSTool(AbstractTool):
     name: str = "retire-js"
+    binary: str = "retire"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.URL})
 

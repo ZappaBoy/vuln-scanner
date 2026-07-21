@@ -8,6 +8,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class QuarkEngineTool(AbstractTool):
     name: str = "quark-engine"
+    binary: str = "quark"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

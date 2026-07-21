@@ -14,6 +14,7 @@ _VULN_RE = re.compile(r"\[\+\]\s*(SSRF[^\n]+)", re.IGNORECASE)
 
 class SSRFmapTool(AbstractTool):
     name: str = "ssrfmap"
+    binary: str = "python3"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

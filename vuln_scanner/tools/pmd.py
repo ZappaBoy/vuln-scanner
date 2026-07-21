@@ -12,6 +12,7 @@ _PRIORITY_MAP = {1: Severity.HIGH, 2: Severity.HIGH, 3: Severity.MEDIUM,
 
 class PMDTool(AbstractTool):
     name: str = "pmd"
+    binary: str = "pmd"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

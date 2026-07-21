@@ -15,6 +15,7 @@ _VULN_RE = re.compile(r"(?:vulnerable|takeover|dangling)[:\s]+(.+)", re.IGNORECA
 
 class SecondOrderTool(AbstractTool):
     name: str = "second-order"
+    binary: str = "second-order"
     category: str = "takeover"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

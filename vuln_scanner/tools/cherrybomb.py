@@ -16,6 +16,7 @@ _SEV_MAP: dict[str, Severity] = {
 
 class CherrybombTool(AbstractTool):
     name: str = "cherrybomb"
+    binary: str = "cherrybomb"
     category: str = "api"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

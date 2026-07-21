@@ -14,6 +14,7 @@ _SEV_MAP = {"HIGH": Severity.HIGH, "MEDIUM": Severity.MEDIUM,
 
 class CloudfoxTool(AbstractTool):
     name: str = "cloudfox"
+    binary: str = "cloudfox"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 

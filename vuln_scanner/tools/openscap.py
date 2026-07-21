@@ -13,6 +13,7 @@ _SIMPLE_FAIL = re.compile(r"FAIL\s+xccdf_[^\s]+_rule_(\S+)")
 
 class OpenSCAPTool(AbstractTool):
     name: str = "openscap"
+    binary: str = "oscap"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.HOST})
 

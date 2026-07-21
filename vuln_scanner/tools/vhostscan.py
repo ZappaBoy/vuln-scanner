@@ -11,6 +11,7 @@ _VHOST_RE = re.compile(r"Found virtual host:\s*(\S+)", re.IGNORECASE)
 
 class VHostScanTool(AbstractTool):
     name: str = "vhostscan"
+    binary: str = "VHostScan"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

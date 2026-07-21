@@ -17,6 +17,7 @@ _LEVEL_MAP = {"danger": Severity.HIGH, "warning": Severity.MEDIUM,
 
 class ScoutSuiteTool(AbstractTool):
     name: str = "scoutsuite"
+    binary: str = "scout"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 

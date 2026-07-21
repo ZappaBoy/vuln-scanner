@@ -21,6 +21,7 @@ def _status_severity(code: int) -> Severity:
 
 class HttpxTool(AbstractTool):
     name: str = "httpx"
+    binary: str = "httpx"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 

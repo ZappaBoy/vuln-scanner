@@ -12,6 +12,7 @@ _FILE_RE = re.compile(r"(?:downloaded|extracted)[:\s]+(.+\.(?:go|py|js|rb|php|en
 
 class GitjackerTool(AbstractTool):
     name: str = "gitjacker"
+    binary: str = "gitjacker"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

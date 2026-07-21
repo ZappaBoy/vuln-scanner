@@ -12,6 +12,7 @@ _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 class XSStrikeTool(AbstractTool):
     name: str = "xsstrike"
+    binary: str = "xsstrike"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

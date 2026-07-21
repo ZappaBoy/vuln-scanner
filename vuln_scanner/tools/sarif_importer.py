@@ -11,6 +11,7 @@ _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM,
 
 class SARIFImporterTool(AbstractTool):
     name: str = "sarif-import"
+    binary: str = "cat"
     category: str = "generic"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

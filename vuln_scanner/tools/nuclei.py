@@ -93,6 +93,7 @@ def update_templates(nuclei_cfg: "NucleiConfig | None" = None) -> None:
 
 class NucleiTool(AbstractTool):
     name: str = "nuclei"
+    binary: str = "nuclei"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.URL, TargetType.HOST, TargetType.IP

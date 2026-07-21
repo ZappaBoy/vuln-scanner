@@ -12,6 +12,7 @@ _NOTICE_RE = re.compile(r"\[Notice\]\s+(.+)", re.IGNORECASE)
 
 class AndroBugsTool(AbstractTool):
     name: str = "androbugs"
+    binary: str = "androbugs"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

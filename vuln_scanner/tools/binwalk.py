@@ -15,6 +15,7 @@ _EXECUTABLE = re.compile(r"(?:ELF|executable|Linux|busybox|uImage)", re.IGNORECA
 
 class BinwalkTool(AbstractTool):
     name: str = "binwalk"
+    binary: str = "binwalk"
     category: str = "binary"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

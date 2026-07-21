@@ -15,6 +15,7 @@ _INJECTABLE_RE = re.compile(r"(\w+) (?:parameter|GET parameter) '([^']+)' is", r
 
 class GhauriTool(AbstractTool):
     name: str = "ghauri"
+    binary: str = "ghauri"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

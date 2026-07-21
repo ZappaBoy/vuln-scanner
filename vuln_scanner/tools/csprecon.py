@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 class CspreconTool(AbstractTool):
     name: str = "csprecon"
+    binary: str = "csprecon"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

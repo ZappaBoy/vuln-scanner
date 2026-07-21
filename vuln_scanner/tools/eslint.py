@@ -15,6 +15,7 @@ _SEC_RULES = {
 
 class ESLintTool(AbstractTool):
     name: str = "eslint"
+    binary: str = "eslint"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

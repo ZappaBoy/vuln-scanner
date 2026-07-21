@@ -10,6 +10,7 @@ _HIGH_PATTERNS = {"google_api", "firebase", "aws_key", "private_key", "secret", 
 
 class APKLeaksTool(AbstractTool):
     name: str = "apkleaks"
+    binary: str = "apkleaks"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

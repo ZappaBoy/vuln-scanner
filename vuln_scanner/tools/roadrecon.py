@@ -14,6 +14,7 @@ _GUEST_RE = re.compile(r"guest[^\n]+", re.IGNORECASE)
 
 class ROADreconTool(AbstractTool):
     name: str = "roadrecon"
+    binary: str = "roadrecon"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 

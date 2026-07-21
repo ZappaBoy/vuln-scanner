@@ -11,6 +11,7 @@ _VULN_RE = re.compile(r"VULNERABLE|Misconfiguration", re.IGNORECASE)
 
 class CorsyTool(AbstractTool):
     name: str = "corsy"
+    binary: str = "python3"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

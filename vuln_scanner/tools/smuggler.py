@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 class SmugglerTool(AbstractTool):
     name: str = "smuggler"
+    binary: str = "smuggler"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

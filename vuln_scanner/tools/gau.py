@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class GauTool(AbstractTool):
     name: str = "gau"
+    binary: str = "gau"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

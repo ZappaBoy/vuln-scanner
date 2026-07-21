@@ -20,6 +20,7 @@ _INTERESTING = {
 
 class WhatWebTool(AbstractTool):
     name: str = "whatweb"
+    binary: str = "whatweb"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 

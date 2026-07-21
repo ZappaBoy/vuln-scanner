@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class SubfinderTool(AbstractTool):
     name: str = "subfinder"
+    binary: str = "subfinder"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

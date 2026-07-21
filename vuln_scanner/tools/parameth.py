@@ -15,6 +15,7 @@ _INTERESTING = re.compile(
 
 class ParamethTool(AbstractTool):
     name: str = "parameth"
+    binary: str = "parameth"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

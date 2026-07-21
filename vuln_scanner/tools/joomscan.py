@@ -13,6 +13,7 @@ _COMPONENT_RE = re.compile(r"Component[:\s]+([^\n]+)", re.IGNORECASE)
 
 class JoomscanTool(AbstractTool):
     name: str = "joomscan"
+    binary: str = "joomscan"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

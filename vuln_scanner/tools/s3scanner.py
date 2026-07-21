@@ -12,6 +12,7 @@ _BUCKET_RE = re.compile(r"bucket[:\s]+([^\s\n]+)", re.IGNORECASE)
 
 class S3ScannerTool(AbstractTool):
     name: str = "s3scanner"
+    binary: str = "s3scanner"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.CLOUD})
 

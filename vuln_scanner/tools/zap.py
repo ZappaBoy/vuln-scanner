@@ -14,6 +14,7 @@ _RISK_SEVERITY: dict[str, Severity] = {
 
 class ZAPTool(AbstractTool):
     name: str = "zap"
+    binary: str = "zaproxy"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

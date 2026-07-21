@@ -18,6 +18,7 @@ _SEV_MAP = {"high": Severity.HIGH, "medium": Severity.MEDIUM, "low": Severity.LO
 
 class BundlerAuditTool(AbstractTool):
     name: str = "bundler-audit"
+    binary: str = "bundle-audit"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

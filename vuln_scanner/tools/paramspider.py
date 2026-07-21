@@ -11,6 +11,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class ParamSpiderTool(AbstractTool):
     name: str = "paramspider"
+    binary: str = "paramspider"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

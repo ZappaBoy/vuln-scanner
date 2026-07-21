@@ -21,6 +21,7 @@ _VULN_RE = re.compile(
 
 class SubjackTool(AbstractTool):
     name: str = "subjack"
+    binary: str = "subjack"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

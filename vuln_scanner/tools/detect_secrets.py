@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class DetectSecretsTool(AbstractTool):
     name: str = "detect-secrets"
+    binary: str = "detect-secrets"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

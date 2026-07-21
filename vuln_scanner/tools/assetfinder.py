@@ -6,6 +6,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class AssetfinderTool(AbstractTool):
     name: str = "assetfinder"
+    binary: str = "assetfinder"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

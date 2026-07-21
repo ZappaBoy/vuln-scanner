@@ -11,6 +11,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class RegulaToool(AbstractTool):
     name: str = "regula"
+    binary: str = "regula"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

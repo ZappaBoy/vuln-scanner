@@ -12,6 +12,7 @@ _RESULT_RE = re.compile(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(.+)")
 
 class HakIp2HostTool(AbstractTool):
     name: str = "hakip2host"
+    binary: str = "hakip2host"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IP, TargetType.CIDR})
 

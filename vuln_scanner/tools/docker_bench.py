@@ -12,6 +12,7 @@ _INFO_RE = re.compile(r"\[INFO\]\s*(.+)")
 
 class DockerBenchTool(AbstractTool):
     name: str = "docker-bench"
+    binary: str = "docker-bench-security"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.PATH})
 

@@ -12,6 +12,7 @@ _SEV_MAP = {"FATAL": Severity.CRITICAL, "WARN": Severity.HIGH,
 
 class DockleTool(AbstractTool):
     name: str = "dockle"
+    binary: str = "dockle"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
 

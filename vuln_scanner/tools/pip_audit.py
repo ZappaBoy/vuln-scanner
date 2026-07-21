@@ -15,6 +15,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class PipAuditTool(AbstractTool):
     name: str = "pip-audit"
+    binary: str = "pip-audit"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

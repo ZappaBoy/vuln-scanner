@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class OSVScannerTool(AbstractTool):
     name: str = "osv-scanner"
+    binary: str = "osv-scanner"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

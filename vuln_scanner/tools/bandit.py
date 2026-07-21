@@ -14,6 +14,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class BanditTool(AbstractTool):
     name: str = "bandit"
+    binary: str = "bandit"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
     silent_flags: list[str] = ["-q"]

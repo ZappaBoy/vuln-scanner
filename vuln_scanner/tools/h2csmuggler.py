@@ -17,6 +17,7 @@ _H2C_RE = re.compile(r"Found\s+h2c\s+server\s+at\s+(?P<url>https?://\S+)", re.IG
 
 class H2cSmugglerTool(AbstractTool):
     name: str = "h2csmuggler"
+    binary: str = "h2csmuggler"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

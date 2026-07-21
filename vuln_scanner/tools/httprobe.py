@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class HttprobeTool(AbstractTool):
     name: str = "httprobe"
+    binary: str = "httprobe"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.CIDR})
 

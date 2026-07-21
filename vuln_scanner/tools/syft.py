@@ -9,6 +9,7 @@ from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 class SyftTool(AbstractTool):
     name: str = "syft"
+    binary: str = "syft"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.PATH, TargetType.IMAGE, TargetType.URL,

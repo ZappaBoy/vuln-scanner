@@ -12,6 +12,7 @@ _WILDCARD_RE = re.compile(r"wildcard", re.IGNORECASE)
 
 class FierceTool(AbstractTool):
     name: str = "fierce"
+    binary: str = "fierce"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

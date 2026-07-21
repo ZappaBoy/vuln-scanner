@@ -11,6 +11,7 @@ _SEV_MAP = {5: Severity.CRITICAL, 4: Severity.HIGH, 3: Severity.MEDIUM,
 
 class QARKTool(AbstractTool):
     name: str = "qark"
+    binary: str = "qark"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

@@ -22,6 +22,7 @@ def _level_to_severity(level: str) -> Severity:
 
 class FlawfinderTool(AbstractTool):
     name: str = "flawfinder"
+    binary: str = "flawfinder"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

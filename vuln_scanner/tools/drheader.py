@@ -13,6 +13,7 @@ _SEVERITY_MAP = {
 
 class DrheaderTool(AbstractTool):
     name: str = "drheader"
+    binary: str = "drheader"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

@@ -11,6 +11,7 @@ _INJECT_RE = re.compile(r"injectable parameter[:\s]+([^\n\r]+)", re.IGNORECASE)
 
 class SSTImapTool(AbstractTool):
     name: str = "sstimap"
+    binary: str = "python3"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

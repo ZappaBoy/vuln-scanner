@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 class CariddiTool(AbstractTool):
     name: str = "cariddi"
+    binary: str = "cariddi"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

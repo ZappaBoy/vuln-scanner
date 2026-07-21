@@ -15,6 +15,7 @@ _SEV_MAP: dict[str, Severity] = {
 
 class GraphQLCopTool(AbstractTool):
     name: str = "graphql-cop"
+    binary: str = "graphql-cop"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

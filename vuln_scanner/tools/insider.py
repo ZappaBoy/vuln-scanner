@@ -11,6 +11,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class InsiderTool(AbstractTool):
     name: str = "insider"
+    binary: str = "insider"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

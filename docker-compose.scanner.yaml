@@ -1,6 +1,7 @@
 services:
 
   scanner:
+    image: vuln-scanner:latest
     build:
       context: .
       dockerfile: Dockerfile

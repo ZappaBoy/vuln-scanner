@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class DnsxTool(AbstractTool):
     name: str = "dnsx"
+    binary: str = "dnsx"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

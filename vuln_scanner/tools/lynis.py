@@ -25,6 +25,7 @@ _SEV_MAP = {
 
 class LynisTool(AbstractTool):
     name: str = "lynis"
+    binary: str = "lynis"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.HOST, TargetType.IP, TargetType.PATH,

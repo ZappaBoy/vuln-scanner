@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 class Enum4linuxTool(AbstractTool):
     name: str = "enum4linux-ng"
+    binary: str = "enum4linux-ng"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

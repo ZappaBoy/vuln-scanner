@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class GitleaksTool(AbstractTool):
     name: str = "gitleaks"
+    binary: str = "gitleaks"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

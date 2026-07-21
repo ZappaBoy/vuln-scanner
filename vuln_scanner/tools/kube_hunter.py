@@ -17,6 +17,7 @@ _SEV_MAP: dict[str, Severity] = {
 
 class KubeHunterTool(AbstractTool):
     name: str = "kube-hunter"
+    binary: str = "kube-hunter"
     category: str = "cloud"
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.HOST, TargetType.IP, TargetType.CLOUD,

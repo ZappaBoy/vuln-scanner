@@ -10,6 +10,7 @@ _CONFIDENCE_MAP = {"High": "high", "Medium": "medium", "Weak": "low"}
 
 class BrakemanTool(AbstractTool):
     name: str = "brakeman"
+    binary: str = "brakeman"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

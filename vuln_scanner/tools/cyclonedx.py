@@ -8,6 +8,7 @@ from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 class CycloneDXTool(AbstractTool):
     name: str = "cyclonedx"
+    binary: str = "cyclonedx"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.IMAGE})
 

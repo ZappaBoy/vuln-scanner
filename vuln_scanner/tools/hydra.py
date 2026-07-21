@@ -29,6 +29,7 @@ _RESULT_RE = re.compile(
 
 class HydraTool(AbstractTool):
     name: str = "hydra"
+    binary: str = "hydra"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

@@ -14,6 +14,7 @@ _TIMING: dict[ScanMode, str] = {
 
 class NmapTool(AbstractTool):
     name: str = "nmap"
+    binary: str = "nmap"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
     verbose_flags: list[str] = ["-v"]

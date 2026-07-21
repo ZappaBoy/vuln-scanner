@@ -25,6 +25,7 @@ _PROFILE_IDS: dict[ScanMode, str] = {
 
 class AcunetixTool(AbstractTool):
     name: str = "acunetix"
+    binary: str = ""
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

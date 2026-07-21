@@ -14,6 +14,7 @@ _CHUNK: dict[ScanMode, int] = {
 
 class ArjunTool(AbstractTool):
     name: str = "arjun"
+    binary: str = "arjun"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

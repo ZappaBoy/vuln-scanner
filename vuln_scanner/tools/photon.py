@@ -20,6 +20,7 @@ _EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
 
 class PhotonTool(AbstractTool):
     name: str = "photon"
+    binary: str = "photon"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

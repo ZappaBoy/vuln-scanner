@@ -17,6 +17,7 @@ _BYPASS_BANNER = re.compile(r"BYPASS\s+FOUND", re.IGNORECASE)
 
 class Nomore403Tool(AbstractTool):
     name: str = "nomore403"
+    binary: str = "nomore403"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

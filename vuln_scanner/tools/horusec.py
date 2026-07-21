@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class HorusecTool(AbstractTool):
     name: str = "horusec"
+    binary: str = "horusec"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

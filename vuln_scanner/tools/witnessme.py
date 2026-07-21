@@ -16,6 +16,7 @@ _DEFAULT_CRED_RE = re.compile(r"(?:default credential|default password|default l
 
 class WitnessMeTool(AbstractTool):
     name: str = "witnessme"
+    binary: str = "witnessme"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

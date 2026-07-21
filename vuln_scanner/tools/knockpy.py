@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class KnockpyTool(AbstractTool):
     name: str = "knockpy"
+    binary: str = "knockpy"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

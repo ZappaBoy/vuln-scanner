@@ -13,6 +13,7 @@ from vuln_scanner.tools.enums import ScanStatus
 
 class GitDumperTool(AbstractTool):
     name: str = "git-dumper"
+    binary: str = "git-dumper"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

@@ -20,6 +20,7 @@ _TECHNIQUE_RE = re.compile(
 
 class CommixTool(AbstractTool):
     name: str = "commix"
+    binary: str = "commix"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

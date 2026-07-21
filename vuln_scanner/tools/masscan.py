@@ -21,6 +21,7 @@ _PORTS: dict[ScanMode, str] = {
 
 class MasscanTool(AbstractTool):
     name: str = "masscan"
+    binary: str = "masscan"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 

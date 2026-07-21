@@ -15,6 +15,7 @@ _HOST_RE = re.compile(
 
 class NetdiscoverTool(AbstractTool):
     name: str = "netdiscover"
+    binary: str = "netdiscover"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IP, TargetType.CIDR})
 

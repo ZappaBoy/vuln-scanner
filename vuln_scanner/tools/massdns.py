@@ -16,6 +16,7 @@ _RESOLVERS = "/usr/share/massdns/resolvers.txt"
 
 class MassDNSTool(AbstractTool):
     name: str = "massdns"
+    binary: str = "massdns"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

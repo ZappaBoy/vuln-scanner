@@ -15,6 +15,7 @@ _VULN_RE = re.compile(r"(?:Vulnerable|Takeover possible)[:\s]+(.+)", re.IGNORECA
 
 class SubOverTool(AbstractTool):
     name: str = "subover"
+    binary: str = "subover"
     category: str = "takeover"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

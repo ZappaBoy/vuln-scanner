@@ -6,6 +6,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class SubdominatorTool(AbstractTool):
     name: str = "subdominator"
+    binary: str = "subdominator"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

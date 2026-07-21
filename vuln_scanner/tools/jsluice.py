@@ -31,6 +31,7 @@ def _secret_severity(kind: str) -> Severity:
 
 class JSluiceTool(AbstractTool):
     name: str = "jsluice"
+    binary: str = "jsluice"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 

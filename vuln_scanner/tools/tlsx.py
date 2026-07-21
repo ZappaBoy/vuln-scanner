@@ -11,6 +11,7 @@ _WEAK_PROTO    = {"ssl2.0", "ssl3.0", "tls1.0", "tls1.1"}
 
 class TlsxTool(AbstractTool):
     name: str = "tlsx"
+    binary: str = "tlsx"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
 

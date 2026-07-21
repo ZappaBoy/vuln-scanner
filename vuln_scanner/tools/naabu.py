@@ -19,6 +19,7 @@ _RATE: dict[ScanMode, int] = {
 
 class NaabuTool(AbstractTool):
     name: str = "naabu"
+    binary: str = "naabu"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 

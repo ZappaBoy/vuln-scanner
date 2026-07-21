@@ -14,6 +14,7 @@ _FAIL_RE = re.compile(r"VULNERABLE[:\s]+(.+)", re.IGNORECASE)
 
 class PromptmapTool(AbstractTool):
     name: str = "promptmap"
+    binary: str = "python3"
     category: str = "llm"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

@@ -11,6 +11,7 @@ _DANGEROUS = {"obfuscator", "packer", "protector", "anti_debug", "anti_emulation
 
 class APKiDTool(AbstractTool):
     name: str = "apkid"
+    binary: str = "apkid"
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

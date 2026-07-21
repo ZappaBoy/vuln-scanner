@@ -10,6 +10,7 @@ _LINE_RE = re.compile(r"(\d{3})\s+\d+\S*\s+(https?://\S+)")
 
 class DirsearchTool(AbstractTool):
     name: str = "dirsearch"
+    binary: str = "dirsearch"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
     silent_flags: list[str] = ["--quiet"]

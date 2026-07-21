@@ -25,6 +25,7 @@ _VULN_RE = re.compile(
 
 class SQLMapTool(AbstractTool):
     name: str = "sqlmap"
+    binary: str = "sqlmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
     verbose_flags: list[str] = ["-v", "3"]

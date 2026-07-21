@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class HadolintTool(AbstractTool):
     name: str = "hadolint"
+    binary: str = "hadolint"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

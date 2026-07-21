@@ -15,6 +15,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class TfsecTool(AbstractTool):
     name: str = "tfsec"
+    binary: str = "tfsec"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

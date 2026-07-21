@@ -14,6 +14,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class GrypeTool(AbstractTool):
     name: str = "grype"
+    binary: str = "grype"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
     silent_flags: list[str] = ["--quiet"]

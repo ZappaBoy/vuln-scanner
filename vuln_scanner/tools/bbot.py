@@ -29,6 +29,7 @@ _FLAG_MAP: dict[ScanMode, list[str]] = {
 
 class BbotTool(AbstractTool):
     name: str = "bbot"
+    binary: str = "bbot"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

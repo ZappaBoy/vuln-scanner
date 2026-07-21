@@ -11,6 +11,7 @@ _GRADE_MAP = {"CRITICAL": Severity.CRITICAL, "WARNING": Severity.MEDIUM,
 
 class KubeScoreTool(AbstractTool):
     name: str = "kube-score"
+    binary: str = "kube-score"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

@@ -28,6 +28,7 @@ _STATUS_SEV: dict[int, Severity] = {
 
 class KiterunnerTool(AbstractTool):
     name: str = "kiterunner"
+    binary: str = "kiterunner"
     category: str = "api"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

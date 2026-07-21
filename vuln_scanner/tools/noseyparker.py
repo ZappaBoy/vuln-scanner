@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class NoseyParkerTool(AbstractTool):
     name: str = "noseyparker"
+    binary: str = "noseyparker"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

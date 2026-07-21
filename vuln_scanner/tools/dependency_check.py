@@ -15,6 +15,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class DependencyCheckTool(AbstractTool):
     name: str = "dependency-check"
+    binary: str = "dependency-check"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

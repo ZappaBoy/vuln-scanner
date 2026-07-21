@@ -12,6 +12,7 @@ _FOUND_RE = re.compile(r"(https?://\S+)")
 
 class KxssTool(AbstractTool):
     name: str = "kxss"
+    binary: str = "kxss"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

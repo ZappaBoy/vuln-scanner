@@ -14,6 +14,7 @@ _MODE_FLAGS: dict[ScanMode, list[str]] = {
 
 class TrufflehogTool(AbstractTool):
     name: str = "trufflehog"
+    binary: str = "trufflehog"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

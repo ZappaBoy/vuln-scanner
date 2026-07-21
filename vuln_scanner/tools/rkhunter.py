@@ -12,6 +12,7 @@ _ROOTKIT_RE = re.compile(r"(?:Rootkit|backdoor|trojan)[:\s]+(.+)", re.IGNORECASE
 
 class RkhunterTool(AbstractTool):
     name: str = "rkhunter"
+    binary: str = "rkhunter"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.HOST})
 

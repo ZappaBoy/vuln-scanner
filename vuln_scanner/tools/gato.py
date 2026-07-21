@@ -12,6 +12,7 @@ _SECRET_RE = re.compile(r"(?:secret|token|credential)[:\s]+(.+)", re.IGNORECASE)
 
 class GatoTool(AbstractTool):
     name: str = "gato"
+    binary: str = "gato"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.REPO})
 

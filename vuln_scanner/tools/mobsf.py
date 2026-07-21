@@ -18,6 +18,7 @@ _MOBSF_KEY = os.environ.get("VS_MOBSF_API_KEY", "")
 
 class MobSFTool(AbstractTool):
     name: str = "mobsf"
+    binary: str = ""
     category: str = "mobile"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

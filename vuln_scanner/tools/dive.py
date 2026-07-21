@@ -12,6 +12,7 @@ _SECRET_RE = re.compile(r"(?:secret|password|credential|key|token)[^\n]*", re.IG
 
 class DiveTool(AbstractTool):
     name: str = "dive"
+    binary: str = "dive"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
 

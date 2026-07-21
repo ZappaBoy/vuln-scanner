@@ -41,6 +41,7 @@ def _classify(kind: str) -> Severity:
 
 class SecretFinderTool(AbstractTool):
     name: str = "secretfinder"
+    binary: str = "SecretFinder"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

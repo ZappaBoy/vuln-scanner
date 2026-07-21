@@ -8,6 +8,7 @@ from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 class XeolTool(AbstractTool):
     name: str = "xeol"
+    binary: str = "xeol"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.PATH, TargetType.IMAGE, TargetType.REPO,

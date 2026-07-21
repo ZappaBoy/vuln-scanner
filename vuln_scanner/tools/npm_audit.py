@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class NpmAuditTool(AbstractTool):
     name: str = "npm-audit"
+    binary: str = "npm"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

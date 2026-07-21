@@ -20,6 +20,7 @@ _PATTERNS = [
 
 class WeggliTool(AbstractTool):
     name: str = "weggli"
+    binary: str = "weggli"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

@@ -23,6 +23,7 @@ _LIMIT: dict[ScanMode, int] = {
 
 class TheHarvesterTool(AbstractTool):
     name: str = "theharvester"
+    binary: str = "theHarvester"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

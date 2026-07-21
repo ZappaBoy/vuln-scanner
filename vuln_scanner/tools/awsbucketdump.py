@@ -15,6 +15,7 @@ _INTERSTING = re.compile(
 
 class AWSBucketDumpTool(AbstractTool):
     name: str = "awsbucketdump"
+    binary: str = "python3"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.CLOUD})
 

@@ -11,6 +11,7 @@ from vuln_scanner.tools.enums import ScanStatus
 
 class DnsReaperTool(AbstractTool):
     name: str = "dnsreaper"
+    binary: str = "dnsreaper"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

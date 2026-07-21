@@ -12,6 +12,7 @@ _URL_RE = re.compile(r"(https?://\S+)")
 
 class CRLFsuiteTool(AbstractTool):
     name: str = "crlfuite"
+    binary: str = "crlfuzz"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

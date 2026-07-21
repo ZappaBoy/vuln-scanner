@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class TerrascanTool(AbstractTool):
     name: str = "terrascan"
+    binary: str = "terrascan"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO, TargetType.CLOUD})
 

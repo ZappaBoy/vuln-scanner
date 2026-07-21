@@ -17,6 +17,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class JaelesTool(AbstractTool):
     name: str = "jaeles"
+    binary: str = "jaeles"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

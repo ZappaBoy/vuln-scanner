@@ -14,6 +14,7 @@ _MODE_TUNING: dict[ScanMode, list[str]] = {
 
 class NiktoTool(AbstractTool):
     name: str = "nikto"
+    binary: str = "nikto"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
     verbose_flags: list[str] = ["-Display", "V"]

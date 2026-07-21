@@ -11,6 +11,7 @@ _FOUND_RE = re.compile(r"(?:Found|Open|Accessible)[:\s]+([^\n]+)", re.IGNORECASE
 
 class CloudScraperTool(AbstractTool):
     name: str = "cloudscraper"
+    binary: str = "cloudscraper"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.CLOUD})
 

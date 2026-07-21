@@ -11,6 +11,7 @@ _CNAME_RE = re.compile(r"CNAME[:\s]+(\S+)", re.IGNORECASE)
 
 class AutoSubTakeoverTool(AbstractTool):
     name: str = "autosub-takeover"
+    binary: str = "autoSubTakeover"
     category: str = "takeover"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

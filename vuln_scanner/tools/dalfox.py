@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class DalfoxTool(AbstractTool):
     name: str = "dalfox"
+    binary: str = "dalfox"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

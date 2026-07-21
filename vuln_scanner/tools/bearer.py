@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class BearerTool(AbstractTool):
     name: str = "bearer"
+    binary: str = "bearer"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 

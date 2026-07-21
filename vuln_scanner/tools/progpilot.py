@@ -21,6 +21,7 @@ _VULN_SEV = {
 
 class ProgPilotTool(AbstractTool):
     name: str = "progpilot"
+    binary: str = "progpilot"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

@@ -11,6 +11,7 @@ _SEV_MAP = {"CRITICAL": Severity.CRITICAL, "HIGH": Severity.HIGH,
 
 class CodeCheckerTool(AbstractTool):
     name: str = "codechecker"
+    binary: str = "CodeChecker"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

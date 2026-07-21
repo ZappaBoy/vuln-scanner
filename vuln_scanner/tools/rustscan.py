@@ -35,6 +35,7 @@ _NMAP_FLAGS: dict[ScanMode, list[str]] = {
 
 class RustScanTool(AbstractTool):
     name: str = "rustscan"
+    binary: str = "rustscan"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 

@@ -11,6 +11,7 @@ _LEVEL_MAP = {0: Severity.INFO, 1: Severity.LOW, 2: Severity.MEDIUM,
 
 class PopeyeTool(AbstractTool):
     name: str = "popeye"
+    binary: str = "popeye"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 

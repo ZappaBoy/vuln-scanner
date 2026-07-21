@@ -11,6 +11,7 @@ _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM, "info": Severity
 
 class PsalmTool(AbstractTool):
     name: str = "psalm"
+    binary: str = "psalm"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

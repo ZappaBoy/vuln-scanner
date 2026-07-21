@@ -14,6 +14,7 @@ _MODE_ARGS: dict[ScanMode, list[str]] = {
 
 class ProwlerTool(AbstractTool):
     name: str = "prowler"
+    binary: str = "prowler"
     category: str = "cloud"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 

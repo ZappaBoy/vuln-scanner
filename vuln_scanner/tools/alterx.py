@@ -5,6 +5,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class AlterxTool(AbstractTool):
     name: str = "alterx"
+    binary: str = "alterx"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
 

@@ -13,6 +13,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class VulsTool(AbstractTool):
     name: str = "vuls"
+    binary: str = "vuls"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

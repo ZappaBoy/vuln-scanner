@@ -7,6 +7,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class SSHAuditTool(AbstractTool):
     name: str = "ssh-audit"
+    binary: str = "ssh-audit"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 

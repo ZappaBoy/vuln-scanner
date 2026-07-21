@@ -18,6 +18,7 @@ _JWKS_RE = re.compile(r"JWKS.*(?:inject|spoof|bypass)", re.IGNORECASE)
 
 class JwtToolTool(AbstractTool):
     name: str = "jwt-tool"
+    binary: str = "jwt-tool"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

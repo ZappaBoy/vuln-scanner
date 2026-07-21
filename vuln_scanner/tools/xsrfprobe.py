@@ -12,6 +12,7 @@ _FORM_RE = re.compile(r"Form[:\s#]+([^\n]+)", re.IGNORECASE)
 
 class XSRFProbeTool(AbstractTool):
     name: str = "xsrfprobe"
+    binary: str = "xsrfprobe"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

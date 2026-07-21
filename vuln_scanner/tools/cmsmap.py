@@ -21,6 +21,7 @@ _SEVERITY_MAP = [
 
 class CMSmapTool(AbstractTool):
     name: str = "cmsmap"
+    binary: str = "cmsmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 

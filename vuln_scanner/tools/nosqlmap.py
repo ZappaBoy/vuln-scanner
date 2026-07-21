@@ -16,6 +16,7 @@ _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 class NoSQLMapTool(AbstractTool):
     name: str = "nosqlmap"
+    binary: str = "nosqlmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
 

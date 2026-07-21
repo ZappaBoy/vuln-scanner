@@ -13,6 +13,7 @@ _DEFAULT_PORTS = {"22", "80", "443", "8080", "8443", "3306", "5432", "6379", "27
 
 class ZmapTool(AbstractTool):
     name: str = "zmap"
+    binary: str = "zmap"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IP, TargetType.CIDR})
 

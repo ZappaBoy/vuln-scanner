@@ -22,6 +22,7 @@ _SEVERITY_KEYWORDS: dict[str, Severity] = {
 
 class CORScannerTool(AbstractTool):
     name: str = "corscanner"
+    binary: str = "corscanner"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 

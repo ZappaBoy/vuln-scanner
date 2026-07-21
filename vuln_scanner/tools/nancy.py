@@ -13,6 +13,7 @@ _SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
 
 class NancyTool(AbstractTool):
     name: str = "nancy"
+    binary: str = "nancy"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 

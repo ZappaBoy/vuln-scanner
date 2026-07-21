@@ -25,6 +25,7 @@ _PROTOCOLS = {
 
 class CrackMapExecTool(AbstractTool):
     name: str = "crackmapexec"
+    binary: str = "crackmapexec"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
 

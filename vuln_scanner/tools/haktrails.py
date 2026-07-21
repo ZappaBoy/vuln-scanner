@@ -9,6 +9,7 @@ from vuln_scanner.tools.abstract import AbstractTool
 
 class HaktrailsTool(AbstractTool):
     name: str = "haktrails"
+    binary: str = "haktrails"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
 

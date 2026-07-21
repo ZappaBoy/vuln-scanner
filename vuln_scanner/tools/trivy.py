@@ -16,6 +16,8 @@ class TrivyTool(AbstractTool):
     name: str = "trivy"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
+    silent_flags: list[str] = ["--quiet"]
+    verbose_flags: list[str] = ["--debug"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         scanners = _MODE_SCANNERS.get(scan_input.mode, "vuln")

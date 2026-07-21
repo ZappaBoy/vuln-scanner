@@ -21,6 +21,7 @@ class FeroxbusterTool(AbstractTool):
     name: str = "feroxbuster"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    silent_flags: list[str] = ["--silent"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

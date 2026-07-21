@@ -16,6 +16,7 @@ class NiktoTool(AbstractTool):
     name: str = "nikto"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
+    verbose_flags: list[str] = ["-Display", "V"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [

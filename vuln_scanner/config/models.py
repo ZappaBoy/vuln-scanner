@@ -17,6 +17,7 @@ class ReportFormat(str, Enum):
     MARKDOWN = "markdown"
     HTML = "html"
     JSON = "json"
+    PDF = "pdf"
 
 
 class ScanMode(str, Enum):
@@ -43,6 +44,7 @@ class CategoriesConfig(BaseModel):
 class ToolsConfig(BaseModel):
     include: list[str] = Field(default_factory=list)
     exclude: list[str] = Field(default_factory=list)
+    timeouts: dict[str, int] = Field(default_factory=dict)
 
 
 class ReportConfig(BaseModel):

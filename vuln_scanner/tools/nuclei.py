@@ -97,6 +97,8 @@ class NucleiTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({
         TargetType.URL, TargetType.HOST, TargetType.IP
     })
+    silent_flags: list[str] = ["-silent"]
+    verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return _build_nuclei_command(target, scan_input, _active_nuclei_cfg)

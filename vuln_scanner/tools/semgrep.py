@@ -17,6 +17,8 @@ class SemgrepTool(AbstractTool):
     name: str = "semgrep"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
+    silent_flags: list[str] = ["--quiet"]
+    verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."

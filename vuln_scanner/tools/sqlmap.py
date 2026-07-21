@@ -27,6 +27,7 @@ class SQLMapTool(AbstractTool):
     name: str = "sqlmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    verbose_flags: list[str] = ["-v", "3"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         level, risk = _LEVEL_RISK[scan_input.mode]

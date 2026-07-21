@@ -1,5 +1,5 @@
 """Pydantic data models: Finding, ScanInput, ScanResult, AuthConfig."""
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from vuln_scanner.tools.enums import Confidence, ScanMode, ScanStatus, Severity
 
@@ -95,6 +95,9 @@ class ScanInput(BaseModel):
     proxy: str | None = None   # e.g. "http://127.0.0.1:8080"
 
 
+_RAW_OUTPUT_KEEP = 4096
+
+
 class ScanResult(BaseModel):
     tool: str
     target: str
@@ -103,3 +106,10 @@ class ScanResult(BaseModel):
     status: ScanStatus = ScanStatus.SUCCESS
     error: str | None = None
     raw_output: str = ""
+
+    @field_validator("raw_output")
+    @classmethod
+    def _truncate_raw(cls, v: str) -> str:
+        if len(v) > _RAW_OUTPUT_KEEP:
+            return v[:_RAW_OUTPUT_KEEP] + f"\n… [{len(v) - _RAW_OUTPUT_KEEP} chars truncated]"
+        return v

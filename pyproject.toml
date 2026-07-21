@@ -9,6 +9,7 @@ dependencies = [
     "pydantic-settings>=2.0",
     "requests>=2.32",
     "openai>=1.0",
+    "reportlab>=4.0",
 ]
 
 [project.scripts]

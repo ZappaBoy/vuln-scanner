@@ -218,3 +218,75 @@ class TestJSONReporter:
         JSONReporter().generate(_assessment(_result(), clusters=[cluster]), out)
         data = json.loads(out.read_text())
         assert data["clusters"][0]["title"] == "Network exposure"
+
+
+# ─── PDF ──────────────────────────────────────────────────────────────────────
+
+class TestPDFReporter:
+    def test_creates_file(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        get_reporter(ReportFormat.PDF).generate(_assessment(_result()), out)
+        assert out.exists()
+
+    def test_file_is_valid_pdf(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        get_reporter(ReportFormat.PDF).generate(_assessment(_result()), out)
+        assert out.read_bytes()[:4] == b"%PDF"
+
+    def test_returns_path(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        written = get_reporter(ReportFormat.PDF).generate(_assessment(_result()), out)
+        assert written == out
+
+    def test_nonzero_size(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        get_reporter(ReportFormat.PDF).generate(_assessment(_result(findings=[_finding()])), out)
+        assert out.stat().st_size > 1000
+
+    def test_creates_parent_dirs(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "nested" / "report.pdf"
+        get_reporter(ReportFormat.PDF).generate(_assessment(_result()), out)
+        assert out.exists()
+
+    def test_multiple_findings(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        r = _result(findings=[
+            _finding("SQLi", Severity.CRITICAL),
+            _finding("XSS", Severity.HIGH),
+            _finding("Info", Severity.INFO),
+        ])
+        get_reporter(ReportFormat.PDF).generate(_assessment(r), out)
+        assert out.exists() and out.stat().st_size > 1000
+
+    def test_with_executive_summary(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        get_reporter(ReportFormat.PDF).generate(
+            _assessment(_result(), summary="Critical infrastructure issues found."), out
+        )
+        assert out.exists()
+
+    def test_min_severity_filter(self, tmp_path):
+        from vuln_scanner.config.models import ReportFormat
+        from vuln_scanner.reports import get_reporter
+        out = tmp_path / "report.pdf"
+        r = _result(findings=[
+            _finding("Low finding", Severity.LOW),
+            _finding("Critical finding", Severity.CRITICAL),
+        ])
+        # Only critical should appear — but PDF is binary so we just test it runs
+        get_reporter(ReportFormat.PDF, min_severity="high").generate(_assessment(r), out)
+        assert out.exists()

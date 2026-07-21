@@ -3,6 +3,7 @@ from vuln_scanner.reports.base import AbstractReporter
 from vuln_scanner.reports.html import HTMLReporter
 from vuln_scanner.reports.json_reporter import JSONReporter
 from vuln_scanner.reports.markdown import MarkdownReporter
+from vuln_scanner.reports.pdf import PDFReporter
 
 
 def get_reporter(fmt: ReportFormat, min_severity: str = "none") -> AbstractReporter:
@@ -10,6 +11,7 @@ def get_reporter(fmt: ReportFormat, min_severity: str = "none") -> AbstractRepor
         ReportFormat.MARKDOWN: MarkdownReporter,
         ReportFormat.HTML: HTMLReporter,
         ReportFormat.JSON: JSONReporter,
+        ReportFormat.PDF: PDFReporter,
     }
     cls = reporters.get(fmt)
     if cls is None:
@@ -22,5 +24,6 @@ __all__ = [
     "MarkdownReporter",
     "HTMLReporter",
     "JSONReporter",
+    "PDFReporter",
     "get_reporter",
 ]

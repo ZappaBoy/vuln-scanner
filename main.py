@@ -17,18 +17,95 @@ from vuln_scanner.tools import TOOL_REGISTRY
 
 _REPORT_EXT = {
     ReportFormat.MARKDOWN: "md",
-    ReportFormat.HTML: "html",
-    ReportFormat.JSON: "json",
+    ReportFormat.HTML:     "html",
+    ReportFormat.JSON:     "json",
+    ReportFormat.PDF:      "pdf",
 }
+
+# ── Logging setup ─────────────────────────────────────────────────────────────
+
+_FMT       = "%(asctime)s %(levelname)-8s %(name)s: %(message)s"
+_FMT_COLOR = "%(asctime)s %(levelname_color)s %(name_short)s: %(message)s"
+_DATEFMT   = "%H:%M:%S"
+
+_LEVEL_COLORS = {
+    logging.DEBUG:    "\033[36m",    # cyan
+    logging.INFO:     "\033[32m",    # green
+    logging.WARNING:  "\033[33m",    # yellow
+    logging.ERROR:    "\033[31m",    # red
+    logging.CRITICAL: "\033[1;31m",  # bold red
+}
+_RESET = "\033[0m"
+
+
+class _ColorFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        color = _LEVEL_COLORS.get(record.levelno, "")
+        record.levelname_color = f"{color}{record.levelname:<8}{_RESET}"
+        # Shorten logger names: vuln_scanner.tools.nmap → tools.nmap
+        parts = record.name.split(".")
+        record.name_short = ".".join(parts[-2:]) if len(parts) > 2 else record.name
+        return super().format(record)
 
 
 def _setup_logging(verbose: bool) -> None:
     level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%H:%M:%S",
-    )
+    root = logging.getLogger()
+    root.setLevel(level)
+
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setLevel(level)
+    if sys.stderr.isatty():
+        handler.setFormatter(_ColorFormatter(_FMT_COLOR, datefmt=_DATEFMT))
+    else:
+        handler.setFormatter(logging.Formatter(_FMT, datefmt=_DATEFMT))
+    root.addHandler(handler)
+
+
+def _add_file_handler(log_path: Path) -> None:
+    handler = logging.FileHandler(log_path, encoding="utf-8")
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(logging.Formatter(_FMT, datefmt=_DATEFMT))
+    logging.getLogger().addHandler(handler)
+
+
+def _cmd_list_tools(registry: dict) -> None:
+    from vuln_scanner.tools.target import _ALL_TARGET_TYPES
+    tools = sorted(registry.values(), key=lambda c: (c().category, c().name))
+    print(f"{len(tools)} tool(s) registered:\n")
+    print(f"  {'NAME':<24} {'CATEGORY':<16} TARGET TYPES")
+    print("  " + "-" * 70)
+    for cls in tools:
+        t = cls()
+        if t.applicable_targets is _ALL_TARGET_TYPES:
+            types_str = "all"
+        else:
+            types_str = ", ".join(sorted(tp.value for tp in t.applicable_targets))
+        print(f"  {t.name:<24} {t.category:<16} {types_str}")
+
+
+def _cmd_dry_run(config, registry: dict) -> None:
+    from vuln_scanner.orchestrator import ScanOrchestrator
+    tools = [cls() for cls in registry.values()]
+    orchestrator = ScanOrchestrator(config=config, tools=tools)
+    active_tools = orchestrator._filter_tools()
+    targets = config.scan.targets
+
+    tasks = [
+        (tool, target)
+        for tool in active_tools
+        for target in targets
+        if tool.applies_to(target)
+    ]
+
+    print(f"Dry run — {len(tasks)} task(s) would execute "
+          f"(mode={config.scan.mode.value}, workers={config.scan.max_concurrent}):\n")
+    print(f"  {'TOOL':<24} {'CATEGORY':<16} TARGET")
+    print("  " + "-" * 72)
+    for tool, target in sorted(tasks, key=lambda x: (x[0].category, x[0].name)):
+        timeout = getattr(config.tools, 'timeouts', {}).get(tool.name, config.scan.timeout)
+        print(f"  {tool.name:<24} {tool.category:<16} {target}  (timeout={timeout}s)")
+    print(f"\n  Total: {len(active_tools)} tool(s) × {len(targets)} target(s) = {len(tasks)} task(s)")
 
 
 def main() -> None:
@@ -43,6 +120,10 @@ def main() -> None:
     # Load plugins (extends TOOL_REGISTRY in-place)
     plugin_registry = dict(TOOL_REGISTRY)
     load_plugins(config.plugins, plugin_registry)
+
+    if args.list_tools:
+        _cmd_list_tools(plugin_registry)
+        sys.exit(0)
 
     if not config.scan.targets:
         log.error("No targets specified. Use --targets or set VS_TARGETS.")
@@ -74,6 +155,7 @@ def main() -> None:
     timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
     run_dir = Path(config.report.output_dir) / f"run_{timestamp}"
     run_dir.mkdir(parents=True, exist_ok=True)
+    _add_file_handler(run_dir / "scan.log")
     log.info("Run directory: %s", run_dir)
 
     # Point gowitness at this run's screenshots subdirectory
@@ -105,6 +187,10 @@ def main() -> None:
 
     # Patch the config targets with the fully expanded list
     config.scan.targets = targets
+
+    if args.dry_run:
+        _cmd_dry_run(config, plugin_registry)
+        sys.exit(0)
 
     # ── Phase 1: Network scan (nmap/rustscan) for port-based routing ──────────
     tools = [cls() for cls in plugin_registry.values()]

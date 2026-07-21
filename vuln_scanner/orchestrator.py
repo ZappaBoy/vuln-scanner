@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import sys
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from vuln_scanner.config.models import AppConfig
@@ -8,6 +10,58 @@ from vuln_scanner.tools.models import ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
 
 log = logging.getLogger(__name__)
+
+
+class _ProgressTracker:
+    """Thread-safe progress counter; renders inline in TTY, logs otherwise."""
+    def __init__(self, total: int) -> None:
+        self._total = total
+        self._done = 0
+        self._ok = 0
+        self._fail = 0
+        self._skip = 0
+        self._running: set[str] = set()
+        self._lock = threading.Lock()
+        self._tty = sys.stderr.isatty()
+
+    def start(self, label: str) -> None:
+        with self._lock:
+            self._running.add(label)
+
+    def finish(self, label: str, status: ScanStatus) -> None:
+        with self._lock:
+            self._running.discard(label)
+            self._done += 1
+            if status == ScanStatus.SUCCESS:
+                self._ok += 1
+            elif status == ScanStatus.SKIPPED:
+                self._skip += 1
+            else:
+                self._fail += 1
+            if self._tty:
+                self._render_tty()
+
+    def _render_tty(self) -> None:
+        width = 24
+        filled = int(width * self._done / max(self._total, 1))
+        bar = "█" * filled + "░" * (width - filled)
+        running_list = ", ".join(sorted(self._running)[:4])
+        if len(self._running) > 4:
+            running_list += f" +{len(self._running) - 4}"
+        suffix = f"  running: [{running_list}]" if running_list else ""
+        line = (
+            f"\r  [{bar}] {self._done}/{self._total}"
+            f"  ✓{self._ok} ✗{self._fail} ~{self._skip}{suffix}"
+        )
+        print(line, end="", flush=True, file=sys.stderr)
+        if self._done == self._total:
+            print(file=sys.stderr)  # final newline
+
+    def summary_line(self) -> str:
+        return (
+            f"{self._total} task(s) completed: "
+            f"✓ {self._ok} success  ✗ {self._fail} failed  ~ {self._skip} skipped"
+        )
 
 
 class ScanOrchestrator:
@@ -44,7 +98,13 @@ class ScanOrchestrator:
         tool: AbstractTool,
         target: str,
         scan_input: ScanInput,
+        tracker: _ProgressTracker,
+        timeout_override: int | None = None,
     ) -> ScanResult:
+        label = f"{tool.name}→{target}"
+        if timeout_override is not None:
+            scan_input = scan_input.model_copy(update={"timeout": timeout_override})
+        tracker.start(label)
         try:
             result = await loop.run_in_executor(executor, tool.run, target, scan_input)
         except Exception as exc:
@@ -55,6 +115,7 @@ class ScanOrchestrator:
                 status=ScanStatus.FAILED,
                 error=str(exc),
             )
+        tracker.finish(label, result.status)
         if result.status == ScanStatus.SUCCESS:
             icon = "✓"
         elif result.status == ScanStatus.SKIPPED:
@@ -62,7 +123,9 @@ class ScanOrchestrator:
         else:
             icon = "✗"
         log.info(
-            "  [%s] %s → %s (%s, %.1fs, %d finding(s))",
+            "  [%d/%d] [%s] %s → %s (%s, %.1fs, %d finding(s))",
+            tracker._done,
+            tracker._total,
             icon,
             tool.name,
             target,
@@ -123,14 +186,20 @@ class ScanOrchestrator:
             max_workers,
         )
 
+        tracker = _ProgressTracker(len(tasks))
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             coroutines = [
-                self._run_task(loop, executor, tool, target, scan_inputs[target])
+                self._run_task(
+                    loop, executor, tool, target, scan_inputs[target],
+                    tracker=tracker,
+                    timeout_override=self._config.tools.timeouts.get(tool.name),
+                )
                 for tool, target in tasks
             ]
             results = await asyncio.gather(*coroutines)
 
+        log.info(tracker.summary_line())
         return list(results)
 
     def run(self) -> list[ScanResult]:

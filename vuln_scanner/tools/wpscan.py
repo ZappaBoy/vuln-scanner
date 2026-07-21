@@ -20,6 +20,7 @@ class WPScanTool(AbstractTool):
     name: str = "wpscan"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [

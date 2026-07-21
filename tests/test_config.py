@@ -23,22 +23,26 @@ def test_defaults_when_no_source(monkeypatch, tmp_path):
     assert ReportFormat.MARKDOWN in config.report.formats
 
 
-def test_cli_targets_override():
+def test_cli_targets_override(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
     config = load_config(_args(targets=["192.168.1.1", "10.0.0.0/8"]))
     assert config.scan.targets == ["192.168.1.1", "10.0.0.0/8"]
 
 
-def test_cli_mode_override():
+def test_cli_mode_override(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
     config = load_config(_args(mode="aggressive"))
     assert config.scan.mode == ScanMode.AGGRESSIVE
 
 
-def test_cli_mode_default_is_passive():
+def test_cli_mode_default_is_passive(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
     config = load_config(_args())
     assert config.scan.mode == ScanMode.PASSIVE
 
 
-def test_env_targets_override(monkeypatch):
+def test_env_targets_override(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("VS_TARGETS", '["172.16.0.1"]')
     config = load_config(_args())
     assert "172.16.0.1" in config.scan.targets

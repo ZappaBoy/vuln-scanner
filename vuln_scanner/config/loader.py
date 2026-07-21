@@ -221,6 +221,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
                         dest="no_recon",
                         help="Disable the asset-discovery recon pipeline.")
 
+    parser.add_argument(
+        "--dry-run", action="store_true", dest="dry_run",
+        help="Print what would run (tool×target matrix) and exit without scanning.",
+    )
+    parser.add_argument(
+        "--list-tools", action="store_true", dest="list_tools",
+        help="List all registered tools with category and target types, then exit.",
+    )
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Enable debug logging.")
     return parser

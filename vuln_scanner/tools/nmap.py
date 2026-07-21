@@ -16,6 +16,7 @@ class NmapTool(AbstractTool):
     name: str = "nmap"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
+    verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         timing = _TIMING[scan_input.mode]

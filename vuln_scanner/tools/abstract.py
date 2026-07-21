@@ -15,6 +15,20 @@ from vuln_scanner.tools.target import _ALL_TARGET_TYPES, classify_target
 
 log = logging.getLogger(__name__)
 
+_RAW_TRUNCATE = 8192  # chars logged per stream in DEBUG mode
+_STORED_RAW_MAX = 4096  # chars kept in ScanResult.raw_output; full output is in scan.log
+
+
+def _log_tool_output(logger: logging.Logger, name: str, stdout: str, stderr: str) -> None:
+    """Emit tool stdout/stderr at DEBUG level, truncated to avoid log spam."""
+    for stream, label in ((stdout, "stdout"), (stderr, "stderr")):
+        stripped = stream.strip()
+        if not stripped:
+            continue
+        if len(stripped) > _RAW_TRUNCATE:
+            stripped = stripped[:_RAW_TRUNCATE] + f"\n… [{len(stream) - _RAW_TRUNCATE} chars truncated]"
+        logger.debug("[%s] %s:\n%s", name, label, stripped)
+
 # Place in a command list where the output file path should be substituted.
 OUTPUT_FILE_SENTINEL = "__OUTPUT_FILE__"
 
@@ -34,6 +48,12 @@ class AbstractTool(ABC, BaseModel):
     # Override in subclasses to restrict which target types this tool handles.
     # Default = all types so tools without an override keep working.
     applicable_targets: frozenset[TargetType] = _ALL_TARGET_TYPES
+
+    # Flags appended to the command when the root logger is at DEBUG level.
+    verbose_flags: list[str] = []
+    # Flags stripped from the command when the root logger is at DEBUG level
+    # (e.g. remove "--quiet" / "--silent" so full tool output is visible).
+    silent_flags: list[str] = []
 
     def applies_to(self, target: str) -> bool:
         """Return True if this tool should run against *target*."""
@@ -83,7 +103,12 @@ class AbstractTool(ABC, BaseModel):
         raw_from: str = "stdout",
         output_file: str | None = None,
     ) -> ScanResult:
-        log.debug("[%s] Running: %s", self.name, " ".join(cmd))
+        debug = log.isEnabledFor(logging.DEBUG)
+        if debug and (self.silent_flags or self.verbose_flags):
+            cmd = [a for a in cmd if a not in self.silent_flags]
+            cmd = cmd + self.verbose_flags
+
+        log.debug("[%s] cmd: %s", self.name, " ".join(cmd))
         start = time.monotonic()
         try:
             proc = subprocess.run(
@@ -93,7 +118,10 @@ class AbstractTool(ABC, BaseModel):
                 timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
-            proc_output = proc.stdout + proc.stderr
+            proc_output = (proc.stdout + proc.stderr)[:_STORED_RAW_MAX]
+
+            if debug:
+                _log_tool_output(log, self.name, proc.stdout, proc.stderr)
 
             if raw_from == "file" and output_file:
                 try:
@@ -104,7 +132,7 @@ class AbstractTool(ABC, BaseModel):
                 raw = proc.stdout
 
             if proc.returncode not in (0, 1) and not raw.strip():
-                log.warning("[%s] Exited %d on %s.", self.name, proc.returncode, target)
+                log.warning("[%s] exited %d on %s", self.name, proc.returncode, target)
                 return ScanResult(
                     tool=self.name,
                     target=target,
@@ -115,7 +143,7 @@ class AbstractTool(ABC, BaseModel):
                 )
 
             findings = self.parse_output(raw, target)
-            log.debug("[%s] %d finding(s) on %s.", self.name, len(findings), target)
+            log.debug("[%s] %d finding(s) on %s", self.name, len(findings), target)
             return ScanResult(
                 tool=self.name,
                 target=target,
@@ -126,7 +154,7 @@ class AbstractTool(ABC, BaseModel):
             )
 
         except subprocess.TimeoutExpired:
-            log.warning("[%s] Timed out after %ds on %s.", self.name, scan_input.timeout, target)
+            log.warning("[%s] timed out after %ds on %s", self.name, scan_input.timeout, target)
             return ScanResult(
                 tool=self.name,
                 target=target,
@@ -135,7 +163,7 @@ class AbstractTool(ABC, BaseModel):
                 error=f"Tool timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
-            log.error("[%s] Binary not found: %r — tool must be installed in the image.", self.name, cmd[0])
+            log.error("[%s] binary not found: %r — tool must be installed in the image", self.name, cmd[0])
             return ScanResult(
                 tool=self.name,
                 target=target,

@@ -18,6 +18,7 @@ _LINE_RE = re.compile(r"^(/\S*)\s+\(Status:\s*(\d+)\)(?:\s+\[Size:\s*(\d+)\])?")
 class GobusterTool(AbstractTool):
     name: str = "gobuster"
     category: str = "web"
+    verbose_flags: list[str] = ["-v"]
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:

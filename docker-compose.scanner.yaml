@@ -43,15 +43,15 @@ services:
     # Scanner is a one-shot service: pass runtime arguments via `docker compose run`.
     #
     # Basic scan (config.toml drives targets + settings):
-    #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+    #   docker compose -f docker-compose.yaml -f docker-compose.scanner.yaml \
     #     run --rm scanner
     #
     # Override targets on the CLI (env vars + config.toml still apply):
-    #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+    #   docker compose -f docker-compose.yaml -f docker-compose.scanner.yaml \
     #     run --rm scanner --targets 192.168.1.1 https://app.example.com --mode active
     #
     # Use an alternative config file:
-    #   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+    #   docker compose -f docker-compose.yaml -f docker-compose.scanner.yaml \
     #     run --rm -v $(pwd)/prod.toml:/app/prod.toml:ro \
     #     -e VS_CONFIG=/app/prod.toml scanner
 

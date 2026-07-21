@@ -15,8 +15,6 @@ RUN pacman -Syu --noconfirm && \
 USER builder
 
 # ── BlackArch / AUR packages ─────────────────────────────────────────────────
-# Using || true so that packages unavailable in the current repo don't abort
-# the build; tools gracefully report ScanStatus.FAILED at runtime when missing.
 RUN yay -Syu --noconfirm && \
     yay -S --noconfirm --needed \
         nmap nikto nuclei wapiti wpscan zaproxy arachni sqlmap \
@@ -41,69 +39,55 @@ RUN yay -Syu --noconfirm && \
         dirsearch joomscan whatwaf medusa cppcheck \
         clamav yara rkhunter chkrootkit binwalk \
         findomain massdns shuffledns spiderfoot \
-        zmap ghauri weggli kics graphql-cop \
-        syft-bin dockle-bin kubeaudit-bin kube-score-bin kube-linter-bin \
-        popeye-bin dive-bin insider-bin smuggler \
-        knockpy assetfinder subover subdominator linkfinder retire second-order \
-        tko-subs gitjacker jaeles-bin cmsmap syft wappalyzer-next-git \
-        gotator s3scanner regula zizmor parameth 2>&1 || true && \
+        zmap ghauri  graphql-cop \
+        dockle-bin \
+        popeye-bin smuggler \
+        assetfinder subover linkfinder retire second-order \
+        gitjacker cmsmap syft wappalyzer-next-git \
+        s3scanner zizmor parameth blackarch/jaeles python-witnessme && \
     yay -Scc --noconfirm
 
 # ── Go tools ─────────────────────────────────────────────────────────────────
-RUN go install github.com/projectdiscovery/katana/cmd/katana@latest 2>/dev/null || true && \
-    go install github.com/securego/gosec/v2/cmd/gosec@latest 2>/dev/null || true && \
-    go install github.com/aquasecurity/kube-bench/cmd/kube-bench@latest 2>/dev/null || true && \
-    go install github.com/trufflesecurity/jsluice/cmd/jsluice@latest 2>/dev/null || true && \
-    go install github.com/devploit/nomore403@latest 2>/dev/null || true && \
-    go install github.com/haccer/subjack@latest 2>/dev/null || true && \
-    go install github.com/hahwul/jaeles@latest 2>/dev/null || true && \
-    go install github.com/projectdiscovery/chaos-client/cmd/chaos@latest 2>/dev/null || true && \
-    go install github.com/gwen001/github-subdomains@latest 2>/dev/null || true && \
-    go install github.com/hakluke/hakip2host@latest 2>/dev/null || true && \
-    go install github.com/hakluke/haktrails@latest 2>/dev/null || true && \
-    go install github.com/bp0lr/gauplus@latest 2>/dev/null || true && \
-    go install github.com/d3mondev/puredns/v2@latest 2>/dev/null || true && \
-    go install github.com/haccer/subover@latest 2>/dev/null || true && \
-    go install github.com/anshumanbh/tko-subs@latest 2>/dev/null || true && \
-    go install github.com/mhmdiaa/second-order@latest 2>/dev/null || true && \
-    go install github.com/tomnomnom/kxss@latest 2>/dev/null || true && \
-    go install github.com/praetorian-inc/gato@latest 2>/dev/null || true && \
-    go install github.com/zricethezav/gitleaks/v8@latest 2>/dev/null || true && \
-    go install github.com/liamg/gitjacker@latest 2>/dev/null || true && \
-    go install github.com/anchore/xeol@latest 2>/dev/null || true && \
-    go install github.com/sonatype-nexus-community/nancy@latest 2>/dev/null || true && \
-    go install github.com/future-architect/vuls@latest 2>/dev/null || true && \
+RUN go install github.com/projectdiscovery/katana/cmd/katana@latest && \
+    go install github.com/securego/gosec/v2/cmd/gosec@latest && \
+    go install github.com/aquasecurity/kube-bench@latest && \
+    go install github.com/BishopFox/jsluice/cmd/jsluice@latest && \
+    go install github.com/devploit/nomore403@latest && \
+    go install github.com/haccer/subjack@latest && \
+    go install github.com/projectdiscovery/chaos-client/cmd/chaos@latest && \
+    go install github.com/gwen001/github-subdomains@latest && \
+    go install github.com/hakluke/hakip2host@latest && \
+    go install github.com/hakluke/haktrails@latest && \
+    go install github.com/bp0lr/gauplus@latest && \
+    go install github.com/d3mondev/puredns/v2@latest && \
+    go install github.com/mhmdiaa/second-order@latest
+
+RUN go install github.com/zricethezav/gitleaks/v8@latest && \
+    go install github.com/sonatype-nexus-community/nancy@latest && \
     go clean -cache -modcache && \
     rm -rf ~/go/pkg
 
 # ── Cargo (Rust) tools ───────────────────────────────────────────────────────
-RUN cargo install cargo-audit 2>/dev/null || true && \
-    cargo install ripgen 2>/dev/null || true && \
-    cargo install rusty-hog 2>/dev/null || true
+RUN cargo install cargo-audit && \
+    cargo install ripgen && \
+    rm -rf ~/.cargo/registry ~/.cargo/git ~/.cargo/.package-cache
 
 USER root
 
 # ── Promote builder binaries to system PATH ───────────────────────────────────
-RUN find /home/builder/go/bin -maxdepth 1 -type f -exec cp {} /usr/local/bin/ \; 2>/dev/null || true && \
-    find /home/builder/.cargo/bin -maxdepth 1 -type f -exec cp {} /usr/local/bin/ \; 2>/dev/null || true && \
-    rm -rf /var/cache/pacman/ /tmp/pacman* \
-           /home/builder/.cache/go-build \
-           /home/builder/.cache/yay
+RUN find /home/builder/go/bin -maxdepth 1 -type f -exec cp {} /usr/local/bin/ \; && \
+    find /home/builder/.cargo/bin -maxdepth 1 -type f -exec cp {} /usr/local/bin/ \; && \
+    rm -rf /home/builder /var/cache/pacman/ /tmp/pacman*
 
 # ── Ruby gems ────────────────────────────────────────────────────────────────
-RUN gem install --no-document bundler-audit cfn_nag rubocop rubocop-ast \
-        dawnscanner license_finder 2>/dev/null || true
+RUN gem install --no-document bundler-audit rubocop rubocop-ast \
+        dawnscanner license_finder && \
+    gem cleanup --silent && \
+    rm -rf /root/.gem/ruby/*/cache /usr/lib/ruby/gems/*/cache
 
 # ── Bearer ───────────────────────────────────────────────────────────────────
 RUN curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh \
         | sh -s -- -b /usr/local/bin
-
-# ── Cherrybomb ───────────────────────────────────────────────────────────────
-RUN CHERRY_URL=$(curl -s https://api.github.com/repos/blst-security/cherrybomb/releases/latest \
-        | grep '"browser_download_url"' | grep -i 'linux' | grep -v '\.sha' | head -1 | cut -d'"' -f4) && \
-    [ -n "$CHERRY_URL" ] && \
-    curl -sLo /usr/local/bin/cherrybomb "$CHERRY_URL" && \
-    chmod +x /usr/local/bin/cherrybomb || true
 
 # ── pip packages ─────────────────────────────────────────────────────────────
 # Install each tool package individually — native-dep build failures are non-fatal.
@@ -115,22 +99,15 @@ RUN for pkg in \
         xsrfprobe garak \
         quark-engine apkleaks qark \
         netaddr python-slugify; do \
-        pip install --break-system-packages --no-cache-dir "$pkg" 2>/dev/null \
-            || echo "[skip] $pkg"; \
+        pip install --break-system-packages --no-cache-dir "$pkg" ; \
     done && \
-    pip install --break-system-packages --no-cache-dir --no-deps apifuzzer 2>/dev/null || true
-
-# apkid: try with --no-build-isolation so it uses the system libyara already installed
-RUN pip install --break-system-packages --no-cache-dir --no-build-isolation apkid 2>/dev/null || \
-    echo "[skip] apkid — yara-python-dex build failed"
+    pip install --break-system-packages --no-cache-dir --no-deps apifuzzer 
 
 # Tools not on PyPI — install from git source
 RUN pip install --break-system-packages --no-cache-dir \
-        git+https://github.com/Nefcore/CRLFsuite.git 2>/dev/null || true && \
-    pip install --break-system-packages --no-cache-dir \
-        git+https://github.com/codingo/VHostScan.git 2>/dev/null || true && \
-    pip install --break-system-packages --no-cache-dir \
-        git+https://github.com/AndroBugs/AndroBugs_Framework.git 2>/dev/null || true
+        git+https://github.com/Nefcore/CRLFsuite.git \
+        git+https://github.com/codingo/VHostScan.git
+
 
 # ── dnsreaper ────────────────────────────────────────────────────────────────
 RUN git clone --depth 1 https://github.com/punk-security/dnsReaper /opt/dnsreaper && \
@@ -159,76 +136,71 @@ RUN TLS_URL=$(curl -s https://api.github.com/repos/tls-attacker/TLS-Scanner/rele
     JAR=$(find /opt/tls-scanner -name "*.jar" | head -1) && \
     printf "#!/bin/sh\nexec java -jar %s \"\$@\"\n" "$JAR" > /usr/local/bin/TLS-Scanner && \
     chmod +x /usr/local/bin/TLS-Scanner && \
-    rm /tmp/tls-scanner.zip || true
+    rm /tmp/tls-scanner.zip
 
 # ── Source-only tools ─────────────────────────────────────────────────────────
 RUN git clone --depth 1 https://github.com/swisskyrepo/SSRFmap /opt/SSRFmap && \
-    pip install --break-system-packages --no-cache-dir -r /opt/SSRFmap/requirements.txt 2>/dev/null || true
-
-RUN git clone --depth 1 https://github.com/s0md3v/Oralyzer /opt/oralyzer 2>/dev/null || true && \
-    pip install --break-system-packages --no-cache-dir -r /opt/oralyzer/requirements.txt 2>/dev/null || true
+    pip install --break-system-packages --no-cache-dir -r /opt/SSRFmap/requirements.txt && \
+    rm -rf /opt/SSRFmap/.git
 
 RUN git clone --depth 1 https://github.com/vladko312/SSTImap /opt/SSTImap && \
-    pip install --break-system-packages --no-cache-dir -r /opt/SSTImap/requirements.txt 2>/dev/null || true
+    pip install --break-system-packages --no-cache-dir -r /opt/SSTImap/requirements.txt && \
+    rm -rf /opt/SSTImap/.git
 
-RUN git clone --depth 1 https://github.com/s0md3v/Corsy /opt/Corsy
+RUN git clone --depth 1 https://github.com/s0md3v/Corsy /opt/Corsy && \
+    rm -rf /opt/Corsy/.git
 
-RUN git clone --depth 1 https://github.com/mufeedvh/aemhacker /opt/aemhacker 2>/dev/null || true && \
-    pip install --break-system-packages --no-cache-dir -r /opt/aemhacker/requirements.txt 2>/dev/null || true
+RUN git clone --depth 1 https://github.com/nahamsec/JSParser /opt/JSParser && \
+    rm -rf /opt/JSParser/.git
 
-RUN git clone --depth 1 https://github.com/xnl-h4ck3r/xnLinkFinder /opt/xnLinkFinder && \
-    pip install --break-system-packages --no-cache-dir -r /opt/xnLinkFinder/requirements.txt 2>/dev/null || true
+RUN git clone --depth 1 https://github.com/1N3/BlackWidow /opt/blackwidow && \
+    pip install --break-system-packages --no-cache-dir -r /opt/blackwidow/requirements.txt && \
+    rm -rf /opt/blackwidow/.git
 
-RUN git clone --depth 1 https://github.com/nahamsec/JSParser /opt/JSParser 2>/dev/null || true
-
-RUN git clone --depth 1 https://github.com/1N3/BlackWidow /opt/blackwidow 2>/dev/null || true && \
-    pip install --break-system-packages --no-cache-dir -r /opt/blackwidow/requirements.txt 2>/dev/null || true
-
-RUN git clone --depth 1 https://github.com/nikitastupin/csprecon /opt/csprecon 2>/dev/null || true && \
-    pip install --break-system-packages --no-cache-dir -r /opt/csprecon/requirements.txt 2>/dev/null || true
+RUN git clone --depth 1 https://github.com/nikitastupin/csprecon /opt/csprecon && \
+    pip install --break-system-packages --no-cache-dir /opt/csprecon  || \
+    pip install --break-system-packages --no-cache-dir -r /opt/csprecon/requirements.txt  && \
+    which csprecon  || \
+    printf '#!/bin/sh\nexec python3 -m csprecon "$@"\n' > /usr/local/bin/csprecon && chmod +x /usr/local/bin/csprecon && \
+    rm -rf /opt/csprecon/.git
 
 RUN git clone --depth 1 https://github.com/nccgroup/ScoutSuite /opt/ScoutSuite && \
-    pip install --break-system-packages --no-cache-dir -r /opt/ScoutSuite/requirements.txt 2>/dev/null || true
+    pip install --break-system-packages --no-cache-dir -r /opt/ScoutSuite/requirements.txt && \
+    rm -rf /opt/ScoutSuite/.git
 
 RUN git clone --depth 1 https://github.com/aquasecurity/cloudsploit /opt/cloudsploit && \
-    cd /opt/cloudsploit && npm install --no-audit --no-fund 2>/dev/null || true && \
+    cd /opt/cloudsploit && npm install --no-audit --no-fund && npm cache clean --force && \
     printf '#!/bin/sh\nexec node /opt/cloudsploit/index.js "$@"\n' > /usr/local/bin/cloudsploit && \
-    chmod +x /usr/local/bin/cloudsploit
-
-RUN git clone --depth 1 https://github.com/michenriksen/gitrob /opt/gitrob && \
-    cd /opt/gitrob && go build -o /usr/local/bin/gitrob . 2>/dev/null || true
-
-RUN git clone --depth 1 https://github.com/RhinoSecurityLabs/cloudFox /opt/CloudFox && \
-    cd /opt/CloudFox && go build -o /usr/local/bin/cloudfox . 2>/dev/null || true
+    chmod +x /usr/local/bin/cloudsploit && \
+    rm -rf /opt/cloudsploit/.git
 
 RUN git clone --depth 1 https://github.com/s0md3v/Photon /opt/photon && \
-    pip install --break-system-packages --no-cache-dir -r /opt/photon/requirements.txt 2>/dev/null || true && \
+    pip install --break-system-packages --no-cache-dir -r /opt/photon/requirements.txt && \
     printf '#!/bin/sh\nexec python3 /opt/photon/photon.py "$@"\n' > /usr/local/bin/photon && \
-    chmod +x /usr/local/bin/photon
+    chmod +x /usr/local/bin/photon && \
+    rm -rf /opt/photon/.git
 
 RUN git clone --depth 1 https://github.com/six2dez/reconftw /opt/reconftw && \
     chmod +x /opt/reconftw/reconftw.sh && \
-    ln -sf /opt/reconftw/reconftw.sh /usr/local/bin/reconftw.sh
-
-RUN git clone --depth 1 https://github.com/sa7mon/AWSBucketDump /opt/AWSBucketDump && \
-    pip install --break-system-packages --no-cache-dir -r /opt/AWSBucketDump/requirements.txt 2>/dev/null || true
+    ln -sf /opt/reconftw/reconftw.sh /usr/local/bin/reconftw.sh && \
+    rm -rf /opt/reconftw/.git
 
 RUN git clone --depth 1 https://github.com/maaaaz/androwarn /opt/androwarn && \
-    pip install --break-system-packages --no-cache-dir -r /opt/androwarn/requirements.txt 2>/dev/null || true && \
+    pip install --break-system-packages --no-cache-dir -r /opt/androwarn/requirements.txt && \
     printf '#!/bin/sh\nexec python3 /opt/androwarn/androwarn.py "$@"\n' > /usr/local/bin/androwarn && \
-    chmod +x /usr/local/bin/androwarn
+    chmod +x /usr/local/bin/androwarn && \
+    rm -rf /opt/androwarn/.git
 
 # ── Wrapper scripts for source-only Python tools ──────────────────────────────
-# Create /usr/local/bin/<name> shim only when the entry-point script exists.
+# Always create the shim so the binary exists in PATH; if the git clone failed
+# the underlying .py file will be missing and the error surfaces at scan time.
 RUN for spec in \
         "aemhacker:/opt/aemhacker/aem_hacker.py" \
         "blackwidow:/opt/blackwidow/blackwidow.py" \
-        "oralyzer:/opt/oralyzer/oralyzer.py" \
-        "csprecon:/opt/csprecon/csprecon.py"; do \
+        "oralyzer:/opt/oralyzer/oralyzer.py"; do \
     name="${spec%%:*}"; path="${spec##*:}"; \
-    [ -f "$path" ] && \
-        printf '#!/bin/sh\nexec python3 %s "$@"\n' "$path" > "/usr/local/bin/$name" && \
-        chmod +x "/usr/local/bin/$name" || true; \
+    printf '#!/bin/sh\nexec python3 %s "$@"\n' "$path" > "/usr/local/bin/$name" && \
+        chmod +x "/usr/local/bin/$name"; \
 done
 
 # ── Joern (requires JVM) ─────────────────────────────────────────────────────
@@ -238,19 +210,8 @@ RUN JOERN_VER=$(curl -s https://api.github.com/repos/joernio/joern/releases/late
     curl -sL "https://github.com/joernio/joern/releases/download/${JOERN_VER}/joern-install.sh" \
          -o /tmp/joern-install.sh && \
     chmod +x /tmp/joern-install.sh && \
-    /tmp/joern-install.sh --prefix /opt/joern 2>/dev/null && \
-    ln -sf /opt/joern/joern-cli/joern /usr/local/bin/joern || true
-
-# ── Infer (Facebook SAST) ────────────────────────────────────────────────────
-RUN INFER_VER=$(curl -s https://api.github.com/repos/facebook/infer/releases/latest \
-        | grep '"tag_name"' | cut -d'"' -f4) && \
-    [ -n "$INFER_VER" ] && \
-    curl -sL "https://github.com/facebook/infer/releases/download/${INFER_VER}/infer-linux64-${INFER_VER}.tar.xz" \
-         -o /tmp/infer.tar.xz && \
-    tar -xf /tmp/infer.tar.xz -C /opt/ && \
-    mv /opt/infer-linux64-${INFER_VER} /opt/infer && \
-    ln -sf /opt/infer/bin/infer /usr/local/bin/infer && \
-    rm /tmp/infer.tar.xz || true
+    /tmp/joern-install.sh --prefix /opt/joern  && \
+    ln -sf /opt/joern/joern-cli/joern /usr/local/bin/joern
 
 # ── PMD (Java SAST) ──────────────────────────────────────────────────────────
 RUN PMD_VER=$(curl -s https://api.github.com/repos/pmd/pmd/releases/latest \
@@ -261,7 +222,7 @@ RUN PMD_VER=$(curl -s https://api.github.com/repos/pmd/pmd/releases/latest \
     unzip -q /tmp/pmd.zip -d /opt/ && \
     mv /opt/pmd-bin-${PMD_VER} /opt/pmd && \
     ln -sf /opt/pmd/bin/pmd /usr/local/bin/pmd && \
-    rm /tmp/pmd.zip || true
+    rm /tmp/pmd.zip
 
 # ── SpotBugs (Java) ──────────────────────────────────────────────────────────
 RUN SB_VER=$(curl -s https://api.github.com/repos/spotbugs/spotbugs/releases/latest \
@@ -272,7 +233,7 @@ RUN SB_VER=$(curl -s https://api.github.com/repos/spotbugs/spotbugs/releases/lat
     tar -xf /tmp/spotbugs.tgz -C /opt/ && \
     mv /opt/spotbugs-${SB_VER} /opt/spotbugs && \
     ln -sf /opt/spotbugs/bin/spotbugs /usr/local/bin/spotbugs && \
-    rm /tmp/spotbugs.tgz || true
+    rm /tmp/spotbugs.tgz
 
 # ── CodeQL CLI ───────────────────────────────────────────────────────────────
 RUN CQL_VER=$(curl -s https://api.github.com/repos/github/codeql-action/releases/latest \
@@ -282,11 +243,14 @@ RUN CQL_VER=$(curl -s https://api.github.com/repos/github/codeql-action/releases
          -o /tmp/codeql.tar.gz && \
     tar -xf /tmp/codeql.tar.gz -C /opt/ && \
     ln -sf /opt/codeql/codeql /usr/local/bin/codeql && \
-    rm /tmp/codeql.tar.gz || true
+    rm /tmp/codeql.tar.gz
 
-# ── npm global tools ──────────────────────────────────────────────────────────
-RUN npm install -g --no-audit --no-fund \
-        retire eslint eslint-plugin-security @microsoft/devskim wappalyzer 2>/dev/null || true
+# ── SpiderFoot CLI shortcut ───────────────────────────────────────────────────
+# The BlackArch spiderfoot package puts the CLI scanner at sf.py; expose it as `sf`.
+RUN SF_PY=$(find /usr/share/spiderfoot /usr/lib/spiderfoot -name "sf.py"  | head -1) && \
+    [ -n "$SF_PY" ] && \
+        printf '#!/bin/sh\nexec python3 %s "$@"\n' "$SF_PY" > /usr/local/bin/sf && \
+        chmod +x /usr/local/bin/sf
 
 # ── Threagile ────────────────────────────────────────────────────────────────
 RUN THREAGILE_VER=$(curl -s https://api.github.com/repos/Threagile/threagile/releases/latest \
@@ -294,17 +258,26 @@ RUN THREAGILE_VER=$(curl -s https://api.github.com/repos/Threagile/threagile/rel
     [ -n "$THREAGILE_VER" ] && \
     curl -sL "https://github.com/Threagile/threagile/releases/download/${THREAGILE_VER}/threagile-linux-amd64" \
          -o /usr/local/bin/threagile && \
-    chmod +x /usr/local/bin/threagile || true
-
-# ── WitnessME ────────────────────────────────────────────────────────────────
-RUN pip install --break-system-packages --no-cache-dir witnessme 2>/dev/null || true
+    chmod +x /usr/local/bin/threagile
 
 # ── MVT (Mobile Verification Toolkit) ────────────────────────────────────────
-RUN pip install --break-system-packages --no-cache-dir mvt 2>/dev/null || true
+RUN pip install --break-system-packages --no-cache-dir mvt 
 
 # ── uv ───────────────────────────────────────────────────────────────────────
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     ln -sf /root/.local/bin/uv /usr/local/bin/uv
+
+# ── Final image cleanup ───────────────────────────────────────────────────────
+# Removes cross-layer debris that couldn't be cleaned in the same layer it was
+# created (e.g. .pyc files generated during imports, shared man/doc directories).
+# This doesn't reclaim space in previously committed layers, but it eliminates
+# these files from every layer written after this point (COPY, uv sync, etc.).
+RUN find /opt -maxdepth 2 -name ".git" -type d -exec rm -rf {} +  && \
+    find /usr /usr/local -path "*/__pycache__" -type d -exec rm -rf {} + && \
+    find /usr /usr/local -name "*.pyc" -o -name "*.pyo" | xargs rm -f  && \
+    rm -rf /usr/share/man /usr/share/doc /usr/share/gtk-doc /usr/share/info \
+           /root/.cache /root/.npm /root/.local/share/gem \
+           /tmp/* /var/tmp/*
 
 WORKDIR /app
 

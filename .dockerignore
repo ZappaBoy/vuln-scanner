@@ -1,0 +1,43 @@
+# Version control
+.git/
+.gitignore
+
+# Local virtual environment and caches
+.venv/
+__pycache__/
+*.py[codz]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Secrets and local config (mounted at runtime via docker-compose volumes)
+.env
+config.toml
+
+# Scan output (mounted as a volume at runtime)
+reports/
+
+# Dev / IDE tooling
+.idea/
+.vscode/
+.claude/
+.pre-commit-config.yaml
+.python-version
+
+# Example / template files not needed inside the image
+.env.example
+config.example.toml
+
+# Compose files (used by the host, not the container)
+docker-compose.yaml
+docker-compose*.yaml
+
+# Host-side helper scripts
+poc.sh
+scanner.sh
+
+# Docs (large, not needed at runtime)
+docs/
+
+# Tests (not installed in the --no-dev sync)
+tests/

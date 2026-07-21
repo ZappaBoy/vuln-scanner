@@ -890,8 +890,8 @@ main.py                  # Entry point
 config.example.toml      # Fully documented configuration template
 .env.example             # Environment variable reference
 Dockerfile               # BlackArch-based image; bakes VS_IN_CONTAINER=1
-docker-compose.yml                # DefectDojo stack
-docker-compose.scanner.yml        # Scanner service
+docker-compose.yaml                # DefectDojo stack
+docker-compose.scanner.yaml        # Scanner service
 docker-compose.target.yaml        # Vulnerable test targets (Juice Shop, WebGoat)
 scanner.sh                        # Convenience wrapper — runs the scanner via docker compose
 poc.sh                            # End-to-end quick-start script (DefectDojo + targets + scanner)

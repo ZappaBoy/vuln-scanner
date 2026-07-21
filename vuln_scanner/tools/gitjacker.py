@@ -6,7 +6,7 @@ from vuln_scanner.tools.models import Finding, ScanInput
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _SUCCESS_RE = re.compile(r"(?:Successfully extracted|Downloaded|Found \.git)", re.IGNORECASE)
-_FILE_RE = re.compile(r"(?:downloaded|extracted)[:\s]+(.+\.(?:go|py|js|rb|php|env|conf|cfg|yml))",
+_FILE_RE = re.compile(r"(?:downloaded|extracted)[:\s]+(.+\.(?:go|py|js|rb|php|env|conf|cfg|yml|yaml))",
                       re.IGNORECASE)
 
 

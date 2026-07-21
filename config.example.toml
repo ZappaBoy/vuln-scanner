@@ -91,6 +91,16 @@ exclude = []   # always skip these categories
 include = []   # non-empty = run ONLY these tools by name
 exclude = []   # always skip these tools by name
 
+# Per-tool timeout overrides (seconds). Falls back to scan.timeout when not set.
+# Useful for slow tools that legitimately need more time than the global default.
+[tools.timeouts]
+# nuclei   = 600
+# sqlmap   = 900
+# wapiti   = 1200
+# arjun    = 600   # parameter brute-force; slow against large wordlists
+# waymore  = 600   # Wayback Machine queries; network-bound
+# whatweb  = 600   # web fingerprinting; can be slow on many redirects
+
 # ─── Plugin system ────────────────────────────────────────────────────────────
 # Drop a .py file defining one or more AbstractTool subclasses into ./plugins/
 # (or ~/.vuln-scanner/plugins/) and they are registered automatically at startup.
@@ -119,7 +129,7 @@ enabled = true
 
 # ─── Reporting ────────────────────────────────────────────────────────────────
 [report]
-formats       = ["markdown", "html", "json"]   # any subset; all three recommended
+formats       = ["markdown", "html", "json", "pdf"]
 output_dir    = "./reports"
 # min_severity = "none"   # Filter findings below this level from all reports.
                            # Choices: none (default, include all) | info | low | medium | high | critical

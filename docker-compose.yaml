@@ -1,0 +1,5 @@
+---
+include:
+  - docker-compose.scanner.yaml
+  - docker-compose.defectdojo.yaml
+  - docker-compose.target.yaml

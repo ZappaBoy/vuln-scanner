@@ -156,7 +156,7 @@ else
 fi
 
 # ── Ensure the Docker network exists ─────────────────────────────────────────
-# vuln_scanner_network is declared external in docker-compose.scanner.yml.
+# vuln_scanner_network is declared external in docker-compose.scanner.yaml.
 # Create it if it doesn't already exist (e.g. running without the full stack).
 if ! docker network inspect vuln_scanner_network &>/dev/null; then
     info "Creating Docker network vuln_scanner_network..."
@@ -166,7 +166,7 @@ fi
 # ── Build scanner image ───────────────────────────────────────────────────────
 if [[ "$DO_BUILD" -eq 1 ]]; then
     info "Building scanner image..."
-    docker compose -f docker-compose.scanner.yml build scanner
+    docker compose -f docker-compose.scanner.yaml build scanner
     success "Image built."
 fi
 
@@ -210,7 +210,7 @@ if [[ "$SHELL_MODE" -eq 1 ]]; then
     info "Type 'exit' to leave. Reports mount at /app/reports, config at /app/config.toml."
     echo ""
     exec docker compose \
-        -f docker-compose.scanner.yml \
+        -f docker-compose.scanner.yaml \
         run --rm -it \
         "${COMPOSE_RUN_ARGS[@]+"${COMPOSE_RUN_ARGS[@]}"}" \
         --entrypoint /bin/bash \
@@ -221,7 +221,7 @@ info "Starting scanner..."
 echo ""
 
 docker compose \
-    -f docker-compose.scanner.yml \
+    -f docker-compose.scanner.yaml \
     run --rm \
     "${COMPOSE_RUN_ARGS[@]+"${COMPOSE_RUN_ARGS[@]}"}" \
     scanner \

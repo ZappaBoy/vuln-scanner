@@ -6,7 +6,7 @@
 #   docker compose -f docker-compose.target.yaml up -d
 #
 # Then scan them:
-#   docker compose -f docker-compose.yml -f docker-compose.scanner.yml \
+#   docker compose -f docker-compose.yaml -f docker-compose.scanner.yaml \
 #     run --rm scanner \
 #       --targets juice-shop webgoat \
 #       --mode active

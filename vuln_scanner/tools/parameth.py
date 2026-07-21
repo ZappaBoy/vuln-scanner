@@ -20,9 +20,11 @@ class ParamethTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["parameth", "-t", url]
+        # parameth uses -u for URL and -t for threads; -p for params wordlist
+        wordlist = "/usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt"
+        cmd = ["parameth", "-u", url, "-p", wordlist]
         if scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["-o", "both"]
+            cmd += ["-t", "10"]
         return cmd
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:

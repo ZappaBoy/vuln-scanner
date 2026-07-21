@@ -26,7 +26,8 @@ class WhatWebTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
         aggression = _AGGRESSION[scan_input.mode]
-        cmd = ["whatweb", "--log-json=-", f"--aggression={aggression}", "--quiet", url]
+        cmd = ["whatweb", "--log-json=-", f"--aggression={aggression}", "--quiet",
+               "--open-timeout=10", "--read-timeout=10", url]
         cmd += scan_input.extra_args
         return cmd
 

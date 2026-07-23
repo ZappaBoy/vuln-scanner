@@ -211,7 +211,6 @@ from vuln_scanner.tools.mvt import MVTTool
 # Subdomain takeover
 from vuln_scanner.tools.subover import SubOverTool
 from vuln_scanner.tools.autosub_takeover import AutoSubTakeoverTool
-from vuln_scanner.tools.tko_subs import TkoSubsTool
 from vuln_scanner.tools.second_order import SecondOrderTool
 # Binary
 from vuln_scanner.tools.binwalk import BinwalkTool
@@ -226,7 +225,6 @@ from vuln_scanner.tools.witnessme import WitnessMeTool
 # Generic
 from vuln_scanner.tools.sarif_importer import SARIFImporterTool
 from vuln_scanner.tools.garak import GarakTool
-from vuln_scanner.tools.promptmap import PromptmapTool
 
 TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Web application scanning
@@ -463,7 +461,6 @@ TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Subdomain takeover
     "subover":            SubOverTool,
     "autosub-takeover":   AutoSubTakeoverTool,
-    "tko-subs":           TkoSubsTool,
     "second-order":       SecondOrderTool,
     # Binary
     "binwalk":            BinwalkTool,
@@ -478,7 +475,6 @@ TOOL_REGISTRY: dict[str, type[AbstractTool]] = {
     # Generic
     "sarif-import":       SARIFImporterTool,
     "garak":              GarakTool,
-    "promptmap":          PromptmapTool,
 }
 
 __all__ = [
@@ -618,13 +614,13 @@ __all__ = [
     "MobSFTool", "AndroBugsTool", "QARKTool", "APKiDTool", "APKLeaksTool",
     "AndrowarnTool", "QuarkEngineTool", "MVTTool",
     # Subdomain takeover
-    "SubOverTool", "AutoSubTakeoverTool", "TkoSubsTool", "SecondOrderTool",
+    "SubOverTool", "AutoSubTakeoverTool", "SecondOrderTool",
     # Binary
     "BinwalkTool",
     # OSINT
     "SpiderFootTool", "PhotonTool", "ReconFTWTool", "WaymoreTool",
     "XnLinkFinderTool", "HakIp2HostTool", "WitnessMeTool",
     # Generic
-    "SARIFImporterTool", "GarakTool", "PromptmapTool",
+    "SARIFImporterTool", "GarakTool",
     "TOOL_REGISTRY",
 ]

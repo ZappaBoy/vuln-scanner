@@ -369,7 +369,6 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] dnsReaper *(subdomain takeover detection — 50+ fingerprints)*
 - [x] subzy *(subdomain takeover tool based on fingerprint matching)*
 - [x] autoSubTakeover *(automated CNAME-based subdomain takeover checker)*
-- [x] tko-subs *(detect and takeover subdomains with dead DNS records)*
 - [x] second-order *(second-order subdomain takeover scanner)*
 
 ## Fuzzing
@@ -414,7 +413,6 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] OpenSCAP *(XCCDF/OVAL compliance report import)*
 - [x] Garak *(LLM security probe)*
 - [~] PyRIT *(Python library — not a CLI tool invocable against a target)*
-- [x] Promptmap *(automated prompt injection testing for LLM apps)*
 - [~] JFrog Xray *(Artifactory integration)*
 - [~] ReversingLabs SpectraAssure
 - [~] Threat Composer *(AWS threat modeling)*

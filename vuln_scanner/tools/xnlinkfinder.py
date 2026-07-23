@@ -15,7 +15,7 @@ _INTERESTING = re.compile(
 
 class XnLinkFinderTool(AbstractTool):
     name: str = "xnlinkfinder"
-    binary: str = "python3"
+    binary: str = "xnLinkFinder"
     category: str = "osint"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
 
@@ -47,7 +47,7 @@ class XnLinkFinderTool(AbstractTool):
         start = time.monotonic()
         try:
             proc = subprocess.run(
-                ["python3", "/opt/xnLinkFinder/xnLinkFinder.py",
+                ["xnLinkFinder",
                  "-i", url, "-sp", url, "-sf", url.split("/")[2],
                  "-d", "2", "-o", "/dev/stdout"],
                 capture_output=True, text=True, timeout=scan_input.timeout,

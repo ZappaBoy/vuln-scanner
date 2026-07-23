@@ -1,7 +1,8 @@
 services:
 
   scanner:
-    image: vuln-scanner:latest
+    image: ghcr.io/zappaboy/vuln-scanner:latest
+    pull_policy: missing
     build:
       context: .
       dockerfile: Dockerfile

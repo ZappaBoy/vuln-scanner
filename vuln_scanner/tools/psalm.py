@@ -1,10 +1,10 @@
 """Psalm — PHP static analysis with security checks."""
-import json
-import xml.etree.ElementTree as ET
 
+import json
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM, "info": Severity.INFO}
 
@@ -20,7 +20,8 @@ class PsalmTool(AbstractTool):
             "psalm",
             "--output-format=json",
             "--no-progress",
-            "--root", target,
+            "--root",
+            target,
             target,
         ]
 
@@ -35,18 +36,19 @@ class PsalmTool(AbstractTool):
                 msg = issue.get("message", "")
                 fname = issue.get("file_name", "")
                 line_num = issue.get("line_from", "")
-                if not any(k in issue_type.lower() for k in
-                           ["taint", "security", "injection", "xss", "sql"]):
+                if not any(k in issue_type.lower() for k in ["taint", "security", "injection", "xss", "sql"]):
                     sev = Severity.LOW
-                findings.append(Finding(
-                    title=f"Psalm [{issue_type}]: {msg[:60]}",
-                    severity=sev,
-                    description=f"{msg}\nFile: {fname}:{line_num}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw=issue,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Psalm [{issue_type}]: {msg[:60]}",
+                        severity=sev,
+                        description=f"{msg}\nFile: {fname}:{line_num}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw=issue,
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

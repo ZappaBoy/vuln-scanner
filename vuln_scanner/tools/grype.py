@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID: ["--only-fixed"],      # only report fixable vulns
-    ScanMode.PASSIVE:  ["--only-fixed"],
-    ScanMode.ACTIVE:   [],
+    ScanMode.PARANOID: ["--only-fixed"],  # only report fixable vulns
+    ScanMode.PASSIVE: ["--only-fixed"],
+    ScanMode.ACTIVE: [],
     ScanMode.AGGRESSIVE: ["--add-cpes-if-none"],
 }
 
@@ -43,18 +43,19 @@ class GrypeTool(AbstractTool):
             pkg = artifact.get("name", "?")
             version = artifact.get("version", "?")
             fix = vuln.get("fix", {}).get("versions", [])
-            findings.append(Finding(
-                title=f"{vid} in {pkg} {version}",
-                severity=severity,
-                description=(
-                    f"{vuln.get('description', '')}\n"
-                    f"Package: {pkg} {version}"
-                    + (f" → fix: {', '.join(fix)}" if fix else " (no fix available)")
-                ),
-                tool=self.name,
-                target=target,
-                cve=[vid] if vid.startswith("CVE-") else [],
-                references=vuln.get("urls", []),
-                raw=match,
-            ))
+            findings.append(
+                Finding(
+                    title=f"{vid} in {pkg} {version}",
+                    severity=severity,
+                    description=(
+                        f"{vuln.get('description', '')}\n"
+                        f"Package: {pkg} {version}" + (f" → fix: {', '.join(fix)}" if fix else " (no fix available)")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cve=[vid] if vid.startswith("CVE-") else [],
+                    references=vuln.get("urls", []),
+                    raw=match,
+                )
+            )
         return findings

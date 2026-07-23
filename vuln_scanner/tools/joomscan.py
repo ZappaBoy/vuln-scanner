@@ -1,9 +1,10 @@
 """joomscan — OWASP Joomla vulnerability scanner."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _VULN_RE = re.compile(r"\[!\]\s*(.+)", re.IGNORECASE)
 _VERSION_RE = re.compile(r"Joomla\s+([\d.]+)", re.IGNORECASE)
@@ -33,14 +34,16 @@ class JoomscanTool(AbstractTool):
             msg = m.group(1).strip()
             cves = _CVE_RE.findall(line)
             sev = Severity.HIGH if cves else Severity.MEDIUM
-            findings.append(Finding(
-                title=f"Joomla issue: {msg[:80]}",
-                severity=sev,
-                description=msg,
-                tool=self.name,
-                target=target,
-                cwe=["CWE-693"],
-                cve=cves,
-                raw={"line": line},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Joomla issue: {msg[:80]}",
+                    severity=sev,
+                    description=msg,
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-693"],
+                    cve=cves,
+                    raw={"line": line},
+                )
+            )
         return findings

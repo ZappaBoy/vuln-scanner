@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class KubeBenchTool(AbstractTool):
@@ -32,16 +32,18 @@ class KubeBenchTool(AbstractTool):
                         continue
                     status = result.get("status", "FAIL")
                     sev = Severity.HIGH if status == "FAIL" else Severity.MEDIUM
-                    findings.append(Finding(
-                        title=result.get("test_desc", "Kubernetes benchmark failure"),
-                        severity=sev,
-                        description=(
-                            f"CIS Benchmark: {control.get('text', '')} — "
-                            f"{result.get('test_desc', '')}\n"
-                            f"Remediation: {result.get('remediation', 'See CIS Kubernetes Benchmark')}"
-                        ),
-                        tool=self.name,
-                        target=target,
-                        raw=result,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=result.get("test_desc", "Kubernetes benchmark failure"),
+                            severity=sev,
+                            description=(
+                                f"CIS Benchmark: {control.get('text', '')} — "
+                                f"{result.get('test_desc', '')}\n"
+                                f"Remediation: {result.get('remediation', 'See CIS Kubernetes Benchmark')}"
+                            ),
+                            tool=self.name,
+                            target=target,
+                            raw=result,
+                        )
+                    )
         return findings

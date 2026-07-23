@@ -1,12 +1,12 @@
 """Popeye — Kubernetes live cluster resource sanitizer."""
+
 import json
 
-from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
-_LEVEL_MAP = {0: Severity.INFO, 1: Severity.LOW, 2: Severity.MEDIUM,
-              3: Severity.HIGH, 4: Severity.CRITICAL}
+_LEVEL_MAP = {0: Severity.INFO, 1: Severity.LOW, 2: Severity.MEDIUM, 3: Severity.HIGH, 4: Severity.CRITICAL}
 
 
 class PopeyeTool(AbstractTool):
@@ -31,15 +31,17 @@ class PopeyeTool(AbstractTool):
                             continue
                         sev = _LEVEL_MAP.get(level, Severity.MEDIUM)
                         msg = issue.get("message", "")
-                        findings.append(Finding(
-                            title=f"Popeye [{resource}]: {msg[:60]}",
-                            severity=sev,
-                            description=f"Resource: {resource}\n{msg}",
-                            tool=self.name,
-                            target=target,
-                            cwe=["CWE-284"],
-                            raw=issue,
-                        ))
+                        findings.append(
+                            Finding(
+                                title=f"Popeye [{resource}]: {msg[:60]}",
+                                severity=sev,
+                                description=f"Resource: {resource}\n{msg}",
+                                tool=self.name,
+                                target=target,
+                                cwe=["CWE-284"],
+                                raw=issue,
+                            )
+                        )
         except json.JSONDecodeError:
             pass
         return findings

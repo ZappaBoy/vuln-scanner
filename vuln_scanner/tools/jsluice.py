@@ -4,21 +4,21 @@ import subprocess
 import time
 import urllib.request
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 log = logging.getLogger(__name__)
 
 _SECRET_SEV: dict[str, Severity] = {
-    "AWSAccessKey":    Severity.CRITICAL,
-    "AWSSecretKey":    Severity.CRITICAL,
-    "PrivateKey":      Severity.CRITICAL,
-    "APIKey":          Severity.HIGH,
-    "Token":           Severity.HIGH,
-    "Password":        Severity.HIGH,
-    "Secret":          Severity.HIGH,
-    "Credential":      Severity.HIGH,
+    "AWSAccessKey": Severity.CRITICAL,
+    "AWSSecretKey": Severity.CRITICAL,
+    "PrivateKey": Severity.CRITICAL,
+    "APIKey": Severity.HIGH,
+    "Token": Severity.HIGH,
+    "Password": Severity.HIGH,
+    "Secret": Severity.HIGH,
+    "Credential": Severity.HIGH,
 }
 
 
@@ -61,27 +61,31 @@ class JSluiceTool(AbstractTool):
                 continue
 
             if kind in ("URL", "url") or value.startswith("http"):
-                findings.append(Finding(
-                    title=f"URL found in JS: {value[:100]}",
-                    severity=Severity.INFO,
-                    description=f"URL/endpoint extracted from JavaScript on {filename}: {value}",
-                    tool=self.name,
-                    target=target,
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"URL found in JS: {value[:100]}",
+                        severity=Severity.INFO,
+                        description=f"URL/endpoint extracted from JavaScript on {filename}: {value}",
+                        tool=self.name,
+                        target=target,
+                        raw=item,
+                    )
+                )
             else:
                 sev = _secret_severity(kind)
-                findings.append(Finding(
-                    title=f"Potential secret in JS: {kind}",
-                    severity=sev,
-                    description=(
-                        f"Potential secret of type '{kind}' found in JavaScript on {filename}."
-                        + (f"\nContext: {context[:200]}" if context else "")
-                    ),
-                    tool=self.name,
-                    target=target,
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Potential secret in JS: {kind}",
+                        severity=sev,
+                        description=(
+                            f"Potential secret of type '{kind}' found in JavaScript on {filename}."
+                            + (f"\nContext: {context[:200]}" if context else "")
+                        ),
+                        tool=self.name,
+                        target=target,
+                        raw=item,
+                    )
+                )
 
         return findings
 
@@ -116,7 +120,9 @@ class JSluiceTool(AbstractTool):
         if content is None:
             # Can't reach the target on any common port — not a tool error.
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
+                tool=self.name,
+                target=target,
+                duration=0.0,
                 status=ScanStatus.SKIPPED,
             )
 
@@ -132,15 +138,20 @@ class JSluiceTool(AbstractTool):
             raw_text = proc.stdout.decode("utf-8", errors="replace")
             findings = self.parse_output(raw_text, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=duration, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=raw_text,
             )
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout),
-                              status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target,
-                              status=ScanStatus.SKIPPED)
+            return ScanResult(tool=self.name, target=target, status=ScanStatus.SKIPPED)

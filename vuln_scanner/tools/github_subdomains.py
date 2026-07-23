@@ -1,7 +1,8 @@
 """github-subdomains — find subdomains via GitHub code search."""
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class GithubSubdomainsTool(AbstractTool):
@@ -23,13 +24,15 @@ class GithubSubdomainsTool(AbstractTool):
             sub = line.strip().lower()
             if sub and sub not in seen and "." in sub:
                 seen.add(sub)
-                findings.append(Finding(
-                    title=f"Subdomain (GitHub): {sub}",
-                    severity=Severity.INFO,
-                    description=f"github-subdomains found subdomain via GitHub code search: {sub}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"subdomain": sub},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Subdomain (GitHub): {sub}",
+                        severity=Severity.INFO,
+                        description=f"github-subdomains found subdomain via GitHub code search: {sub}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"subdomain": sub},
+                    )
+                )
         return findings

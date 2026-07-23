@@ -1,8 +1,8 @@
 """Tests for port-based web target routing."""
 
-from vuln_scanner.tools.enums import Severity, ScanStatus
-from vuln_scanner.tools.models import Finding, ScanResult
 from vuln_scanner.port_router import extract_web_targets
+from vuln_scanner.tools.enums import ScanStatus, Severity
+from vuln_scanner.tools.models import Finding, ScanResult
 
 
 def _result(tool: str, host: str, port: int, service: str) -> ScanResult:
@@ -68,6 +68,7 @@ class TestPortRouter:
 
     def test_scope_filter_applied(self):
         from vuln_scanner.scope import ScopeValidator
+
         scope = ScopeValidator(include=["10.0.0.0/24"], exclude=[])
         results = [
             _result("nmap", "10.0.0.5", 80, "http"),
@@ -81,5 +82,6 @@ class TestPortRouter:
         for port, scheme in [(3000, "http"), (5000, "http"), (8888, "http"), (4443, "https")]:
             results = [_result("nmap", "10.0.0.1", port, "unknown")]
             targets = extract_web_targets(results)
-            assert any(str(port) in t or (port in (80, 443)) for t in targets), \
+            assert any(str(port) in t or (port in (80, 443)) for t in targets), (
                 f"Port {port} should produce a web target"
+            )

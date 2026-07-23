@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 
 class CRLFuzzTool(AbstractTool):
@@ -27,16 +27,18 @@ class CRLFuzzTool(AbstractTool):
             # crlfuzz prints vulnerable URLs with "[VULN]" or just the URL
             if "[VULN]" in line or "carriage return" in line.lower() or "crlf" in line.lower():
                 url = line.replace("[VULN]", "").strip()
-                findings.append(Finding(
-                    title=f"CRLF Injection: {url[:120]}",
-                    severity=Severity.HIGH,
-                    description=(
-                        f"CRLF injection vulnerability detected at {url}.\n"
-                        "An attacker may inject arbitrary HTTP headers or split responses."
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-93"],
-                    raw={"url": url, "raw_line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"CRLF Injection: {url[:120]}",
+                        severity=Severity.HIGH,
+                        description=(
+                            f"CRLF injection vulnerability detected at {url}.\n"
+                            "An attacker may inject arbitrary HTTP headers or split responses."
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-93"],
+                        raw={"url": url, "raw_line": line},
+                    )
+                )
         return findings

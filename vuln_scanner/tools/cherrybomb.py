@@ -1,16 +1,16 @@
 import json
 import os
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP: dict[str, Severity] = {
     "critical": Severity.CRITICAL,
-    "high":     Severity.HIGH,
-    "medium":   Severity.MEDIUM,
-    "low":      Severity.LOW,
-    "info":     Severity.INFO,
+    "high": Severity.HIGH,
+    "medium": Severity.MEDIUM,
+    "low": Severity.LOW,
+    "info": Severity.INFO,
 }
 
 
@@ -25,7 +25,7 @@ class CherrybombTool(AbstractTool):
         if os.path.isfile(target):
             spec = target
         else:
-            spec = target   # cherrybomb can also accept a URL to the spec
+            spec = target  # cherrybomb can also accept a URL to the spec
         cmd = ["cherrybomb", "--file", spec, "--format", "json"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
@@ -61,13 +61,15 @@ class CherrybombTool(AbstractTool):
             if method and endpoint:
                 title += f" — {method} {endpoint}"
 
-            findings.append(Finding(
-                title=title,
-                severity=sev,
-                description=description or title,
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=title,
+                    severity=sev,
+                    description=description or title,
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings

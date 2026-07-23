@@ -2,9 +2,9 @@ import json
 import subprocess
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 
 class CariddiTool(AbstractTool):
@@ -39,19 +39,25 @@ class CariddiTool(AbstractTool):
             duration = time.monotonic() - start
             findings = self.parse_output(proc.stdout + proc.stderr, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=duration, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=proc.stdout,
             )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target,
-                              duration=0.0, status=ScanStatus.FAILED,
-                              error="Binary not found: cariddi")
+            return ScanResult(
+                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error="Binary not found: cariddi"
+            )
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout),
-                              status=ScanStatus.TIMEOUT,
-                              error=f"Tool timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Tool timed out after {scan_input.timeout}s",
+            )
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []
@@ -63,14 +69,16 @@ class CariddiTool(AbstractTool):
                 item = json.loads(line)
             except json.JSONDecodeError:
                 if line.startswith("http"):
-                    findings.append(Finding(
-                        title=f"URL: {line[:100]}",
-                        severity=Severity.INFO,
-                        description=f"Crawled URL: {line}",
-                        tool=self.name,
-                        target=target,
-                        raw={"url": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"URL: {line[:100]}",
+                            severity=Severity.INFO,
+                            description=f"Crawled URL: {line}",
+                            tool=self.name,
+                            target=target,
+                            raw={"url": line},
+                        )
+                    )
                 continue
 
             url = item.get("url", "")
@@ -84,12 +92,14 @@ class CariddiTool(AbstractTool):
             elif finding_type in ("endpoint", "api"):
                 sev = Severity.LOW
 
-            findings.append(Finding(
-                title=f"{finding_type or 'URL'}: {url[:100]}",
-                severity=sev,
-                description=f"Cariddi found: {url}" + (f" (type: {finding_type})" if finding_type else ""),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"{finding_type or 'URL'}: {url[:100]}",
+                    severity=sev,
+                    description=f"Cariddi found: {url}" + (f" (type: {finding_type})" if finding_type else ""),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
         return findings

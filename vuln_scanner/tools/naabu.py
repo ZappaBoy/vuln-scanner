@@ -1,19 +1,21 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _PORTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "22,80,443,8080,8443",
-    ScanMode.PASSIVE:    "top-100",
-    ScanMode.ACTIVE:     "top-1000",
+    ScanMode.PARANOID: "22,80,443,8080,8443",
+    ScanMode.PASSIVE: "top-100",
+    ScanMode.ACTIVE: "top-1000",
     ScanMode.AGGRESSIVE: "full",
 }
 
 _RATE: dict[ScanMode, int] = {
-    ScanMode.PARANOID: 100, ScanMode.PASSIVE: 500,
-    ScanMode.ACTIVE: 1000,  ScanMode.AGGRESSIVE: 5000,
+    ScanMode.PARANOID: 100,
+    ScanMode.PASSIVE: 500,
+    ScanMode.ACTIVE: 1000,
+    ScanMode.AGGRESSIVE: 5000,
 }
 
 
@@ -29,9 +31,12 @@ class NaabuTool(AbstractTool):
         rate = scan_input.rate_limit or _RATE[scan_input.mode]
         cmd = [
             "naabu",
-            "-host", host,
-            "-p", ports,
-            "-rate", str(rate),
+            "-host",
+            host,
+            "-p",
+            ports,
+            "-rate",
+            str(rate),
             "-json",
             "-silent",
         ]
@@ -56,14 +61,16 @@ class NaabuTool(AbstractTool):
             port = item.get("port", "?")
             proto = item.get("protocol", "tcp")
 
-            findings.append(Finding(
-                title=f"Open port {port}/{proto} on {host}",
-                severity=Severity.INFO,
-                description=f"Naabu found open port {port}/{proto} on {host}"
-                            + (f" ({ip})" if ip and ip != host else ""),
-                tool=self.name,
-                target=host,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"Open port {port}/{proto} on {host}",
+                    severity=Severity.INFO,
+                    description=f"Naabu found open port {port}/{proto} on {host}"
+                    + (f" ({ip})" if ip and ip != host else ""),
+                    tool=self.name,
+                    target=host,
+                    raw=item,
+                )
+            )
 
         return findings

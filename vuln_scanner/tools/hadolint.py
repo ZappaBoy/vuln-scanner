@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class HadolintTool(AbstractTool):
@@ -13,6 +13,7 @@ class HadolintTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         import os
+
         # Find Dockerfiles under target
         dockerfiles = []
         if os.path.isfile(target) and "dockerfile" in os.path.basename(target).lower():
@@ -43,16 +44,15 @@ class HadolintTool(AbstractTool):
             filename = item.get("file", target)
             line = item.get("line", "")
 
-            findings.append(Finding(
-                title=f"{rule}: {message[:80]}",
-                severity=sev,
-                description=(
-                    f"{message}\n"
-                    f"File: {filename}" + (f"\nLine: {line}" if line else "")
-                ),
-                tool=self.name,
-                target=target,
-                references=[f"https://github.com/hadolint/hadolint/wiki/{rule}" if rule else ""],
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"{rule}: {message[:80]}",
+                    severity=sev,
+                    description=(f"{message}\nFile: {filename}" + (f"\nLine: {line}" if line else "")),
+                    tool=self.name,
+                    target=target,
+                    references=[f"https://github.com/hadolint/hadolint/wiki/{rule}" if rule else ""],
+                    raw=item,
+                )
+            )
         return findings

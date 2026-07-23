@@ -1,9 +1,10 @@
 """Quark-Engine — Android malware scoring system."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class QuarkEngineTool(AbstractTool):
@@ -29,31 +30,35 @@ class QuarkEngineTool(AbstractTool):
             else:
                 sev = Severity.LOW
             if total_score > 0:
-                findings.append(Finding(
-                    title=f"Quark Engine threat: {threat_level} (score: {total_score})",
-                    severity=sev,
-                    description=(
-                        f"Total malware score: {total_score}\nThreat level: {threat_level}\n"
-                        f"Detected crimes: {len(crimes)}"
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"total_score": total_score, "threat_level": threat_level},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Quark Engine threat: {threat_level} (score: {total_score})",
+                        severity=sev,
+                        description=(
+                            f"Total malware score: {total_score}\nThreat level: {threat_level}\n"
+                            f"Detected crimes: {len(crimes)}"
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"total_score": total_score, "threat_level": threat_level},
+                    )
+                )
             for crime in crimes[:10]:  # Limit to top 10
                 crime_desc = crime.get("crime", "")
                 crime_score = crime.get("score", 0)
                 if crime_score > 60:
-                    findings.append(Finding(
-                        title=f"Quark crime: {crime_desc[:80]}",
-                        severity=Severity.MEDIUM,
-                        description=f"Crime: {crime_desc}\nScore: {crime_score}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw=crime,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Quark crime: {crime_desc[:80]}",
+                            severity=Severity.MEDIUM,
+                            description=f"Crime: {crime_desc}\nScore: {crime_score}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw=crime,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

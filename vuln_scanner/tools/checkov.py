@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--check", "HIGH,CRITICAL"],
-    ScanMode.PASSIVE:  ["--check", "HIGH,CRITICAL"],
-    ScanMode.ACTIVE:   [],
+    ScanMode.PASSIVE: ["--check", "HIGH,CRITICAL"],
+    ScanMode.ACTIVE: [],
     ScanMode.AGGRESSIVE: ["--enable-secret-scan-all-files"],
 }
 
@@ -52,18 +52,20 @@ class CheckovTool(AbstractTool):
                 line_range = check.get("file_line_range", [])
                 line_info = f":{line_range[0]}" if line_range else ""
                 cks = result.get("check_id", check.get("check_id", "?"))
-                findings.append(Finding(
-                    title=f"[{cks}] {check.get('check', {}).get('name', 'IaC check failed')}",
-                    severity=severity,
-                    description=(
-                        f"{check.get('check', {}).get('name', '')}\n"
-                        f"File: {filepath}{line_info}\n"
-                        f"Framework: {check_type}\n"
-                        f"Resource: {check.get('resource', '')}"
-                    ),
-                    tool=self.name,
-                    target=filepath,
-                    references=check.get("check", {}).get("guide_link", []),
-                    raw=check,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"[{cks}] {check.get('check', {}).get('name', 'IaC check failed')}",
+                        severity=severity,
+                        description=(
+                            f"{check.get('check', {}).get('name', '')}\n"
+                            f"File: {filepath}{line_info}\n"
+                            f"Framework: {check_type}\n"
+                            f"Resource: {check.get('resource', '')}"
+                        ),
+                        tool=self.name,
+                        target=filepath,
+                        references=check.get("check", {}).get("guide_link", []),
+                        raw=check,
+                    )
+                )
         return findings

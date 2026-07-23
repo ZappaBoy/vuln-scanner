@@ -1,9 +1,9 @@
 """Syft — SBOM generation tool (pairs with Grype for vulnerability scanning)."""
-import json
-import re
 
-from vuln_scanner.tools.enums import Severity, TargetType
+import json
+
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 
@@ -11,14 +11,20 @@ class SyftTool(AbstractTool):
     name: str = "syft"
     binary: str = "syft"
     category: str = "container"
-    applicable_targets: frozenset[TargetType] = frozenset({
-        TargetType.PATH, TargetType.IMAGE, TargetType.URL,
-    })
+    applicable_targets: frozenset[TargetType] = frozenset(
+        {
+            TargetType.PATH,
+            TargetType.IMAGE,
+            TargetType.URL,
+        }
+    )
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return [
-            "syft", target,
-            "-o", f"json={OUTPUT_FILE_SENTINEL}",
+            "syft",
+            target,
+            "-o",
+            f"json={OUTPUT_FILE_SENTINEL}",
             "--quiet",
         ]
 
@@ -30,29 +36,33 @@ class SyftTool(AbstractTool):
             # Report notable findings: packages with no declared license
             unlicensed = [a for a in artifacts if not a.get("licenses")]
             if unlicensed:
-                findings.append(Finding(
-                    title=f"SBOM: {len(artifacts)} packages ({len(unlicensed)} without license)",
-                    severity=Severity.INFO,
-                    description=(
-                        f"Syft generated SBOM for {target}.\n"
-                        f"Total packages: {len(artifacts)}\n"
-                        f"Packages without declared license: {len(unlicensed)}"
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"total": len(artifacts), "unlicensed": len(unlicensed)},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"SBOM: {len(artifacts)} packages ({len(unlicensed)} without license)",
+                        severity=Severity.INFO,
+                        description=(
+                            f"Syft generated SBOM for {target}.\n"
+                            f"Total packages: {len(artifacts)}\n"
+                            f"Packages without declared license: {len(unlicensed)}"
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"total": len(artifacts), "unlicensed": len(unlicensed)},
+                    )
+                )
             elif artifacts:
-                findings.append(Finding(
-                    title=f"SBOM generated: {len(artifacts)} packages",
-                    severity=Severity.INFO,
-                    description=f"Syft generated SBOM for {target}: {len(artifacts)} packages.",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"total": len(artifacts)},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"SBOM generated: {len(artifacts)} packages",
+                        severity=Severity.INFO,
+                        description=f"Syft generated SBOM for {target}: {len(artifacts)} packages.",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"total": len(artifacts)},
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

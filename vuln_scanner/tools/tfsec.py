@@ -1,15 +1,14 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--minimum-severity", "HIGH"],
-    ScanMode.PASSIVE:  ["--minimum-severity", "HIGH"],
-    ScanMode.ACTIVE:   ["--minimum-severity", "LOW"],
-    ScanMode.AGGRESSIVE: ["--minimum-severity", "LOW", "--include-ignored",
-                          "--include-passed"],
+    ScanMode.PASSIVE: ["--minimum-severity", "HIGH"],
+    ScanMode.ACTIVE: ["--minimum-severity", "LOW"],
+    ScanMode.AGGRESSIVE: ["--minimum-severity", "LOW", "--include-ignored", "--include-passed"],
 }
 
 
@@ -43,17 +42,17 @@ class TfsecTool(AbstractTool):
             line = location.get("start_line", "?")
             rule_id = r.get("rule_id") or r.get("long_id", "?")
             refs = [r.get("links", [""])[0]] if r.get("links") else []
-            findings.append(Finding(
-                title=f"[{rule_id}] {r.get('description', 'tfsec finding')[:100]}",
-                severity=severity,
-                description=(
-                    f"{r.get('description', '')}\n"
-                    f"Resolution: {r.get('resolution', '')}\n"
-                    f"File: {filepath}:{line}"
-                ),
-                tool=self.name,
-                target=filepath,
-                references=refs,
-                raw=r,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{rule_id}] {r.get('description', 'tfsec finding')[:100]}",
+                    severity=severity,
+                    description=(
+                        f"{r.get('description', '')}\nResolution: {r.get('resolution', '')}\nFile: {filepath}:{line}"
+                    ),
+                    tool=self.name,
+                    target=filepath,
+                    references=refs,
+                    raw=r,
+                )
+            )
         return findings

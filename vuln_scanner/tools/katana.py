@@ -1,12 +1,15 @@
 import json
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _DEPTH: dict[ScanMode, int] = {
-    ScanMode.PARANOID: 1, ScanMode.PASSIVE: 2,
-    ScanMode.ACTIVE: 3,   ScanMode.AGGRESSIVE: 5,
+    ScanMode.PARANOID: 1,
+    ScanMode.PASSIVE: 2,
+    ScanMode.ACTIVE: 3,
+    ScanMode.AGGRESSIVE: 5,
 }
 
 
@@ -15,15 +18,19 @@ class KatanaTool(AbstractTool):
     binary: str = "katana"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    produces: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.ENDPOINT, AssetType.JS_URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.LIVE_HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
         cmd = [
             "katana",
-            "-u", url,
+            "-u",
+            url,
             "-json",
             "-silent",
-            "-depth", str(_DEPTH[scan_input.mode]),
+            "-depth",
+            str(_DEPTH[scan_input.mode]),
         ]
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-js-crawl", "-known-files", "all", "-automatic-form-fill"]
@@ -55,13 +62,29 @@ class KatanaTool(AbstractTool):
             if not endpoint:
                 continue
 
-            findings.append(Finding(
-                title=f"Endpoint: {method} {endpoint}",
-                severity=Severity.INFO,
-                description=f"Crawled endpoint: {method} {endpoint}"
-                            + (f" (source: {source})" if source else ""),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"Endpoint: {method} {endpoint}",
+                    severity=Severity.INFO,
+                    description=f"Crawled endpoint: {method} {endpoint}" + (f" (source: {source})" if source else ""),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            endpoint = f.raw.get("request", {}).get("endpoint") or f.raw.get("endpoint", "")
+            if not endpoint:
+                continue
+            if endpoint.endswith(".js"):
+                atype = AssetType.JS_URL
+            elif f.raw.get("request", {}).get("method", "GET") != "GET":
+                atype = AssetType.ENDPOINT
+            else:
+                atype = AssetType.URL
+            assets.append(Asset(type=atype, value=endpoint, source=self.name, target=result.target))
+        return assets

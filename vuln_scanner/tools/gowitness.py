@@ -3,15 +3,15 @@
 Captures a screenshot of each URL and emits an INFO finding with the
 screenshot path so it appears in the report assets section.
 """
+
 import os
 import subprocess
 import time
 from pathlib import Path
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
-
 
 # Default screenshot directory — overridden per-run by main.py via configure().
 _SCREENSHOT_DIR = Path(os.environ.get("VS_SCREENSHOT_DIR", "./reports/screenshots"))
@@ -32,10 +32,14 @@ class GowitnesssTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
         cmd = [
-            "gowitness", "single",
-            "--url", url,
-            "--screenshot-path", str(_SCREENSHOT_DIR),
-            "--timeout", str(min(30, scan_input.timeout)),
+            "gowitness",
+            "single",
+            "--url",
+            url,
+            "--screenshot-path",
+            str(_SCREENSHOT_DIR),
+            "--timeout",
+            str(min(30, scan_input.timeout)),
             "--disable-db",
         ]
         if scan_input.proxy:
@@ -51,23 +55,23 @@ class GowitnesssTool(AbstractTool):
         if not screenshots:
             return []
         latest = screenshots[0]
-        return [Finding(
-            title=f"Screenshot captured: {url}",
-            severity=Severity.INFO,
-            description=f"Web screenshot saved to: {latest}",
-            tool=self.name,
-            target=target,
-            raw={"screenshot_path": str(latest), "url": url},
-        )]
+        return [
+            Finding(
+                title=f"Screenshot captured: {url}",
+                severity=Severity.INFO,
+                description=f"Web screenshot saved to: {latest}",
+                tool=self.name,
+                target=target,
+                raw={"screenshot_path": str(latest), "url": url},
+            )
+        ]
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         _SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
         cmd = self.build_command(target, scan_input)
         start = time.monotonic()
         try:
-            proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=scan_input.timeout
-            )
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=scan_input.timeout)
             duration = time.monotonic() - start
             findings = self.parse_output(proc.stdout + proc.stderr, target)
             return ScanResult(
@@ -80,12 +84,17 @@ class GowitnesssTool(AbstractTool):
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error="Binary not found: gowitness",
+                tool=self.name,
+                target=target,
+                duration=0.0,
+                status=ScanStatus.FAILED,
+                error="Binary not found: gowitness",
             )
         except subprocess.TimeoutExpired:
             return ScanResult(
-                tool=self.name, target=target,
-                duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
                 error=f"gowitness timed out after {scan_input.timeout}s",
             )

@@ -1,12 +1,12 @@
 """Whispers — YAML, JSON, config file secret scanner."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
-            "medium": Severity.MEDIUM, "low": Severity.LOW}
+_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH, "medium": Severity.MEDIUM, "low": Severity.LOW}
 
 
 class WhispersTool(AbstractTool):
@@ -32,15 +32,17 @@ class WhispersTool(AbstractTool):
                 rule = obj.get("rule", {}).get("name", "secret")
                 fname = obj.get("file", "")
                 line_num = obj.get("line", "")
-                findings.append(Finding(
-                    title=f"Whispers [{rule}]: {key} in {fname}",
-                    severity=sev,
-                    description=f"Secret found: key='{key}'\nFile: {fname}:{line_num}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-798"],
-                    raw={**obj, "value": "[REDACTED]"},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Whispers [{rule}]: {key} in {fname}",
+                        severity=sev,
+                        description=f"Secret found: key='{key}' value='{value}'\nFile: {fname}:{line_num}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-798"],
+                        raw={**obj, "value": "[REDACTED]"},
+                    )
+                )
             except json.JSONDecodeError:
                 continue
         return findings

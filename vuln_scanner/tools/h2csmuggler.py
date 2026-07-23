@@ -1,9 +1,10 @@
 """h2csmuggler — HTTP/2 cleartext (h2c) request smuggling scanner."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 # "[INFO] Found h2c server at https://target.com"
 # "h2c streaming request is VULNERABLE: https://target.com"
@@ -45,35 +46,39 @@ class H2cSmugglerTool(AbstractTool):
 
         for m in _VULN_RE.finditer(raw):
             detail = m.group("detail").strip()
-            findings.append(Finding(
-                title=f"HTTP/2 cleartext smuggling (h2c) at {target}",
-                severity=Severity.HIGH,
-                description=(
-                    f"h2csmuggler detected HTTP/2 cleartext upgrade smuggling vulnerability.\n"
-                    f"Detail: {detail}\n"
-                    f"An attacker can bypass front-end security controls by smuggling requests "
-                    f"over an h2c upgrade to the back-end server."
-                ),
-                tool=self.name,
-                target=target,
-                cwe=["CWE-444"],
-                raw={"detail": detail, "h2c_endpoints": h2c_urls},
-            ))
-
-        # If h2c endpoints found but no explicit vuln marker, report as info
-        if h2c_urls and not findings:
-            for url in h2c_urls:
-                findings.append(Finding(
-                    title=f"h2c upgrade server detected at {url}",
-                    severity=Severity.LOW,
+            findings.append(
+                Finding(
+                    title=f"HTTP/2 cleartext smuggling (h2c) at {target}",
+                    severity=Severity.HIGH,
                     description=(
-                        f"An HTTP/2 cleartext (h2c) upgrade endpoint was detected at {url}. "
-                        f"This may be exploitable for request smuggling depending on proxy configuration."
+                        f"h2csmuggler detected HTTP/2 cleartext upgrade smuggling vulnerability.\n"
+                        f"Detail: {detail}\n"
+                        f"An attacker can bypass front-end security controls by smuggling requests "
+                        f"over an h2c upgrade to the back-end server."
                     ),
                     tool=self.name,
                     target=target,
                     cwe=["CWE-444"],
-                    raw={"url": url},
-                ))
+                    raw={"detail": detail, "h2c_endpoints": h2c_urls},
+                )
+            )
+
+        # If h2c endpoints found but no explicit vuln marker, report as info
+        if h2c_urls and not findings:
+            for url in h2c_urls:
+                findings.append(
+                    Finding(
+                        title=f"h2c upgrade server detected at {url}",
+                        severity=Severity.LOW,
+                        description=(
+                            f"An HTTP/2 cleartext (h2c) upgrade endpoint was detected at {url}. "
+                            f"This may be exploitable for request smuggling depending on proxy configuration."
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-444"],
+                        raw={"url": url},
+                    )
+                )
 
         return findings

@@ -1,10 +1,10 @@
 """haktrails — SecurityTrails API client for subdomain and DNS history recon."""
-import json
-import re
 
+import json
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class HaktrailsTool(AbstractTool):
@@ -26,27 +26,31 @@ class HaktrailsTool(AbstractTool):
                 sub = str(sub).strip().lower()
                 if sub and sub not in seen:
                     seen.add(sub)
-                    findings.append(Finding(
-                        title=f"Subdomain (SecurityTrails): {sub}.{target}",
-                        severity=Severity.INFO,
-                        description=f"haktrails found subdomain via SecurityTrails: {sub}.{target}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"subdomain": f"{sub}.{target}"},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Subdomain (SecurityTrails): {sub}.{target}",
+                            severity=Severity.INFO,
+                            description=f"haktrails found subdomain via SecurityTrails: {sub}.{target}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"subdomain": f"{sub}.{target}"},
+                        )
+                    )
         except json.JSONDecodeError:
             for line in raw.splitlines():
                 sub = line.strip().lower()
                 if sub and sub not in seen and "." in sub:
                     seen.add(sub)
-                    findings.append(Finding(
-                        title=f"Subdomain (SecurityTrails): {sub}",
-                        severity=Severity.INFO,
-                        description=f"haktrails found: {sub}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"subdomain": sub},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Subdomain (SecurityTrails): {sub}",
+                            severity=Severity.INFO,
+                            description=f"haktrails found: {sub}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"subdomain": sub},
+                        )
+                    )
         return findings

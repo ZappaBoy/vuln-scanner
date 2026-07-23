@@ -1,8 +1,9 @@
 import xml.etree.ElementTree as ET
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _TIMING: dict[ScanMode, str] = {
     ScanMode.PARANOID: "-T0",
@@ -17,6 +18,7 @@ class NmapTool(AbstractTool):
     binary: str = "nmap"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
+    produces: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
     verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
@@ -65,9 +67,7 @@ class NmapTool(AbstractTool):
                 protocol = port_el.get("protocol", "tcp")
 
                 service_el = port_el.find("service")
-                service_name = (
-                    service_el.get("name", "unknown") if service_el is not None else "unknown"
-                )
+                service_name = service_el.get("name", "unknown") if service_el is not None else "unknown"
                 product = service_el.get("product", "") if service_el is not None else ""
                 version = service_el.get("version", "") if service_el is not None else ""
 
@@ -80,8 +80,7 @@ class NmapTool(AbstractTool):
                         title=f"Open port {portid}/{protocol} — {service_str}",
                         severity=Severity.INFO,
                         description=(
-                            f"Port {portid}/{protocol} is open on {host_addr}. "
-                            f"Service detected: {service_str}."
+                            f"Port {portid}/{protocol} is open on {host_addr}. Service detected: {service_str}."
                         ),
                         tool=self.name,
                         target=host_addr,
@@ -90,3 +89,21 @@ class NmapTool(AbstractTool):
                 )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            port = f.raw.get("port", "")
+            protocol = f.raw.get("protocol", "tcp")
+            service = f.raw.get("service", "unknown")
+            if port:
+                assets.append(
+                    Asset(
+                        type=AssetType.OPEN_PORT,
+                        value=f"{f.target}:{port}/{protocol}",
+                        source=self.name,
+                        target=result.target,
+                        meta={"service": service, "protocol": protocol},
+                    )
+                )
+        return assets

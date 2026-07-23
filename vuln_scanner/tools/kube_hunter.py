@@ -1,10 +1,11 @@
 """kube-hunter — active Kubernetes penetration testing tool."""
+
 import json
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP: dict[str, Severity] = {
     "critical": Severity.CRITICAL,
@@ -19,16 +20,22 @@ class KubeHunterTool(AbstractTool):
     name: str = "kube-hunter"
     binary: str = "kube-hunter"
     category: str = "cloud"
-    applicable_targets: frozenset[TargetType] = frozenset({
-        TargetType.HOST, TargetType.IP, TargetType.CLOUD,
-    })
+    applicable_targets: frozenset[TargetType] = frozenset(
+        {
+            TargetType.HOST,
+            TargetType.IP,
+            TargetType.CLOUD,
+        }
+    )
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = re.sub(r"^https?://", "", target).rstrip("/")
         cmd = [
             "kube-hunter",
-            "--remote", host,
-            "--report", "json",
+            "--remote",
+            host,
+            "--report",
+            "json",
         ]
         if scan_input.mode in ("active", "aggressive"):
             cmd.append("--active")
@@ -59,16 +66,17 @@ class KubeHunterTool(AbstractTool):
             sev = _SEV_MAP.get(sev_str, Severity.MEDIUM)
             vid = vuln.get("vid", vuln.get("id", ""))
 
-            findings.append(Finding(
-                title=f"kube-hunter [{vid}]: {name}",
-                severity=sev,
-                description=(
-                    f"{description}\n\nLocation: {location}"
-                    + (f"\nEvidence: {evidence}" if evidence else "")
-                ).strip(),
-                tool=self.name,
-                target=target,
-                raw=vuln,
-            ))
+            findings.append(
+                Finding(
+                    title=f"kube-hunter [{vid}]: {name}",
+                    severity=sev,
+                    description=(
+                        f"{description}\n\nLocation: {location}" + (f"\nEvidence: {evidence}" if evidence else "")
+                    ).strip(),
+                    tool=self.name,
+                    target=target,
+                    raw=vuln,
+                )
+            )
 
         return findings

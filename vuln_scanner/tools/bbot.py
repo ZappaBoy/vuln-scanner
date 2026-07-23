@@ -1,15 +1,15 @@
 """bbot — recursive internet scanner (subdomain, port, web, SSRF, secrets, ...)."""
+
 import json
 import re
-import subprocess
 import shutil
+import subprocess
 import tempfile
 import time
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
-from vuln_scanner.tools.enums import ScanStatus
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _SEV_MAP: dict[str, Severity] = {
     "critical": Severity.CRITICAL,
@@ -21,8 +21,8 @@ _SEV_MAP: dict[str, Severity] = {
 
 _FLAG_MAP: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["passive", "safe"],
-    ScanMode.PASSIVE:  ["passive", "safe"],
-    ScanMode.ACTIVE:   ["subdomain-enum", "web-basic", "safe"],
+    ScanMode.PASSIVE: ["passive", "safe"],
+    ScanMode.ACTIVE: ["subdomain-enum", "web-basic", "safe"],
     ScanMode.AGGRESSIVE: ["subdomain-enum", "web-thorough"],
 }
 
@@ -63,15 +63,16 @@ class BbotTool(AbstractTool):
                     url = ""
 
                 sev = _SEV_MAP.get(sev_str, Severity.MEDIUM)
-                findings.append(Finding(
-                    title=f"bbot: {desc[:80]}",
-                    severity=sev,
-                    description=f"bbot vulnerability event on {host}.\n{desc}"
-                               + (f"\nURL: {url}" if url else ""),
-                    tool=self.name,
-                    target=target,
-                    raw=event,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"bbot: {desc[:80]}",
+                        severity=sev,
+                        description=f"bbot vulnerability event on {host}.\n{desc}" + (f"\nURL: {url}" if url else ""),
+                        tool=self.name,
+                        target=target,
+                        raw=event,
+                    )
+                )
 
             elif etype == "FINDING":
                 if isinstance(data, dict):
@@ -80,14 +81,16 @@ class BbotTool(AbstractTool):
                 else:
                     desc = str(data)
                     host = target
-                findings.append(Finding(
-                    title=f"bbot finding: {desc[:80]}",
-                    severity=Severity.INFO,
-                    description=f"bbot finding on {host}.\n{desc}",
-                    tool=self.name,
-                    target=target,
-                    raw=event,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"bbot finding: {desc[:80]}",
+                        severity=Severity.INFO,
+                        description=f"bbot finding on {host}.\n{desc}",
+                        tool=self.name,
+                        target=target,
+                        raw=event,
+                    )
+                )
 
         return findings
 
@@ -99,10 +102,14 @@ class BbotTool(AbstractTool):
         flags = _FLAG_MAP.get(scan_input.mode, _FLAG_MAP[ScanMode.PASSIVE])
         cmd = [
             "bbot",
-            "-t", host,
-            "-f", *flags,
-            "--output-modules", "json",
-            "-o", tmpdir,
+            "-t",
+            host,
+            "-f",
+            *flags,
+            "--output-modules",
+            "json",
+            "-o",
+            tmpdir,
             "--force",
             "--silent",
         ]
@@ -110,13 +117,18 @@ class BbotTool(AbstractTool):
 
         try:
             proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=scan_input.timeout,
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
 
             # bbot writes output.ndjson under tmpdir/<scan_name>/json/
             raw_out = ""
-            import os, glob
+            import glob
+            import os
+
             for ndjson in glob.glob(os.path.join(tmpdir, "**", "*.ndjson"), recursive=True):
                 try:
                     raw_out += open(ndjson).read() + "\n"
@@ -126,21 +138,28 @@ class BbotTool(AbstractTool):
                 raw_out = proc.stdout + proc.stderr
 
             return ScanResult(
-                tool=self.name, target=target,
+                tool=self.name,
+                target=target,
                 findings=self.parse_output(raw_out, target),
-                duration=duration, status=ScanStatus.SUCCESS,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=proc.stdout + proc.stderr,
             )
         except subprocess.TimeoutExpired:
             return ScanResult(
-                tool=self.name, target=target,
-                duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
                 error=f"Timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error="Binary not found: bbot",
+                tool=self.name,
+                target=target,
+                duration=0.0,
+                status=ScanStatus.FAILED,
+                error="Binary not found: bbot",
             )
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)

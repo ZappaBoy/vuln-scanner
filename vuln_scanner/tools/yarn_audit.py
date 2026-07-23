@@ -1,12 +1,18 @@
 """Yarn audit — Node.js dependency vulnerability scanner."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
-            "moderate": Severity.MEDIUM, "low": Severity.LOW, "info": Severity.INFO}
+_SEV_MAP = {
+    "critical": Severity.CRITICAL,
+    "high": Severity.HIGH,
+    "moderate": Severity.MEDIUM,
+    "low": Severity.LOW,
+    "info": Severity.INFO,
+}
 
 
 class YarnAuditTool(AbstractTool):
@@ -33,16 +39,18 @@ class YarnAuditTool(AbstractTool):
                     module = advisory.get("module_name", "")
                     cves = advisory.get("cves", [])
                     desc = advisory.get("overview", "")
-                    findings.append(Finding(
-                        title=f"yarn audit [{module}]: {title}",
-                        severity=sev,
-                        description=desc,
-                        tool=self.name,
-                        target=target,
-                        cwe=[advisory.get("cwe", "")] if advisory.get("cwe") else [],
-                        cve=cves,
-                        raw=advisory,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"yarn audit [{module}]: {title}",
+                            severity=sev,
+                            description=desc,
+                            tool=self.name,
+                            target=target,
+                            cwe=[advisory.get("cwe", "")] if advisory.get("cwe") else [],
+                            cve=cves,
+                            raw=advisory,
+                        )
+                    )
             except json.JSONDecodeError:
                 continue
         return findings

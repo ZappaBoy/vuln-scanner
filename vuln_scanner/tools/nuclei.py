@@ -9,14 +9,16 @@ Mode-based template profiles (applied when no explicit tags/severity override):
 
 User config in [nuclei] always wins over these defaults.
 """
+
 import json
 import logging
 import subprocess
 from typing import TYPE_CHECKING
 
+from vuln_scanner.assets import AssetType
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 if TYPE_CHECKING:
     from vuln_scanner.config.models import NucleiConfig
@@ -25,17 +27,17 @@ log = logging.getLogger(__name__)
 
 # ── Per-mode severity profiles ────────────────────────────────────────────────
 _MODE_SEVERITY: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID:   ["info", "low"],
-    ScanMode.PASSIVE:    ["info", "low", "medium"],
-    ScanMode.ACTIVE:     ["low", "medium", "high", "critical"],
+    ScanMode.PARANOID: ["info", "low"],
+    ScanMode.PASSIVE: ["info", "low", "medium"],
+    ScanMode.ACTIVE: ["low", "medium", "high", "critical"],
     ScanMode.AGGRESSIVE: ["info", "low", "medium", "high", "critical"],
 }
 
 # Tags applied in each mode when no explicit user tags are set
 _MODE_EXTRA_TAGS: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID:   ["dns", "ssl", "headers", "misconfiguration"],
-    ScanMode.PASSIVE:    ["dns", "ssl", "headers", "misconfiguration", "exposure", "detection"],
-    ScanMode.ACTIVE:     [],
+    ScanMode.PARANOID: ["dns", "ssl", "headers", "misconfiguration"],
+    ScanMode.PASSIVE: ["dns", "ssl", "headers", "misconfiguration", "exposure", "detection"],
+    ScanMode.ACTIVE: [],
     ScanMode.AGGRESSIVE: [],
 }
 
@@ -44,9 +46,9 @@ _ALWAYS_EXCLUDE: list[str] = ["dos", "fuzz"]
 
 # Additional per-mode excludes
 _MODE_EXCLUDE_TAGS: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID:   ["rce", "sqli", "xss", "ssti", "xxe", "intrusive"],
-    ScanMode.PASSIVE:    ["intrusive"],
-    ScanMode.ACTIVE:     [],
+    ScanMode.PARANOID: ["rce", "sqli", "xss", "ssti", "xxe", "intrusive"],
+    ScanMode.PASSIVE: ["intrusive"],
+    ScanMode.ACTIVE: [],
     ScanMode.AGGRESSIVE: [],
 }
 
@@ -64,7 +66,7 @@ def _nuclei_available() -> bool:
     try:
         subprocess.run(["nuclei", "-version"], capture_output=True, timeout=5)
         return True
-    except (FileNotFoundError, subprocess.TimeoutExpired):
+    except FileNotFoundError, subprocess.TimeoutExpired:
         return False
 
 
@@ -95,9 +97,8 @@ class NucleiTool(AbstractTool):
     name: str = "nuclei"
     binary: str = "nuclei"
     category: str = "web"
-    applicable_targets: frozenset[TargetType] = frozenset({
-        TargetType.URL, TargetType.HOST, TargetType.IP
-    })
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.LIVE_HOST})
     silent_flags: list[str] = ["-silent"]
     verbose_flags: list[str] = ["-v"]
 
@@ -125,25 +126,25 @@ class NucleiTool(AbstractTool):
             req = item.get("request", "")
             resp = item.get("response", "")[:2000] if item.get("response") else ""
 
-            findings.append(Finding(
-                title=info.get("name", item.get("template-id", "Unknown")),
-                severity=severity,
-                description=(
-                    info.get("description", "")
-                    or f"Matched at {item.get('matched-at', target)}"
-                ),
-                tool=self.name,
-                target=item.get("host", target),
-                cve=cve,
-                references=refs,
-                request=req,
-                response=resp,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=info.get("name", item.get("template-id", "Unknown")),
+                    severity=severity,
+                    description=(info.get("description", "") or f"Matched at {item.get('matched-at', target)}"),
+                    tool=self.name,
+                    target=item.get("host", target),
+                    cve=cve,
+                    references=refs,
+                    request=req,
+                    response=resp,
+                    raw=item,
+                )
+            )
         return findings
 
 
 # ── Command builder (also used by tests) ─────────────────────────────────────
+
 
 def _build_nuclei_command(
     target: str,
@@ -199,10 +200,14 @@ def _build_nuclei_command(
 
     # ── Performance ────────────────────────────────────────────────────────
     cmd += [
-        "-rl",  str(cfg.rate_limit),
-        "-bs",  str(cfg.bulk_size),
-        "-c",   str(cfg.concurrency),
-        "-retries", str(cfg.retries),
+        "-rl",
+        str(cfg.rate_limit),
+        "-bs",
+        str(cfg.bulk_size),
+        "-c",
+        str(cfg.concurrency),
+        "-retries",
+        str(cfg.retries),
     ]
 
     # ScanInput rate_limit overrides NucleiConfig.rate_limit
@@ -234,8 +239,7 @@ def _build_nuclei_command(
         for k, v in auth.effective_headers.items():
             cmd += ["-H", f"{k}: {v}"]
         if auth.username and auth.password:
-            cmd += ["-auth-type", "basic", "-auth-cred",
-                    f"{auth.username}:{auth.password}"]
+            cmd += ["-auth-type", "basic", "-auth-cred", f"{auth.username}:{auth.password}"]
 
     # ── Proxy ──────────────────────────────────────────────────────────────
     if scan_input.proxy:
@@ -248,4 +252,3 @@ def _build_nuclei_command(
     cmd += scan_input.extra_args
 
     return cmd
-

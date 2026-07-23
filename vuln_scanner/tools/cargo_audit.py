@@ -1,12 +1,18 @@
 """cargo-audit — Rust crates vulnerability scanner."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
-            "medium": Severity.MEDIUM, "low": Severity.LOW, "none": Severity.INFO}
+_SEV_MAP = {
+    "critical": Severity.CRITICAL,
+    "high": Severity.HIGH,
+    "medium": Severity.MEDIUM,
+    "low": Severity.LOW,
+    "none": Severity.INFO,
+}
 
 
 class CargoAuditTool(AbstractTool):
@@ -31,16 +37,18 @@ class CargoAuditTool(AbstractTool):
                 sev_str = advisory.get("severity", "medium").lower()
                 sev = _SEV_MAP.get(sev_str, Severity.MEDIUM)
                 cves = advisory.get("aliases", [])
-                findings.append(Finding(
-                    title=f"cargo-audit [{name} {version}]: {title}",
-                    severity=sev,
-                    description=advisory.get("description", title),
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    cve=[c for c in cves if c.startswith("CVE-")],
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"cargo-audit [{name} {version}]: {title}",
+                        severity=sev,
+                        description=advisory.get("description", title),
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        cve=[c for c in cves if c.startswith("CVE-")],
+                        raw=vuln,
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

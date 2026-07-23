@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class HttprobeTool(AbstractTool):
@@ -23,12 +23,14 @@ class HttprobeTool(AbstractTool):
             if not url or url in seen:
                 continue
             seen.add(url)
-            findings.append(Finding(
-                title=f"Live host: {url}",
-                severity=Severity.INFO,
-                description=f"HTTP/HTTPS service confirmed alive: {url}",
-                tool=self.name,
-                target=target,
-                raw={"url": url},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Live host: {url}",
+                    severity=Severity.INFO,
+                    description=f"HTTP/HTTPS service confirmed alive: {url}",
+                    tool=self.name,
+                    target=target,
+                    raw={"url": url},
+                )
+            )
         return findings

@@ -1,6 +1,5 @@
 """Multi-pass LLM analysis: triage → PoC design → mitigation → clustering."""
 
-
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -11,14 +10,18 @@ from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity, _parse_se
 from vuln_scanner.tools.models import Finding, ScanResult
 
 if TYPE_CHECKING:
-    from vuln_scanner.llm.models import LLMConfig
     from vuln_scanner.llm.client import LLMClient
+    from vuln_scanner.llm.models import LLMConfig
 
 log = logging.getLogger(__name__)
 
 # Ordered from lowest to highest — used for min_severity comparisons.
 _SEVERITY_ORDER = [
-    Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH, Severity.CRITICAL,
+    Severity.INFO,
+    Severity.LOW,
+    Severity.MEDIUM,
+    Severity.HIGH,
+    Severity.CRITICAL,
 ]
 
 
@@ -28,7 +31,9 @@ def _severity_at_least(finding_sev: Severity, min_sev: Severity) -> bool:
     except ValueError:
         return True
 
-_TRUNCATE_RAW = 2000  # chars of raw_output to send to LLM
+
+_TRUNCATE_RAW = 2_000   # chars of in-memory raw_output to send to LLM (fallback)
+_LOG_TRUNCATE_LLM = 8_000  # chars read from the on-disk log file for LLM context
 
 
 class LLMAnalyzer:
@@ -39,6 +44,7 @@ class LLMAnalyzer:
     def _get_client(self) -> "LLMClient":
         if self._client is None:
             from vuln_scanner.llm.client import LLMClient
+
             self._client = LLMClient(self._config)
         return self._client
 
@@ -54,26 +60,23 @@ class LLMAnalyzer:
             return assessment
 
         in_scope = [
-            r for r in assessment.results
-            if r.status != ScanStatus.SKIPPED
-            and r.findings
-            and self._config.in_scope(r.tool, self._get_category(r))
+            r
+            for r in assessment.results
+            if r.status != ScanStatus.SKIPPED and r.findings and self._config.in_scope(r.tool, self._get_category(r))
         ]
 
         if not in_scope:
             log.info("LLM: no in-scope results with findings — skipping analysis.")
             return assessment
 
-        log.info("LLM: analyzing %d result(s) across %d finding(s).",
-                 len(in_scope), sum(len(r.findings) for r in in_scope))
+        log.info(
+            "LLM: analyzing %d result(s) across %d finding(s).", len(in_scope), sum(len(r.findings) for r in in_scope)
+        )
 
         # Triage & PoC design (per result, threaded)
         poc_plans: dict[str, str] = {}  # finding key → poc_plan
         with ThreadPoolExecutor(max_workers=4) as ex:
-            futures = {
-                ex.submit(self._triage_result, r): r
-                for r in in_scope
-            }
+            futures = {ex.submit(self._triage_result, r): r for r in in_scope}
             for fut in as_completed(futures):
                 r = futures[fut]
                 try:
@@ -85,6 +88,15 @@ class LLMAnalyzer:
         # PoC generation (deferred to poc/generator.py, called from main.py)
         # The poc_plans dict is stored in assessment.metadata for the generator to consume.
         assessment.metadata["llm_poc_plans"] = poc_plans
+
+        # Apply FP suppression: remove findings marked as false-positives
+        if self._config.features.false_positive_filter:
+            before = sum(len(r.findings) for r in assessment.results)
+            for r in assessment.results:
+                r.findings = [f for f in r.findings if not f.false_positive]
+            after = sum(len(r.findings) for r in assessment.results)
+            if before != after:
+                log.info("LLM FP suppression removed %d finding(s).", before - after)
 
         # Clustering + executive summary
         features = self._config.features
@@ -100,6 +112,7 @@ class LLMAnalyzer:
     def _get_category(result: ScanResult) -> str:
         try:
             from vuln_scanner.tools import TOOL_REGISTRY
+
             cls = TOOL_REGISTRY.get(result.tool)
             if cls:
                 return cls().category
@@ -123,8 +136,15 @@ class LLMAnalyzer:
         client = self._get_client()
         poc_plans: dict[str, str] = {}
         raw_snippet = ""
-        if features.logs_analysis and result.raw_output:
-            raw_snippet = result.raw_output[:_TRUNCATE_RAW]
+        if features.logs_analysis:
+            if result.log_path:
+                try:
+                    with open(result.log_path, encoding="utf-8", errors="replace") as fh:
+                        raw_snippet = fh.read(_LOG_TRUNCATE_LLM)
+                except OSError:
+                    raw_snippet = result.raw_output[:_TRUNCATE_RAW]
+            elif result.raw_output:
+                raw_snippet = result.raw_output[:_TRUNCATE_RAW]
 
         for finding in result.findings:
             if not _severity_at_least(finding.severity, min_sev):
@@ -168,7 +188,7 @@ class LLMAnalyzer:
                     poc_plans[self._finding_key(finding)] = poc_plan
 
                 if features.false_positive_filter and finding.false_positive is True:
-                    log.debug("LLM marked finding as FP: %s", finding.title)
+                    log.info("LLM suppressed false-positive: %s (target: %s)", finding.title, finding.target)
 
             except Exception as exc:
                 log.debug("LLM triage error on finding '%s': %s", finding.title, exc)
@@ -243,9 +263,7 @@ class LLMAnalyzer:
 
         client = self._get_client()
         system = self._config.prompts.get("cluster_system")
-        user = self._config.prompts.get("cluster_user").format(
-            findings_json=json.dumps(findings_payload, indent=2)
-        )
+        user = self._config.prompts.get("cluster_user").format(findings_json=json.dumps(findings_payload, indent=2))
         data = client.complete_json(system, user)
 
         assessment.executive_summary = data.get("executive_summary", "")
@@ -254,7 +272,7 @@ class LLMAnalyzer:
         clusters: list[Cluster] = []
         for c in data.get("clusters", []):
             cluster = Cluster(
-                id=c.get("id", f"cluster-{len(clusters)+1}"),
+                id=c.get("id", f"cluster-{len(clusters) + 1}"),
                 title=c.get("title", ""),
                 severity=self._parse_severity(c.get("severity", "medium")),
                 summary=c.get("summary", ""),
@@ -274,4 +292,5 @@ class LLMAnalyzer:
     @staticmethod
     def _parse_severity(s: str) -> "Severity":  # type: ignore[return]
         from vuln_scanner.tools.enums import _parse_severity
+
         return _parse_severity(s)

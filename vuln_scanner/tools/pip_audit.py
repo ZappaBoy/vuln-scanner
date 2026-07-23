@@ -1,14 +1,14 @@
 import json
 import os
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--strict"],
-    ScanMode.PASSIVE:  [],
-    ScanMode.ACTIVE:   [],
+    ScanMode.PASSIVE: [],
+    ScanMode.ACTIVE: [],
     ScanMode.AGGRESSIVE: ["--strict", "--fix"],
 }
 
@@ -23,11 +23,15 @@ class PipAuditTool(AbstractTool):
         cmd = ["pip-audit", "-f", "json", "-l"]
 
         # If target looks like a requirements file, use it; else scan environment
-        req_candidates = [
-            os.path.join(target, "requirements.txt"),
-            os.path.join(target, "requirements/base.txt"),
-            target,
-        ] if not target.endswith(".txt") else [target]
+        req_candidates = (
+            [
+                os.path.join(target, "requirements.txt"),
+                os.path.join(target, "requirements/base.txt"),
+                target,
+            ]
+            if not target.endswith(".txt")
+            else [target]
+        )
 
         req_file = next((p for p in req_candidates if os.path.isfile(p)), None)
         if req_file:
@@ -54,19 +58,21 @@ class PipAuditTool(AbstractTool):
                 fix_versions = vuln.get("fix_versions", [])
                 aliases = vuln.get("aliases", [])
                 cves = [a for a in aliases if a.startswith("CVE-")]
-                findings.append(Finding(
-                    title=f"{vid} in {pkg} {version}",
-                    severity=Severity.HIGH,
-                    description=(
-                        f"Package: {pkg} {version}\n"
-                        f"Vulnerability: {vid}\n"
-                        f"Description: {vuln.get('description', '')}\n"
-                        f"Fix: {', '.join(fix_versions) if fix_versions else 'no fix available'}"
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cve=cves if cves else ([vid] if vid.startswith("CVE-") else []),
-                    references=vuln.get("fix_versions", []),
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"{vid} in {pkg} {version}",
+                        severity=Severity.HIGH,
+                        description=(
+                            f"Package: {pkg} {version}\n"
+                            f"Vulnerability: {vid}\n"
+                            f"Description: {vuln.get('description', '')}\n"
+                            f"Fix: {', '.join(fix_versions) if fix_versions else 'no fix available'}"
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cve=cves if cves else ([vid] if vid.startswith("CVE-") else []),
+                        references=vuln.get("fix_versions", []),
+                        raw=vuln,
+                    )
+                )
         return findings

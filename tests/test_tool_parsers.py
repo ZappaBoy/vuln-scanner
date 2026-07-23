@@ -3,20 +3,21 @@
 import json
 
 from vuln_scanner.tools.bearer import BearerTool
+from vuln_scanner.tools.enums import Severity
 from vuln_scanner.tools.govulncheck import GovulncheckTool
 from vuln_scanner.tools.prowler import ProwlerTool
-from vuln_scanner.tools.enums import Severity
 
-
-GOVULN_LINE = json.dumps({
-    "vuln": {
-        "id": "GO-2023-1234",
-        "summary": "A remote code execution vulnerability in example/pkg",
-        "aliases": ["CVE-2023-1234"],
-        "references": [{"url": "https://pkg.go.dev/vuln/GO-2023-1234"}],
-        "modules": [{"path": "github.com/example/pkg"}],
+GOVULN_LINE = json.dumps(
+    {
+        "vuln": {
+            "id": "GO-2023-1234",
+            "summary": "A remote code execution vulnerability in example/pkg",
+            "aliases": ["CVE-2023-1234"],
+            "references": [{"url": "https://pkg.go.dev/vuln/GO-2023-1234"}],
+            "modules": [{"path": "github.com/example/pkg"}],
+        }
     }
-})
+)
 
 GOVULN_PREAMBLE = '{"progress": {"message": "Scanning..."}}'
 
@@ -48,26 +49,30 @@ class TestGovulncheckParser:
         assert len(findings) == 1
 
     def test_vuln_without_modules_is_skipped(self):
-        line = json.dumps({
-            "vuln": {
-                "id": "GO-2023-9999",
-                "summary": "No modules listed",
-                "modules": [],
+        line = json.dumps(
+            {
+                "vuln": {
+                    "id": "GO-2023-9999",
+                    "summary": "No modules listed",
+                    "modules": [],
+                }
             }
-        })
+        )
         assert self.tool.parse_output(line, self.target) == []
 
     def test_multiple_modules_produce_multiple_findings(self):
-        line = json.dumps({
-            "vuln": {
-                "id": "GO-2023-5555",
-                "summary": "Multi-module vuln",
-                "modules": [
-                    {"path": "github.com/pkg/a"},
-                    {"path": "github.com/pkg/b"},
-                ],
+        line = json.dumps(
+            {
+                "vuln": {
+                    "id": "GO-2023-5555",
+                    "summary": "Multi-module vuln",
+                    "modules": [
+                        {"path": "github.com/pkg/a"},
+                        {"path": "github.com/pkg/b"},
+                    ],
+                }
             }
-        })
+        )
         findings = self.tool.parse_output(line, self.target)
         assert len(findings) == 2
 
@@ -134,23 +139,27 @@ class TestBearerParser:
 
 
 # Prowler outputs ASFF JSONL (one JSON object per line)
-_PROWLER_FAIL = json.dumps({
-    "SchemaVersion": "2018-10-08",
-    "Title": "S3 bucket public access block not enabled",
-    "Description": "Bucket my-bucket has public access enabled.",
-    "Severity": {"Label": "HIGH"},
-    "Status": "FAIL",
-    "Resources": [{"Id": "arn:aws:s3:::my-bucket", "Region": "us-east-1"}],
-    "Remediation": {"Recommendation": {"Url": "https://docs.aws.amazon.com/s3/"}},
-})
-_PROWLER_PASS = json.dumps({
-    "SchemaVersion": "2018-10-08",
-    "Title": "CloudTrail enabled",
-    "Description": "CloudTrail is enabled.",
-    "Severity": {"Label": "MEDIUM"},
-    "Status": "PASS",
-    "Resources": [{"Id": "arn:aws:cloudtrail:us-east-1:123456789:trail/main", "Region": "us-east-1"}],
-})
+_PROWLER_FAIL = json.dumps(
+    {
+        "SchemaVersion": "2018-10-08",
+        "Title": "S3 bucket public access block not enabled",
+        "Description": "Bucket my-bucket has public access enabled.",
+        "Severity": {"Label": "HIGH"},
+        "Status": "FAIL",
+        "Resources": [{"Id": "arn:aws:s3:::my-bucket", "Region": "us-east-1"}],
+        "Remediation": {"Recommendation": {"Url": "https://docs.aws.amazon.com/s3/"}},
+    }
+)
+_PROWLER_PASS = json.dumps(
+    {
+        "SchemaVersion": "2018-10-08",
+        "Title": "CloudTrail enabled",
+        "Description": "CloudTrail is enabled.",
+        "Severity": {"Label": "MEDIUM"},
+        "Status": "PASS",
+        "Resources": [{"Id": "arn:aws:cloudtrail:us-east-1:123456789:trail/main", "Region": "us-east-1"}],
+    }
+)
 
 
 class TestProwlerParser:

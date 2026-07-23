@@ -1,9 +1,10 @@
 """Oralyzer — open redirect vulnerability analyzer."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _VULN_RE = re.compile(r"\[VULNERABLE\][^\n]*", re.IGNORECASE)
 _REDIR_RE = re.compile(r"(?:redirect|open redirect)[^\n]*", re.IGNORECASE)
@@ -31,13 +32,15 @@ class OralyzerTool(AbstractTool):
             if re.search(r"VULNERABLE|open redirect found", line, re.IGNORECASE):
                 param_m = _PARAM_RE.search(line)
                 param = param_m.group(1) if param_m else "unknown"
-                findings.append(Finding(
-                    title=f"Open Redirect: parameter '{param}'",
-                    severity=Severity.MEDIUM,
-                    description=f"Oralyzer found an open redirect vulnerability via parameter '{param}' on {target}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-601"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Open Redirect: parameter '{param}'",
+                        severity=Severity.MEDIUM,
+                        description=f"Oralyzer found an open redirect vulnerability via parameter '{param}' on {target}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-601"],
+                        raw={"line": line},
+                    )
+                )
         return findings

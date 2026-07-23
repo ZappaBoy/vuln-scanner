@@ -1,6 +1,5 @@
 """Host-safe PoC generator — produces scripts, never executes them."""
 
-
 import logging
 import re
 from pathlib import Path
@@ -10,8 +9,8 @@ from vuln_scanner.poc.models import Poc
 from vuln_scanner.tools.models import Finding
 
 if TYPE_CHECKING:
-    from vuln_scanner.llm.models import LLMConfig
     from vuln_scanner.llm.client import LLMClient
+    from vuln_scanner.llm.models import LLMConfig
     from vuln_scanner.model import Assessment
     from vuln_scanner.tools.models import ScanResult
 
@@ -25,14 +24,14 @@ _SHEBANGS = {"python": "#!/usr/bin/env python3", "bash": "#!/usr/bin/env bash"}
 _DENYLIST_RE = [
     re.compile(p, re.IGNORECASE | re.MULTILINE)
     for p in [
-        r"rm\s+-rf\s+/",             # recursive delete from root
-        r"mkfs\.",                    # format filesystem
-        r"dd\s+.*of=/dev/",          # overwrite block devices
-        r"fork\s*\(\s*\)",           # fork bomb foundation
-        r":\(\s*\)\s*\{",            # bash fork bomb definition f(){ f|f& }
-        r"while\s+true.*fork",      # loop+fork
+        r"rm\s+-rf\s+/",  # recursive delete from root
+        r"mkfs\.",  # format filesystem
+        r"dd\s+.*of=/dev/",  # overwrite block devices
+        r"fork\s*\(\s*\)",  # fork bomb foundation
+        r":\(\s*\)\s*\{",  # bash fork bomb definition f(){ f|f& }
+        r"while\s+true.*fork",  # loop+fork
         r"shutdown|reboot|halt|poweroff",  # system control
-        r"iptables\s+-F",            # flush firewall rules
+        r"iptables\s+-F",  # flush firewall rules
         r"/etc/passwd|/etc/shadow",  # system credential files
         r"DROP\s+TABLE|TRUNCATE\s+TABLE",  # SQL destruction
     ]
@@ -55,6 +54,7 @@ class PocGenerator:
     def _get_client(self) -> "LLMClient":
         if self._client is None:
             from vuln_scanner.llm.client import LLMClient
+
             self._client = LLMClient(self._config)
         return self._client
 
@@ -122,7 +122,8 @@ class PocGenerator:
         git_instr = (
             "You may also suggest cloning an official exploit PoC from a public git repository "
             "(provide the git clone command in the script)."
-            if poc_cfg.allow_git_clone else ""
+            if poc_cfg.allow_git_clone
+            else ""
         )
 
         client = self._get_client()
@@ -163,7 +164,7 @@ class PocGenerator:
             safe_to_run = False
             safety_notes = (safety_notes + f" [Denylist: {denylist_reason}]").strip()
 
-        poc_id = f"poc-{index+1:03d}"
+        poc_id = f"poc-{index + 1:03d}"
         ext = _EXTENSIONS.get(lang, ".sh")
         filename = f"{poc_id}{ext}"
         script_path = assets_dir / filename
@@ -202,6 +203,7 @@ class PocGenerator:
     def _get_category(self, result: "ScanResult") -> str:
         try:
             from vuln_scanner.tools import TOOL_REGISTRY
+
             cls = TOOL_REGISTRY.get(result.tool)
             if cls:
                 return cls().category

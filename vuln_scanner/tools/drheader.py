@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _SEVERITY_MAP = {
     "high": Severity.HIGH,
@@ -41,16 +41,14 @@ class DrheaderTool(AbstractTool):
             message = item.get("message") or item.get("Message") or rule
             expected = item.get("expected") or item.get("Expected") or ""
             actual = item.get("value") or item.get("Value") or item.get("actual") or "missing"
-            findings.append(Finding(
-                title=f"HTTP Header: {rule}",
-                severity=severity,
-                description=(
-                    f"{message}\n"
-                    f"Expected: {expected}\n"
-                    f"Actual:   {actual}"
-                ),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"HTTP Header: {rule}",
+                    severity=severity,
+                    description=(f"{message}\nExpected: {expected}\nActual:   {actual}"),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
         return findings

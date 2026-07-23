@@ -4,17 +4,24 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _CHECKS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--checks=xss*,sqli*", "--audit-links", "--audit-forms"],
-    ScanMode.PASSIVE:  ["--checks=xss*,sqli*", "--audit-links", "--audit-forms"],
-    ScanMode.ACTIVE:   ["--checks=*", "--audit-links", "--audit-forms", "--audit-cookies", "--audit-headers"],
-    ScanMode.AGGRESSIVE: ["--checks=*", "--audit-links", "--audit-forms",
-                          "--audit-cookies", "--audit-headers", "--audit-jsons",
-                          "--audit-xmls", "--audit-ui-forms"],
+    ScanMode.PASSIVE: ["--checks=xss*,sqli*", "--audit-links", "--audit-forms"],
+    ScanMode.ACTIVE: ["--checks=*", "--audit-links", "--audit-forms", "--audit-cookies", "--audit-headers"],
+    ScanMode.AGGRESSIVE: [
+        "--checks=*",
+        "--audit-links",
+        "--audit-forms",
+        "--audit-cookies",
+        "--audit-headers",
+        "--audit-jsons",
+        "--audit-xmls",
+        "--audit-ui-forms",
+    ],
 }
 
 
@@ -40,25 +47,27 @@ class ArachniTool(AbstractTool):
             sev_label = issue.get("severity", "info")
             severity = _parse_severity(sev_label)
             url = issue.get("vector", {}).get("url", target)
-            findings.append(Finding(
-                title=issue.get("name", "Arachni finding"),
-                severity=severity,
-                description=(
-                    issue.get("description", "")
-                    + f"\nURL: {url}"
-                    + f"\nInput: {issue.get('vector', {}).get('input', '')}"
-                ),
-                tool=self.name,
-                target=url or target,
-                references=issue.get("references", {}).get("url", []),
-                cve=[c for c in issue.get("references", {}).get("cve", [])
-                     if c.startswith("CVE-")],
-                raw=issue,
-            ))
+            findings.append(
+                Finding(
+                    title=issue.get("name", "Arachni finding"),
+                    severity=severity,
+                    description=(
+                        issue.get("description", "")
+                        + f"\nURL: {url}"
+                        + f"\nInput: {issue.get('vector', {}).get('input', '')}"
+                    ),
+                    tool=self.name,
+                    target=url or target,
+                    references=issue.get("references", {}).get("url", []),
+                    cve=[c for c in issue.get("references", {}).get("cve", []) if c.startswith("CVE-")],
+                    raw=issue,
+                )
+            )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         import logging
+
         log = logging.getLogger(__name__)
         start = time.monotonic()
 
@@ -70,35 +79,46 @@ class ArachniTool(AbstractTool):
         try:
             # Step 1: scan → .afr
             checks = _CHECKS.get(scan_input.mode, _CHECKS[ScanMode.ACTIVE])
-            scan_cmd = [
-                "arachni",
-                _as_url(target),
-                f"--save-afr={afr_path}",
-                "--output-only-positives",
-            ] + checks + scan_input.extra_args
+            scan_cmd = (
+                [
+                    "arachni",
+                    _as_url(target),
+                    f"--save-afr={afr_path}",
+                    "--output-only-positives",
+                ]
+                + checks
+                + scan_input.extra_args
+            )
 
             log.debug("[arachni] Running: %s", " ".join(scan_cmd))
             try:
                 subprocess.run(
-                    scan_cmd, capture_output=True, text=True,
+                    scan_cmd,
+                    capture_output=True,
+                    text=True,
                     timeout=scan_input.timeout,
                 )
             except subprocess.TimeoutExpired:
                 return ScanResult(
-                    tool=self.name, target=target,
+                    tool=self.name,
+                    target=target,
                     duration=float(scan_input.timeout),
                     status=ScanStatus.TIMEOUT,
                     error=f"Timed out after {scan_input.timeout}s",
                 )
             except FileNotFoundError:
                 return ScanResult(
-                    tool=self.name, target=target, duration=0.0,
-                    status=ScanStatus.FAILED, error="Binary not found: arachni",
+                    tool=self.name,
+                    target=target,
+                    duration=0.0,
+                    status=ScanStatus.FAILED,
+                    error="Binary not found: arachni",
                 )
 
             # Step 2: convert .afr → JSON report
             report_cmd = [
-                "arachni-reporter", afr_path,
+                "arachni-reporter",
+                afr_path,
                 f"--reporter=json:outfile={json_path}",
             ]
             log.debug("[arachni] Converting report: %s", " ".join(report_cmd))
@@ -106,13 +126,16 @@ class ArachniTool(AbstractTool):
                 subprocess.run(report_cmd, capture_output=True, text=True, timeout=60)
             except FileNotFoundError:
                 return ScanResult(
-                    tool=self.name, target=target,
+                    tool=self.name,
+                    target=target,
                     duration=time.monotonic() - start,
-                    status=ScanStatus.FAILED, error="Binary not found: arachni-reporter",
+                    status=ScanStatus.FAILED,
+                    error="Binary not found: arachni-reporter",
                 )
             except subprocess.TimeoutExpired as exc:
                 return ScanResult(
-                    tool=self.name, target=target,
+                    tool=self.name,
+                    target=target,
                     duration=time.monotonic() - start,
                     status=ScanStatus.FAILED,
                     error=f"arachni-reporter timed out: {exc}",
@@ -124,8 +147,11 @@ class ArachniTool(AbstractTool):
 
             findings = self.parse_output(raw, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=time.monotonic() - start, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=time.monotonic() - start,
+                status=ScanStatus.SUCCESS,
             )
 
         finally:

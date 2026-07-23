@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_ARGS: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID:   ["-g", "cislevel1"],
-    ScanMode.PASSIVE:    ["-g", "cislevel1"],
-    ScanMode.ACTIVE:     ["-g", "cislevel2"],
+    ScanMode.PARANOID: ["-g", "cislevel1"],
+    ScanMode.PASSIVE: ["-g", "cislevel1"],
+    ScanMode.ACTIVE: ["-g", "cislevel2"],
     ScanMode.AGGRESSIVE: [],  # all checks
 }
 
@@ -52,13 +52,15 @@ class ProwlerTool(AbstractTool):
             resource = item.get("Resources", [{}])[0].get("Id", target) if item.get("Resources") else target
 
             rec_url = item.get("Remediation", {}).get("Recommendation", {}).get("Url", "")
-            findings.append(Finding(
-                title=title,
-                severity=sev,
-                description=f"{desc}\nResource: {resource}" + (f"\nRegion: {region}" if region else ""),
-                tool=self.name,
-                target=target,
-                references=[rec_url] if rec_url else [],
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=title,
+                    severity=sev,
+                    description=f"{desc}\nResource: {resource}" + (f"\nRegion: {region}" if region else ""),
+                    tool=self.name,
+                    target=target,
+                    references=[rec_url] if rec_url else [],
+                    raw=item,
+                )
+            )
         return findings

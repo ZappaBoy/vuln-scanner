@@ -1,9 +1,10 @@
 """WhatWaf — detect and bypass web application firewalls."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _WAF_RE = re.compile(r"(?:detected|identified)[:\s]+([^\n]+WAF[^\n]*)", re.IGNORECASE)
 _BYPASS_RE = re.compile(r"(?:bypass|tamper)[:\s]+([^\n]+)", re.IGNORECASE)
@@ -27,25 +28,29 @@ class WhatWafTool(AbstractTool):
             m = _WAF_RE.search(line) or _PROTECTED_RE.search(line)
             if m and not waf_name:
                 waf_name = m.group(1).strip()
-                findings.append(Finding(
-                    title=f"WAF detected: {waf_name}",
-                    severity=Severity.INFO,
-                    description=f"WhatWaf detected a Web Application Firewall on {target}: {waf_name}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"waf": waf_name},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"WAF detected: {waf_name}",
+                        severity=Severity.INFO,
+                        description=f"WhatWaf detected a Web Application Firewall on {target}: {waf_name}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"waf": waf_name},
+                    )
+                )
             bm = _BYPASS_RE.search(line)
             if bm:
                 bypass = bm.group(1).strip()
-                findings.append(Finding(
-                    title=f"WAF bypass technique: {bypass[:60]}",
-                    severity=Severity.MEDIUM,
-                    description=f"WhatWaf found a potential bypass for the WAF on {target}: {bypass}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-693"],
-                    raw={"bypass": bypass},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"WAF bypass technique: {bypass[:60]}",
+                        severity=Severity.MEDIUM,
+                        description=f"WhatWaf found a potential bypass for the WAF on {target}: {bypass}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-693"],
+                        raw={"bypass": bypass},
+                    )
+                )
         return findings

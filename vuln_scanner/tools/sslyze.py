@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class SSLyzeTool(AbstractTool):
@@ -50,49 +50,57 @@ class SSLyzeTool(AbstractTool):
                 accepted = (block.get("result") or {}).get("accepted_cipher_suites", [])
                 if accepted:
                     sev = Severity.HIGH if "ssl" in proto else Severity.MEDIUM
-                    findings.append(Finding(
-                        title=f"Weak protocol supported: {label}",
-                        severity=sev,
-                        description=f"Server accepts {label} connections ({len(accepted)} cipher suite(s)).",
-                        tool=self.name,
-                        target=host,
-                        raw={"protocol": proto, "accepted": len(accepted)},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Weak protocol supported: {label}",
+                            severity=sev,
+                            description=f"Server accepts {label} connections ({len(accepted)} cipher suite(s)).",
+                            tool=self.name,
+                            target=host,
+                            raw={"protocol": proto, "accepted": len(accepted)},
+                        )
+                    )
 
             # Heartbleed
             hb = (scan.get("heartbleed") or {}).get("result") or {}
             if hb.get("is_vulnerable_to_heartbleed"):
-                findings.append(Finding(
-                    title="Heartbleed (CVE-2014-0160)",
-                    severity=Severity.CRITICAL,
-                    description="Server is vulnerable to the Heartbleed OpenSSL bug.",
-                    tool=self.name,
-                    target=host,
-                    cve=["CVE-2014-0160"],
-                ))
+                findings.append(
+                    Finding(
+                        title="Heartbleed (CVE-2014-0160)",
+                        severity=Severity.CRITICAL,
+                        description="Server is vulnerable to the Heartbleed OpenSSL bug.",
+                        tool=self.name,
+                        target=host,
+                        cve=["CVE-2014-0160"],
+                    )
+                )
 
             # ROBOT
             robot = (scan.get("robot") or {}).get("result") or {}
             if "NOT_VULNERABLE" not in str(robot.get("robot_result", "NOT_VULNERABLE")):
-                findings.append(Finding(
-                    title="ROBOT Attack",
-                    severity=Severity.HIGH,
-                    description="Server may be vulnerable to the ROBOT (Return Of Bleichenbacher's Oracle Threat) attack.",
-                    tool=self.name,
-                    target=host,
-                    cve=["CVE-2017-13099"],
-                ))
+                findings.append(
+                    Finding(
+                        title="ROBOT Attack",
+                        severity=Severity.HIGH,
+                        description="Server may be vulnerable to the ROBOT (Return Of Bleichenbacher's Oracle Threat) attack.",
+                        tool=self.name,
+                        target=host,
+                        cve=["CVE-2017-13099"],
+                    )
+                )
 
             # Compression (CRIME)
             comp = (scan.get("tls_compression") or {}).get("result") or {}
             if comp.get("supports_compression"):
-                findings.append(Finding(
-                    title="TLS Compression enabled (CRIME)",
-                    severity=Severity.MEDIUM,
-                    description="Server supports TLS compression, making it potentially vulnerable to the CRIME attack.",
-                    tool=self.name,
-                    target=host,
-                    cve=["CVE-2012-4929"],
-                ))
+                findings.append(
+                    Finding(
+                        title="TLS Compression enabled (CRIME)",
+                        severity=Severity.MEDIUM,
+                        description="Server supports TLS compression, making it potentially vulnerable to the CRIME attack.",
+                        tool=self.name,
+                        target=host,
+                        cve=["CVE-2012-4929"],
+                    )
+                )
 
         return findings

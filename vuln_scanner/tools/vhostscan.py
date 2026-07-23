@@ -1,9 +1,10 @@
 """VHostScan — virtual host scanner with reverse lookup and wordlist support."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _FOUND_RE = re.compile(r"\[Found\]\s*(.+)", re.IGNORECASE)
 _VHOST_RE = re.compile(r"Found virtual host:\s*(\S+)", re.IGNORECASE)
@@ -29,13 +30,15 @@ class VHostScanTool(AbstractTool):
                 vhost = m.group(1).strip()
                 if vhost not in seen:
                     seen.add(vhost)
-                    findings.append(Finding(
-                        title=f"Virtual host discovered: {vhost}",
-                        severity=Severity.INFO,
-                        description=f"VHostScan discovered virtual host '{vhost}' on {target}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"vhost": vhost},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Virtual host discovered: {vhost}",
+                            severity=Severity.INFO,
+                            description=f"VHostScan discovered virtual host '{vhost}' on {target}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"vhost": vhost},
+                        )
+                    )
         return findings

@@ -1,8 +1,8 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _VULN_RE = re.compile(
     r"parameter\s+'?([^']+?)'?\s+(?:appears to be|is)\s+(?:vulnerable|injectable).+?'(.+?)'",
@@ -28,7 +28,7 @@ class CommixTool(AbstractTool):
         cmd = ["commix", "--url", target, "--batch"]
 
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
-            cmd += ["--technique=C"]   # classic only (least intrusive)
+            cmd += ["--technique=C"]  # classic only (least intrusive)
         elif scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["--all-techniques", "--crawl=2"]
 
@@ -49,28 +49,32 @@ class CommixTool(AbstractTool):
                 key = f"{param}:{technique}"
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"Command injection: parameter '{param}'",
-                        severity=Severity.CRITICAL,
-                        description=(
-                            f"OS command injection via parameter '{param}' on {target} "
-                            f"using '{technique}' technique."
-                        ),
-                        tool=self.name,
-                        target=target,
-                        raw={"parameter": param, "technique": technique},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Command injection: parameter '{param}'",
+                            severity=Severity.CRITICAL,
+                            description=(
+                                f"OS command injection via parameter '{param}' on {target} "
+                                f"using '{technique}' technique."
+                            ),
+                            tool=self.name,
+                            target=target,
+                            raw={"parameter": param, "technique": technique},
+                        )
+                    )
             elif _FOUND_RE.search(line):
                 key = line.strip()
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"Command injection detected: {line.strip()[:100]}",
-                        severity=Severity.CRITICAL,
-                        description=line.strip(),
-                        tool=self.name,
-                        target=target,
-                        raw={"raw_line": line.strip()},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Command injection detected: {line.strip()[:100]}",
+                            severity=Severity.CRITICAL,
+                            description=line.strip(),
+                            tool=self.name,
+                            target=target,
+                            raw={"raw_line": line.strip()},
+                        )
+                    )
 
         return findings

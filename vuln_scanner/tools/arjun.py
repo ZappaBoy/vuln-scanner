@@ -1,13 +1,14 @@
 import json
 
+from vuln_scanner.assets import Asset, AssetType
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _CHUNK: dict[ScanMode, int] = {
-    ScanMode.PARANOID:    50,
-    ScanMode.PASSIVE:    250,
-    ScanMode.ACTIVE:     500,
+    ScanMode.PARANOID: 50,
+    ScanMode.PASSIVE: 250,
+    ScanMode.ACTIVE: 500,
     ScanMode.AGGRESSIVE: 1000,
 }
 
@@ -17,13 +18,18 @@ class ArjunTool(AbstractTool):
     binary: str = "arjun"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    produces: frozenset[AssetType] = frozenset({AssetType.PARAM})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
             "arjun",
-            "-u", target,
-            "-o", OUTPUT_FILE_SENTINEL,
-            "-c", str(_CHUNK[scan_input.mode]),
+            "-u",
+            target,
+            "-o",
+            OUTPUT_FILE_SENTINEL,
+            "-c",
+            str(_CHUNK[scan_input.mode]),
             "-q",
         ]
         if scan_input.mode == ScanMode.AGGRESSIVE:
@@ -33,6 +39,7 @@ class ArjunTool(AbstractTool):
         auth = scan_input.auth
         if auth.is_configured:
             import json as _json
+
             headers = dict(auth.effective_headers)
             cmd += ["--headers", _json.dumps(headers)]
         if scan_input.proxy:
@@ -58,19 +65,40 @@ class ArjunTool(AbstractTool):
                 for method, params in methods.items():
                     if not params:
                         continue
-                    findings.append(Finding(
-                        title=f"Parameters found: {method} {url}",
-                        severity=Severity.INFO,
-                        description=(
-                            f"Hidden parameters discovered on {url} ({method}): "
-                            + ", ".join(str(p) for p in params)
-                        ),
-                        tool=self.name,
-                        target=target,
-                        raw={"url": url, "method": method, "params": params},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Parameters found: {method} {url}",
+                            severity=Severity.INFO,
+                            description=(
+                                f"Hidden parameters discovered on {url} ({method}): "
+                                + ", ".join(str(p) for p in params)
+                            ),
+                            tool=self.name,
+                            target=target,
+                            raw={"url": url, "method": method, "params": params},
+                        )
+                    )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            url = f.raw.get("url", "")
+            method = f.raw.get("method", "GET")
+            for param in f.raw.get("params", []):
+                if param:
+                    sep = "&" if "?" in url else "?"
+                    assets.append(
+                        Asset(
+                            type=AssetType.PARAM,
+                            value=f"{url}{sep}{param}",
+                            source=self.name,
+                            target=result.target,
+                            meta={"method": method, "param_name": str(param)},
+                        )
+                    )
+        return assets
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         return self._run_with_tempfile(target, scan_input, suffix=".json")

@@ -1,10 +1,8 @@
 """gauplus — extended URL gathering from Wayback Machine, CommonCrawl, OTX."""
-import subprocess
-import time
 
-from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
 
 _INTERESTING = __import__("re").compile(
     r"(?:admin|api|auth|config|backup|\.git|\.env|secret|key|token|password|debug|upload|internal)",
@@ -34,13 +32,15 @@ class GauplusTool(AbstractTool):
                 continue
             seen.add(url)
             if _INTERESTING.search(url):
-                findings.append(Finding(
-                    title=f"Interesting URL from archives: {url[:80]}",
-                    severity=Severity.LOW,
-                    description=f"gauplus found interesting archived URL: {url}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-200"],
-                    raw={"url": url},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Interesting URL from archives: {url[:80]}",
+                        severity=Severity.LOW,
+                        description=f"gauplus found interesting archived URL: {url}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-200"],
+                        raw={"url": url},
+                    )
+                )
         return findings

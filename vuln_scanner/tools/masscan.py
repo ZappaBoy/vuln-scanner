@@ -1,20 +1,20 @@
 import xml.etree.ElementTree as ET
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _RATE: dict[ScanMode, int] = {
-    ScanMode.PARANOID:   100,
-    ScanMode.PASSIVE:    500,
-    ScanMode.ACTIVE:    1000,
+    ScanMode.PARANOID: 100,
+    ScanMode.PASSIVE: 500,
+    ScanMode.ACTIVE: 1000,
     ScanMode.AGGRESSIVE: 10000,
 }
 
 _PORTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "22,80,443,8080",
-    ScanMode.PASSIVE:    "1-1024",
-    ScanMode.ACTIVE:     "1-65535",
+    ScanMode.PARANOID: "22,80,443,8080",
+    ScanMode.PASSIVE: "1-1024",
+    ScanMode.ACTIVE: "1-65535",
     ScanMode.AGGRESSIVE: "1-65535",
 }
 
@@ -30,10 +30,14 @@ class MasscanTool(AbstractTool):
         ports = _PORTS[scan_input.mode]
         cmd = [
             "masscan",
-            "-p", ports,
-            "--rate", str(rate),
-            "--wait", "2",
-            "-oX", "-",
+            "-p",
+            ports,
+            "--rate",
+            str(rate),
+            "--wait",
+            "2",
+            "-oX",
+            "-",
         ]
         cmd += scan_input.extra_args
         cmd.append(target)
@@ -53,7 +57,7 @@ class MasscanTool(AbstractTool):
             addr_el = host.find("address")
             addr = addr_el.get("addr", target) if addr_el is not None else target
 
-            for port_el in (host.find("ports") or []):
+            for port_el in host.find("ports") or []:
                 state_el = port_el.find("state")
                 if state_el is None or state_el.get("state") != "open":
                     continue
@@ -61,13 +65,15 @@ class MasscanTool(AbstractTool):
                 portid = port_el.get("portid", "?")
                 protocol = port_el.get("protocol", "tcp")
 
-                findings.append(Finding(
-                    title=f"Open port {portid}/{protocol}",
-                    severity=Severity.INFO,
-                    description=f"Masscan detected open port {portid}/{protocol} on {addr}.",
-                    tool=self.name,
-                    target=addr,
-                    raw={"port": portid, "protocol": protocol},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Open port {portid}/{protocol}",
+                        severity=Severity.INFO,
+                        description=f"Masscan detected open port {portid}/{protocol} on {addr}.",
+                        tool=self.name,
+                        target=addr,
+                        raw={"port": portid, "protocol": protocol},
+                    )
+                )
 
         return findings

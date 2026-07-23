@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class PureDNSTool(AbstractTool):
@@ -14,8 +14,12 @@ class PureDNSTool(AbstractTool):
         domain = target.split("//")[-1].split("/")[0].split(":")[0]
         wordlist = "/usr/share/wordlists/subdomains/subdomains-top1million-5000.txt"
         cmd = [
-            "puredns", "bruteforce", wordlist, domain,
-            "--resolvers", "/etc/resolvers.txt",
+            "puredns",
+            "bruteforce",
+            wordlist,
+            domain,
+            "--resolvers",
+            "/etc/resolvers.txt",
         ]
         cmd += scan_input.extra_args
         return cmd
@@ -28,12 +32,14 @@ class PureDNSTool(AbstractTool):
             if not subdomain or subdomain in seen:
                 continue
             seen.add(subdomain)
-            findings.append(Finding(
-                title=f"Subdomain: {subdomain}",
-                severity=Severity.INFO,
-                description=f"Valid subdomain discovered: {subdomain}",
-                tool=self.name,
-                target=target,
-                raw={"subdomain": subdomain},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Subdomain: {subdomain}",
+                    severity=Severity.INFO,
+                    description=f"Valid subdomain discovered: {subdomain}",
+                    tool=self.name,
+                    target=target,
+                    raw={"subdomain": subdomain},
+                )
+            )
         return findings

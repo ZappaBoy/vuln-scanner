@@ -1,15 +1,14 @@
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--enableExperimental"],
-    ScanMode.PASSIVE:  [],
-    ScanMode.ACTIVE:   ["--enableExperimental", "--enableRetired"],
-    ScanMode.AGGRESSIVE: ["--enableExperimental", "--enableRetired",
-                          "--analyzer", "all"],
+    ScanMode.PASSIVE: [],
+    ScanMode.ACTIVE: ["--enableExperimental", "--enableRetired"],
+    ScanMode.AGGRESSIVE: ["--enableExperimental", "--enableRetired", "--analyzer", "all"],
 }
 
 
@@ -23,10 +22,14 @@ class DependencyCheckTool(AbstractTool):
         path = target if target.startswith("/") else "."
         cmd = [
             "dependency-check",
-            "--project", "vuln-scanner-scan",
-            "--scan", path,
-            "--format", "JSON",
-            "--out", OUTPUT_FILE_SENTINEL,
+            "--project",
+            "vuln-scanner-scan",
+            "--scan",
+            path,
+            "--format",
+            "JSON",
+            "--out",
+            OUTPUT_FILE_SENTINEL,
             "--noupdate",
         ]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
@@ -50,19 +53,18 @@ class DependencyCheckTool(AbstractTool):
                 filepath = dep.get("filePath", target)
                 pkg = dep.get("fileName", "?")
                 refs = [r.get("url", "") for r in vuln.get("references", []) if r.get("url")]
-                findings.append(Finding(
-                    title=f"{vid} in {pkg}",
-                    severity=severity,
-                    description=(
-                        vuln.get("description", "")
-                        + f"\nFile: {filepath}"
-                    ),
-                    tool=self.name,
-                    target=filepath,
-                    cve=[vid] if vid.startswith("CVE-") else [],
-                    references=refs,
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"{vid} in {pkg}",
+                        severity=severity,
+                        description=(vuln.get("description", "") + f"\nFile: {filepath}"),
+                        tool=self.name,
+                        target=filepath,
+                        cve=[vid] if vid.startswith("CVE-") else [],
+                        references=refs,
+                        raw=vuln,
+                    )
+                )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:

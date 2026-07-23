@@ -4,9 +4,9 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class ParamSpiderTool(AbstractTool):
@@ -32,14 +32,16 @@ class ParamSpiderTool(AbstractTool):
             seen.add(url)
 
             has_params = "?" in url and "=" in url
-            findings.append(Finding(
-                title=f"Parameterised URL: {url[:120]}",
-                severity=Severity.INFO,
-                description=f"URL with parameters discovered from web archives: {url}",
-                tool=self.name,
-                target=target,
-                raw={"url": url, "has_params": has_params},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Parameterised URL: {url[:120]}",
+                    severity=Severity.INFO,
+                    description=f"URL with parameters discovered from web archives: {url}",
+                    tool=self.name,
+                    target=target,
+                    raw={"url": url, "has_params": has_params},
+                )
+            )
 
         return findings
 
@@ -55,8 +57,11 @@ class ParamSpiderTool(AbstractTool):
             cmd += scan_input.extra_args
 
             proc = subprocess.run(
-                cmd, capture_output=True, text=True,
-                cwd=workdir, timeout=scan_input.timeout,
+                cmd,
+                capture_output=True,
+                text=True,
+                cwd=workdir,
+                timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
 
@@ -71,19 +76,25 @@ class ParamSpiderTool(AbstractTool):
 
             findings = self.parse_output(raw, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=duration, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=proc.stdout + proc.stderr,
             )
 
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout),
-                              status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target,
-                              status=ScanStatus.FAILED,
-                              error="Binary not found: paramspider")
+            return ScanResult(
+                tool=self.name, target=target, status=ScanStatus.FAILED, error="Binary not found: paramspider"
+            )
         finally:
             shutil.rmtree(workdir, ignore_errors=True)

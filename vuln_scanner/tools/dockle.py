@@ -1,13 +1,18 @@
 """Dockle — container image security linting."""
-import json
-import re
 
-from vuln_scanner.tools.enums import Severity, TargetType
+import json
+
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
-_SEV_MAP = {"FATAL": Severity.CRITICAL, "WARN": Severity.HIGH,
-            "INFO": Severity.INFO, "SKIP": Severity.INFO, "PASS": Severity.INFO}
+_SEV_MAP = {
+    "FATAL": Severity.CRITICAL,
+    "WARN": Severity.HIGH,
+    "INFO": Severity.INFO,
+    "SKIP": Severity.INFO,
+    "PASS": Severity.INFO,
+}
 
 
 class DockleTool(AbstractTool):
@@ -31,15 +36,17 @@ class DockleTool(AbstractTool):
                 code = item.get("code", "")
                 alerts = item.get("alerts", [])
                 desc = "\n".join(alerts) if alerts else item.get("title", "")
-                findings.append(Finding(
-                    title=f"Dockle [{level}] {code}: {item.get('title', '')}",
-                    severity=sev,
-                    description=desc,
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-732"],
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Dockle [{level}] {code}: {item.get('title', '')}",
+                        severity=sev,
+                        description=desc,
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-732"],
+                        raw=item,
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

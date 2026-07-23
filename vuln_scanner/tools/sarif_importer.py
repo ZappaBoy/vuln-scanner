@@ -1,12 +1,12 @@
 """SARIF importer — import vulnerability reports in SARIF universal format."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM,
-            "note": Severity.LOW, "none": Severity.INFO}
+_SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM, "note": Severity.LOW, "none": Severity.INFO}
 
 
 class SARIFImporterTool(AbstractTool):
@@ -40,19 +40,18 @@ class SARIFImporterTool(AbstractTool):
                         loc = f"{uri}:{line_num}" if line_num else uri
                     # Look up CWE from rule metadata
                     rule_meta = rules.get(rule_id, {})
-                    cwe_tags = [
-                        t for t in rule_meta.get("properties", {}).get("tags", [])
-                        if t.startswith("CWE-")
-                    ]
-                    findings.append(Finding(
-                        title=f"[{tool_name}] {rule_id}: {msg[:80]}",
-                        severity=sev,
-                        description=f"Tool: {tool_name}\n{msg}\nLocation: {loc}",
-                        tool=self.name,
-                        target=target,
-                        cwe=cwe_tags,
-                        raw=result,
-                    ))
+                    cwe_tags = [t for t in rule_meta.get("properties", {}).get("tags", []) if t.startswith("CWE-")]
+                    findings.append(
+                        Finding(
+                            title=f"[{tool_name}] {rule_id}: {msg[:80]}",
+                            severity=sev,
+                            description=f"Tool: {tool_name}\n{msg}\nLocation: {loc}",
+                            tool=self.name,
+                            target=target,
+                            cwe=cwe_tags,
+                            raw=result,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

@@ -1,5 +1,3 @@
-
-
 import argparse
 import os
 import tomllib
@@ -15,7 +13,7 @@ from vuln_scanner.config.models import AppConfig, ReportFormat, ScanMode
 class _EnvSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="VS_", env_ignore_empty=True)
 
-    config: str | None = None           # VS_CONFIG — path to TOML config file
+    config: str | None = None  # VS_CONFIG — path to TOML config file
     targets: list[str] | None = None
     timeout: int | None = None
     max_concurrent: int | None = None
@@ -28,7 +26,7 @@ class _EnvSettings(BaseSettings):
     report_format: str | None = None
     formats: list[str] | None = None
     output_dir: str | None = None
-    report_min_severity: str | None = None   # VS_REPORT_MIN_SEVERITY=medium
+    report_min_severity: str | None = None  # VS_REPORT_MIN_SEVERITY=medium
     defectdojo_url: str | None = None
     defectdojo_api_key: str | None = None
     defectdojo_product: str | None = None
@@ -47,7 +45,7 @@ class _EnvSettings(BaseSettings):
     llm_frequency_penalty: float | None = None
     llm_presence_penalty: float | None = None
     llm_seed: int | None = None
-    llm_min_severity: str | None = None   # VS_LLM_MIN_SEVERITY=medium
+    llm_min_severity: str | None = None  # VS_LLM_MIN_SEVERITY=medium
     # Per-feature toggles: VS_LLM_FEATURE_<NAME>=true|false
     llm_feature_logs_analysis: str | None = None
     llm_feature_enrich: str | None = None
@@ -95,142 +93,185 @@ def build_arg_parser() -> argparse.ArgumentParser:
         description="Automated vulnerability assessment scanner and report generator.",
     )
     parser.add_argument(
-        "--config", metavar="FILE",
+        "--config",
+        metavar="FILE",
         help="Path to a TOML config file (default: config.toml). (env: VS_CONFIG)",
     )
     parser.add_argument(
-        "--targets", nargs="+", metavar="TARGET",
+        "--targets",
+        nargs="+",
+        metavar="TARGET",
         help="IPs, CIDR ranges, hostnames, URLs, or paths to scan. (env: VS_TARGETS)",
     )
-    parser.add_argument("--timeout", type=int, metavar="SECONDS",
-                        help="Per-tool execution timeout in seconds. (env: VS_TIMEOUT)")
-    parser.add_argument("--max-concurrent", type=int, metavar="N",
-                        help="Max tools running concurrently. (env: VS_MAX_CONCURRENT)")
     parser.add_argument(
-        "--mode", choices=[m.value for m in ScanMode], default=None,
+        "--timeout", type=int, metavar="SECONDS", help="Per-tool execution timeout in seconds. (env: VS_TIMEOUT)"
+    )
+    parser.add_argument(
+        "--max-concurrent", type=int, metavar="N", help="Max tools running concurrently. (env: VS_MAX_CONCURRENT)"
+    )
+    parser.add_argument(
+        "--mode",
+        choices=[m.value for m in ScanMode],
+        default=None,
         help="Scan aggressiveness mode. (env: VS_MODE)",
     )
-    parser.add_argument("--rate-limit", type=int, metavar="RPS",
-                        help="Max requests per second. (env: VS_RATE_LIMIT)")
+    parser.add_argument("--rate-limit", type=int, metavar="RPS", help="Max requests per second. (env: VS_RATE_LIMIT)")
     parser.add_argument("--include-categories", nargs="+", metavar="CATEGORY")
     parser.add_argument("--exclude-categories", nargs="+", metavar="CATEGORY")
     parser.add_argument("--include-tools", nargs="+", metavar="TOOL")
     parser.add_argument("--exclude-tools", nargs="+", metavar="TOOL")
     parser.add_argument(
-        "--formats", nargs="+",
+        "--formats",
+        nargs="+",
         choices=[f.value for f in ReportFormat],
         metavar="FORMAT",
         help="Report output formats (markdown/html/json, repeatable). (env: VS_FORMATS)",
     )
     # Legacy single --format alias kept for back-compat
     parser.add_argument(
-        "--format", choices=[f.value for f in ReportFormat], default=None,
-        metavar="FORMAT", help=argparse.SUPPRESS,
+        "--format",
+        choices=[f.value for f in ReportFormat],
+        default=None,
+        metavar="FORMAT",
+        help=argparse.SUPPRESS,
     )
-    parser.add_argument("--output-dir", metavar="DIR",
-                        help="Directory where reports are written. (env: VS_OUTPUT_DIR)")
+    parser.add_argument("--output-dir", metavar="DIR", help="Directory where reports are written. (env: VS_OUTPUT_DIR)")
     parser.add_argument(
         "--report-min-severity",
         choices=["none", "info", "low", "medium", "high", "critical"],
-        default=None, metavar="LEVEL", dest="report_min_severity",
+        default=None,
+        metavar="LEVEL",
+        dest="report_min_severity",
         help="Exclude findings below this severity from reports "
-             "(none = include all, default: none). (env: VS_REPORT_MIN_SEVERITY)",
+        "(none = include all, default: none). (env: VS_REPORT_MIN_SEVERITY)",
     )
     parser.add_argument("--defectdojo-url", metavar="URL")
     parser.add_argument("--defectdojo-api-key", metavar="KEY")
     # LLM flags
-    parser.add_argument("--llm-model", metavar="MODEL",
-                        help="LLM model name (required when LLM active). (env: VS_LLM_MODEL)")
-    parser.add_argument("--no-llm", action="store_true",
-                        help="Disable LLM analysis entirely.")
+    parser.add_argument(
+        "--llm-model", metavar="MODEL", help="LLM model name (required when LLM active). (env: VS_LLM_MODEL)"
+    )
+    parser.add_argument("--no-llm", action="store_true", help="Disable LLM analysis entirely.")
     parser.add_argument(
         "--llm-min-severity",
         choices=["info", "low", "medium", "high", "critical"],
-        metavar="LEVEL", dest="llm_min_severity",
-        help="Minimum finding severity to send to LLM (default: medium). "
-             "(env: VS_LLM_MIN_SEVERITY)",
+        metavar="LEVEL",
+        dest="llm_min_severity",
+        help="Minimum finding severity to send to LLM (default: medium). (env: VS_LLM_MIN_SEVERITY)",
     )
     parser.add_argument(
-        "--llm-feature", nargs="+", metavar="NAME=on|off",
+        "--llm-feature",
+        nargs="+",
+        metavar="NAME=on|off",
         dest="llm_features",
         help="Override a global LLM feature flag, e.g. --llm-feature generate_poc=on",
     )
-    parser.add_argument("--llm-poc-execute", action="store_true",
-                        help="Enable PoC execution (container-only).")
+    parser.add_argument("--llm-poc-execute", action="store_true", help="Enable PoC execution (container-only).")
     # Auth flags
-    parser.add_argument("--auth-bearer", metavar="TOKEN",
-                        help="Bearer token for authenticated scanning. (env: VS_AUTH_BEARER_TOKEN)")
-    parser.add_argument("--auth-user", metavar="USERNAME",
-                        help="HTTP Basic username. (env: VS_AUTH_USERNAME)")
-    parser.add_argument("--auth-pass", metavar="PASSWORD",
-                        help="HTTP Basic password. (env: VS_AUTH_PASSWORD)")
-    parser.add_argument("--auth-login-url", metavar="URL",
-                        help="Form login URL. (env: VS_AUTH_LOGIN_URL)")
-    parser.add_argument("--auth-cookie", nargs="+", metavar="NAME=VALUE",
-                        dest="auth_cookies",
-                        help="Cookies for authenticated scanning, e.g. --auth-cookie session=abc")
-    parser.add_argument("--auth-header", nargs="+", metavar="NAME=VALUE",
-                        dest="auth_headers",
-                        help="Extra request headers, e.g. --auth-header X-API-Key=secret")
+    parser.add_argument(
+        "--auth-bearer", metavar="TOKEN", help="Bearer token for authenticated scanning. (env: VS_AUTH_BEARER_TOKEN)"
+    )
+    parser.add_argument("--auth-user", metavar="USERNAME", help="HTTP Basic username. (env: VS_AUTH_USERNAME)")
+    parser.add_argument("--auth-pass", metavar="PASSWORD", help="HTTP Basic password. (env: VS_AUTH_PASSWORD)")
+    parser.add_argument("--auth-login-url", metavar="URL", help="Form login URL. (env: VS_AUTH_LOGIN_URL)")
+    parser.add_argument(
+        "--auth-cookie",
+        nargs="+",
+        metavar="NAME=VALUE",
+        dest="auth_cookies",
+        help="Cookies for authenticated scanning, e.g. --auth-cookie session=abc",
+    )
+    parser.add_argument(
+        "--auth-header",
+        nargs="+",
+        metavar="NAME=VALUE",
+        dest="auth_headers",
+        help="Extra request headers, e.g. --auth-header X-API-Key=secret",
+    )
     # Plugin flags
-    parser.add_argument("--no-plugins", action="store_true",
-                        help="Disable plugin auto-discovery.")
-    parser.add_argument("--plugin-dir", nargs="+", metavar="DIR",
-                        dest="plugin_dirs",
-                        help="Extra directories to scan for plugins.")
+    parser.add_argument("--no-plugins", action="store_true", help="Disable plugin auto-discovery.")
+    parser.add_argument(
+        "--plugin-dir", nargs="+", metavar="DIR", dest="plugin_dirs", help="Extra directories to scan for plugins."
+    )
 
     # Scope
-    parser.add_argument("--scope-include", nargs="+", metavar="PATTERN",
-                        dest="scope_include",
-                        help="In-scope patterns: *.example.com, 10.0.0.0/8. "
-                             "Discovered assets outside this list are dropped.")
-    parser.add_argument("--scope-exclude", nargs="+", metavar="PATTERN",
-                        dest="scope_exclude",
-                        help="Out-of-scope patterns (always denied, even if in include).")
+    parser.add_argument(
+        "--scope-include",
+        nargs="+",
+        metavar="PATTERN",
+        dest="scope_include",
+        help="In-scope patterns: *.example.com, 10.0.0.0/8. Discovered assets outside this list are dropped.",
+    )
+    parser.add_argument(
+        "--scope-exclude",
+        nargs="+",
+        metavar="PATTERN",
+        dest="scope_exclude",
+        help="Out-of-scope patterns (always denied, even if in include).",
+    )
 
     # Proxy
-    parser.add_argument("--proxy", metavar="URL",
-                        help="Route all tool traffic through this proxy "
-                             "(e.g. http://127.0.0.1:8080 for Burp Suite).")
+    parser.add_argument(
+        "--proxy",
+        metavar="URL",
+        help="Route all tool traffic through this proxy (e.g. http://127.0.0.1:8080 for Burp Suite).",
+    )
 
     # Nuclei
-    parser.add_argument("--nuclei-update-templates", action="store_true",
-                        dest="nuclei_update_templates",
-                        help="Run nuclei -update-templates before scanning.")
-    parser.add_argument("--nuclei-tags", nargs="+", metavar="TAG",
-                        dest="nuclei_tags",
-                        help="Override Nuclei tag filter (replaces mode defaults).")
-    parser.add_argument("--nuclei-etags", nargs="+", metavar="TAG",
-                        dest="nuclei_etags",
-                        help="Additional Nuclei tags to exclude.")
-    parser.add_argument("--nuclei-severity", nargs="+", metavar="SEVERITY",
-                        dest="nuclei_severity",
-                        help="Comma-separated severity list override (info,low,medium,high,critical).")
-    parser.add_argument("--nuclei-templates", metavar="DIR",
-                        dest="nuclei_templates_dir",
-                        help="Custom nuclei templates directory.")
-    parser.add_argument("--nuclei-headless", action="store_true",
-                        dest="nuclei_headless",
-                        help="Enable headless browser mode in Nuclei.")
-    parser.add_argument("--nuclei-new-templates", action="store_true",
-                        dest="nuclei_new_templates",
-                        help="Only run templates new since last update.")
+    parser.add_argument(
+        "--nuclei-update-templates",
+        action="store_true",
+        dest="nuclei_update_templates",
+        help="Run nuclei -update-templates before scanning.",
+    )
+    parser.add_argument(
+        "--nuclei-tags",
+        nargs="+",
+        metavar="TAG",
+        dest="nuclei_tags",
+        help="Override Nuclei tag filter (replaces mode defaults).",
+    )
+    parser.add_argument(
+        "--nuclei-etags", nargs="+", metavar="TAG", dest="nuclei_etags", help="Additional Nuclei tags to exclude."
+    )
+    parser.add_argument(
+        "--nuclei-severity",
+        nargs="+",
+        metavar="SEVERITY",
+        dest="nuclei_severity",
+        help="Comma-separated severity list override (info,low,medium,high,critical).",
+    )
+    parser.add_argument(
+        "--nuclei-templates", metavar="DIR", dest="nuclei_templates_dir", help="Custom nuclei templates directory."
+    )
+    parser.add_argument(
+        "--nuclei-headless", action="store_true", dest="nuclei_headless", help="Enable headless browser mode in Nuclei."
+    )
+    parser.add_argument(
+        "--nuclei-new-templates",
+        action="store_true",
+        dest="nuclei_new_templates",
+        help="Only run templates new since last update.",
+    )
 
     # Recon pipeline
-    parser.add_argument("--no-recon", action="store_true",
-                        dest="no_recon",
-                        help="Disable the asset-discovery recon pipeline.")
+    parser.add_argument(
+        "--no-recon", action="store_true", dest="no_recon", help="Disable the asset-discovery recon pipeline."
+    )
 
     parser.add_argument(
-        "--dry-run", action="store_true", dest="dry_run",
+        "--dry-run",
+        action="store_true",
+        dest="dry_run",
         help="Print what would run (tool×target matrix) and exit without scanning.",
     )
     parser.add_argument(
-        "--list-tools", action="store_true", dest="list_tools",
+        "--list-tools",
+        action="store_true",
+        dest="list_tools",
         help="List all registered tools with category and target types, then exit.",
     )
-    parser.add_argument("-v", "--verbose", action="store_true",
-                        help="Enable debug logging.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging.")
     return parser
 
 
@@ -265,9 +306,8 @@ def load_config(args: Namespace) -> AppConfig:
     elif args.config or env_cfg.config:
         # Explicitly requested but not found — warn rather than silently skip
         import logging as _logging
-        _logging.getLogger(__name__).warning(
-            "Config file not found: %s — using defaults.", config_path
-        )
+
+        _logging.getLogger(__name__).warning("Config file not found: %s — using defaults.", config_path)
 
     # --- layer 2: env vars ---
     env = env_cfg  # already constructed above
@@ -371,8 +411,14 @@ def load_config(args: Namespace) -> AppConfig:
     # Per-feature env overrides
     llm.setdefault("features", {})
     for feat in (
-        "logs_analysis", "enrich", "classify", "cluster", "mitigation",
-        "generate_poc", "execute_poc", "false_positive_filter",
+        "logs_analysis",
+        "enrich",
+        "classify",
+        "cluster",
+        "mitigation",
+        "generate_poc",
+        "execute_poc",
+        "false_positive_filter",
     ):
         env_attr = f"llm_feature_{feat}"
         env_val = _parse_bool_env(getattr(env, env_attr, None))

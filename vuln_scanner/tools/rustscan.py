@@ -1,34 +1,34 @@
 import xml.etree.ElementTree as ET
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _ULIMIT: dict[ScanMode, int] = {
-    ScanMode.PARANOID:    500,
-    ScanMode.PASSIVE:    1000,
-    ScanMode.ACTIVE:     5000,
+    ScanMode.PARANOID: 500,
+    ScanMode.PASSIVE: 1000,
+    ScanMode.ACTIVE: 5000,
     ScanMode.AGGRESSIVE: 10000,
 }
 
 _PORTS: dict[ScanMode, str | None] = {
-    ScanMode.PARANOID:   "22,80,443,8080",
-    ScanMode.PASSIVE:    None,   # rustscan default (~top 1000)
-    ScanMode.ACTIVE:     None,   # full range via --range flag
+    ScanMode.PARANOID: "22,80,443,8080",
+    ScanMode.PASSIVE: None,  # rustscan default (~top 1000)
+    ScanMode.ACTIVE: None,  # full range via --range flag
     ScanMode.AGGRESSIVE: None,
 }
 
 _RANGE: dict[ScanMode, str | None] = {
-    ScanMode.PARANOID:   None,
-    ScanMode.PASSIVE:    "1-1024",
-    ScanMode.ACTIVE:     "1-65535",
+    ScanMode.PARANOID: None,
+    ScanMode.PASSIVE: "1-1024",
+    ScanMode.ACTIVE: "1-65535",
     ScanMode.AGGRESSIVE: "1-65535",
 }
 
 _NMAP_FLAGS: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID:   [],
-    ScanMode.PASSIVE:    ["-sV"],
-    ScanMode.ACTIVE:     ["-sV"],
+    ScanMode.PARANOID: [],
+    ScanMode.PASSIVE: ["-sV"],
+    ScanMode.ACTIVE: ["-sV"],
     ScanMode.AGGRESSIVE: ["-A"],
 }
 
@@ -92,13 +92,15 @@ class RustScanTool(AbstractTool):
                 if product:
                     label += f" ({product} {version})".rstrip()
 
-                findings.append(Finding(
-                    title=f"Open port {portid}/{protocol} — {label}",
-                    severity=Severity.INFO,
-                    description=f"Port {portid}/{protocol} is open on {addr}. Service: {label}.",
-                    tool=self.name,
-                    target=addr,
-                    raw={"port": portid, "protocol": protocol, "service": service},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Open port {portid}/{protocol} — {label}",
+                        severity=Severity.INFO,
+                        description=f"Port {portid}/{protocol} is open on {addr}. Service: {label}.",
+                        tool=self.name,
+                        target=addr,
+                        raw={"port": portid, "protocol": protocol, "service": service},
+                    )
+                )
 
         return findings

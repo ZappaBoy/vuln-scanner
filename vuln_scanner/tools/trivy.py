@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_SCANNERS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "vuln",
-    ScanMode.PASSIVE:    "vuln",
-    ScanMode.ACTIVE:     "vuln,config,secret",
+    ScanMode.PARANOID: "vuln",
+    ScanMode.PASSIVE: "vuln",
+    ScanMode.ACTIVE: "vuln,config,secret",
     ScanMode.AGGRESSIVE: "vuln,config,secret,license",
 }
 
@@ -23,11 +23,15 @@ class TrivyTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         scanners = _MODE_SCANNERS.get(scan_input.mode, "vuln")
         cmd = [
-            "trivy", "image",
-            "--format", "json",
+            "trivy",
+            "image",
+            "--format",
+            "json",
             "--quiet",
-            "--scanners", scanners,
-            "--timeout", f"{scan_input.timeout}s",
+            "--scanners",
+            scanners,
+            "--timeout",
+            f"{scan_input.timeout}s",
         ]
         cmd += scan_input.extra_args
         cmd.append(target)
@@ -51,31 +55,34 @@ class TrivyTool(AbstractTool):
                 pkg = vuln.get("PkgName", "?")
                 installed = vuln.get("InstalledVersion", "?")
                 fixed = vuln.get("FixedVersion", "not fixed")
-                findings.append(Finding(
-                    title=f"{vid} in {pkg} {installed}",
-                    severity=severity,
-                    description=(
-                        f"{vuln.get('Title', vuln.get('Description', ''))}\n"
-                        f"Package: {pkg} {installed} → fix: {fixed}"
-                    ),
-                    tool=self.name,
-                    target=scan_target,
-                    cve=[vid] if vid.startswith("CVE-") else [],
-                    references=vuln.get("References", []),
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"{vid} in {pkg} {installed}",
+                        severity=severity,
+                        description=(
+                            f"{vuln.get('Title', vuln.get('Description', ''))}\n"
+                            f"Package: {pkg} {installed} → fix: {fixed}"
+                        ),
+                        tool=self.name,
+                        target=scan_target,
+                        cve=[vid] if vid.startswith("CVE-") else [],
+                        references=vuln.get("References", []),
+                        raw=vuln,
+                    )
+                )
 
             for misconfig in result.get("Misconfigurations") or []:
                 severity = _parse_severity(misconfig.get("Severity", "low"))
-                findings.append(Finding(
-                    title=misconfig.get("Title", "Misconfiguration"),
-                    severity=severity,
-                    description=misconfig.get("Description", "")
-                                + "\n" + misconfig.get("Resolution", ""),
-                    tool=self.name,
-                    target=scan_target,
-                    references=[misconfig.get("PrimaryURL", "")],
-                    raw=misconfig,
-                ))
+                findings.append(
+                    Finding(
+                        title=misconfig.get("Title", "Misconfiguration"),
+                        severity=severity,
+                        description=misconfig.get("Description", "") + "\n" + misconfig.get("Resolution", ""),
+                        tool=self.name,
+                        target=scan_target,
+                        references=[misconfig.get("PrimaryURL", "")],
+                        raw=misconfig,
+                    )
+                )
 
         return findings

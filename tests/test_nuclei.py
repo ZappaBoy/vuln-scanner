@@ -138,6 +138,7 @@ class TestNucleiCommandBuilder:
     # ── Templates ──────────────────────────────────────────────────────────
     def test_custom_templates_dir(self):
         from pathlib import Path
+
         cfg = NucleiConfig(templates_dir=Path("/opt/my-templates"))
         cmd = _cmd(cfg=cfg)
         assert "-t" in cmd
@@ -172,6 +173,7 @@ class TestNucleiCommandBuilder:
     # ── Workflows ──────────────────────────────────────────────────────────
     def test_workflow_added(self):
         from pathlib import Path
+
         cfg = NucleiConfig(workflows=[Path("/opt/workflows/sqli.yaml")])
         cmd = _cmd(cfg=cfg)
         assert "-w" in cmd
@@ -203,12 +205,14 @@ class TestNucleiParser:
         findings = self.tool.parse_output(self._make_line(), self.target)
         assert len(findings) == 1
         from vuln_scanner.tools.enums import Severity
+
         assert findings[0].severity == Severity.CRITICAL
 
     def test_extracts_cve(self):
         findings = self.tool.parse_output(self._make_line(), self.target)
-        assert "https://nvd.nist.gov/vuln/detail/CVE-2021-1234" in findings[0].cve or \
-               findings[0].cve  # references contain the URL; cve list may vary
+        assert (
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-1234" in findings[0].cve or findings[0].cve
+        )  # references contain the URL; cve list may vary
 
     def test_extracts_request_response(self):
         findings = self.tool.parse_output(self._make_line(), self.target)

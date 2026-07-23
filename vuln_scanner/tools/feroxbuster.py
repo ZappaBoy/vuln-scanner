@@ -1,19 +1,21 @@
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _WORDLISTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "/usr/share/wordlists/dirb/small.txt",
-    ScanMode.PASSIVE:    "/usr/share/wordlists/dirb/common.txt",
-    ScanMode.ACTIVE:     "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
+    ScanMode.PARANOID: "/usr/share/wordlists/dirb/small.txt",
+    ScanMode.PASSIVE: "/usr/share/wordlists/dirb/common.txt",
+    ScanMode.ACTIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
     ScanMode.AGGRESSIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-big.txt",
 }
 
 _DEPTH: dict[ScanMode, int] = {
-    ScanMode.PARANOID: 1, ScanMode.PASSIVE: 2,
-    ScanMode.ACTIVE: 4,   ScanMode.AGGRESSIVE: 8,
+    ScanMode.PARANOID: 1,
+    ScanMode.PASSIVE: 2,
+    ScanMode.ACTIVE: 4,
+    ScanMode.AGGRESSIVE: 8,
 }
 
 
@@ -30,11 +32,15 @@ class FeroxbusterTool(AbstractTool):
         depth = _DEPTH[scan_input.mode]
         cmd = [
             "feroxbuster",
-            "--url", url,
-            "--wordlist", wordlist,
-            "--depth", str(depth),
+            "--url",
+            url,
+            "--wordlist",
+            wordlist,
+            "--depth",
+            str(depth),
             "--json",
-            "--output", OUTPUT_FILE_SENTINEL,
+            "--output",
+            OUTPUT_FILE_SENTINEL,
             "--silent",
             "--no-state",
         ]
@@ -74,14 +80,16 @@ class FeroxbusterTool(AbstractTool):
             if status == 500:
                 sev = Severity.MEDIUM
 
-            findings.append(Finding(
-                title=f"[{status}] {url}",
-                severity=sev,
-                description=f"Content discovered: {url} (HTTP {status}, {item.get('content_length', 0)} bytes)",
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{status}] {url}",
+                    severity=sev,
+                    description=f"Content discovered: {url} (HTTP {status}, {item.get('content_length', 0)} bytes)",
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings
 

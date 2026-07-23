@@ -202,6 +202,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     clone_reqs https://github.com/1N3/BlackWidow            /opt/blackwidow    && \
     clone_reqs https://github.com/nccgroup/ScoutSuite       /opt/ScoutSuite    && \
     clone_reqs https://github.com/jordanpotti/AWSBucketDump /opt/AWSBucketDump && \
+    clone_reqs https://github.com/r0075h3ll/Oralyzer        /opt/oralyzer      && \
     clone_reqs https://github.com/rfc-st/humble             /opt/humble    && mkwrap humble    /opt/humble/humble.py       && \
     clone_reqs https://github.com/s0md3v/Photon             /opt/photon    && mkwrap photon    /opt/photon/photon.py       && \
     clone_reqs https://github.com/maaaaz/androwarn          /opt/androwarn && mkwrap androwarn /opt/androwarn/androwarn.py
@@ -235,7 +236,6 @@ RUN git clone --depth 1 https://github.com/six2dez/reconftw /opt/reconftw && \
 
 # ── Wrapper scripts for source-only Python tools ──────────────────────────────
 RUN for spec in \
-    "aemhacker:/opt/aemhacker/aem_hacker.py" \
     "blackwidow:/opt/blackwidow/blackwidow.py" \
     "oralyzer:/opt/oralyzer/oralyzer.py"; do \
     name="${spec%%:*}"; path="${spec##*:}"; \

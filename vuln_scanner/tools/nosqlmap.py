@@ -1,9 +1,9 @@
 import re
 from urllib.parse import urlparse
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _VULN_RE = re.compile(
     r"(?:vulnerable|injection|bypass|found|detected).+?(?:NoSQL|MongoDB|CouchDB|injection)",
@@ -48,14 +48,16 @@ class NoSQLMapTool(AbstractTool):
                 key = "auth_bypass"
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title="NoSQL authentication bypass",
-                        severity=Severity.CRITICAL,
-                        description=f"NoSQL authentication bypass detected on {target}: {line}",
-                        tool=self.name,
-                        target=target,
-                        raw={"raw_line": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title="NoSQL authentication bypass",
+                            severity=Severity.CRITICAL,
+                            description=f"NoSQL authentication bypass detected on {target}: {line}",
+                            tool=self.name,
+                            target=target,
+                            raw={"raw_line": line},
+                        )
+                    )
                 continue
 
             if _VULN_RE.search(line):
@@ -64,13 +66,15 @@ class NoSQLMapTool(AbstractTool):
                     seen.add(key)
                     param_m = _PARAM_RE.search(line)
                     param = param_m.group(1) if param_m else ""
-                    findings.append(Finding(
-                        title="NoSQL injection" + (f" — parameter '{param}'" if param else ""),
-                        severity=Severity.HIGH,
-                        description=f"NoSQL injection detected on {target}: {line}",
-                        tool=self.name,
-                        target=target,
-                        raw={"raw_line": line, "param": param},
-                    ))
+                    findings.append(
+                        Finding(
+                            title="NoSQL injection" + (f" — parameter '{param}'" if param else ""),
+                            severity=Severity.HIGH,
+                            description=f"NoSQL injection detected on {target}: {line}",
+                            tool=self.name,
+                            target=target,
+                            raw={"raw_line": line, "param": param},
+                        )
+                    )
 
         return findings

@@ -1,15 +1,14 @@
 """Cloudfox — AWS/Azure attack surface discovery for pentesting."""
-import json
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _FINDING_RE = re.compile(r"\[(?:HIGH|MEDIUM|LOW|INFO)\]\s+(.+)", re.IGNORECASE)
 _LEVEL_RE = re.compile(r"\[(HIGH|MEDIUM|LOW|INFO)\]", re.IGNORECASE)
-_SEV_MAP = {"HIGH": Severity.HIGH, "MEDIUM": Severity.MEDIUM,
-            "LOW": Severity.LOW, "INFO": Severity.INFO}
+_SEV_MAP = {"HIGH": Severity.HIGH, "MEDIUM": Severity.MEDIUM, "LOW": Severity.LOW, "INFO": Severity.INFO}
 
 
 class CloudfoxTool(AbstractTool):
@@ -33,13 +32,15 @@ class CloudfoxTool(AbstractTool):
                 if sev == Severity.INFO:
                     continue
                 msg = msg_m.group(1).strip()
-                findings.append(Finding(
-                    title=f"Cloudfox [{level}]: {msg[:80]}",
-                    severity=sev,
-                    description=msg,
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Cloudfox [{level}]: {msg[:80]}",
+                        severity=sev,
+                        description=msg,
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"line": line},
+                    )
+                )
         return findings

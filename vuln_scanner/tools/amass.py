@@ -1,8 +1,9 @@
 import json
 
+from vuln_scanner.assets import Asset, AssetType
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 
 class AmassTool(AbstractTool):
@@ -10,6 +11,7 @@ class AmassTool(AbstractTool):
     binary: str = "amass"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
+    produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a domain name (e.g. example.com)
@@ -44,19 +46,25 @@ class AmassTool(AbstractTool):
             ips = [a.get("ip", "") for a in addresses if a.get("ip")]
             source = item.get("source", item.get("tag", ""))
 
-            findings.append(Finding(
-                title=f"Subdomain: {name}",
-                severity=Severity.INFO,
-                description=(
-                    f"Discovered subdomain: {name}\n"
-                    f"IPs: {', '.join(ips) or 'N/A'}\n"
-                    f"Source: {source}"
-                ),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"Subdomain: {name}",
+                    severity=Severity.INFO,
+                    description=(f"Discovered subdomain: {name}\nIPs: {', '.join(ips) or 'N/A'}\nSource: {source}"),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            name = f.raw.get("name", "")
+            if name:
+                assets.append(Asset(type=AssetType.SUBDOMAIN, value=name, source=self.name, target=result.target))
+        return assets
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         return self._run_with_tempfile(target, scan_input, suffix=".json")

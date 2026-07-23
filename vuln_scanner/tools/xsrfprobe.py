@@ -1,9 +1,10 @@
 """XSRFProbe — CSRF audit and exploitation tool."""
+
 import re
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
+from vuln_scanner.tools.enums import Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
 
 _VULN_RE = re.compile(r"\[CRITICAL\].*?(?:CSRF|XSRF)[^\n]*", re.IGNORECASE)
 _ENDPOINT_RE = re.compile(r"Endpoint[:\s]+(https?://\S+)", re.IGNORECASE)
@@ -31,23 +32,27 @@ class XSRFProbeTool(AbstractTool):
             if re.search(r"\[CRITICAL\].*(?:CSRF|XSRF|No token)", line, re.IGNORECASE):
                 ep_m = _ENDPOINT_RE.search(line)
                 endpoint = ep_m.group(1) if ep_m else target
-                findings.append(Finding(
-                    title=f"CSRF vulnerability: {endpoint}",
-                    severity=Severity.HIGH,
-                    description=f"XSRFProbe detected missing or bypassable CSRF protection on {endpoint}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-352"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"CSRF vulnerability: {endpoint}",
+                        severity=Severity.HIGH,
+                        description=f"XSRFProbe detected missing or bypassable CSRF protection on {endpoint}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-352"],
+                        raw={"line": line},
+                    )
+                )
             elif re.search(r"(?:token not found|csrf not found)", line, re.IGNORECASE):
-                findings.append(Finding(
-                    title=f"Missing CSRF token on {target}",
-                    severity=Severity.MEDIUM,
-                    description=line.strip(),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-352"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Missing CSRF token on {target}",
+                        severity=Severity.MEDIUM,
+                        description=line.strip(),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-352"],
+                        raw={"line": line},
+                    )
+                )
         return findings

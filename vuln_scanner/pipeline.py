@@ -13,14 +13,13 @@ skipped gracefully.
 Discovered URLs are scope-validated before being returned.
 """
 
-
 import logging
 import shutil
 import subprocess
 from typing import TYPE_CHECKING
 
-from vuln_scanner.tools.target import classify_target
 from vuln_scanner.tools.enums import TargetType
+from vuln_scanner.tools.target import classify_target
 
 if TYPE_CHECKING:
     from vuln_scanner.config.models import ReconConfig
@@ -40,9 +39,7 @@ def _run(cmd: list[str], timeout: int, label: str) -> list[str]:
     """Run *cmd*, return stdout lines, log failures silently."""
     log.debug("[pipeline:%s] %s", label, " ".join(cmd))
     try:
-        proc = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout
-        )
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
         return [ln.strip() for ln in proc.stdout.splitlines() if ln.strip()]
     except FileNotFoundError:
         log.debug("[pipeline:%s] binary not found: %s", label, cmd[0])
@@ -57,6 +54,7 @@ def _run(cmd: list[str], timeout: int, label: str) -> list[str]:
 
 # ── Stage 1: subdomain enumeration ───────────────────────────────────────────
 
+
 def _enumerate_subdomains(domain: str, cfg: "ReconConfig") -> list[str]:
     binary = _find_binary(cfg.enum_tools)
     if not binary:
@@ -64,15 +62,9 @@ def _enumerate_subdomains(domain: str, cfg: "ReconConfig") -> list[str]:
         return [domain]
 
     if binary == "subfinder":
-        lines = _run(
-            ["subfinder", "-d", domain, "-silent", "-all"],
-            cfg.timeout, "enum"
-        )
+        lines = _run(["subfinder", "-d", domain, "-silent", "-all"], cfg.timeout, "enum")
     elif binary == "amass":
-        lines = _run(
-            ["amass", "enum", "-passive", "-d", domain, "-silent"],
-            cfg.timeout, "enum"
-        )
+        lines = _run(["amass", "enum", "-passive", "-d", domain, "-silent"], cfg.timeout, "enum")
     else:
         lines = _run([binary, "-d", domain], cfg.timeout, "enum")
 
@@ -83,6 +75,7 @@ def _enumerate_subdomains(domain: str, cfg: "ReconConfig") -> list[str]:
 
 # ── Stage 2: DNS resolution ───────────────────────────────────────────────────
 
+
 def _resolve_domains(domains: list[str], cfg: "ReconConfig") -> list[str]:
     binary = _find_binary(cfg.resolve_tools)
     if not binary:
@@ -91,23 +84,20 @@ def _resolve_domains(domains: list[str], cfg: "ReconConfig") -> list[str]:
 
     if binary == "dnsx":
         lines = _run(
-            ["dnsx", "-silent", "-resp-only"] + [f for d in domains for f in ["-d", d]],
-            cfg.timeout, "resolve"
+            ["dnsx", "-silent", "-resp-only"] + [f for d in domains for f in ["-d", d]], cfg.timeout, "resolve"
         )
         # dnsx with -resp-only returns resolved IPs; fall back to original hostnames
         # when output is empty
         resolved = lines or domains
     elif binary == "puredns":
-        import tempfile
         import os
+        import tempfile
+
         fd, tmp = tempfile.mkstemp(suffix=".txt", prefix="vs_pipeline_")
         try:
             os.write(fd, "\n".join(domains).encode())
             os.close(fd)
-            lines = _run(
-                ["puredns", "resolve", tmp, "--quiet"],
-                cfg.timeout, "resolve"
-            )
+            lines = _run(["puredns", "resolve", tmp, "--quiet"], cfg.timeout, "resolve")
         finally:
             try:
                 os.unlink(tmp)
@@ -117,12 +107,12 @@ def _resolve_domains(domains: list[str], cfg: "ReconConfig") -> list[str]:
     else:
         resolved = domains
 
-    log.info("[pipeline:resolve] %d → %d live host(s) via %s",
-             len(domains), len(resolved), binary)
+    log.info("[pipeline:resolve] %d → %d live host(s) via %s", len(domains), len(resolved), binary)
     return resolved
 
 
 # ── Stage 3: HTTP liveness probe ──────────────────────────────────────────────
+
 
 def _probe_http(hosts: list[str], cfg: "ReconConfig") -> list[str]:
     binary = _find_binary(cfg.probe_tools)
@@ -132,21 +122,19 @@ def _probe_http(hosts: list[str], cfg: "ReconConfig") -> list[str]:
 
     if binary == "httpx":
         lines = _run(
-            ["httpx", "-silent", "-l", "/dev/stdin", "-o", "/dev/stdout",
-             "-follow-redirects", "-status-code"],
-            cfg.timeout, "probe",
+            ["httpx", "-silent", "-l", "/dev/stdin", "-o", "/dev/stdout", "-follow-redirects", "-status-code"],
+            cfg.timeout,
+            "probe",
         )
         # httpx with -l /dev/stdin doesn't work well; pipe via echo
-        import tempfile
         import os
+        import tempfile
+
         fd, tmp = tempfile.mkstemp(suffix=".txt", prefix="vs_probe_")
         try:
             os.write(fd, "\n".join(hosts).encode())
             os.close(fd)
-            lines = _run(
-                ["httpx", "-silent", "-l", tmp, "-follow-redirects"],
-                cfg.timeout, "probe"
-            )
+            lines = _run(["httpx", "-silent", "-l", tmp, "-follow-redirects"], cfg.timeout, "probe")
         finally:
             try:
                 os.unlink(tmp)
@@ -154,16 +142,16 @@ def _probe_http(hosts: list[str], cfg: "ReconConfig") -> list[str]:
                 pass
         urls = [ln.split()[0] for ln in lines if ln.startswith("http")]
     elif binary == "httprobe":
-        import tempfile
         import os
+        import tempfile
+
         fd, tmp = tempfile.mkstemp(suffix=".txt", prefix="vs_probe_")
         try:
             os.write(fd, "\n".join(hosts).encode())
             os.close(fd)
             # httprobe reads from stdin
             proc = subprocess.run(
-                ["httprobe"], input="\n".join(hosts),
-                capture_output=True, text=True, timeout=cfg.timeout
+                ["httprobe"], input="\n".join(hosts), capture_output=True, text=True, timeout=cfg.timeout
             )
             urls = [ln.strip() for ln in proc.stdout.splitlines() if ln.strip()]
         except Exception:
@@ -176,12 +164,12 @@ def _probe_http(hosts: list[str], cfg: "ReconConfig") -> list[str]:
     else:
         urls = [f"https://{h}" if not h.startswith("http") else h for h in hosts]
 
-    log.info("[pipeline:probe] %d → %d live URL(s) via %s",
-             len(hosts), len(urls), binary)
+    log.info("[pipeline:probe] %d → %d live URL(s) via %s", len(hosts), len(urls), binary)
     return urls
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
+
 
 class ReconPipeline:
     """Runs asset discovery for HOST-type targets and returns new URL targets."""
@@ -200,15 +188,11 @@ class ReconPipeline:
         if not self._cfg.enabled:
             return []
 
-        host_targets = [
-            t for t in targets
-            if TargetType.HOST in classify_target(t)
-        ]
+        host_targets = [t for t in targets if TargetType.HOST in classify_target(t)]
         if not host_targets:
             return []
 
-        log.info("[pipeline] Starting recon for %d domain(s): %s",
-                 len(host_targets), ", ".join(host_targets))
+        log.info("[pipeline] Starting recon for %d domain(s): %s", len(host_targets), ", ".join(host_targets))
 
         discovered: list[str] = []
         for domain in host_targets:

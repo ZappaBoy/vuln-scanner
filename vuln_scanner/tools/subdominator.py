@@ -1,7 +1,8 @@
 """subdominator — fast subdomain enumeration aggregating 50+ passive sources."""
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class SubdominatorTool(AbstractTool):
@@ -20,13 +21,15 @@ class SubdominatorTool(AbstractTool):
             sub = line.strip().lower()
             if sub and sub not in seen and "." in sub:
                 seen.add(sub)
-                findings.append(Finding(
-                    title=f"Subdomain: {sub}",
-                    severity=Severity.INFO,
-                    description=f"subdominator found: {sub}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"subdomain": sub},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Subdomain: {sub}",
+                        severity=Severity.INFO,
+                        description=f"subdominator found: {sub}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"subdomain": sub},
+                    )
+                )
         return findings

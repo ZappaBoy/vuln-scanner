@@ -1,12 +1,12 @@
 """kubeaudit — Kubernetes RBAC and security audit."""
+
 import json
 
-from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
-_SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM,
-            "info": Severity.INFO, "debug": Severity.INFO}
+_SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM, "info": Severity.INFO, "debug": Severity.INFO}
 
 
 class KubeauditTool(AbstractTool):
@@ -36,17 +36,17 @@ class KubeauditTool(AbstractTool):
                 msg = obj.get("msg", "")
                 resource = obj.get("ResourceKind", "")
                 name = obj.get("ResourceName", "")
-                findings.append(Finding(
-                    title=f"kubeaudit [{level.upper()}] {audit_id}",
-                    severity=sev,
-                    description=(
-                        f"{msg}\nResource: {resource}/{name}" if resource else msg
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-284"],
-                    raw=obj,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"kubeaudit [{level.upper()}] {audit_id}",
+                        severity=sev,
+                        description=(f"{msg}\nResource: {resource}/{name}" if resource else msg),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-284"],
+                        raw=obj,
+                    )
+                )
             except json.JSONDecodeError:
                 continue
         return findings

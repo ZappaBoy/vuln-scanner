@@ -1,9 +1,10 @@
 """rkhunter — rootkit, backdoor, and local exploit detection."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _WARNING_RE = re.compile(r"Warning:\s+(.+)", re.IGNORECASE)
 _FOUND_RE = re.compile(r"Found\s+(.+)", re.IGNORECASE)
@@ -29,24 +30,28 @@ class RkhunterTool(AbstractTool):
             rootkit_m = _ROOTKIT_RE.search(line)
             if rootkit_m:
                 msg = rootkit_m.group(1).strip()
-                findings.append(Finding(
-                    title=f"Rootkit/backdoor: {msg[:80]}",
-                    severity=Severity.CRITICAL,
-                    description=f"rkhunter detected: {msg}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-506"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Rootkit/backdoor: {msg[:80]}",
+                        severity=Severity.CRITICAL,
+                        description=f"rkhunter detected: {msg}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-506"],
+                        raw={"line": line},
+                    )
+                )
             elif warn_m:
                 msg = warn_m.group(1).strip()
-                findings.append(Finding(
-                    title=f"rkhunter warning: {msg[:80]}",
-                    severity=Severity.HIGH,
-                    description=msg,
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-506"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"rkhunter warning: {msg[:80]}",
+                        severity=Severity.HIGH,
+                        description=msg,
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-506"],
+                        raw={"line": line},
+                    )
+                )
         return findings

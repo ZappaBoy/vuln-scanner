@@ -1,9 +1,10 @@
 """Binwalk — firmware extraction and vulnerability analysis."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _FOUND_RE = re.compile(r"(\d+)\s+0x[0-9A-Fa-f]+\s+(.+)")
 _DANGEROUS = re.compile(
@@ -36,23 +37,27 @@ class BinwalkTool(AbstractTool):
             seen.add(key)
             if _DANGEROUS.search(description):
                 sev = Severity.HIGH
-                findings.append(Finding(
-                    title=f"Sensitive data in firmware: {description[:60]}",
-                    severity=sev,
-                    description=f"binwalk found sensitive data at offset {offset}: {description}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-312"],
-                    raw={"offset": offset, "description": description},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Sensitive data in firmware: {description[:60]}",
+                        severity=sev,
+                        description=f"binwalk found sensitive data at offset {offset}: {description}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-312"],
+                        raw={"offset": offset, "description": description},
+                    )
+                )
             elif _EXECUTABLE.search(description):
-                findings.append(Finding(
-                    title=f"Embedded executable: {description[:60]}",
-                    severity=Severity.INFO,
-                    description=f"binwalk found embedded executable at offset {offset}: {description}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"offset": offset, "description": description},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Embedded executable: {description[:60]}",
+                        severity=Severity.INFO,
+                        description=f"binwalk found embedded executable at offset {offset}: {description}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"offset": offset, "description": description},
+                    )
+                )
         return findings

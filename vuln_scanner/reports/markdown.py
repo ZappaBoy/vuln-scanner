@@ -5,12 +5,11 @@ numbered sections, finding IDs, business impact, evidence, scope/methodology,
 and a clean appendix for scan errors and PoC assets.
 """
 
-
 import re
 from collections import defaultdict
 from pathlib import Path
 
-from vuln_scanner.model import Assessment, Cluster
+from vuln_scanner.model import Assessment, Cluster, FindingGroup, deduplicate_findings
 from vuln_scanner.reports.base import AbstractReporter
 from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity, severity_passes
 from vuln_scanner.tools.models import Finding, ScanResult
@@ -27,32 +26,32 @@ _SEVERITY_ORDER = [
 
 _SEVERITY_LABEL = {
     Severity.CRITICAL: "CRITICAL",
-    Severity.HIGH:     "HIGH",
-    Severity.MEDIUM:   "MEDIUM",
-    Severity.LOW:      "LOW",
-    Severity.INFO:     "INFO",
+    Severity.HIGH: "HIGH",
+    Severity.MEDIUM: "MEDIUM",
+    Severity.LOW: "LOW",
+    Severity.INFO: "INFO",
 }
 
 _SEVERITY_INDICATOR = {
     Severity.CRITICAL: "🔴 CRITICAL",
-    Severity.HIGH:     "🟠 HIGH",
-    Severity.MEDIUM:   "🟡 MEDIUM",
-    Severity.LOW:      "🔵 LOW",
-    Severity.INFO:     "⚪ INFO",
+    Severity.HIGH: "🟠 HIGH",
+    Severity.MEDIUM: "🟡 MEDIUM",
+    Severity.LOW: "🔵 LOW",
+    Severity.INFO: "⚪ INFO",
 }
 
 _SEVERITY_RISK = {
     Severity.CRITICAL: "Immediate exploitation likely; maximum business impact.",
-    Severity.HIGH:     "Significant risk; exploitation probable with minimal effort.",
-    Severity.MEDIUM:   "Moderate risk; exploitation requires specific conditions.",
-    Severity.LOW:      "Limited risk; exploitation is difficult or low-impact.",
-    Severity.INFO:     "Informational; no direct exploitability demonstrated.",
+    Severity.HIGH: "Significant risk; exploitation probable with minimal effort.",
+    Severity.MEDIUM: "Moderate risk; exploitation requires specific conditions.",
+    Severity.LOW: "Limited risk; exploitation is difficult or low-impact.",
+    Severity.INFO: "Informational; no direct exploitability demonstrated.",
 }
 
 _CONFIDENCE_LABEL = {
-    Confidence.HIGH:    "High",
-    Confidence.MEDIUM:  "Medium",
-    Confidence.LOW:     "Low",
+    Confidence.HIGH: "High",
+    Confidence.MEDIUM: "Medium",
+    Confidence.LOW: "Low",
     Confidence.UNKNOWN: "Unknown",
 }
 
@@ -61,6 +60,7 @@ _BAR_MAX = 20
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 def _escape_cell(s: str) -> str:
     return s.replace("|", "\\|").replace("\n", " ").strip()
@@ -82,36 +82,26 @@ def _fmt_ts(ts: str) -> str:
     return ts.split(".")[0].replace("T", " ").replace("+00:00", "") + " UTC"
 
 
-# ── Deduplication ─────────────────────────────────────────────────────────────
-
-class _FindingGroup:
-    """Collapses identical findings (same title + target) from multiple tools."""
-
-    def __init__(self, finding: Finding, tool: str) -> None:
-        self.finding = finding
-        self.tools: list[str] = [tool]
-        self.fid: str = ""   # assigned by the renderer
-
-    def add_tool(self, tool: str) -> None:
-        if tool not in self.tools:
-            self.tools.append(tool)
+# ── Rendering wrapper ─────────────────────────────────────────────────────────
 
 
-def _deduplicate(pairs: list[tuple[str, Finding]]) -> list[_FindingGroup]:
-    seen: dict[str, _FindingGroup] = {}
-    for tool, f in pairs:
-        key = f"{f.target}::{f.title}"
-        if key in seen:
-            seen[key].add_tool(tool)
-        else:
-            seen[key] = _FindingGroup(f, tool)
-    return list(seen.values())
+class _RenderedGroup:
+    """Adds a renderer-assigned finding ID to a model-level FindingGroup."""
+
+    def __init__(self, group: FindingGroup) -> None:
+        self.finding = group.finding
+        self.found_by = group.found_by
+        self.fid: str = ""  # assigned by the renderer
+
+
+def _make_groups(pairs: list[tuple[str, Finding]]) -> list[_RenderedGroup]:
+    return [_RenderedGroup(g) for g in deduplicate_findings(pairs)]
 
 
 # ── Reporter ──────────────────────────────────────────────────────────────────
 
-class MarkdownReporter(AbstractReporter):
 
+class MarkdownReporter(AbstractReporter):
     def generate(self, assessment: Assessment, output_path: Path) -> Path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text("\n".join(self._render(assessment)), encoding="utf-8")
@@ -128,18 +118,18 @@ class MarkdownReporter(AbstractReporter):
             by_target[r.target].append(r)
 
         # Collect active targets and their deduplicated findings
-        target_groups: dict[str, list[_FindingGroup]] = {}
+        target_groups: dict[str, list[_RenderedGroup]] = {}
         target_errors: dict[str, list[tuple[str, str]]] = {}
         for target in sorted(by_target):
             findings, errors = self._collect(by_target[target], self._min_severity)
             if findings or errors:
-                groups = _deduplicate(findings)
+                groups = _make_groups(findings)
                 groups.sort(key=lambda g: _SEVERITY_ORDER.index(g.finding.severity))
                 target_groups[target] = groups
                 target_errors[target] = errors
 
         # Assign sequential finding IDs across all targets, ordered by severity
-        all_groups: list[_FindingGroup] = []
+        all_groups: list[_RenderedGroup] = []
         for groups in target_groups.values():
             all_groups.extend(groups)
         all_groups.sort(key=lambda g: _SEVERITY_ORDER.index(g.finding.severity))
@@ -183,12 +173,12 @@ class MarkdownReporter(AbstractReporter):
             "",
             "| | |",
             "|:---|:---|",
-            f"| **Classification** | CONFIDENTIAL |",
+            "| **Classification** | CONFIDENTIAL |",
             f"| **Report Date** | {date} |",
-            f"| **Assessment Type** | Automated Security Scan |",
+            "| **Assessment Type** | Automated Security Scan |",
             f"| **Targets Assessed** | {stats.targets_scanned} |",
             f"| **Total Findings** | {stats.total_findings} |",
-            f"| **Report Version** | 1.0 |",
+            "| **Report Version** | 1.0 |",
             "",
             "> **CONFIDENTIAL** — This report contains sensitive security information.",
             "> Distribution is restricted to authorized recipients only.",
@@ -227,9 +217,9 @@ class MarkdownReporter(AbstractReporter):
                 lines.append(f"   - [Target: {t}](#target-{_anchor(t)})")
 
         if has_errors:
-            lines.append(f"\nAppendix A — [Scan Errors](#appendix-a--scan-errors)")
+            lines.append("\nAppendix A — [Scan Errors](#appendix-a--scan-errors)")
         if has_pocs:
-            lines.append(f"Appendix B — [PoC Assets](#appendix-b--poc-assets)")
+            lines.append("Appendix B — [PoC Assets](#appendix-b--poc-assets)")
 
         lines += ["", "---", ""]
         return lines
@@ -279,7 +269,6 @@ class MarkdownReporter(AbstractReporter):
         ]
         # Build per-tool status from results
         tool_status: dict[str, str] = {}
-        tool_findings: dict[str, int] = dict(stats.by_tool)
         for r in assessment.results:
             if r.status.value in ("failed", "timeout"):
                 tool_status[r.tool] = r.status.value.capitalize()
@@ -317,10 +306,10 @@ class MarkdownReporter(AbstractReporter):
         ]
         ranges = {
             Severity.CRITICAL: "9.0 – 10.0",
-            Severity.HIGH:     "7.0 – 8.9",
-            Severity.MEDIUM:   "4.0 – 6.9",
-            Severity.LOW:      "0.1 – 3.9",
-            Severity.INFO:     "N/A",
+            Severity.HIGH: "7.0 – 8.9",
+            Severity.MEDIUM: "4.0 – 6.9",
+            Severity.LOW: "0.1 – 3.9",
+            Severity.INFO: "N/A",
         }
         for sev in _SEVERITY_ORDER:
             label = _SEVERITY_INDICATOR[sev]
@@ -333,7 +322,7 @@ class MarkdownReporter(AbstractReporter):
     def _section_findings_overview(
         self,
         stats,
-        target_groups: dict[str, list[_FindingGroup]],
+        target_groups: dict[str, list[_RenderedGroup]],
     ) -> list[str]:
         lines = [
             "## 4. Findings Overview",
@@ -361,7 +350,7 @@ class MarkdownReporter(AbstractReporter):
 
         if targets and sev_cols:
             header = "| Target | " + " | ".join(_SEVERITY_LABEL[s] for s in sev_cols) + " | Total |"
-            sep =    "|--------|" + "|".join([":------:"] * len(sev_cols)) + "|------:|"
+            sep = "|--------|" + "|".join([":------:"] * len(sev_cols)) + "|------:|"
             lines += [header, sep]
 
             for target in targets:
@@ -392,8 +381,8 @@ class MarkdownReporter(AbstractReporter):
             lines += [
                 f"### Cluster {idx} — {cluster.title}",
                 "",
-                f"| | |",
-                f"|:---|:---|",
+                "| | |",
+                "|:---|:---|",
                 f"| **Severity** | {label} |",
                 f"| **Affected Findings** | {len(cluster.member_ids)} |",
                 f"| **Tags** | {tags} |",
@@ -417,7 +406,7 @@ class MarkdownReporter(AbstractReporter):
 
     def _section_detailed_findings(
         self,
-        target_groups: dict[str, list[_FindingGroup]],
+        target_groups: dict[str, list[_RenderedGroup]],
         section_num: int = 6,
     ) -> list[str]:
         lines = [f"## {section_num}. Detailed Findings", ""]
@@ -430,7 +419,7 @@ class MarkdownReporter(AbstractReporter):
     def _render_target(
         self,
         target: str,
-        groups: list[_FindingGroup],
+        groups: list[_RenderedGroup],
     ) -> list[str]:
         if not groups:
             return []
@@ -448,7 +437,7 @@ class MarkdownReporter(AbstractReporter):
         for g in groups:
             f = g.finding
             label = _SEVERITY_LABEL[f.severity]
-            tools = ", ".join(g.tools)
+            tools = ", ".join(g.found_by)
             conf = _CONFIDENCE_LABEL.get(f.confidence, "Unknown")
             title = _escape_cell(f.title)
             lines.append(f"| {g.fid} | {label} | {title} | {tools} | {conf} |")
@@ -461,10 +450,10 @@ class MarkdownReporter(AbstractReporter):
 
         return lines
 
-    def _render_finding(self, group: _FindingGroup) -> list[str]:
+    def _render_finding(self, group: _RenderedGroup) -> list[str]:
         f = group.finding
         label = _SEVERITY_INDICATOR[f.severity]
-        tools_str = ", ".join(group.tools)
+        tools_str = ", ".join(group.found_by)
         cwes = ", ".join(f.cwe) if f.cwe else "—"
         cves = ", ".join(f.cve) if f.cve else "—"
         conf = _CONFIDENCE_LABEL.get(f.confidence, "Unknown")
@@ -477,7 +466,7 @@ class MarkdownReporter(AbstractReporter):
             "|:------|--------|",
             f"| **Identifier** | {group.fid} |",
             f"| **Severity** | {label} |",
-            f"| **Status** | Open |",
+            "| **Status** | Open |",
             f"| **Affected System** | {f.target} |",
             f"| **Detected By** | {tools_str} |",
             f"| **Confidence** | {conf} |",

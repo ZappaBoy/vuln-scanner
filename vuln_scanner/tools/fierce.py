@@ -1,8 +1,8 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _IP_RE = re.compile(r"\b(\d{1,3}(?:\.\d{1,3}){3})\b")
 _SUBDOMAIN_RE = re.compile(r"Found:\s+(\S+)\s+(?:==>|->)?\s*(\d{1,3}(?:\.\d{1,3}){3})?")
@@ -42,26 +42,30 @@ class FierceTool(AbstractTool):
 
             # Zone transfer success
             if _ZONE_RE.search(line) and "success" in line.lower():
-                findings.append(Finding(
-                    title="DNS zone transfer succeeded",
-                    severity=Severity.CRITICAL,
-                    description=f"DNS zone transfer was successful for {target}: {line}",
-                    tool=self.name,
-                    target=target,
-                    raw={"raw_line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title="DNS zone transfer succeeded",
+                        severity=Severity.CRITICAL,
+                        description=f"DNS zone transfer was successful for {target}: {line}",
+                        tool=self.name,
+                        target=target,
+                        raw={"raw_line": line},
+                    )
+                )
                 continue
 
             # Wildcard DNS
             if _WILDCARD_RE.search(line):
-                findings.append(Finding(
-                    title="Wildcard DNS detected",
-                    severity=Severity.LOW,
-                    description=f"Wildcard DNS record detected for {target}: {line}",
-                    tool=self.name,
-                    target=target,
-                    raw={"raw_line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title="Wildcard DNS detected",
+                        severity=Severity.LOW,
+                        description=f"Wildcard DNS record detected for {target}: {line}",
+                        tool=self.name,
+                        target=target,
+                        raw={"raw_line": line},
+                    )
+                )
                 continue
 
             # Subdomain → IP
@@ -73,13 +77,15 @@ class FierceTool(AbstractTool):
                 if key in seen:
                     continue
                 seen.add(key)
-                findings.append(Finding(
-                    title=f"Subdomain: {subdomain}" + (f" ({ip})" if ip else ""),
-                    severity=Severity.INFO,
-                    description=f"Discovered subdomain: {subdomain}" + (f" → {ip}" if ip else ""),
-                    tool=self.name,
-                    target=target,
-                    raw={"subdomain": subdomain, "ip": ip},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Subdomain: {subdomain}" + (f" ({ip})" if ip else ""),
+                        severity=Severity.INFO,
+                        description=f"Discovered subdomain: {subdomain}" + (f" → {ip}" if ip else ""),
+                        tool=self.name,
+                        target=target,
+                        raw={"subdomain": subdomain, "ip": ip},
+                    )
+                )
 
         return findings

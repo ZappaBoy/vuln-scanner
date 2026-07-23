@@ -1,13 +1,13 @@
 """KubeLinter — Kubernetes YAML linting."""
+
 import json
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEV_MAP = {"KubeLinterError": Severity.HIGH, "error": Severity.HIGH,
-            "warning": Severity.MEDIUM, "info": Severity.INFO}
+_SEV_MAP = {"KubeLinterError": Severity.HIGH, "error": Severity.HIGH, "warning": Severity.MEDIUM, "info": Severity.INFO}
 
 
 class KubeLinterTool(AbstractTool):
@@ -29,23 +29,29 @@ class KubeLinterTool(AbstractTool):
                 msg = diagnostic.get("Message", "")
                 obj = report.get("Object", {}).get("K8sObject", {})
                 resource = f"{obj.get('GroupVersionKind', {}).get('Kind', '')} {obj.get('Name', '')}"
-                findings.append(Finding(
-                    title=f"kube-linter [{check}]: {msg[:60]}",
-                    severity=Severity.MEDIUM,
-                    description=f"Check: {check}\n{msg}\nResource: {resource}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-284"],
-                    raw=report,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"kube-linter [{check}]: {msg[:60]}",
+                        severity=Severity.MEDIUM,
+                        description=f"Check: {check}\n{msg}\nResource: {resource}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-284"],
+                        raw=report,
+                    )
+                )
         except json.JSONDecodeError:
             for line in raw.splitlines():
                 if re.search(r"KubeLinterError|error|warning", line, re.IGNORECASE):
-                    findings.append(Finding(
-                        title=f"kube-linter: {line[:80]}",
-                        severity=Severity.MEDIUM,
-                        description=line.strip(),
-                        tool=self.name, target=target, cwe=["CWE-284"],
-                        raw={"line": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"kube-linter: {line[:80]}",
+                            severity=Severity.MEDIUM,
+                            description=line.strip(),
+                            tool=self.name,
+                            target=target,
+                            cwe=["CWE-284"],
+                            raw={"line": line},
+                        )
+                    )
         return findings

@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["-severity", "high", "-confidence", "high"],
-    ScanMode.PASSIVE:  ["-severity", "medium"],
-    ScanMode.ACTIVE:   [],
+    ScanMode.PASSIVE: ["-severity", "medium"],
+    ScanMode.ACTIVE: [],
     ScanMode.AGGRESSIVE: ["-tests"],
 }
 
@@ -45,17 +45,15 @@ class GosecTool(AbstractTool):
             cwe = issue.get("cwe", {})
             cwe_id = cwe.get("id", "")
             cwe_url = cwe.get("url", "")
-            findings.append(Finding(
-                title=f"[{rule_id}] {issue.get('details', 'gosec finding')[:100]}",
-                severity=severity,
-                description=(
-                    f"{issue.get('details', '')}\n"
-                    f"File: {filepath}:{line}\n"
-                    f"CWE: {cwe_id}"
-                ),
-                tool=self.name,
-                target=filepath,
-                references=[cwe_url] if cwe_url else [],
-                raw=issue,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{rule_id}] {issue.get('details', 'gosec finding')[:100]}",
+                    severity=severity,
+                    description=(f"{issue.get('details', '')}\nFile: {filepath}:{line}\nCWE: {cwe_id}"),
+                    tool=self.name,
+                    target=filepath,
+                    references=[cwe_url] if cwe_url else [],
+                    raw=issue,
+                )
+            )
         return findings

@@ -11,7 +11,6 @@ The returned URLs are scope-validated and deduped before being appended
 to the target list.
 """
 
-
 import logging
 from typing import TYPE_CHECKING
 
@@ -23,25 +22,63 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 # Services whose presence on a port implies an HTTP endpoint
-_HTTP_SERVICES: frozenset[str] = frozenset({
-    "http", "http-alt", "http-proxy",
-    "www", "webcache", "websm",
-    "8080", "8000", "8888", "3000", "8081", "9000",
-})
+_HTTP_SERVICES: frozenset[str] = frozenset(
+    {
+        "http",
+        "http-alt",
+        "http-proxy",
+        "www",
+        "webcache",
+        "websm",
+        "8080",
+        "8000",
+        "8888",
+        "3000",
+        "8081",
+        "9000",
+    }
+)
 
-_HTTPS_SERVICES: frozenset[str] = frozenset({
-    "https", "https-alt", "ssl/http", "ssl/https", "ssl",
-    "8443", "4443", "9443",
-})
+_HTTPS_SERVICES: frozenset[str] = frozenset(
+    {
+        "https",
+        "https-alt",
+        "ssl/http",
+        "ssl/https",
+        "ssl",
+        "8443",
+        "4443",
+        "9443",
+    }
+)
 
 # Well-known HTTP ports (used when service name is ambiguous)
-_HTTP_PORTS: frozenset[int] = frozenset({
-    80, 8080, 8000, 8001, 8008, 8081, 8888, 3000, 5000,
-    8082, 9000, 9080, 10080,
-})
-_HTTPS_PORTS: frozenset[int] = frozenset({
-    443, 8443, 4443, 9443, 4433,
-})
+_HTTP_PORTS: frozenset[int] = frozenset(
+    {
+        80,
+        8080,
+        8000,
+        8001,
+        8008,
+        8081,
+        8888,
+        3000,
+        5000,
+        8082,
+        9000,
+        9080,
+        10080,
+    }
+)
+_HTTPS_PORTS: frozenset[int] = frozenset(
+    {
+        443,
+        8443,
+        4443,
+        9443,
+        4433,
+    }
+)
 
 
 def _infer_scheme(port: int, service: str) -> str | None:
@@ -86,7 +123,7 @@ def extract_web_targets(
 
             try:
                 port = int(port_str)
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 continue
 
             scheme = _infer_scheme(port, service)

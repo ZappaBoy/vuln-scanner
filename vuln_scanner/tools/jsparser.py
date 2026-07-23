@@ -1,9 +1,10 @@
 """JSParser — parse relative URLs from JavaScript files."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _URL_RE = re.compile(r"((?:https?://|/)[^\s\"'<>]+)", re.IGNORECASE)
 _API_RE = re.compile(r"(/api/[^\s\"'<>]+)", re.IGNORECASE)
@@ -34,13 +35,15 @@ class JSParserTool(AbstractTool):
                 seen.add(line)
                 sev = Severity.MEDIUM if _INTERESTING.search(line) else Severity.INFO
                 if sev == Severity.MEDIUM or _API_RE.match(line):
-                    findings.append(Finding(
-                        title=f"JS endpoint: {line[:80]}",
-                        severity=sev,
-                        description=f"JSParser found endpoint in JavaScript: {line}",
-                        tool=self.name,
-                        target=target,
-                        cwe=["CWE-538"],
-                        raw={"endpoint": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"JS endpoint: {line[:80]}",
+                            severity=sev,
+                            description=f"JSParser found endpoint in JavaScript: {line}",
+                            tool=self.name,
+                            target=target,
+                            cwe=["CWE-538"],
+                            raw={"endpoint": line},
+                        )
+                    )
         return findings

@@ -2,13 +2,11 @@
 
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_VULN_RE = re.compile(
-    r"(?:Potentially vulnerable|vulnerable to takeover)[:\s]+(.+)", re.IGNORECASE
-)
+_VULN_RE = re.compile(r"(?:Potentially vulnerable|vulnerable to takeover)[:\s]+(.+)", re.IGNORECASE)
 _CNAME_RE = re.compile(r"CNAME[:\s]+(\S+)", re.IGNORECASE)
 
 
@@ -34,8 +32,7 @@ class AutoSubTakeoverTool(AbstractTool):
                         title=f"Subdomain takeover: {sub}",
                         severity=Severity.HIGH,
                         description=(
-                            f"autoSubTakeover found potential takeover: {sub}"
-                            + (f"\nCNAME: {cname}" if cname else "")
+                            f"autoSubTakeover found potential takeover: {sub}" + (f"\nCNAME: {cname}" if cname else "")
                         ),
                         tool=self.name,
                         target=target,

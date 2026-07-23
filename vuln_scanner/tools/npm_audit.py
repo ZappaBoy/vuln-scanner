@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class NpmAuditTool(AbstractTool):
@@ -42,19 +42,21 @@ class NpmAuditTool(AbstractTool):
                     cve_ids = v.get("cves", [])
                     cve.extend(cve_ids)
 
-            findings.append(Finding(
-                title=f"{pkg_name}: {severity_raw.upper()} vulnerability",
-                severity=sev,
-                description=(
-                    f"Vulnerable package: {pkg_name}\n"
-                    f"Range: {info.get('range', 'unknown')}\n"
-                    f"Fix available: {info.get('fixAvailable', False)}"
-                ),
-                tool=self.name,
-                target=target,
-                cve=cve,
-                references=refs[:5],
-                raw=info,
-            ))
+            findings.append(
+                Finding(
+                    title=f"{pkg_name}: {severity_raw.upper()} vulnerability",
+                    severity=sev,
+                    description=(
+                        f"Vulnerable package: {pkg_name}\n"
+                        f"Range: {info.get('range', 'unknown')}\n"
+                        f"Fix available: {info.get('fixAvailable', False)}"
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cve=cve,
+                    references=refs[:5],
+                    raw=info,
+                )
+            )
 
         return findings

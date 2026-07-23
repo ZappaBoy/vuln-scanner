@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class WaybackURLsTool(AbstractTool):
@@ -27,12 +27,14 @@ class WaybackURLsTool(AbstractTool):
             sev = Severity.INFO
             if any(k in low for k in ("api", "admin", "secret", "token", "key", "pass", ".env", "backup")):
                 sev = Severity.LOW
-            findings.append(Finding(
-                title=f"Archived URL: {url[:100]}",
-                severity=sev,
-                description=f"Historical URL from Wayback Machine: {url}",
-                tool=self.name,
-                target=target,
-                raw={"url": url},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Archived URL: {url[:100]}",
+                    severity=sev,
+                    description=f"Historical URL from Wayback Machine: {url}",
+                    tool=self.name,
+                    target=target,
+                    raw={"url": url},
+                )
+            )
         return findings

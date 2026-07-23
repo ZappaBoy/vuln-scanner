@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 
 class LinkFinderTool(AbstractTool):
@@ -33,12 +33,14 @@ class LinkFinderTool(AbstractTool):
                 low = line.lower()
                 if "api" in low or "admin" in low or "secret" in low or "token" in low or "key" in low:
                     sev = Severity.LOW
-                findings.append(Finding(
-                    title=f"Endpoint discovered: {line[:100]}",
-                    severity=sev,
-                    description=f"Endpoint found in JavaScript/HTML source: {line}",
-                    tool=self.name,
-                    target=target,
-                    raw={"endpoint": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Endpoint discovered: {line[:100]}",
+                        severity=sev,
+                        description=f"Endpoint found in JavaScript/HTML source: {line}",
+                        tool=self.name,
+                        target=target,
+                        raw={"endpoint": line},
+                    )
+                )
         return findings

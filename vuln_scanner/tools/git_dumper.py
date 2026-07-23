@@ -1,14 +1,14 @@
 """git-dumper — detect and dump exposed .git directories from web servers."""
+
+import os
+import shutil
 import subprocess
 import tempfile
-import shutil
 import time
-import os
 
-from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
-from vuln_scanner.tools.enums import ScanStatus
+from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 
 class GitDumperTool(AbstractTool):
@@ -37,7 +37,10 @@ class GitDumperTool(AbstractTool):
 
             try:
                 proc = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=scan_input.timeout,
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=scan_input.timeout,
                 )
                 duration = time.monotonic() - start
                 raw_out = proc.stdout + proc.stderr
@@ -48,15 +51,16 @@ class GitDumperTool(AbstractTool):
 
                 if not dumped:
                     return ScanResult(
-                        tool=self.name, target=target, findings=[],
-                        duration=duration, status=ScanStatus.SUCCESS,
+                        tool=self.name,
+                        target=target,
+                        findings=[],
+                        duration=duration,
+                        status=ScanStatus.SUCCESS,
                         raw_output=raw_out,
                     )
 
                 # Count dumped files
-                file_count = sum(
-                    1 for _, _, files in os.walk(tmpdir) for _ in files
-                )
+                file_count = sum(1 for _, _, files in os.walk(tmpdir) for _ in files)
                 description = (
                     f"Exposed .git directory found at {git_url}.\n"
                     f"git-dumper successfully retrieved the repository ({file_count} files).\n"
@@ -75,20 +79,29 @@ class GitDumperTool(AbstractTool):
                     raw={"git_url": git_url, "files_dumped": file_count},
                 )
                 return ScanResult(
-                    tool=self.name, target=target, findings=[finding],
-                    duration=duration, status=ScanStatus.SUCCESS, raw_output=raw_out,
+                    tool=self.name,
+                    target=target,
+                    findings=[finding],
+                    duration=duration,
+                    status=ScanStatus.SUCCESS,
+                    raw_output=raw_out,
                 )
 
             except subprocess.TimeoutExpired:
                 return ScanResult(
-                    tool=self.name, target=target,
-                    duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
+                    tool=self.name,
+                    target=target,
+                    duration=float(scan_input.timeout),
+                    status=ScanStatus.TIMEOUT,
                     error=f"Timed out after {scan_input.timeout}s",
                 )
             except FileNotFoundError:
                 return ScanResult(
-                    tool=self.name, target=target, duration=0.0,
-                    status=ScanStatus.FAILED, error="Binary not found: git-dumper",
+                    tool=self.name,
+                    target=target,
+                    duration=0.0,
+                    status=ScanStatus.FAILED,
+                    error="Binary not found: git-dumper",
                 )
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)

@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _WORDLISTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "/usr/share/wordlists/dirb/small.txt",
-    ScanMode.PASSIVE:    "/usr/share/wordlists/dirb/common.txt",
-    ScanMode.ACTIVE:     "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
+    ScanMode.PARANOID: "/usr/share/wordlists/dirb/small.txt",
+    ScanMode.PASSIVE: "/usr/share/wordlists/dirb/common.txt",
+    ScanMode.ACTIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
     ScanMode.AGGRESSIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-big.txt",
 }
 
@@ -26,12 +26,18 @@ class FfufTool(AbstractTool):
         wordlist = _WORDLISTS[scan_input.mode]
         cmd = [
             "ffuf",
-            "-u", f"{url}/FUZZ",
-            "-w", wordlist,
-            "-of", "json",
-            "-o", OUTPUT_FILE_SENTINEL,
-            "-mc", "all",
-            "-fc", "404",
+            "-u",
+            f"{url}/FUZZ",
+            "-w",
+            wordlist,
+            "-of",
+            "json",
+            "-o",
+            OUTPUT_FILE_SENTINEL,
+            "-mc",
+            "all",
+            "-fc",
+            "404",
             "-noninteractive",
             "-s",
         ]
@@ -72,14 +78,16 @@ class FfufTool(AbstractTool):
             elif status == 500:
                 sev = Severity.MEDIUM
 
-            findings.append(Finding(
-                title=f"[{status}] {url}",
-                severity=sev,
-                description=f"Directory/file discovered: {url} (HTTP {status}, {length} bytes, {words} words)",
-                tool=self.name,
-                target=target,
-                raw=result,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{status}] {url}",
+                    severity=sev,
+                    description=f"Directory/file discovered: {url} (HTTP {status}, {length} bytes, {words} words)",
+                    tool=self.name,
+                    target=target,
+                    raw=result,
+                )
+            )
 
         return findings
 

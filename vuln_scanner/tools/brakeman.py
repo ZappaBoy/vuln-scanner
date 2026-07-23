@@ -1,9 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
-
 
 _CONFIDENCE_MAP = {"High": "high", "Medium": "medium", "Weak": "low"}
 
@@ -36,17 +35,16 @@ class BrakemanTool(AbstractTool):
             line = item.get("line", "")
             cwe = item.get("cwe", "")
 
-            findings.append(Finding(
-                title=f"{warning_type}: {filename}",
-                severity=sev,
-                description=(
-                    f"{message}\n"
-                    f"File: {filename}" + (f"\nLine: {line}" if line else "")
-                ),
-                tool=self.name,
-                target=target,
-                cwe=([f"CWE-{cwe}"] if cwe else []),
-                references=[item.get("link", "")],
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"{warning_type}: {filename}",
+                    severity=sev,
+                    description=(f"{message}\nFile: {filename}" + (f"\nLine: {line}" if line else "")),
+                    tool=self.name,
+                    target=target,
+                    cwe=([f"CWE-{cwe}"] if cwe else []),
+                    references=[item.get("link", "")],
+                    raw=item,
+                )
+            )
         return findings

@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class DetectSecretsTool(AbstractTool):
@@ -32,17 +32,20 @@ class DetectSecretsTool(AbstractTool):
                 is_verified = secret.get("is_verified", False)
                 sev = Severity.CRITICAL if is_verified else Severity.HIGH
 
-                findings.append(Finding(
-                    title=f"Secret detected: {secret_type} in {filepath}",
-                    severity=sev,
-                    description=(
-                        f"Potential {secret_type} found.\n"
-                        f"File: {filepath}" + (f"\nLine: {line_number}" if line_number else "")
-                        + f"\nVerified: {is_verified}"
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-798"],
-                    raw=secret,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Secret detected: {secret_type} in {filepath}",
+                        severity=sev,
+                        description=(
+                            f"Potential {secret_type} found.\n"
+                            f"File: {filepath}"
+                            + (f"\nLine: {line_number}" if line_number else "")
+                            + f"\nVerified: {is_verified}"
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-798"],
+                        raw=secret,
+                    )
+                )
         return findings

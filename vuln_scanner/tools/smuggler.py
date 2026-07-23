@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 
 class SmugglerTool(AbstractTool):
@@ -26,16 +26,17 @@ class SmugglerTool(AbstractTool):
                 continue
             low = line.lower()
             if "possible" in low or "vulnerable" in low or "issue found" in low or "cl.te" in low or "te.cl" in low:
-                findings.append(Finding(
-                    title=f"HTTP Request Smuggling: {line[:100]}",
-                    severity=Severity.HIGH,
-                    description=(
-                        f"Potential HTTP request smuggling vulnerability detected on {target}.\n"
-                        f"Detail: {line}"
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-444"],
-                    raw={"raw_line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"HTTP Request Smuggling: {line[:100]}",
+                        severity=Severity.HIGH,
+                        description=(
+                            f"Potential HTTP request smuggling vulnerability detected on {target}.\nDetail: {line}"
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-444"],
+                        raw={"raw_line": line},
+                    )
+                )
         return findings

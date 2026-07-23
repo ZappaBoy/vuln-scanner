@@ -1,13 +1,14 @@
 """massdns — high-performance passive DNS resolver for bulk subdomain recon."""
+
 import os
 import re
 import subprocess
 import tempfile
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 _RESOLV_RE = re.compile(r"^(\S+)\.\s+\d+\s+IN\s+A\s+(\S+)$")
 
@@ -32,15 +33,17 @@ class MassDNSTool(AbstractTool):
                 sub, ip = m.group(1).rstrip("."), m.group(2)
                 if sub not in seen:
                     seen.add(sub)
-                    findings.append(Finding(
-                        title=f"Resolved subdomain: {sub} → {ip}",
-                        severity=Severity.INFO,
-                        description=f"massdns resolved {sub} to {ip}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"subdomain": sub, "ip": ip},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Resolved subdomain: {sub} → {ip}",
+                            severity=Severity.INFO,
+                            description=f"massdns resolved {sub} to {ip}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"subdomain": sub, "ip": ip},
+                        )
+                    )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
@@ -63,23 +66,34 @@ class MassDNSTool(AbstractTool):
                     f.write(f"www.{target}\nmail.{target}\ndev.{target}\nstaging.{target}\n")
 
             resolvers = _RESOLVERS if os.path.exists(_RESOLVERS) else ""
-            cmd = ["massdns", "-r", resolvers, "-t", "A", "-o", "S", domain_file] if resolvers else \
-                  ["massdns", "-t", "A", "-o", "S", domain_file]
+            cmd = (
+                ["massdns", "-r", resolvers, "-t", "A", "-o", "S", domain_file]
+                if resolvers
+                else ["massdns", "-t", "A", "-o", "S", domain_file]
+            )
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=scan_input.timeout)
             duration = time.monotonic() - start
             raw = proc.stdout + proc.stderr
             return ScanResult(
-                tool=self.name, target=target,
+                tool=self.name,
+                target=target,
                 findings=self.parse_output(raw, target),
-                duration=duration, status=ScanStatus.SUCCESS, raw_output=raw,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
+                raw_output=raw,
             )
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target, duration=0.0,
-                              status=ScanStatus.FAILED, error="Binary not found: massdns")
+            return ScanResult(
+                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error="Binary not found: massdns"
+            )
         finally:
             try:
                 os.unlink(domain_file)

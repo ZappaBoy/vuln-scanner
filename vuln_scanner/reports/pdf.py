@@ -9,7 +9,7 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import cm, mm
+from reportlab.lib.units import cm
 from reportlab.platypus import (
     HRFlowable,
     KeepTogether,
@@ -30,45 +30,49 @@ from vuln_scanner.tools.models import Finding, ScanResult
 
 _C = {
     "critical": colors.HexColor("#d32f2f"),
-    "high":     colors.HexColor("#e64a19"),
-    "medium":   colors.HexColor("#f9a825"),
-    "low":      colors.HexColor("#1565c0"),
-    "info":     colors.HexColor("#546e7a"),
-    "accent":   colors.HexColor("#1976d2"),
-    "bg_dark":  colors.HexColor("#1a237e"),
+    "high": colors.HexColor("#e64a19"),
+    "medium": colors.HexColor("#f9a825"),
+    "low": colors.HexColor("#1565c0"),
+    "info": colors.HexColor("#546e7a"),
+    "accent": colors.HexColor("#1976d2"),
+    "bg_dark": colors.HexColor("#1a237e"),
     "bg_light": colors.HexColor("#e3f2fd"),
-    "row_alt":  colors.HexColor("#f5f5f5"),
-    "border":   colors.HexColor("#bdbdbd"),
-    "text":     colors.HexColor("#212121"),
-    "muted":    colors.HexColor("#757575"),
-    "white":    colors.white,
-    "black":    colors.black,
+    "row_alt": colors.HexColor("#f5f5f5"),
+    "border": colors.HexColor("#bdbdbd"),
+    "text": colors.HexColor("#212121"),
+    "muted": colors.HexColor("#757575"),
+    "white": colors.white,
+    "black": colors.black,
 }
 
 _SEV_ORDER = [
-    Severity.CRITICAL, Severity.HIGH, Severity.MEDIUM, Severity.LOW, Severity.INFO,
+    Severity.CRITICAL,
+    Severity.HIGH,
+    Severity.MEDIUM,
+    Severity.LOW,
+    Severity.INFO,
 ]
 
 _SEV_COLOR: dict[Severity, colors.Color] = {
     Severity.CRITICAL: _C["critical"],
-    Severity.HIGH:     _C["high"],
-    Severity.MEDIUM:   _C["medium"],
-    Severity.LOW:      _C["low"],
-    Severity.INFO:     _C["info"],
+    Severity.HIGH: _C["high"],
+    Severity.MEDIUM: _C["medium"],
+    Severity.LOW: _C["low"],
+    Severity.INFO: _C["info"],
 }
 
 _SEV_BG: dict[Severity, colors.Color] = {
     Severity.CRITICAL: colors.HexColor("#ffebee"),
-    Severity.HIGH:     colors.HexColor("#fbe9e7"),
-    Severity.MEDIUM:   colors.HexColor("#fffde7"),
-    Severity.LOW:      colors.HexColor("#e3f2fd"),
-    Severity.INFO:     colors.HexColor("#eceff1"),
+    Severity.HIGH: colors.HexColor("#fbe9e7"),
+    Severity.MEDIUM: colors.HexColor("#fffde7"),
+    Severity.LOW: colors.HexColor("#e3f2fd"),
+    Severity.INFO: colors.HexColor("#eceff1"),
 }
 
 _CONF_LABEL = {
-    Confidence.HIGH:    "High",
-    Confidence.MEDIUM:  "Medium",
-    Confidence.LOW:     "Low",
+    Confidence.HIGH: "High",
+    Confidence.MEDIUM: "Medium",
+    Confidence.LOW: "Low",
     Confidence.UNKNOWN: "—",
 }
 
@@ -78,6 +82,7 @@ def _hex(color: colors.Color) -> str:
 
 
 # ── Styles ────────────────────────────────────────────────────────────────────
+
 
 def _build_styles() -> dict[str, ParagraphStyle]:
     base = getSampleStyleSheet()
@@ -89,78 +94,119 @@ def _build_styles() -> dict[str, ParagraphStyle]:
     return {
         "cover_title": s(
             "cover_title",
-            fontSize=28, leading=34, textColor=_C["white"],
-            fontName="Helvetica-Bold", alignment=TA_LEFT,
+            fontSize=28,
+            leading=34,
+            textColor=_C["white"],
+            fontName="Helvetica-Bold",
+            alignment=TA_LEFT,
         ),
         "cover_sub": s(
             "cover_sub",
-            fontSize=12, leading=16, textColor=colors.HexColor("#bbdefb"),
-            fontName="Helvetica", alignment=TA_LEFT,
+            fontSize=12,
+            leading=16,
+            textColor=colors.HexColor("#bbdefb"),
+            fontName="Helvetica",
+            alignment=TA_LEFT,
         ),
         "cover_meta": s(
             "cover_meta",
-            fontSize=9, leading=13, textColor=colors.HexColor("#90caf9"),
-            fontName="Helvetica", alignment=TA_LEFT,
+            fontSize=9,
+            leading=13,
+            textColor=colors.HexColor("#90caf9"),
+            fontName="Helvetica",
+            alignment=TA_LEFT,
         ),
         "section_title": s(
             "section_title",
-            fontSize=14, leading=18, textColor=_C["accent"],
-            fontName="Helvetica-Bold", spaceBefore=14, spaceAfter=6,
+            fontSize=14,
+            leading=18,
+            textColor=_C["accent"],
+            fontName="Helvetica-Bold",
+            spaceBefore=14,
+            spaceAfter=6,
         ),
         "sub_title": s(
             "sub_title",
-            fontSize=11, leading=14, textColor=_C["text"],
-            fontName="Helvetica-Bold", spaceBefore=8, spaceAfter=4,
+            fontSize=11,
+            leading=14,
+            textColor=_C["text"],
+            fontName="Helvetica-Bold",
+            spaceBefore=8,
+            spaceAfter=4,
         ),
         "body": s(
             "body",
-            fontSize=9, leading=13, textColor=_C["text"],
-            fontName="Helvetica", spaceAfter=4,
+            fontSize=9,
+            leading=13,
+            textColor=_C["text"],
+            fontName="Helvetica",
+            spaceAfter=4,
         ),
         "body_small": s(
             "body_small",
-            fontSize=8, leading=11, textColor=_C["text"],
+            fontSize=8,
+            leading=11,
+            textColor=_C["text"],
             fontName="Helvetica",
         ),
         "muted": s(
             "muted",
-            fontSize=8, leading=11, textColor=_C["muted"],
+            fontSize=8,
+            leading=11,
+            textColor=_C["muted"],
             fontName="Helvetica",
         ),
         "code": s(
             "code",
-            fontSize=8, leading=11, textColor=_C["text"],
-            fontName="Courier", backColor=colors.HexColor("#f5f5f5"),
+            fontSize=8,
+            leading=11,
+            textColor=_C["text"],
+            fontName="Courier",
+            backColor=colors.HexColor("#f5f5f5"),
         ),
         "th": s(
             "th",
-            fontSize=8, leading=10, textColor=_C["white"],
-            fontName="Helvetica-Bold", alignment=TA_LEFT,
+            fontSize=8,
+            leading=10,
+            textColor=_C["white"],
+            fontName="Helvetica-Bold",
+            alignment=TA_LEFT,
         ),
         "td": s(
             "td",
-            fontSize=8, leading=11, textColor=_C["text"],
+            fontSize=8,
+            leading=11,
+            textColor=_C["text"],
             fontName="Helvetica",
         ),
         "td_code": s(
             "td_code",
-            fontSize=7.5, leading=10, textColor=_C["text"],
+            fontSize=7.5,
+            leading=10,
+            textColor=_C["text"],
             fontName="Courier",
         ),
         "footer": s(
             "footer",
-            fontSize=7.5, leading=10, textColor=_C["muted"],
-            fontName="Helvetica", alignment=TA_CENTER,
+            fontSize=7.5,
+            leading=10,
+            textColor=_C["muted"],
+            fontName="Helvetica",
+            alignment=TA_CENTER,
         ),
         "page_num": s(
             "page_num",
-            fontSize=7.5, leading=10, textColor=_C["muted"],
-            fontName="Helvetica", alignment=TA_RIGHT,
+            fontSize=7.5,
+            leading=10,
+            textColor=_C["muted"],
+            fontName="Helvetica",
+            alignment=TA_RIGHT,
         ),
     }
 
 
 # ── Page canvas decorators ────────────────────────────────────────────────────
+
 
 class _ReportCanvas:
     """Mixin that draws the header/footer on every page after the cover."""
@@ -170,6 +216,7 @@ class _ReportCanvas:
 
     def _draw_page_decoration(self, canvas: object, doc: object) -> None:
         from reportlab.lib.units import cm
+
         c = canvas
         page_w, page_h = A4
         page_no = c.getPageNumber()
@@ -215,9 +262,9 @@ def _make_doc_template(output_path: Path, generated_at: str) -> SimpleDocTemplat
 
 # ── Helper builders ───────────────────────────────────────────────────────────
 
+
 def _sev_badge_para(sev: Severity, st: dict) -> Paragraph:
     color = _SEV_COLOR.get(sev, _C["info"])
-    hex_c = _hex(color)
     label = sev.value.upper()
     return Paragraph(
         f'<font color="white"><b>{label}</b></font>',
@@ -247,26 +294,29 @@ def _hr(color: colors.Color = None, thickness: float = 0.5) -> HRFlowable:
 
 def _table_style(header_color: colors.Color | None = None) -> TableStyle:
     hc = header_color or _C["accent"]
-    return TableStyle([
-        ("BACKGROUND",   (0, 0), (-1, 0), hc),
-        ("TEXTCOLOR",    (0, 0), (-1, 0), _C["white"]),
-        ("FONTNAME",     (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE",     (0, 0), (-1, 0), 8),
-        ("BOTTOMPADDING",(0, 0), (-1, 0), 5),
-        ("TOPPADDING",   (0, 0), (-1, 0), 5),
-        ("ROWBACKGROUNDS",(0, 1), (-1, -1), [_C["white"], _C["row_alt"]]),
-        ("FONTNAME",     (0, 1), (-1, -1), "Helvetica"),
-        ("FONTSIZE",     (0, 1), (-1, -1), 8),
-        ("TOPPADDING",   (0, 1), (-1, -1), 3),
-        ("BOTTOMPADDING",(0, 1), (-1, -1), 3),
-        ("LEFTPADDING",  (0, 0), (-1, -1), 5),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-        ("GRID",         (0, 0), (-1, -1), 0.3, _C["border"]),
-        ("VALIGN",       (0, 0), (-1, -1), "TOP"),
-    ])
+    return TableStyle(
+        [
+            ("BACKGROUND", (0, 0), (-1, 0), hc),
+            ("TEXTCOLOR", (0, 0), (-1, 0), _C["white"]),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, 0), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 5),
+            ("TOPPADDING", (0, 0), (-1, 0), 5),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [_C["white"], _C["row_alt"]]),
+            ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
+            ("FONTSIZE", (0, 1), (-1, -1), 8),
+            ("TOPPADDING", (0, 1), (-1, -1), 3),
+            ("BOTTOMPADDING", (0, 1), (-1, -1), 3),
+            ("LEFTPADDING", (0, 0), (-1, -1), 5),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+            ("GRID", (0, 0), (-1, -1), 0.3, _C["border"]),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ]
+    )
 
 
 # ── Reporter ──────────────────────────────────────────────────────────────────
+
 
 class PDFReporter(AbstractReporter):
     def generate(self, assessment: Assessment, output_path: Path) -> Path:
@@ -293,7 +343,6 @@ class PDFReporter(AbstractReporter):
     # ── Cover page ────────────────────────────────────────────────────────────
 
     def _cover(self, assessment: Assessment, st: dict) -> list:
-        from reportlab.platypus import Frame, PageTemplate
         page_w, page_h = A4
         stats = assessment.stats
         parts: list = []
@@ -301,11 +350,15 @@ class PDFReporter(AbstractReporter):
         # Dark hero band (simulated via a colored table spanning the "page")
         cover_data = [[""]]
         cover_table = Table(cover_data, colWidths=[page_w - 3 * cm], rowHeights=[9 * cm])
-        cover_table.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), _C["bg_dark"]),
-            ("LEFTPADDING",  (0, 0), (-1, -1), 20),
-            ("TOPPADDING",   (0, 0), (-1, -1), 30),
-        ]))
+        cover_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), _C["bg_dark"]),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 20),
+                    ("TOPPADDING", (0, 0), (-1, -1), 30),
+                ]
+            )
+        )
         parts.append(cover_table)
         # Overlay text via separate paragraphs with top spacing hack:
         # We'll build a proper cover using a big colored table with nested content.
@@ -314,12 +367,14 @@ class PDFReporter(AbstractReporter):
         inner = [
             [Paragraph("Vulnerability Assessment Report", st["cover_title"])],
             [Spacer(1, 0.4 * cm)],
-            [Paragraph(
-                f"Targets: {stats.targets_scanned} &nbsp;|&nbsp; "
-                f"Findings: <b>{stats.total_findings}</b> &nbsp;|&nbsp; "
-                f"Duration: {stats.total_duration:.0f}s",
-                st["cover_sub"],
-            )],
+            [
+                Paragraph(
+                    f"Targets: {stats.targets_scanned} &nbsp;|&nbsp; "
+                    f"Findings: <b>{stats.total_findings}</b> &nbsp;|&nbsp; "
+                    f"Duration: {stats.total_duration:.0f}s",
+                    st["cover_sub"],
+                )
+            ],
             [Spacer(1, 0.3 * cm)],
             [Paragraph(f"Generated: {stats.generated_at}", st["cover_meta"])],
         ]
@@ -327,84 +382,111 @@ class PDFReporter(AbstractReporter):
             inner,
             colWidths=[page_w - 3 * cm - 2 * cm],
         )
-        inner_table.setStyle(TableStyle([
-            ("BACKGROUND",   (0, 0), (-1, -1), _C["bg_dark"]),
-            ("LEFTPADDING",  (0, 0), (-1, -1), 0),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-            ("TOPPADDING",   (0, 0), (-1, -1), 0),
-            ("BOTTOMPADDING",(0, 0), (-1, -1), 0),
-        ]))
+        inner_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), _C["bg_dark"]),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+                ]
+            )
+        )
 
         hero = Table([[inner_table]], colWidths=[page_w - 3 * cm], rowHeights=[7 * cm])
-        hero.setStyle(TableStyle([
-            ("BACKGROUND",   (0, 0), (-1, -1), _C["bg_dark"]),
-            ("LEFTPADDING",  (0, 0), (-1, -1), 1 * cm),
-            ("TOPPADDING",   (0, 0), (-1, -1), 1.5 * cm),
-            ("BOTTOMPADDING",(0, 0), (-1, -1), 1 * cm),
-            ("VALIGN",       (0, 0), (-1, -1), "MIDDLE"),
-        ]))
+        hero.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), _C["bg_dark"]),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 1 * cm),
+                    ("TOPPADDING", (0, 0), (-1, -1), 1.5 * cm),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 1 * cm),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ]
+            )
+        )
         parts.append(hero)
         parts.append(Spacer(1, 1 * cm))
 
         # Severity summary cards row
         sev_data = [
-            [Paragraph(
-                f'<font color="{_hex(_SEV_COLOR[sev])}">'
-                f'<b>{stats.by_severity.get(sev.value, 0)}</b></font><br/>'
-                f'<font size="8" color="#757575">{sev.value.capitalize()}</font>',
-                ParagraphStyle(
-                    f"stat_{sev.value}",
-                    alignment=TA_CENTER,
-                    fontSize=22,
-                    leading=28,
-                ),
-            ) for sev in _SEV_ORDER]
+            [
+                Paragraph(
+                    f'<font color="{_hex(_SEV_COLOR[sev])}">'
+                    f"<b>{stats.by_severity.get(sev.value, 0)}</b></font><br/>"
+                    f'<font size="8" color="#757575">{sev.value.capitalize()}</font>',
+                    ParagraphStyle(
+                        f"stat_{sev.value}",
+                        alignment=TA_CENTER,
+                        fontSize=22,
+                        leading=28,
+                    ),
+                )
+                for sev in _SEV_ORDER
+            ]
         ]
         sev_col_w = (page_w - 3 * cm) / len(_SEV_ORDER)
         sev_table = Table(sev_data, colWidths=[sev_col_w] * len(_SEV_ORDER), rowHeights=[2.2 * cm])
-        sev_table.setStyle(TableStyle([
-            ("BACKGROUND",    (0, 0), (-1, -1), _C["white"]),
-            ("BOX",           (0, 0), (-1, -1), 0.5, _C["border"]),
-            ("INNERGRID",     (0, 0), (-1, -1), 0.3, _C["border"]),
-            ("ALIGN",         (0, 0), (-1, -1), "CENTER"),
-            ("VALIGN",        (0, 0), (-1, -1), "MIDDLE"),
-            ("TOPPADDING",    (0, 0), (-1, -1), 6),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-        ]))
+        sev_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), _C["white"]),
+                    ("BOX", (0, 0), (-1, -1), 0.5, _C["border"]),
+                    ("INNERGRID", (0, 0), (-1, -1), 0.3, _C["border"]),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ]
+            )
+        )
         parts.append(sev_table)
         parts.append(Spacer(1, 1.5 * cm))
 
         # Meta stats table
         meta_rows = [
             ["Targets scanned", str(stats.targets_scanned), "Tools run", str(stats.tools_run)],
-            ["Tools skipped",   str(stats.tools_skipped),   "Tools failed", str(stats.tools_failed)],
-            ["Total duration",  f"{stats.total_duration:.1f}s", "Total findings", str(stats.total_findings)],
+            ["Tools skipped", str(stats.tools_skipped), "Tools failed", str(stats.tools_failed)],
+            ["Total duration", f"{stats.total_duration:.1f}s", "Total findings", str(stats.total_findings)],
         ]
         col_w = (page_w - 3 * cm) / 4
         meta_table = Table(meta_rows, colWidths=[col_w] * 4)
-        meta_table.setStyle(TableStyle([
-            ("FONTNAME",      (0, 0), (0, -1), "Helvetica-Bold"),
-            ("FONTNAME",      (2, 0), (2, -1), "Helvetica-Bold"),
-            ("FONTNAME",      (1, 0), (1, -1), "Helvetica"),
-            ("FONTNAME",      (3, 0), (3, -1), "Helvetica"),
-            ("FONTSIZE",      (0, 0), (-1, -1), 9),
-            ("TEXTCOLOR",     (0, 0), (0, -1), _C["muted"]),
-            ("TEXTCOLOR",     (2, 0), (2, -1), _C["muted"]),
-            ("TEXTCOLOR",     (1, 0), (1, -1), _C["text"]),
-            ("TEXTCOLOR",     (3, 0), (3, -1), _C["text"]),
-            ("ROWBACKGROUNDS",(0, 0), (-1, -1), [_C["white"], _C["row_alt"]]),
-            ("BOX",           (0, 0), (-1, -1), 0.5, _C["border"]),
-            ("INNERGRID",     (0, 0), (-1, -1), 0.3, _C["border"]),
-            ("TOPPADDING",    (0, 0), (-1, -1), 5),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-            ("LEFTPADDING",   (0, 0), (-1, -1), 8),
-        ]))
+        meta_table.setStyle(
+            TableStyle(
+                [
+                    ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
+                    ("FONTNAME", (2, 0), (2, -1), "Helvetica-Bold"),
+                    ("FONTNAME", (1, 0), (1, -1), "Helvetica"),
+                    ("FONTNAME", (3, 0), (3, -1), "Helvetica"),
+                    ("FONTSIZE", (0, 0), (-1, -1), 9),
+                    ("TEXTCOLOR", (0, 0), (0, -1), _C["muted"]),
+                    ("TEXTCOLOR", (2, 0), (2, -1), _C["muted"]),
+                    ("TEXTCOLOR", (1, 0), (1, -1), _C["text"]),
+                    ("TEXTCOLOR", (3, 0), (3, -1), _C["text"]),
+                    ("ROWBACKGROUNDS", (0, 0), (-1, -1), [_C["white"], _C["row_alt"]]),
+                    ("BOX", (0, 0), (-1, -1), 0.5, _C["border"]),
+                    ("INNERGRID", (0, 0), (-1, -1), 0.3, _C["border"]),
+                    ("TOPPADDING", (0, 0), (-1, -1), 5),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ]
+            )
+        )
         parts.append(meta_table)
         parts.append(Spacer(1, 2 * cm))
-        parts.append(Paragraph("CONFIDENTIAL", ParagraphStyle(
-            "confidential",
-            fontSize=9, textColor=_C["muted"], alignment=TA_CENTER, fontName="Helvetica-Oblique",
-        )))
+        parts.append(
+            Paragraph(
+                "CONFIDENTIAL",
+                ParagraphStyle(
+                    "confidential",
+                    fontSize=9,
+                    textColor=_C["muted"],
+                    alignment=TA_CENTER,
+                    fontName="Helvetica-Oblique",
+                ),
+            )
+        )
         return parts
 
     # ── Executive summary ─────────────────────────────────────────────────────
@@ -418,14 +500,18 @@ class PDFReporter(AbstractReporter):
         # Highlighted box
         box_data = [[Paragraph(summary, st["body"])]]
         box = Table(box_data, colWidths=[A4[0] - 3 * cm])
-        box.setStyle(TableStyle([
-            ("BACKGROUND",    (0, 0), (-1, -1), _C["bg_light"]),
-            ("LEFTPADDING",   (0, 0), (-1, -1), 12),
-            ("RIGHTPADDING",  (0, 0), (-1, -1), 12),
-            ("TOPPADDING",    (0, 0), (-1, -1), 10),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-            ("BOX",           (0, 0), (-1, -1), 2, _C["accent"]),
-        ]))
+        box.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), _C["bg_light"]),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 12),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+                    ("TOPPADDING", (0, 0), (-1, -1), 10),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+                    ("BOX", (0, 0), (-1, -1), 2, _C["accent"]),
+                ]
+            )
+        )
         parts.append(box)
         parts.append(Spacer(1, 0.5 * cm))
         return parts
@@ -449,14 +535,16 @@ class PDFReporter(AbstractReporter):
             count = stats.by_severity.get(sev.value, 0)
             pct = f"{count / total * 100:.1f}%"
             c = _SEV_COLOR.get(sev, _C["info"])
-            rows.append([
-                Paragraph(
-                    f'<font color="{_hex(c)}"><b>{sev.value.upper()}</b></font>',
-                    st["td"],
-                ),
-                Paragraph(str(count), st["td"]),
-                Paragraph(pct, st["td"]),
-            ])
+            rows.append(
+                [
+                    Paragraph(
+                        f'<font color="{_hex(c)}"><b>{sev.value.upper()}</b></font>',
+                        st["td"],
+                    ),
+                    Paragraph(str(count), st["td"]),
+                    Paragraph(pct, st["td"]),
+                ]
+            )
 
         col_w = (A4[0] - 3 * cm) / 3
         tbl = Table(rows, colWidths=[col_w * 1.5, col_w * 0.75, col_w * 0.75])
@@ -472,7 +560,7 @@ class PDFReporter(AbstractReporter):
                 [Paragraph(tool, st["td_code"]), Paragraph(str(cnt), st["td"])]
                 for tool, cnt in sorted(stats.by_tool.items(), key=lambda x: -x[1])
             ]
-            col_w2 = (A4[0] - 3 * cm)
+            col_w2 = A4[0] - 3 * cm
             tbl2 = Table(tool_rows, colWidths=[col_w2 * 0.75, col_w2 * 0.25])
             tbl2.setStyle(_table_style())
             parts.append(tbl2)
@@ -493,33 +581,42 @@ class PDFReporter(AbstractReporter):
             sev_bg = _SEV_BG.get(cluster.severity, colors.white)
 
             title_para = Paragraph(
-                f'<font color="{sev_hex}"><b>[{cluster.severity.value.upper()}]</b></font>'
-                f'  {cluster.title}',
+                f'<font color="{sev_hex}"><b>[{cluster.severity.value.upper()}]</b></font>  {cluster.title}',
                 st["sub_title"],
             )
             summary_para = Paragraph(cluster.summary, st["body"])
 
             inner_content = [title_para, summary_para]
             if cluster.shared_remediation:
-                inner_content.append(Paragraph(
-                    f"<b>Remediation:</b> {cluster.shared_remediation}", st["body_small"],
-                ))
+                inner_content.append(
+                    Paragraph(
+                        f"<b>Remediation:</b> {cluster.shared_remediation}",
+                        st["body_small"],
+                    )
+                )
             if cluster.tags:
-                inner_content.append(Paragraph(
-                    f"<i>Tags: {', '.join(cluster.tags)}</i>", st["muted"],
-                ))
+                inner_content.append(
+                    Paragraph(
+                        f"<i>Tags: {', '.join(cluster.tags)}</i>",
+                        st["muted"],
+                    )
+                )
 
             card_data = [[inner_content]]
             card = Table(card_data, colWidths=[A4[0] - 3 * cm])
-            card.setStyle(TableStyle([
-                ("BACKGROUND",    (0, 0), (-1, -1), sev_bg),
-                ("LEFTPADDING",   (0, 0), (-1, -1), 10),
-                ("RIGHTPADDING",  (0, 0), (-1, -1), 10),
-                ("TOPPADDING",    (0, 0), (-1, -1), 8),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
-                ("BOX",           (0, 0), (-1, -1), 0.5, sev_c),
-                ("LINEBEFORE",    (0, 0), (0, -1), 4, sev_c),
-            ]))
+            card.setStyle(
+                TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, -1), sev_bg),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                        ("TOPPADDING", (0, 0), (-1, -1), 8),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                        ("BOX", (0, 0), (-1, -1), 0.5, sev_c),
+                        ("LINEBEFORE", (0, 0), (0, -1), 4, sev_c),
+                    ]
+                )
+            )
             parts.append(KeepTogether(card))
             parts.append(Spacer(1, 0.3 * cm))
 
@@ -559,16 +656,20 @@ class PDFReporter(AbstractReporter):
 
             all_findings.sort(key=lambda x: _SEV_ORDER.index(x[1].severity))
 
-            parts.append(Paragraph(
-                f'Target: <font name="Courier">{target}</font> — {len(all_findings)} finding(s)',
-                st["sub_title"],
-            ))
+            parts.append(
+                Paragraph(
+                    f'Target: <font name="Courier">{target}</font> — {len(all_findings)} finding(s)',
+                    st["sub_title"],
+                )
+            )
 
             for tool_name, err in errors:
-                parts.append(Paragraph(
-                    f'<font color="#e64a19"><b>{tool_name}:</b></font> {err}',
-                    st["body_small"],
-                ))
+                parts.append(
+                    Paragraph(
+                        f'<font color="#e64a19"><b>{tool_name}:</b></font> {err}',
+                        st["body_small"],
+                    )
+                )
 
             if all_findings:
                 col_widths = self._findings_col_widths()
@@ -596,25 +697,33 @@ class PDFReporter(AbstractReporter):
                             desc += "…"
                         title_content.append(Paragraph(desc, st["muted"]))
                     if f.mitigation:
-                        title_content.append(Paragraph(
-                            f"<b>Mitigation:</b> {f.mitigation[:200]}", st["body_small"],
-                        ))
+                        title_content.append(
+                            Paragraph(
+                                f"<b>Mitigation:</b> {f.mitigation[:200]}",
+                                st["body_small"],
+                            )
+                        )
                     if f.poc_ids:
-                        title_content.append(Paragraph(
-                            f'<i>PoC: {", ".join(f.poc_ids)}</i>', st["muted"],
-                        ))
+                        title_content.append(
+                            Paragraph(
+                                f"<i>PoC: {', '.join(f.poc_ids)}</i>",
+                                st["muted"],
+                            )
+                        )
 
-                    rows.append([
-                        Paragraph(
-                            f'<font color="{sev_hex}"><b>{f.severity.value.upper()}</b></font>',
-                            st["td"],
-                        ),
-                        Paragraph(tool_name, st["td_code"]),
-                        title_content,
-                        Paragraph(cwes, st["td_code"]),
-                        Paragraph(conf, st["td"]),
-                        Paragraph(cves, st["td_code"]),
-                    ])
+                    rows.append(
+                        [
+                            Paragraph(
+                                f'<font color="{sev_hex}"><b>{f.severity.value.upper()}</b></font>',
+                                st["td"],
+                            ),
+                            Paragraph(tool_name, st["td_code"]),
+                            title_content,
+                            Paragraph(cwes, st["td_code"]),
+                            Paragraph(conf, st["td"]),
+                            Paragraph(cves, st["td_code"]),
+                        ]
+                    )
 
                 tbl = Table(rows, colWidths=col_widths, repeatRows=1)
                 sev_style = _table_style()
@@ -623,7 +732,7 @@ class PDFReporter(AbstractReporter):
                     sev_c = _SEV_COLOR.get(f.severity, _C["info"])
                     sev_bg = _SEV_BG.get(f.severity, colors.white)
                     sev_style.add("BACKGROUND", (0, i), (0, i), sev_bg)
-                    sev_style.add("TEXTCOLOR",  (0, i), (0, i), sev_c)
+                    sev_style.add("TEXTCOLOR", (0, i), (0, i), sev_c)
                 tbl.setStyle(sev_style)
                 parts.append(tbl)
             parts.append(Spacer(1, 0.5 * cm))

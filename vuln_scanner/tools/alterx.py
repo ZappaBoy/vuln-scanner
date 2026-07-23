@@ -1,6 +1,6 @@
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class AlterxTool(AbstractTool):
@@ -23,12 +23,14 @@ class AlterxTool(AbstractTool):
             if not subdomain or subdomain in seen:
                 continue
             seen.add(subdomain)
-            findings.append(Finding(
-                title=f"Permutation: {subdomain}",
-                severity=Severity.INFO,
-                description=f"Subdomain permutation generated: {subdomain}",
-                tool=self.name,
-                target=target,
-                raw={"subdomain": subdomain},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Permutation: {subdomain}",
+                    severity=Severity.INFO,
+                    description=f"Subdomain permutation generated: {subdomain}",
+                    tool=self.name,
+                    target=target,
+                    raw={"subdomain": subdomain},
+                )
+            )
         return findings

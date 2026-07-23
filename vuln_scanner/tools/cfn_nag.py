@@ -1,9 +1,10 @@
 """cfn-nag — AWS CloudFormation security linting."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class CfnNagTool(AbstractTool):
@@ -19,7 +20,7 @@ class CfnNagTool(AbstractTool):
         findings: list[Finding] = []
         try:
             data = json.loads(raw)
-            for file_result in (data if isinstance(data, list) else [data]):
+            for file_result in data if isinstance(data, list) else [data]:
                 fname = file_result.get("filename", "")
                 for violation in file_result.get("file_results", {}).get("violations", []):
                     vtype = violation.get("type", "WARN")
@@ -27,15 +28,17 @@ class CfnNagTool(AbstractTool):
                     rule_id = violation.get("id", "")
                     msg = violation.get("message", "")
                     resources = violation.get("logical_resource_ids", [])
-                    findings.append(Finding(
-                        title=f"cfn-nag [{rule_id}]: {msg[:80]}",
-                        severity=sev,
-                        description=f"{msg}\nResources: {', '.join(resources)}\nFile: {fname}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw=violation,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"cfn-nag [{rule_id}]: {msg[:80]}",
+                            severity=sev,
+                            description=f"{msg}\nResources: {', '.join(resources)}\nFile: {fname}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw=violation,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

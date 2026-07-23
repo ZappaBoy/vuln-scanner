@@ -4,9 +4,9 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _VULN_SEVERITY: dict[int, Severity] = {
     3: Severity.HIGH,
@@ -15,9 +15,9 @@ _VULN_SEVERITY: dict[int, Severity] = {
     0: Severity.INFO,
 }
 
-_PASSIVE_MODULES = "mod_wapp"          # tech detection only
-_ACTIVE_MODULES  = "mod_sql,mod_xss,mod_file,mod_exec,mod_blindsql,mod_ssrf,mod_wapp"
-_AGGRESSIVE_MODULES = ""               # empty = all modules
+_PASSIVE_MODULES = "mod_wapp"  # tech detection only
+_ACTIVE_MODULES = "mod_sql,mod_xss,mod_file,mod_exec,mod_blindsql,mod_ssrf,mod_wapp"
+_AGGRESSIVE_MODULES = ""  # empty = all modules
 
 
 class WapitiTool(AbstractTool):
@@ -47,25 +47,29 @@ class WapitiTool(AbstractTool):
                 param = item.get("parameter", "")
                 desc = item.get("info", vuln_type)
                 title = f"{vuln_type}" + (f" via {param}" if param else "")
-                findings.append(Finding(
-                    title=title[:120],
-                    severity=severity,
-                    description=f"{desc}\nPath: {path}" + (f"\nParameter: {param}" if param else ""),
-                    tool=self.name,
-                    target=target,
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=title[:120],
+                        severity=severity,
+                        description=f"{desc}\nPath: {path}" + (f"\nParameter: {param}" if param else ""),
+                        tool=self.name,
+                        target=target,
+                        raw=item,
+                    )
+                )
 
         for anom_type, instances in data.get("anomalies", {}).items():
             for item in instances:
-                findings.append(Finding(
-                    title=f"Anomaly: {anom_type}",
-                    severity=Severity.LOW,
-                    description=item.get("info", anom_type),
-                    tool=self.name,
-                    target=target,
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Anomaly: {anom_type}",
+                        severity=Severity.LOW,
+                        description=item.get("info", anom_type),
+                        tool=self.name,
+                        target=target,
+                        raw=item,
+                    )
+                )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
@@ -83,11 +87,15 @@ class WapitiTool(AbstractTool):
 
         cmd = [
             "wapiti",
-            "-u", _as_url(target),
-            "-f", "json",
-            "-o", tmpfile,
+            "-u",
+            _as_url(target),
+            "-f",
+            "json",
+            "-o",
+            tmpfile,
             "--flush-session",
-            "--max-scan-time", str(scan_input.timeout),
+            "--max-scan-time",
+            str(scan_input.timeout),
         ]
         if modules:
             cmd += ["-m", modules]
@@ -108,13 +116,12 @@ class WapitiTool(AbstractTool):
         cmd += scan_input.extra_args
 
         import logging
+
         log = logging.getLogger(__name__)
         log.debug("[%s] Running: %s", self.name, " ".join(cmd))
         start = time.monotonic()
         try:
-            proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=scan_input.timeout + 10
-            )
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=scan_input.timeout + 10)
             duration = time.monotonic() - start
             raw = ""
             if os.path.exists(tmpfile):
@@ -122,19 +129,28 @@ class WapitiTool(AbstractTool):
                 os.unlink(tmpfile)
             findings = self.parse_output(raw, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=duration, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=proc.stdout + proc.stderr,
             )
         except subprocess.TimeoutExpired:
             return ScanResult(
-                tool=self.name, target=target, duration=float(scan_input.timeout),
-                status=ScanStatus.TIMEOUT, error=f"Timed out after {scan_input.timeout}s",
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error="wapiti binary not found.",
+                tool=self.name,
+                target=target,
+                duration=0.0,
+                status=ScanStatus.FAILED,
+                error="wapiti binary not found.",
             )
         finally:
             if os.path.exists(tmpfile):

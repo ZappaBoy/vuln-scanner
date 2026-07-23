@@ -1,7 +1,8 @@
 """findomain — fast cross-platform subdomain enumerator with certificate transparency."""
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class FindomainTool(AbstractTool):
@@ -18,16 +19,18 @@ class FindomainTool(AbstractTool):
         seen: set[str] = set()
         for line in raw.splitlines():
             sub = line.strip().lower()
-            if not sub or sub in seen or " " in sub or not "." in sub:
+            if not sub or sub in seen or " " in sub or "." not in sub:
                 continue
             seen.add(sub)
-            findings.append(Finding(
-                title=f"Subdomain discovered: {sub}",
-                severity=Severity.INFO,
-                description=f"findomain found subdomain: {sub}",
-                tool=self.name,
-                target=target,
-                cwe=[],
-                raw={"subdomain": sub},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Subdomain discovered: {sub}",
+                    severity=Severity.INFO,
+                    description=f"findomain found subdomain: {sub}",
+                    tool=self.name,
+                    target=target,
+                    cwe=[],
+                    raw={"subdomain": sub},
+                )
+            )
         return findings

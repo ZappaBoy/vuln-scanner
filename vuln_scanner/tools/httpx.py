@@ -1,8 +1,9 @@
 import json
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _SEV_BY_STATUS = {
     range(200, 300): Severity.INFO,
@@ -24,6 +25,8 @@ class HttpxTool(AbstractTool):
     binary: str = "httpx"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
+    produces: frozenset[AssetType] = frozenset({AssetType.LIVE_HOST, AssetType.URL, AssetType.TECH})
+    consumes: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["httpx", "-u", target, "-json", "-silent", "-status-code", "-title", "-tech-detect"]
@@ -72,12 +75,26 @@ class HttpxTool(AbstractTool):
             if techs:
                 desc_parts.append(f"Technologies: {', '.join(techs)}")
 
-            findings.append(Finding(
-                title=f"[{status}] {url}" + (f" — {title}" if title else ""),
-                severity=_status_severity(status),
-                description="\n".join(desc_parts),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{status}] {url}" + (f" — {title}" if title else ""),
+                    severity=_status_severity(status),
+                    description="\n".join(desc_parts),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            url = f.raw.get("url", "")
+            if url:
+                assets.append(Asset(type=AssetType.LIVE_HOST, value=url, source=self.name, target=result.target))
+                assets.append(Asset(type=AssetType.URL, value=url, source=self.name, target=result.target))
+            for tech in f.raw.get("tech", []):
+                if tech:
+                    assets.append(Asset(type=AssetType.TECH, value=tech, source=self.name, target=result.target))
+        return assets

@@ -1,8 +1,9 @@
 import json
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 
 class SubfinderTool(AbstractTool):
@@ -10,6 +11,7 @@ class SubfinderTool(AbstractTool):
     binary: str = "subfinder"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
+    produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a domain (e.g. example.com)
@@ -43,17 +45,27 @@ class SubfinderTool(AbstractTool):
 
             ip = item.get("ip", "")
             source = item.get("source", "")
-            findings.append(Finding(
-                title=f"Subdomain: {host}",
-                severity=Severity.INFO,
-                description=(
-                    f"Discovered subdomain: {host}"
-                    + (f" ({ip})" if ip else "")
-                    + (f" via {source}" if source else "")
-                ),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"Subdomain: {host}",
+                    severity=Severity.INFO,
+                    description=(
+                        f"Discovered subdomain: {host}"
+                        + (f" ({ip})" if ip else "")
+                        + (f" via {source}" if source else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            host = f.raw.get("host", "")
+            if host:
+                assets.append(Asset(type=AssetType.SUBDOMAIN, value=host, source=self.name, target=result.target))
+        return assets

@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _TYPE_FLAGS: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID:   ["-t", "std"],
-    ScanMode.PASSIVE:    ["-t", "std"],
-    ScanMode.ACTIVE:     ["-t", "std,brt,axfr"],
+    ScanMode.PARANOID: ["-t", "std"],
+    ScanMode.PASSIVE: ["-t", "std"],
+    ScanMode.ACTIVE: ["-t", "std,brt,axfr"],
     ScanMode.AGGRESSIVE: ["-t", "std,brt,axfr,bing,yandex"],
 }
 
@@ -56,14 +56,16 @@ class DNSReconTool(AbstractTool):
                 title += f" → {address}"
 
             sev = Severity.HIGH if rtype in ("AXFR",) else Severity.INFO
-            findings.append(Finding(
-                title=title,
-                severity=sev,
-                description=f"DNS record discovered: {json.dumps(record)}",
-                tool=self.name,
-                target=target,
-                raw=record,
-            ))
+            findings.append(
+                Finding(
+                    title=title,
+                    severity=sev,
+                    description=f"DNS record discovered: {json.dumps(record)}",
+                    tool=self.name,
+                    target=target,
+                    raw=record,
+                )
+            )
 
         return findings
 

@@ -1,13 +1,19 @@
 """RuboCop — Ruby static analysis with security cops."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEVERITY_MAP = {"fatal": Severity.CRITICAL, "error": Severity.HIGH,
-                 "warning": Severity.MEDIUM, "convention": Severity.LOW,
-                 "refactor": Severity.INFO, "info": Severity.INFO}
+_SEVERITY_MAP = {
+    "fatal": Severity.CRITICAL,
+    "error": Severity.HIGH,
+    "warning": Severity.MEDIUM,
+    "convention": Severity.LOW,
+    "refactor": Severity.INFO,
+    "info": Severity.INFO,
+}
 
 _SECURITY_COPS = {"Security/", "Rails/OutputSafety", "Rails/Eval"}
 
@@ -34,15 +40,17 @@ class RuboCopTool(AbstractTool):
                     msg = offense.get("message", "")
                     loc = offense.get("location", {})
                     line_num = loc.get("start_line", "")
-                    findings.append(Finding(
-                        title=f"RuboCop [{cop}]: {msg[:60]}",
-                        severity=sev,
-                        description=f"{msg}\nFile: {fname}:{line_num}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw=offense,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"RuboCop [{cop}]: {msg[:60]}",
+                            severity=sev,
+                            description=f"{msg}\nFile: {fname}:{line_num}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw=offense,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

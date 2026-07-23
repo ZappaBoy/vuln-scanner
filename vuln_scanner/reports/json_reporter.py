@@ -1,12 +1,11 @@
 """Full structured JSON reporter — exports the complete Assessment model."""
 
-
 import json
 from pathlib import Path
 
 from vuln_scanner.model import Assessment
 from vuln_scanner.reports.base import AbstractReporter
-from vuln_scanner.tools.enums import severity_passes, _parse_severity
+from vuln_scanner.tools.enums import _parse_severity, severity_passes
 
 
 class JSONReporter(AbstractReporter):
@@ -16,7 +15,8 @@ class JSONReporter(AbstractReporter):
         if self._min_severity and self._min_severity.lower() not in ("none", ""):
             for result in data.get("results", []):
                 result["findings"] = [
-                    f for f in result.get("findings", [])
+                    f
+                    for f in result.get("findings", [])
                     if severity_passes(
                         _parse_severity(f.get("severity", "info")),
                         self._min_severity,

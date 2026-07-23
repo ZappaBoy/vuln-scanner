@@ -1,8 +1,8 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 # "https://example.com - Origin: https://evil.com - is allowed"
 _ALLOWED_RE = re.compile(
@@ -12,11 +12,11 @@ _ALLOWED_RE = re.compile(
 _VULN_RE = re.compile(r"(Vulnerable|CORS misconfiguration|arbitrary origin)", re.IGNORECASE)
 
 _SEVERITY_KEYWORDS: dict[str, Severity] = {
-    "null":        Severity.HIGH,    # null origin allowed
-    "reflected":   Severity.HIGH,    # reflected arbitrary origin
-    "wildcard":    Severity.MEDIUM,  # Access-Control-Allow-Origin: *
-    "trusted":     Severity.LOW,
-    "is allowed":  Severity.MEDIUM,
+    "null": Severity.HIGH,  # null origin allowed
+    "reflected": Severity.HIGH,  # reflected arbitrary origin
+    "wildcard": Severity.MEDIUM,  # Access-Control-Allow-Origin: *
+    "trusted": Severity.LOW,
+    "is allowed": Severity.MEDIUM,
 }
 
 
@@ -69,30 +69,34 @@ class CORScannerTool(AbstractTool):
                 elif "wildcard" in low or "*" in origin:
                     sev = Severity.MEDIUM
 
-                findings.append(Finding(
-                    title=f"CORS: origin '{origin}' allowed on {url}",
-                    severity=sev,
-                    description=(
-                        f"CORS misconfiguration: origin '{origin}' is reflected/allowed "
-                        f"by {url}. This may allow cross-origin requests from untrusted origins."
-                    ),
-                    tool=self.name,
-                    target=url,
-                    raw={"url": url, "origin": origin, "raw_line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"CORS: origin '{origin}' allowed on {url}",
+                        severity=sev,
+                        description=(
+                            f"CORS misconfiguration: origin '{origin}' is reflected/allowed "
+                            f"by {url}. This may allow cross-origin requests from untrusted origins."
+                        ),
+                        tool=self.name,
+                        target=url,
+                        raw={"url": url, "origin": origin, "raw_line": line},
+                    )
+                )
                 continue
 
             if _VULN_RE.search(line):
                 key = line
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"CORS issue: {line[:100]}",
-                        severity=Severity.MEDIUM,
-                        description=line,
-                        tool=self.name,
-                        target=target,
-                        raw={"raw_line": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"CORS issue: {line[:100]}",
+                            severity=Severity.MEDIUM,
+                            description=line,
+                            tool=self.name,
+                            target=target,
+                            raw={"raw_line": line},
+                        )
+                    )
 
         return findings

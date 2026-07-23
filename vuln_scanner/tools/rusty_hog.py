@@ -6,12 +6,13 @@ essex_hog (Confluence), gottingen_hog (Jira) and hante_hog (Slack). Only the two
 credential-free scanners (choctaw/git, duroc/filesystem) are driven here; the
 rest are available as binaries but require service credentials/IDs to run.
 """
+
 import json
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _GIT_TARGET = re.compile(r"(?:\.git|github\.com|gitlab\.com|bitbucket\.org)")
 
@@ -41,20 +42,22 @@ class RustyHogTool(AbstractTool):
                 commit = secret.get("commit", "")
                 date = secret.get("date", "")
                 path = secret.get("path", "")
-                findings.append(Finding(
-                    title=f"Rusty Hog [{reason}]: {path}",
-                    severity=Severity.HIGH,
-                    description=(
-                        f"Secret found: {reason}\n"
-                        f"File: {path}"
-                        + (f"\nCommit: {commit}" if commit else "")
-                        + (f"\nDate: {date}" if date else "")
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-798"],
-                    raw={k: v for k, v in secret.items() if k != "stringsFound"},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Rusty Hog [{reason}]: {path}",
+                        severity=Severity.HIGH,
+                        description=(
+                            f"Secret found: {reason}\n"
+                            f"File: {path}"
+                            + (f"\nCommit: {commit}" if commit else "")
+                            + (f"\nDate: {date}" if date else "")
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-798"],
+                        raw={k: v for k, v in secret.items() if k != "stringsFound"},
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

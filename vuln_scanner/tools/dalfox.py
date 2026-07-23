@@ -1,8 +1,9 @@
 import json
 
+from vuln_scanner.assets import AssetType
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class DalfoxTool(AbstractTool):
@@ -10,6 +11,7 @@ class DalfoxTool(AbstractTool):
     binary: str = "dalfox"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PARAM, AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["dalfox", "scan", target, "-f", "jsonl", "-S", "--no-color"]
@@ -58,23 +60,28 @@ class DalfoxTool(AbstractTool):
             evidence = item.get("evidence", "")
             severity_raw = item.get("severity", "medium").lower()
 
-            sev_map = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
-                       "medium": Severity.MEDIUM, "low": Severity.LOW}
+            sev_map = {
+                "critical": Severity.CRITICAL,
+                "high": Severity.HIGH,
+                "medium": Severity.MEDIUM,
+                "low": Severity.LOW,
+            }
             sev = sev_map.get(severity_raw, Severity.MEDIUM)
 
             title = f"XSS in parameter '{param}'" if param else f"XSS: {poc[:80]}"
-            findings.append(Finding(
-                title=title,
-                severity=sev,
-                description=(
-                    f"Cross-Site Scripting vulnerability detected on {target}.\n"
-                    f"Parameter: {param}\nPoC: {poc}"
-                    + (f"\nEvidence: {evidence}" if evidence else "")
-                ),
-                tool=self.name,
-                target=target,
-                cve=[cve] if cve else [],
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=title,
+                    severity=sev,
+                    description=(
+                        f"Cross-Site Scripting vulnerability detected on {target}.\n"
+                        f"Parameter: {param}\nPoC: {poc}" + (f"\nEvidence: {evidence}" if evidence else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cve=[cve] if cve else [],
+                    raw=item,
+                )
+            )
 
         return findings

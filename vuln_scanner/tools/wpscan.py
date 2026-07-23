@@ -1,17 +1,21 @@
 import json
 
+from vuln_scanner.assets import AssetType
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _MODE_ENUMERATE: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--enumerate", "p,t,u", "--detection-mode", "passive"],
-    ScanMode.PASSIVE:  ["--enumerate", "p,t,u", "--detection-mode", "passive"],
-    ScanMode.ACTIVE:   ["--enumerate", "vp,vt,u,cb,dbe", "--detection-mode", "mixed"],
+    ScanMode.PASSIVE: ["--enumerate", "p,t,u", "--detection-mode", "passive"],
+    ScanMode.ACTIVE: ["--enumerate", "vp,vt,u,cb,dbe", "--detection-mode", "mixed"],
     ScanMode.AGGRESSIVE: [
-        "--enumerate", "ap,at,cb,dbe,u",
-        "--plugins-detection", "aggressive",
-        "--detection-mode", "aggressive",
+        "--enumerate",
+        "ap,at,cb,dbe,u",
+        "--plugins-detection",
+        "aggressive",
+        "--detection-mode",
+        "aggressive",
     ],
 }
 
@@ -21,15 +25,19 @@ class WPScanTool(AbstractTool):
     binary: str = "wpscan"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.LIVE_HOST})
     verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
             "wpscan",
-            "--url", _as_url(target),
-            "--format", "json",
+            "--url",
+            _as_url(target),
+            "--format",
+            "json",
             "--no-banner",
-            "--request-timeout", str(max(10, scan_input.timeout // 10)),
+            "--request-timeout",
+            str(max(10, scan_input.timeout // 10)),
         ]
         cmd += _MODE_ENUMERATE.get(scan_input.mode, [])
         if scan_input.rate_limit is not None:
@@ -66,7 +74,7 @@ class WPScanTool(AbstractTool):
             return Finding(
                 title=vuln.get("title", "WordPress vulnerability"),
                 severity=Severity.HIGH,
-                description=f"{context}: {vuln.get('title','')}",
+                description=f"{context}: {vuln.get('title', '')}",
                 tool=self.name,
                 target=target,
                 cve=[f"CVE-{c}" for c in cve],
@@ -91,14 +99,16 @@ class WPScanTool(AbstractTool):
 
         # Interesting findings (misconfigs, exposed files)
         for item in data.get("interesting_findings", []):
-            findings.append(Finding(
-                title=item.get("to_s", item.get("type", "Interesting finding")),
-                severity=Severity.LOW,
-                description=item.get("to_s", "") + "\n" + item.get("url", ""),
-                tool=self.name,
-                target=target,
-                references=item.get("references", {}).get("url", []),
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=item.get("to_s", item.get("type", "Interesting finding")),
+                    severity=Severity.LOW,
+                    description=item.get("to_s", "") + "\n" + item.get("url", ""),
+                    tool=self.name,
+                    target=target,
+                    references=item.get("references", {}).get("url", []),
+                    raw=item,
+                )
+            )
 
         return findings

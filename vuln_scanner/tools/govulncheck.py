@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class GovulncheckTool(AbstractTool):
@@ -40,15 +40,17 @@ class GovulncheckTool(AbstractTool):
             modules = vuln.get("modules", [])
             for mod in modules:
                 pkg_path = mod.get("path", "")
-                findings.append(Finding(
-                    title=f"{pkg_path}: {osv_id}" if pkg_path else summary[:80],
-                    severity=Severity.HIGH,
-                    description=f"{summary}\nModule: {pkg_path}",
-                    tool=self.name,
-                    target=target,
-                    cve=cve,
-                    references=refs[:5],
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"{pkg_path}: {osv_id}" if pkg_path else summary[:80],
+                        severity=Severity.HIGH,
+                        description=f"{summary}\nModule: {pkg_path}",
+                        tool=self.name,
+                        target=target,
+                        cve=cve,
+                        references=refs[:5],
+                        raw=vuln,
+                    )
+                )
 
         return findings

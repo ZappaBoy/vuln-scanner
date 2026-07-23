@@ -1,15 +1,15 @@
 """Subzy — subdomain takeover scanner based on fingerprint matching."""
+
 import json
+import os
 import re
 import subprocess
 import tempfile
 import time
-import os
 
-from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
-from vuln_scanner.tools.enums import ScanStatus
+from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 # Plain-text fallback: "[VULNERABLE] - sub.example.com - GitHub Pages"
 _VULN_RE = re.compile(
@@ -87,24 +87,36 @@ class SubzyTool(AbstractTool):
             start = time.monotonic()
             try:
                 proc = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=scan_input.timeout,
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=scan_input.timeout,
                 )
                 duration = time.monotonic() - start
                 raw = proc.stdout + proc.stderr
                 return ScanResult(
-                    tool=self.name, target=target, findings=self.parse_output(raw, target),
-                    duration=duration, status=ScanStatus.SUCCESS, raw_output=raw,
+                    tool=self.name,
+                    target=target,
+                    findings=self.parse_output(raw, target),
+                    duration=duration,
+                    status=ScanStatus.SUCCESS,
+                    raw_output=raw,
                 )
             except subprocess.TimeoutExpired:
                 return ScanResult(
-                    tool=self.name, target=target,
-                    duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
+                    tool=self.name,
+                    target=target,
+                    duration=float(scan_input.timeout),
+                    status=ScanStatus.TIMEOUT,
                     error=f"Timed out after {scan_input.timeout}s",
                 )
             except FileNotFoundError:
                 return ScanResult(
-                    tool=self.name, target=target, duration=0.0,
-                    status=ScanStatus.FAILED, error="Binary not found: subzy",
+                    tool=self.name,
+                    target=target,
+                    duration=0.0,
+                    status=ScanStatus.FAILED,
+                    error="Binary not found: subzy",
                 )
         finally:
             try:

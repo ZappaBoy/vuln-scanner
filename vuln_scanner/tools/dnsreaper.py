@@ -1,12 +1,12 @@
 """dnsReaper — subdomain takeover detection with 50+ provider fingerprints."""
+
 import json
 import subprocess
 import time
 
-from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
-from vuln_scanner.tools.enums import ScanStatus
+from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 
 class DnsReaperTool(AbstractTool):
@@ -17,6 +17,7 @@ class DnsReaperTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         import re
+
         domain = re.sub(r"^https?://", "", target).rstrip("/")
         cmd = ["dnsreaper", "single", "--target", domain, "--output", "json"]
         cmd += scan_input.extra_args
@@ -49,19 +50,21 @@ class DnsReaperTool(AbstractTool):
             confidence = item.get("confidence", "medium")
             signature = item.get("signature", "")
             sev = Severity.HIGH if confidence in ("high", "certain") else Severity.MEDIUM
-            findings.append(Finding(
-                title=f"Subdomain takeover: {domain} ({provider})",
-                severity=sev,
-                description=(
-                    f"dnsReaper detected potential subdomain takeover for {domain}.\n"
-                    f"Provider: {provider}\nConfidence: {confidence}"
-                    + (f"\nSignature: {signature}" if signature else "")
-                ),
-                tool=self.name,
-                target=target,
-                cwe=["CWE-350"],
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"Subdomain takeover: {domain} ({provider})",
+                    severity=sev,
+                    description=(
+                        f"dnsReaper detected potential subdomain takeover for {domain}.\n"
+                        f"Provider: {provider}\nConfidence: {confidence}"
+                        + (f"\nSignature: {signature}" if signature else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-350"],
+                    raw=item,
+                )
+            )
 
         return findings
 
@@ -70,22 +73,34 @@ class DnsReaperTool(AbstractTool):
         start = time.monotonic()
         try:
             proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=scan_input.timeout,
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
             raw = proc.stdout + proc.stderr
             return ScanResult(
-                tool=self.name, target=target, findings=self.parse_output(proc.stdout, target),
-                duration=duration, status=ScanStatus.SUCCESS, raw_output=raw,
+                tool=self.name,
+                target=target,
+                findings=self.parse_output(proc.stdout, target),
+                duration=duration,
+                status=ScanStatus.SUCCESS,
+                raw_output=raw,
             )
         except subprocess.TimeoutExpired:
             return ScanResult(
-                tool=self.name, target=target,
-                duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
                 error=f"Timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error="Binary not found: dnsreaper",
+                tool=self.name,
+                target=target,
+                duration=0.0,
+                status=ScanStatus.FAILED,
+                error="Binary not found: dnsreaper",
             )

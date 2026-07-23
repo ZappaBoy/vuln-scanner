@@ -1,4 +1,7 @@
 """AbstractTool ABC and subprocess execution helpers."""
+
+from __future__ import annotations
+
 import logging
 import os
 import subprocess
@@ -6,17 +9,21 @@ import tempfile
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.enums import ScanStatus, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.target import _ALL_TARGET_TYPES, classify_target
 
+if TYPE_CHECKING:
+    pass
+
 log = logging.getLogger(__name__)
 
 _RAW_TRUNCATE = 8192  # chars logged per stream in DEBUG mode
-_STORED_RAW_MAX = 4096  # chars kept in ScanResult.raw_output; full output is in scan.log
 
 
 def _log_tool_output(logger: logging.Logger, name: str, stdout: str, stderr: str) -> None:
@@ -28,6 +35,7 @@ def _log_tool_output(logger: logging.Logger, name: str, stdout: str, stderr: str
         if len(stripped) > _RAW_TRUNCATE:
             stripped = stripped[:_RAW_TRUNCATE] + f"\n… [{len(stream) - _RAW_TRUNCATE} chars truncated]"
         logger.debug("[%s] %s:\n%s", name, label, stripped)
+
 
 # Place in a command list where the output file path should be substituted.
 OUTPUT_FILE_SENTINEL = "__OUTPUT_FILE__"
@@ -52,6 +60,15 @@ class AbstractTool(ABC, BaseModel):
     # Default = all types so tools without an override keep working.
     applicable_targets: frozenset[TargetType] = _ALL_TARGET_TYPES
 
+    # ── Chaining declarations ────────────────────────────────────────────────
+    # Asset types this tool discovers (emits into the AssetStore when chaining
+    # is enabled).  Empty frozenset = no asset production.
+    produces: frozenset[AssetType] = frozenset()
+
+    # Asset types this tool needs as input.  Empty frozenset = runs on the
+    # original CLI targets in Wave 0 (no upstream dependency).
+    consumes: frozenset[AssetType] = frozenset()
+
     # Flags appended to the command when the root logger is at DEBUG level.
     verbose_flags: list[str] = []
     # Flags stripped from the command when the root logger is at DEBUG level
@@ -63,6 +80,14 @@ class AbstractTool(ABC, BaseModel):
         if self.applicable_targets is _ALL_TARGET_TYPES:
             return True
         return bool(classify_target(target) & self.applicable_targets)
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        """Extract typed assets from a completed ScanResult.
+
+        Override in subclasses that declare *produces*.  The default
+        implementation returns an empty list (no asset production).
+        """
+        return []
 
     @abstractmethod
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
@@ -80,17 +105,12 @@ class AbstractTool(ABC, BaseModel):
         cmd = self.build_command(target, scan_input)
         return self._exec(cmd, target, scan_input, raw_from="stdout")
 
-    def _run_with_tempfile(
-        self, target: str, scan_input: ScanInput, suffix: str = ".json"
-    ) -> ScanResult:
+    def _run_with_tempfile(self, target: str, scan_input: ScanInput, suffix: str = ".json") -> ScanResult:
         """Execute against *target*; tool writes results to a temp file."""
         fd, tmpfile = tempfile.mkstemp(suffix=suffix, prefix=f"vs_{self.name}_")
         os.close(fd)
         try:
-            cmd = [
-                tmpfile if arg == OUTPUT_FILE_SENTINEL else arg
-                for arg in self.build_command(target, scan_input)
-            ]
+            cmd = [tmpfile if arg == OUTPUT_FILE_SENTINEL else arg for arg in self.build_command(target, scan_input)]
             return self._exec(cmd, target, scan_input, raw_from="file", output_file=tmpfile)
         finally:
             try:
@@ -121,7 +141,7 @@ class AbstractTool(ABC, BaseModel):
                 timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
-            proc_output = (proc.stdout + proc.stderr)[:_STORED_RAW_MAX]
+            proc_output = proc.stdout + proc.stderr
 
             if debug:
                 _log_tool_output(log, self.name, proc.stdout, proc.stderr)

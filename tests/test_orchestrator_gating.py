@@ -1,11 +1,10 @@
 """Tests for orchestrator target-type gating and per-target auth — mocked subprocess."""
 
-
 from vuln_scanner.config.models import AppConfig, ScanConfig
 from vuln_scanner.orchestrator import ScanOrchestrator
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, TargetType
 from vuln_scanner.tools.models import AuthConfig, Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class _MockWebTool(AbstractTool):
@@ -88,6 +87,7 @@ class TestOrchestratorGating:
 
 class _AuthCapturingTool(AbstractTool):
     """Records the auth it received so tests can inspect per-target resolution."""
+
     name: str = "auth_capture"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})

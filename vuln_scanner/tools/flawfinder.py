@@ -1,9 +1,9 @@
 import csv
 import io
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 def _level_to_severity(level: str) -> Severity:
@@ -47,17 +47,20 @@ class FlawfinderTool(AbstractTool):
             context = row.get("Context", "")
             sev = _level_to_severity(level)
 
-            findings.append(Finding(
-                title=f"{name}: {filename}",
-                severity=sev,
-                description=(
-                    f"{warning}\n"
-                    f"File: {filename}" + (f"\nLine: {line}" if line else "")
-                    + (f"\nContext: {context[:200]}" if context else "")
-                    + (f"\nCategory: {category}" if category else "")
-                ),
-                tool=self.name,
-                target=target,
-                raw=dict(row),
-            ))
+            findings.append(
+                Finding(
+                    title=f"{name}: {filename}",
+                    severity=sev,
+                    description=(
+                        f"{warning}\n"
+                        f"File: {filename}"
+                        + (f"\nLine: {line}" if line else "")
+                        + (f"\nContext: {context[:200]}" if context else "")
+                        + (f"\nCategory: {category}" if category else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    raw=dict(row),
+                )
+            )
         return findings

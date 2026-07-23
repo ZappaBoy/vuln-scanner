@@ -1,9 +1,10 @@
 """chkrootkit — rootkit detection tool."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _INFECTED_RE = re.compile(r"INFECTED\s*(.+)", re.IGNORECASE)
 _SUSPICIOUS_RE = re.compile(r"Suspicious files and dirs.+?found:\s*(.+)", re.IGNORECASE)
@@ -25,23 +26,27 @@ class ChkrootkitTool(AbstractTool):
             m = _INFECTED_RE.search(line)
             if m:
                 what = m.group(1).strip() or line.strip()
-                findings.append(Finding(
-                    title=f"chkrootkit INFECTED: {what[:80]}",
-                    severity=Severity.CRITICAL,
-                    description=f"chkrootkit detected infection: {what}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-506"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"chkrootkit INFECTED: {what[:80]}",
+                        severity=Severity.CRITICAL,
+                        description=f"chkrootkit detected infection: {what}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-506"],
+                        raw={"line": line},
+                    )
+                )
             elif "SUSPICIOUS" in line.upper():
-                findings.append(Finding(
-                    title=f"chkrootkit suspicious: {line.strip()[:80]}",
-                    severity=Severity.HIGH,
-                    description=line.strip(),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-506"],
-                    raw={"line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"chkrootkit suspicious: {line.strip()[:80]}",
+                        severity=Severity.HIGH,
+                        description=line.strip(),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-506"],
+                        raw={"line": line},
+                    )
+                )
         return findings

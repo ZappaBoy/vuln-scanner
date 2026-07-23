@@ -1,8 +1,8 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -14,20 +14,20 @@ _FOUND_RE = re.compile(
 )
 
 _SEV_BY_KIND: dict[str, Severity] = {
-    "google api key":       Severity.HIGH,
-    "aws access key":       Severity.CRITICAL,
-    "private key":          Severity.CRITICAL,
-    "firebase":             Severity.HIGH,
-    "slack":                Severity.HIGH,
-    "github":               Severity.HIGH,
-    "stripe":               Severity.CRITICAL,
-    "twilio":               Severity.HIGH,
-    "jwt":                  Severity.MEDIUM,
-    "bearer":               Severity.MEDIUM,
-    "password":             Severity.HIGH,
-    "secret":               Severity.HIGH,
-    "token":                Severity.HIGH,
-    "api key":              Severity.HIGH,
+    "google api key": Severity.HIGH,
+    "aws access key": Severity.CRITICAL,
+    "private key": Severity.CRITICAL,
+    "firebase": Severity.HIGH,
+    "slack": Severity.HIGH,
+    "github": Severity.HIGH,
+    "stripe": Severity.CRITICAL,
+    "twilio": Severity.HIGH,
+    "jwt": Severity.MEDIUM,
+    "bearer": Severity.MEDIUM,
+    "password": Severity.HIGH,
+    "secret": Severity.HIGH,
+    "token": Severity.HIGH,
+    "api key": Severity.HIGH,
 }
 
 
@@ -50,7 +50,7 @@ class SecretFinderTool(AbstractTool):
         cmd = ["SecretFinder", "-i", url, "-o", "cli"]
 
         if scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["-e"]   # include all JS files linked from the page
+            cmd += ["-e"]  # include all JS files linked from the page
 
         cmd += scan_input.extra_args
         return cmd
@@ -76,16 +76,15 @@ class SecretFinderTool(AbstractTool):
             seen.add(key)
 
             sev = _classify(kind)
-            findings.append(Finding(
-                title=f"Secret in JS: {kind}",
-                severity=sev,
-                description=(
-                    f"Potential {kind} found in JavaScript at {location}.\n"
-                    f"Value: {value[:120]}"
-                ),
-                tool=self.name,
-                target=target,
-                raw={"kind": kind, "value": value, "location": location},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Secret in JS: {kind}",
+                    severity=sev,
+                    description=(f"Potential {kind} found in JavaScript at {location}.\nValue: {value[:120]}"),
+                    tool=self.name,
+                    target=target,
+                    raw={"kind": kind, "value": value, "location": location},
+                )
+            )
 
         return findings

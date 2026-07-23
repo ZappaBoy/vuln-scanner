@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class TerrascanTool(AbstractTool):
@@ -13,9 +13,12 @@ class TerrascanTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
-            "terrascan", "scan",
-            "-d", target,
-            "-o", "json",
+            "terrascan",
+            "scan",
+            "-d",
+            target,
+            "-o",
+            "json",
             "--non-recursive" if scan_input.mode in ("paranoid", "passive") else "",
         ]
         cmd = [c for c in cmd if c]  # remove empty strings
@@ -41,18 +44,19 @@ class TerrascanTool(AbstractTool):
             description = v.get("description", rule_name)
             category = v.get("category", "")
 
-            findings.append(Finding(
-                title=f"{rule_name}: {resource}" if rule_name else description[:80],
-                severity=sev,
-                description=(
-                    f"{description}\n"
-                    f"Resource: {resource}\n"
-                    f"File: {v.get('file', '')}"
-                    + (f"\nCategory: {category}" if category else "")
-                ),
-                tool=self.name,
-                target=target,
-                references=[v.get("rule_reference_id", "")],
-                raw=v,
-            ))
+            findings.append(
+                Finding(
+                    title=f"{rule_name}: {resource}" if rule_name else description[:80],
+                    severity=sev,
+                    description=(
+                        f"{description}\n"
+                        f"Resource: {resource}\n"
+                        f"File: {v.get('file', '')}" + (f"\nCategory: {category}" if category else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    references=[v.get("rule_reference_id", "")],
+                    raw=v,
+                )
+            )
         return findings

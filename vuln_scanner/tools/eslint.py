@@ -1,15 +1,21 @@
 """ESLint — JavaScript/TypeScript linter with security plugins."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP = {2: Severity.HIGH, 1: Severity.MEDIUM, 0: Severity.INFO}
 _SEC_RULES = {
-    "no-eval", "no-implied-eval", "no-new-func", "no-script-url",
-    "security/detect-eval-with-expression", "security/detect-non-literal-regexp",
-    "security/detect-non-literal-fs-filename", "security/detect-possible-timing-attacks",
+    "no-eval",
+    "no-implied-eval",
+    "no-new-func",
+    "no-script-url",
+    "security/detect-eval-with-expression",
+    "security/detect-non-literal-regexp",
+    "security/detect-non-literal-fs-filename",
+    "security/detect-possible-timing-attacks",
 }
 
 
@@ -22,11 +28,15 @@ class ESLintTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return [
             "eslint",
-            "--format", "json",
+            "--format",
+            "json",
             "--no-eslintrc",
-            "--plugin", "security",
-            "--rule", '{"security/detect-eval-with-expression": "error", "no-eval": "error"}',
-            "--ext", ".js,.ts,.mjs",
+            "--plugin",
+            "security",
+            "--rule",
+            '{"security/detect-eval-with-expression": "error", "no-eval": "error"}',
+            "--ext",
+            ".js,.ts,.mjs",
             target,
         ]
 
@@ -44,15 +54,17 @@ class ESLintTool(AbstractTool):
                         sev = Severity.INFO
                     message = msg.get("message", "")
                     line_num = msg.get("line", "")
-                    findings.append(Finding(
-                        title=f"ESLint [{rule}]: {message[:60]}",
-                        severity=sev,
-                        description=f"{message}\nFile: {fname}:{line_num}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw=msg,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"ESLint [{rule}]: {message[:60]}",
+                            severity=sev,
+                            description=f"{message}\nFile: {fname}:{line_num}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw=msg,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

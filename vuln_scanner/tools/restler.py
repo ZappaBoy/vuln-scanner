@@ -3,9 +3,9 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class RESTlerTool(AbstractTool):
@@ -48,18 +48,19 @@ class RESTlerTool(AbstractTool):
             elif "Auth" in bug_type or "Unauthorized" in bug_type:
                 sev = Severity.CRITICAL
 
-            findings.append(Finding(
-                title=f"RESTler: {bug_type or 'Bug'} — {method} {endpoint}",
-                severity=sev,
-                description=(
-                    f"RESTler found '{bug_type}' on {method} {endpoint} "
-                    f"(HTTP {status})"
-                    + (f". Replay: {replay}" if replay else "")
-                ),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"RESTler: {bug_type or 'Bug'} — {method} {endpoint}",
+                    severity=sev,
+                    description=(
+                        f"RESTler found '{bug_type}' on {method} {endpoint} "
+                        f"(HTTP {status})" + (f". Replay: {replay}" if replay else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings
 
@@ -85,6 +86,7 @@ class RESTlerTool(AbstractTool):
                     spec_url = server_url.rstrip("/") + path
                     try:
                         import urllib.request
+
                         urllib.request.urlretrieve(spec_url, _os.path.join(workdir, "spec.json"))
                         spec_file = _os.path.join(workdir, "spec.json")
                         break
@@ -93,17 +95,24 @@ class RESTlerTool(AbstractTool):
 
                 if spec_file is None:
                     return ScanResult(
-                        tool=self.name, target=target, status=ScanStatus.SKIPPED,
+                        tool=self.name,
+                        target=target,
+                        status=ScanStatus.SKIPPED,
                     )
                 compile_cmd = ["restler", "compile", "--api_spec", spec_file]
 
             proc = subprocess.run(
-                compile_cmd, capture_output=True, text=True,
-                cwd=workdir, timeout=120,
+                compile_cmd,
+                capture_output=True,
+                text=True,
+                cwd=workdir,
+                timeout=120,
             )
             if proc.returncode != 0:
                 return ScanResult(
-                    tool=self.name, target=target, status=ScanStatus.FAILED,
+                    tool=self.name,
+                    target=target,
+                    status=ScanStatus.FAILED,
                     error=f"RESTler compile failed: {proc.stderr[:300]}",
                 )
 
@@ -116,20 +125,24 @@ class RESTlerTool(AbstractTool):
                 ScanMode.AGGRESSIVE: ("bfs-fast", "1"),
                 ScanMode.PARANOID: ("bfs-fast", "2"),
             }
-            fuzzing_mode, time_budget = fuzzing_mode_map.get(
-                scan_input.mode, ("bfs", "0.5")
-            )
+            fuzzing_mode, time_budget = fuzzing_mode_map.get(scan_input.mode, ("bfs", "0.5"))
 
             fuzz_cmd = [
                 "restler-fuzzer",
-                "--restler_grammar", grammar,
-                "--custom_mutations", dictionary,
-                "--fuzzing_mode", fuzzing_mode,
-                "--time_budget", time_budget,
-                "--save_results_in_fixed_dirname", "True",
+                "--restler_grammar",
+                grammar,
+                "--custom_mutations",
+                dictionary,
+                "--fuzzing_mode",
+                fuzzing_mode,
+                "--time_budget",
+                time_budget,
+                "--save_results_in_fixed_dirname",
+                "True",
             ]
             if server_url:
                 from urllib.parse import urlparse
+
                 parsed = urlparse(server_url)
                 host = parsed.hostname or target
                 port = parsed.port or (80 if server_url.startswith("http://") else 443)
@@ -140,14 +153,18 @@ class RESTlerTool(AbstractTool):
             fuzz_cmd += scan_input.extra_args
 
             proc2 = subprocess.run(
-                fuzz_cmd, capture_output=True, text=True,
-                cwd=workdir, timeout=scan_input.timeout,
+                fuzz_cmd,
+                capture_output=True,
+                text=True,
+                cwd=workdir,
+                timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
 
             # Parse bug bucket JSON files — search recursively since the output
             # directory name depends on the fuzzing mode and run timestamp.
             import glob
+
             raw_findings = ""
             for fpath in glob.glob(
                 _os.path.join(workdir, "**", "BugBuckets", "*.json"),
@@ -158,20 +175,30 @@ class RESTlerTool(AbstractTool):
 
             findings = self.parse_output(raw_findings, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=duration, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=proc2.stdout + proc2.stderr,
             )
 
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout),
-                              status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target,
-                              status=ScanStatus.FAILED,
-                              error="restler / restler-fuzzer not found — image may need rebuilding")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                status=ScanStatus.FAILED,
+                error="restler / restler-fuzzer not found — image may need rebuilding",
+            )
         finally:
             import shutil
+
             shutil.rmtree(workdir, ignore_errors=True)

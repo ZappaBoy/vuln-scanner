@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class BearerTool(AbstractTool):
@@ -13,8 +13,11 @@ class BearerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
-            "bearer", "scan", target,
-            "--format", "json",
+            "bearer",
+            "scan",
+            target,
+            "--format",
+            "json",
             "--quiet",
         ]
         cmd += scan_input.extra_args
@@ -38,16 +41,15 @@ class BearerTool(AbstractTool):
                 filename = item.get("filename", target)
                 cwe = item.get("cwe_ids", [])
 
-                findings.append(Finding(
-                    title=f"{title}: {filename}",
-                    severity=sev,
-                    description=(
-                        f"{description}\n"
-                        f"File: {filename}" + (f"\nLine: {line}" if line else "")
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=[f"CWE-{c}" for c in cwe],
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"{title}: {filename}",
+                        severity=sev,
+                        description=(f"{description}\nFile: {filename}" + (f"\nLine: {line}" if line else "")),
+                        tool=self.name,
+                        target=target,
+                        cwe=[f"CWE-{c}" for c in cwe],
+                        raw=item,
+                    )
+                )
         return findings

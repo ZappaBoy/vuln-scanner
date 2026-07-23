@@ -1,24 +1,22 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 # SMB line: "SMB  192.168.1.1  445  HOSTNAME  [*] Windows 10 Build ... (name:HOSTNAME) ..."
-_SMB_RE = re.compile(
-    r"^SMB\s+(\S+)\s+\d+\s+(\S+)\s+\[[\+\-\*!]\]\s+(.*)"
-)
+_SMB_RE = re.compile(r"^SMB\s+(\S+)\s+\d+\s+(\S+)\s+\[[\+\-\*!]\]\s+(.*)")
 _STATUS_SEV: dict[str, Severity] = {
-    "+": Severity.HIGH,     # authentication success
-    "-": Severity.MEDIUM,   # auth failure / negative
-    "*": Severity.INFO,     # informational
-    "!": Severity.MEDIUM,   # signing required / warning
+    "+": Severity.HIGH,  # authentication success
+    "-": Severity.MEDIUM,  # auth failure / negative
+    "*": Severity.INFO,  # informational
+    "!": Severity.MEDIUM,  # signing required / warning
 }
 
 _PROTOCOLS = {
-    ScanMode.PARANOID:   "smb",
-    ScanMode.PASSIVE:    "smb",
-    ScanMode.ACTIVE:     "smb",
+    ScanMode.PARANOID: "smb",
+    ScanMode.PASSIVE: "smb",
+    ScanMode.ACTIVE: "smb",
     ScanMode.AGGRESSIVE: "smb",
 }
 
@@ -65,13 +63,15 @@ class CrackMapExecTool(AbstractTool):
 
             sev = _STATUS_SEV.get(status_char, Severity.INFO)
 
-            findings.append(Finding(
-                title=f"CME SMB {hostname} ({host_addr}): {message[:80]}",
-                severity=sev,
-                description=f"{hostname} ({host_addr}): {message}",
-                tool=self.name,
-                target=host_addr,
-                raw={"host": host_addr, "hostname": hostname, "message": message},
-            ))
+            findings.append(
+                Finding(
+                    title=f"CME SMB {hostname} ({host_addr}): {message[:80]}",
+                    severity=sev,
+                    description=f"{hostname} ({host_addr}): {message}",
+                    tool=self.name,
+                    target=host_addr,
+                    raw={"host": host_addr, "hostname": hostname, "message": message},
+                )
+            )
 
         return findings

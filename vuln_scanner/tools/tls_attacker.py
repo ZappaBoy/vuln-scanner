@@ -1,34 +1,34 @@
 import json
 import re
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _DETAIL: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "NORMAL",
-    ScanMode.PASSIVE:    "NORMAL",
-    ScanMode.ACTIVE:     "DETAILED",
+    ScanMode.PARANOID: "NORMAL",
+    ScanMode.PASSIVE: "NORMAL",
+    ScanMode.ACTIVE: "DETAILED",
     ScanMode.AGGRESSIVE: "ALL",
 }
 
 _VULN_SEV: dict[str, tuple[Severity, list[str]]] = {
-    "Heartbleed":     (Severity.CRITICAL, ["CVE-2014-0160"]),
-    "POODLE":         (Severity.HIGH,     ["CVE-2014-3566"]),
-    "BEAST":          (Severity.MEDIUM,   ["CVE-2011-3389"]),
-    "CRIME":          (Severity.MEDIUM,   ["CVE-2012-4929"]),
-    "BREACH":         (Severity.MEDIUM,   ["CVE-2013-3587"]),
-    "FREAK":          (Severity.HIGH,     ["CVE-2015-0204"]),
-    "LOGJAM":         (Severity.MEDIUM,   ["CVE-2015-4000"]),
-    "DROWN":          (Severity.HIGH,     ["CVE-2016-0800"]),
-    "ROBOT":          (Severity.HIGH,     ["CVE-2017-13099"]),
-    "RACCOON":        (Severity.MEDIUM,   ["CVE-2020-1968"]),
-    "Lucky13":        (Severity.MEDIUM,   ["CVE-2013-0169"]),
-    "SweetBEAST":     (Severity.MEDIUM,   []),
-    "PaddingOracle":  (Severity.HIGH,     []),
-    "EarlyFinished":  (Severity.MEDIUM,   []),
-    "InvalidCurve":   (Severity.HIGH,     []),
-    "CertificateIssue": (Severity.HIGH,   []),
+    "Heartbleed": (Severity.CRITICAL, ["CVE-2014-0160"]),
+    "POODLE": (Severity.HIGH, ["CVE-2014-3566"]),
+    "BEAST": (Severity.MEDIUM, ["CVE-2011-3389"]),
+    "CRIME": (Severity.MEDIUM, ["CVE-2012-4929"]),
+    "BREACH": (Severity.MEDIUM, ["CVE-2013-3587"]),
+    "FREAK": (Severity.HIGH, ["CVE-2015-0204"]),
+    "LOGJAM": (Severity.MEDIUM, ["CVE-2015-4000"]),
+    "DROWN": (Severity.HIGH, ["CVE-2016-0800"]),
+    "ROBOT": (Severity.HIGH, ["CVE-2017-13099"]),
+    "RACCOON": (Severity.MEDIUM, ["CVE-2020-1968"]),
+    "Lucky13": (Severity.MEDIUM, ["CVE-2013-0169"]),
+    "SweetBEAST": (Severity.MEDIUM, []),
+    "PaddingOracle": (Severity.HIGH, []),
+    "EarlyFinished": (Severity.MEDIUM, []),
+    "InvalidCurve": (Severity.HIGH, []),
+    "CertificateIssue": (Severity.HIGH, []),
 }
 
 
@@ -45,10 +45,14 @@ class TLSAttackerTool(AbstractTool):
         detail = _DETAIL.get(scan_input.mode, "NORMAL")
         cmd = [
             "TLS-Scanner",
-            "-connect", host,
-            "-reportFormat", "JSON",
-            "-reportDetail", detail,
-            "-report", OUTPUT_FILE_SENTINEL,
+            "-connect",
+            host,
+            "-reportFormat",
+            "JSON",
+            "-reportDetail",
+            detail,
+            "-report",
+            OUTPUT_FILE_SENTINEL,
         ]
 
         if scan_input.mode == ScanMode.PARANOID:
@@ -76,20 +80,24 @@ class TLSAttackerTool(AbstractTool):
             vname = v if isinstance(v, str) else v.get("version", "")
             if vname.upper() in ("SSL2", "SSL3", "TLS10", "TLS11", "SSLV2", "SSLV3"):
                 sev_map = {
-                    "SSL2": Severity.CRITICAL, "SSLV2": Severity.CRITICAL,
-                    "SSL3": Severity.HIGH,     "SSLV3": Severity.HIGH,
+                    "SSL2": Severity.CRITICAL,
+                    "SSLV2": Severity.CRITICAL,
+                    "SSL3": Severity.HIGH,
+                    "SSLV3": Severity.HIGH,
                     "TLS10": Severity.MEDIUM,
                     "TLS11": Severity.LOW,
                 }
                 sev = sev_map.get(vname.upper(), Severity.MEDIUM)
-                findings.append(Finding(
-                    title=f"Weak protocol supported: {vname}",
-                    severity=sev,
-                    description=f"Server {host} supports deprecated protocol {vname}.",
-                    tool=self.name,
-                    target=host,
-                    raw={"version": vname},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Weak protocol supported: {vname}",
+                        severity=sev,
+                        description=f"Server {host} supports deprecated protocol {vname}.",
+                        tool=self.name,
+                        target=host,
+                        raw={"version": vname},
+                    )
+                )
 
         # Vulnerabilities
         vulns = data.get("vulnerabilities") or {}
@@ -115,32 +123,35 @@ class TLSAttackerTool(AbstractTool):
                 continue
 
             sev, cves = _VULN_SEV.get(vuln_name, (Severity.MEDIUM, []))
-            findings.append(Finding(
-                title=f"TLS vulnerability: {vuln_name}",
-                severity=sev,
-                description=(
-                    f"Server {host} is vulnerable to {vuln_name}."
-                    + (f" {detail_str}" if detail_str else "")
-                ),
-                tool=self.name,
-                target=host,
-                cve=cves,
-                raw={"vulnerability": vuln_name},
-            ))
+            findings.append(
+                Finding(
+                    title=f"TLS vulnerability: {vuln_name}",
+                    severity=sev,
+                    description=(
+                        f"Server {host} is vulnerable to {vuln_name}." + (f" {detail_str}" if detail_str else "")
+                    ),
+                    tool=self.name,
+                    target=host,
+                    cve=cves,
+                    raw={"vulnerability": vuln_name},
+                )
+            )
 
         # Weak ciphers
         weak_ciphers = data.get("weakCiphers") or data.get("supported_ciphersuites") or []
         for cipher in weak_ciphers:
             name = cipher if isinstance(cipher, str) else cipher.get("name", str(cipher))
             if re.search(r"(NULL|EXPORT|RC4|DES|MD5|anon)", name, re.IGNORECASE):
-                findings.append(Finding(
-                    title=f"Weak/null cipher: {name}",
-                    severity=Severity.HIGH,
-                    description=f"Server {host} supports insecure cipher suite: {name}.",
-                    tool=self.name,
-                    target=host,
-                    raw={"cipher": name},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Weak/null cipher: {name}",
+                        severity=Severity.HIGH,
+                        description=f"Server {host} supports insecure cipher suite: {name}.",
+                        tool=self.name,
+                        target=host,
+                        raw={"cipher": name},
+                    )
+                )
 
         return findings
 

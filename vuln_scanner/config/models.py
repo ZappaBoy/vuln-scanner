@@ -1,5 +1,3 @@
-
-
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -9,8 +7,9 @@ if TYPE_CHECKING:
 
 from pydantic import BaseModel, Field, field_validator
 
-from vuln_scanner.tools.models import AuthConfig
 from vuln_scanner.scope import ScopeConfig
+from vuln_scanner.tools.enums import ScanMode  # single canonical definition
+from vuln_scanner.tools.models import AuthConfig
 
 
 class ReportFormat(str, Enum):
@@ -20,20 +19,13 @@ class ReportFormat(str, Enum):
     PDF = "pdf"
 
 
-class ScanMode(str, Enum):
-    PARANOID = "paranoid"
-    PASSIVE = "passive"
-    ACTIVE = "active"
-    AGGRESSIVE = "aggressive"
-
-
 class ScanConfig(BaseModel):
     targets: list[str] = Field(default_factory=list)
     timeout: int = 300
     max_concurrent: int = 3
     mode: ScanMode = ScanMode.PASSIVE
     rate_limit: int | None = None
-    proxy: str | None = None   # e.g. "http://127.0.0.1:8080"
+    proxy: str | None = None  # e.g. "http://127.0.0.1:8080"
 
 
 class CategoriesConfig(BaseModel):
@@ -62,6 +54,7 @@ class ReportConfig(BaseModel):
 
 class PluginsConfig(BaseModel):
     """Plugin auto-discovery configuration."""
+
     enabled: bool = True
     # Extra directories to scan for plugin .py files (in addition to ./plugins/)
     dirs: list[Path] = Field(default_factory=list)
@@ -103,20 +96,20 @@ class NucleiConfig(BaseModel):
     workflows: list[Path] = Field(default_factory=list)
 
     # ── Performance ───────────────────────────────────────────────────────────
-    rate_limit: int = 150          # maximum HTTP requests per second
-    bulk_size: int = 25            # number of templates processed per host batch
-    concurrency: int = 25          # concurrent template executions
-    timeout: int = 5               # per-request timeout (seconds)
-    retries: int = 1               # number of retries on request failure
+    rate_limit: int = 150  # maximum HTTP requests per second
+    bulk_size: int = 25  # number of templates processed per host batch
+    concurrency: int = 25  # concurrent template executions
+    timeout: int = 5  # per-request timeout (seconds)
+    retries: int = 1  # number of retries on request failure
 
     # ── Headless browser ──────────────────────────────────────────────────────
-    headless: bool = False         # enable headless Chrome/Chromium support
-    headless_timeout: int = 20     # headless page load timeout (seconds)
+    headless: bool = False  # enable headless Chrome/Chromium support
+    headless_timeout: int = 20  # headless page load timeout (seconds)
 
     # ── Interactsh (OOB interaction server) ───────────────────────────────────
-    no_interactsh: bool = True     # disable by default; enable for active/aggressive
-    interactsh_server: str = ""    # custom interactsh server URL
-    interactsh_token: str = ""     # authentication token for custom server
+    no_interactsh: bool = True  # disable by default; enable for active/aggressive
+    interactsh_server: str = ""  # custom interactsh server URL
+    interactsh_token: str = ""  # authentication token for custom server
 
 
 class ReconConfig(BaseModel):
@@ -159,7 +152,43 @@ class DefectDojoConfig(BaseModel):
     engagement_name: str = "Automated Scan"
 
 
+# ─── Tool chaining config ────────────────────────────────────────────────────
+
+
+class ChainingConfig(BaseModel):
+    """Controls the wave/fixpoint tool-chaining engine.
+
+    When ``enabled=True`` the orchestrator turns the flat tool×target matrix
+    into a live data-flow graph: tools that *produce* assets (subdomains, URLs,
+    params, …) feed tools that *consume* those asset types in subsequent waves.
+    Set ``enabled=False`` (the default) to keep the existing flat matrix.
+    """
+
+    enabled: bool = False
+
+    # Maximum number of waves (depth) to prevent unbounded expansion.
+    max_depth: int = 5
+
+    # Hard cap on the total number of newly-discovered targets added per run.
+    max_new_targets: int = 200
+
+    # Per-asset-type budgets (max assets of that type to carry forward).
+    asset_budgets: dict[str, int] = Field(
+        default_factory=lambda: {
+            "subdomain": 500,
+            "live_host": 500,
+            "url": 1000,
+            "param": 200,
+            "open_port": 300,
+            "js_url": 200,
+            "tech": 100,
+            "bucket": 50,
+        }
+    )
+
+
 # ─── LLM config (imported here to avoid circular imports) ────────────────────
+
 
 def _default_llm_config() -> "AppLLMConfig":
     return AppLLMConfig()
@@ -171,6 +200,7 @@ class AppLLMConfig(BaseModel):
     Stored as plain dict-compatible pydantic model so it can be embedded in
     AppConfig without pulling in the openai dependency at import time.
     """
+
     enabled: Any = "auto"
 
     @field_validator("enabled", mode="before")
@@ -182,6 +212,7 @@ class AppLLMConfig(BaseModel):
             if v.lower() in ("true", "1", "yes", "on"):
                 return True
         return v
+
     base_url: str = ""
     api_key: str = ""
     model: str = ""
@@ -222,6 +253,7 @@ class AppConfig(BaseModel):
     plugins: PluginsConfig = Field(default_factory=PluginsConfig)
     nuclei: NucleiConfig = Field(default_factory=NucleiConfig)
     recon: ReconConfig = Field(default_factory=ReconConfig)
+    chaining: ChainingConfig = Field(default_factory=ChainingConfig)
 
     def build_llm_config(self) -> "LLMConfig":
         """Convert AppLLMConfig → typed LLMConfig (lazy, avoids circular imports)."""
@@ -239,12 +271,8 @@ class AppConfig(BaseModel):
         return LLMConfig(
             **raw,
             features=LLMFeatures(**features_data) if features_data else LLMFeatures(),
-            tool_features={
-                k: LLMFeatures(**v) for k, v in tool_features_data.items()
-            },
-            category_features={
-                k: LLMFeatures(**v) for k, v in category_features_data.items()
-            },
+            tool_features={k: LLMFeatures(**v) for k, v in tool_features_data.items()},
+            category_features={k: LLMFeatures(**v) for k, v in category_features_data.items()},
             prompts=LLMPrompts(**prompts_data) if prompts_data else LLMPrompts(),
             poc=PocConfig(**poc_data) if poc_data else PocConfig(),
         )

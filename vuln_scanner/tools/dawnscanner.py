@@ -1,10 +1,11 @@
 """DawnScanner — Ruby security scanner."""
+
 import json
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP = {"high": Severity.HIGH, "medium": Severity.MEDIUM, "low": Severity.LOW}
 _VULN_RE = re.compile(r"\[CVE-\d{4}-\d+\]|\[OWASP[^\]]+\]", re.IGNORECASE)
@@ -31,16 +32,18 @@ class DawnScannerTool(AbstractTool):
                 fname = issue.get("filename", "")
                 line_num = issue.get("line", "")
                 cves = [c for c in issue.get("cve", "").split(",") if c.strip()]
-                findings.append(Finding(
-                    title=f"DawnScanner: {name}",
-                    severity=sev,
-                    description=f"{desc}\nFile: {fname}:{line_num}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    cve=cves,
-                    raw=issue,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"DawnScanner: {name}",
+                        severity=sev,
+                        description=f"{desc}\nFile: {fname}:{line_num}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        cve=cves,
+                        raw=issue,
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

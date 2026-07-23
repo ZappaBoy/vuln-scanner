@@ -1,14 +1,14 @@
 """Subjack — subdomain takeover detection."""
+
+import os
 import re
 import subprocess
 import tempfile
 import time
-import os
 
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 from vuln_scanner.tools.abstract import AbstractTool
-from vuln_scanner.tools.enums import ScanStatus
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 # "[Subjack] Subdomain Takeover: sub.example.com [GitHub Pages]"
 # "[SubOver] Found Subdomain Takeover: sub.example.com"
@@ -36,18 +36,20 @@ class SubjackTool(AbstractTool):
                 continue
             host = m.group("host")
             service = m.group("service") or "Unknown service"
-            findings.append(Finding(
-                title=f"Subdomain takeover: {host} ({service})",
-                severity=Severity.HIGH,
-                description=(
-                    f"Subdomain {host} is vulnerable to takeover via {service}.\n"
-                    f"The DNS record points to a service that is not claimed."
-                ),
-                tool=self.name,
-                target=target,
-                cwe=["CWE-350"],
-                raw={"host": host, "service": service},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Subdomain takeover: {host} ({service})",
+                    severity=Severity.HIGH,
+                    description=(
+                        f"Subdomain {host} is vulnerable to takeover via {service}.\n"
+                        f"The DNS record points to a service that is not claimed."
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-350"],
+                    raw={"host": host, "service": service},
+                )
+            )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
@@ -60,9 +62,12 @@ class SubjackTool(AbstractTool):
             threads = 50 if scan_input.mode == ScanMode.AGGRESSIVE else 20
             cmd = [
                 "subjack",
-                "-w", tmp,
-                "-t", str(threads),
-                "-timeout", "30",
+                "-w",
+                tmp,
+                "-t",
+                str(threads),
+                "-timeout",
+                "30",
                 "-v",
             ]
             if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
@@ -72,24 +77,36 @@ class SubjackTool(AbstractTool):
             start = time.monotonic()
             try:
                 proc = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=scan_input.timeout,
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=scan_input.timeout,
                 )
                 duration = time.monotonic() - start
                 raw = proc.stdout + proc.stderr
                 return ScanResult(
-                    tool=self.name, target=target, findings=self.parse_output(raw, target),
-                    duration=duration, status=ScanStatus.SUCCESS, raw_output=raw,
+                    tool=self.name,
+                    target=target,
+                    findings=self.parse_output(raw, target),
+                    duration=duration,
+                    status=ScanStatus.SUCCESS,
+                    raw_output=raw,
                 )
             except subprocess.TimeoutExpired:
                 return ScanResult(
-                    tool=self.name, target=target,
-                    duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
+                    tool=self.name,
+                    target=target,
+                    duration=float(scan_input.timeout),
+                    status=ScanStatus.TIMEOUT,
                     error=f"Timed out after {scan_input.timeout}s",
                 )
             except FileNotFoundError:
                 return ScanResult(
-                    tool=self.name, target=target, duration=0.0,
-                    status=ScanStatus.FAILED, error="Binary not found: subjack",
+                    tool=self.name,
+                    target=target,
+                    duration=0.0,
+                    status=ScanStatus.FAILED,
+                    error="Binary not found: subjack",
                 )
         finally:
             try:

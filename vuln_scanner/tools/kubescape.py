@@ -1,9 +1,10 @@
 """Kubescape — Kubernetes security posture scanner (NSA/MITRE frameworks)."""
+
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _SEV_MAP: dict[str, Severity] = {
     "critical": Severity.CRITICAL,
@@ -21,13 +22,17 @@ class KubescapeTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
-            "kubescape", "scan",
-            "--format", "json",
-            "--output", OUTPUT_FILE_SENTINEL,
+            "kubescape",
+            "scan",
+            "--format",
+            "json",
+            "--output",
+            OUTPUT_FILE_SENTINEL,
             "--verbose",
         ]
         # If target is a file/directory, scan it; otherwise scan the cluster
         import os
+
         if os.path.exists(target):
             cmd.append(target)
         # else: scan the current cluster context (no extra arg needed)
@@ -76,17 +81,17 @@ class KubescapeTool(AbstractTool):
             if len(resources) > 10:
                 resource_str += f" (+{len(resources) - 10} more)"
 
-            findings.append(Finding(
-                title=f"Kubescape [{control_id}]: {name}",
-                severity=sev,
-                description=(
-                    f"{description}\n\n"
-                    f"Affected resources: {resource_str or 'N/A'}\n\n"
-                    f"Remediation: {remediation}"
-                ).strip(),
-                tool=self.name,
-                target=target,
-                raw={"control_id": control_id, "name": name, "affected": resources},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Kubescape [{control_id}]: {name}",
+                    severity=sev,
+                    description=(
+                        f"{description}\n\nAffected resources: {resource_str or 'N/A'}\n\nRemediation: {remediation}"
+                    ).strip(),
+                    tool=self.name,
+                    target=target,
+                    raw={"control_id": control_id, "name": name, "affected": resources},
+                )
+            )
 
         return findings

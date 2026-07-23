@@ -1,16 +1,16 @@
 """LLM configuration models — OpenAI-compatible, fully customisable."""
 
-
 from typing import Any
 
 from pydantic import BaseModel, Field
 
-from vuln_scanner.llm.features import LLMFeatures
 from vuln_scanner.llm import prompts as _default_prompts
+from vuln_scanner.llm.features import LLMFeatures
 
 
 class LLMPrompts(BaseModel):
     """Overridable prompt templates. Any field left empty uses the built-in default."""
+
     enrich_system: str = ""
     enrich_user: str = ""
     cluster_system: str = ""
@@ -30,13 +30,12 @@ class LLMPrompts(BaseModel):
 
 class PocConfig(BaseModel):
     """PoC generation/execution mechanics (on/off switches live in LLMFeatures)."""
+
     languages: list[str] = Field(default_factory=lambda: ["python", "bash"])
     timeout: int = 120
     allow_git_clone: bool = False
     max_pocs: int = 20
-    only_severities: list[str] = Field(
-        default_factory=lambda: ["critical", "high", "medium"]
-    )
+    only_severities: list[str] = Field(default_factory=lambda: ["critical", "high", "medium"])
     assets_dir: str = ""  # empty = auto (<report>_assets/poc/)
 
 
@@ -45,9 +44,9 @@ class LLMConfig(BaseModel):
 
     # Connection
     enabled: bool | str = "auto"  # True, False, or "auto" (on iff api_key is set)
-    base_url: str = ""            # override for non-OpenAI endpoints (Ollama, vLLM, etc.)
+    base_url: str = ""  # override for non-OpenAI endpoints (Ollama, vLLM, etc.)
     api_key: str = ""
-    model: str = ""               # REQUIRED when LLM is active — validated at runtime
+    model: str = ""  # REQUIRED when LLM is active — validated at runtime
     organization: str = ""
     timeout: float = 60.0
     max_retries: int = 2
@@ -102,8 +101,7 @@ class LLMConfig(BaseModel):
             return
         if not self.model:
             raise ValueError(
-                "LLM is active but 'llm.model' is not set. "
-                "Set VS_LLM_MODEL or [llm] model = \"...\" in config."
+                "LLM is active but 'llm.model' is not set. Set VS_LLM_MODEL or [llm] model = \"...\" in config."
             )
 
     def in_scope(self, tool_name: str, category: str) -> bool:
@@ -120,7 +118,11 @@ class LLMConfig(BaseModel):
 
     def resolve_features(self, tool_name: str, category: str) -> LLMFeatures:
         from vuln_scanner.llm.features import resolve_features
+
         return resolve_features(
-            self.features, self.tool_features, self.category_features,
-            tool_name, category,
+            self.features,
+            self.tool_features,
+            self.category_features,
+            tool_name,
+            category,
         )

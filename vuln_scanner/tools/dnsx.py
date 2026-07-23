@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class DnsxTool(AbstractTool):
@@ -48,17 +48,19 @@ class DnsxTool(AbstractTool):
                 if records:
                     all_records.append(f"{rtype.upper()}: {', '.join(records)}")
 
-            findings.append(Finding(
-                title=f"DNS: {host} ({status_code})",
-                severity=Severity.INFO,
-                description=(
-                    f"DNS record for {host}: status={status_code}, "
-                    + ("; ".join(all_records) or "no records")
-                    + (f", resolver={resolver}" if resolver else "")
-                ),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"DNS: {host} ({status_code})",
+                    severity=Severity.INFO,
+                    description=(
+                        f"DNS record for {host}: status={status_code}, "
+                        + ("; ".join(all_records) or "no records")
+                        + (f", resolver={resolver}" if resolver else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings

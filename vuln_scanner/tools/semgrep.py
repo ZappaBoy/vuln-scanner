@@ -1,15 +1,14 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MODE_CONFIG: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--config", "p/security-audit"],
-    ScanMode.PASSIVE:  ["--config", "p/security-audit"],
-    ScanMode.ACTIVE:   ["--config", "auto"],
-    ScanMode.AGGRESSIVE: ["--config", "auto", "--config", "p/owasp-top-ten",
-                          "--config", "p/cwe-top-25"],
+    ScanMode.PASSIVE: ["--config", "p/security-audit"],
+    ScanMode.ACTIVE: ["--config", "auto"],
+    ScanMode.AGGRESSIVE: ["--config", "auto", "--config", "p/owasp-top-ten", "--config", "p/cwe-top-25"],
 }
 
 
@@ -40,21 +39,23 @@ class SemgrepTool(AbstractTool):
         findings: list[Finding] = []
         for r in data.get("results", []):
             meta = r.get("extra", {}).get("metadata", {})
-            sev_label = (r.get("extra", {}).get("severity") or meta.get("impact") or "warning")
+            sev_label = r.get("extra", {}).get("severity") or meta.get("impact") or "warning"
             severity = _parse_severity(sev_label)
             filepath = r.get("path", target)
             line = r.get("start", {}).get("line", "?")
             cves = [c for c in meta.get("cves", []) if c.startswith("CVE-")]
             refs = meta.get("references", [])
-            findings.append(Finding(
-                title=f"[{r.get('check_id', '?')}] {filepath}:{line}",
-                severity=severity,
-                description=r.get("extra", {}).get("message", ""),
-                tool=self.name,
-                target=filepath,
-                cve=cves,
-                references=refs,
-                raw=r,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{r.get('check_id', '?')}] {filepath}:{line}",
+                    severity=severity,
+                    description=r.get("extra", {}).get("message", ""),
+                    tool=self.name,
+                    target=filepath,
+                    cve=cves,
+                    references=refs,
+                    raw=r,
+                )
+            )
 
         return findings

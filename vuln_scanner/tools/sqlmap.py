@@ -1,13 +1,14 @@
 import re
 
+from vuln_scanner.assets import AssetType
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _LEVEL_RISK: dict[ScanMode, tuple[int, int]] = {
-    ScanMode.PARANOID:   (1, 1),
-    ScanMode.PASSIVE:    (1, 1),
-    ScanMode.ACTIVE:     (2, 1),
+    ScanMode.PARANOID: (1, 1),
+    ScanMode.PASSIVE: (1, 1),
+    ScanMode.ACTIVE: (2, 1),
     ScanMode.AGGRESSIVE: (5, 3),
 }
 
@@ -28,13 +29,15 @@ class SQLMapTool(AbstractTool):
     binary: str = "sqlmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PARAM, AssetType.URL})
     verbose_flags: list[str] = ["-v", "3"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         level, risk = _LEVEL_RISK[scan_input.mode]
         cmd = [
             "sqlmap",
-            "-u", target,
+            "-u",
+            target,
             "--batch",
             "--smart",
             "--forms",
@@ -43,7 +46,7 @@ class SQLMapTool(AbstractTool):
             "--output-dir=/tmp/vs_sqlmap",
         ]
         if scan_input.mode in (ScanMode.PASSIVE, ScanMode.PARANOID):
-            cmd += ["--technique=B"]   # boolean-based only (least intrusive)
+            cmd += ["--technique=B"]  # boolean-based only (least intrusive)
         if scan_input.rate_limit is not None:
             cmd += [f"--delay={max(1, 1 // scan_input.rate_limit)}"]
         auth = scan_input.auth
@@ -75,17 +78,16 @@ class SQLMapTool(AbstractTool):
                 if key in seen:
                     continue
                 seen.add(key)
-                findings.append(Finding(
-                    title=f"SQL injection: {method} parameter '{param}'",
-                    severity=Severity.CRITICAL,
-                    description=(
-                        f"Parameter '{param}' ({method}) on {target} is injectable "
-                        f"via '{technique}'."
-                    ),
-                    tool=self.name,
-                    target=target,
-                    raw={"parameter": param, "method": method, "technique": technique},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"SQL injection: {method} parameter '{param}'",
+                        severity=Severity.CRITICAL,
+                        description=(f"Parameter '{param}' ({method}) on {target} is injectable via '{technique}'."),
+                        tool=self.name,
+                        target=target,
+                        raw={"parameter": param, "method": method, "technique": technique},
+                    )
+                )
 
         # Catch CRITICAL lines not matched by the main pattern
         for line in raw.splitlines():
@@ -93,13 +95,15 @@ class SQLMapTool(AbstractTool):
                 key = line.strip()
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"SQLMap: {line.strip()[:120]}",
-                        severity=Severity.CRITICAL,
-                        description=line.strip(),
-                        tool=self.name,
-                        target=target,
-                        raw={"raw_line": line.strip()},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"SQLMap: {line.strip()[:120]}",
+                            severity=Severity.CRITICAL,
+                            description=line.strip(),
+                            tool=self.name,
+                            target=target,
+                            raw={"raw_line": line.strip()},
+                        )
+                    )
 
         return findings

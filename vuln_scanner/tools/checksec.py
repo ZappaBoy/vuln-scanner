@@ -1,20 +1,23 @@
 """checksec — ELF/PE binary hardening checks (NX, PIE, RELRO, stack canary, ...)."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _MITIGATIONS = {
-    "relro":   ("RELRO",          "No RELRO",     "Partial RELRO", "Full RELRO"),
-    "canary":  ("Stack canary",   "No",           None,            "Yes"),
-    "nx":      ("NX (DEP)",       "No",           None,            "Yes"),
-    "pie":     ("PIE",            "No",           "DSO",           "Yes"),
-    "fortify": ("Fortify",        "No",           None,            "Yes"),
+    "relro": ("RELRO", "No RELRO", "Partial RELRO", "Full RELRO"),
+    "canary": ("Stack canary", "No", None, "Yes"),
+    "nx": ("NX (DEP)", "No", None, "Yes"),
+    "pie": ("PIE", "No", "DSO", "Yes"),
+    "fortify": ("Fortify", "No", None, "Yes"),
 }
 
 
-def _check_mitigation(label: str, value: str, no_val: str, partial_val: str | None, yes_val: str) -> tuple[str, Severity] | None:
+def _check_mitigation(
+    label: str, value: str, no_val: str, partial_val: str | None, yes_val: str
+) -> tuple[str, Severity] | None:
     """Return (description, severity) if the mitigation is absent or partial, else None."""
     v = str(value).lower()
     no = no_val.lower()
@@ -62,17 +65,16 @@ class ChecksecTool(AbstractTool):
                 result = _check_mitigation(label, value, no_val, partial_val, yes_val)
                 if result:
                     desc, sev = result
-                    findings.append(Finding(
-                        title=f"Missing mitigation ({label}) in {binary_path}",
-                        severity=sev,
-                        description=(
-                            f"{desc}\nBinary: {binary_path}\n"
-                            f"Current value: {value}"
-                        ),
-                        tool=self.name,
-                        target=target,
-                        cwe=["CWE-693"],
-                        raw={"binary": binary_path, "property": key, "value": value},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Missing mitigation ({label}) in {binary_path}",
+                            severity=sev,
+                            description=(f"{desc}\nBinary: {binary_path}\nCurrent value: {value}"),
+                            tool=self.name,
+                            target=target,
+                            cwe=["CWE-693"],
+                            raw={"binary": binary_path, "property": key, "value": value},
+                        )
+                    )
 
         return findings

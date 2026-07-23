@@ -1,6 +1,5 @@
 """Thin OpenAI-compatible LLM client — endpoint-agnostic."""
 
-
 import json
 import logging
 from typing import Any
@@ -16,8 +15,7 @@ class LLMClient:
             from openai import OpenAI
         except ImportError as exc:
             raise RuntimeError(
-                "openai package is required for LLM analysis. "
-                "Add 'openai' to your dependencies."
+                "openai package is required for LLM analysis. Add 'openai' to your dependencies."
             ) from exc
 
         kwargs: dict[str, Any] = {

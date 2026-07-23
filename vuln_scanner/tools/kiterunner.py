@@ -1,20 +1,18 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _WORDLISTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "/usr/share/wordlists/kiterunner/routes-small.kite",
-    ScanMode.PASSIVE:    "/usr/share/wordlists/kiterunner/routes-small.kite",
-    ScanMode.ACTIVE:     "/usr/share/wordlists/kiterunner/routes-large.kite",
+    ScanMode.PARANOID: "/usr/share/wordlists/kiterunner/routes-small.kite",
+    ScanMode.PASSIVE: "/usr/share/wordlists/kiterunner/routes-small.kite",
+    ScanMode.ACTIVE: "/usr/share/wordlists/kiterunner/routes-large.kite",
     ScanMode.AGGRESSIVE: "/usr/share/wordlists/kiterunner/routes-large.kite",
 }
 
 # "POST   200 [   312,    8,    2] https://example.com/api/v1/users 0ms"
-_ROUTE_RE = re.compile(
-    r"(\w+)\s+(\d{3})\s+\[\s*(\d+),\s*(\d+),\s*(\d+)\]\s+(\S+)"
-)
+_ROUTE_RE = re.compile(r"(\w+)\s+(\d{3})\s+\[\s*(\d+),\s*(\d+),\s*(\d+)\]\s+(\S+)")
 
 _STATUS_SEV: dict[int, Severity] = {
     200: Severity.LOW,
@@ -36,11 +34,17 @@ class KiterunnerTool(AbstractTool):
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
         wordlist = _WORDLISTS[scan_input.mode]
         cmd = [
-            "kiterunner", "scan", url,
-            "-w", wordlist,
-            "--fail-status-codes", "404",
-            "--ignore-length", "0",
-            "-o", "text",
+            "kiterunner",
+            "scan",
+            url,
+            "-w",
+            wordlist,
+            "--fail-status-codes",
+            "404",
+            "--ignore-length",
+            "0",
+            "-o",
+            "text",
             "-q",
         ]
         if scan_input.rate_limit is not None:
@@ -61,7 +65,12 @@ class KiterunnerTool(AbstractTool):
             if not m:
                 continue
             method, status_str, length, words, _, url = (
-                m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6)
+                m.group(1),
+                m.group(2),
+                m.group(3),
+                m.group(4),
+                m.group(5),
+                m.group(6),
             )
             status = int(status_str)
             key = f"{method}:{url}"
@@ -70,16 +79,17 @@ class KiterunnerTool(AbstractTool):
             seen.add(key)
 
             sev = _STATUS_SEV.get(status, Severity.INFO)
-            findings.append(Finding(
-                title=f"API route: {method} {url} [{status}]",
-                severity=sev,
-                description=(
-                    f"API route discovered: {method} {url} "
-                    f"(HTTP {status}, {length} bytes, {words} words)"
-                ),
-                tool=self.name,
-                target=target,
-                raw={"method": method, "status": status, "url": url, "length": length},
-            ))
+            findings.append(
+                Finding(
+                    title=f"API route: {method} {url} [{status}]",
+                    severity=sev,
+                    description=(
+                        f"API route discovered: {method} {url} (HTTP {status}, {length} bytes, {words} words)"
+                    ),
+                    tool=self.name,
+                    target=target,
+                    raw={"method": method, "status": status, "url": url, "length": length},
+                )
+            )
 
         return findings

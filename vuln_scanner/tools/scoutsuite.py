@@ -1,18 +1,17 @@
 """ScoutSuite — multi-cloud audit (AWS, Azure, GCP, Alibaba)."""
+
 import json
 import os
-import re
 import shutil
 import subprocess
 import tempfile
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
-_LEVEL_MAP = {"danger": Severity.HIGH, "warning": Severity.MEDIUM,
-              "good": Severity.INFO, "neutral": Severity.INFO}
+_LEVEL_MAP = {"danger": Severity.HIGH, "warning": Severity.MEDIUM, "good": Severity.INFO, "neutral": Severity.INFO}
 
 
 class ScoutSuiteTool(AbstractTool):
@@ -36,15 +35,17 @@ class ScoutSuiteTool(AbstractTool):
                     sev = _LEVEL_MAP.get(level, Severity.MEDIUM)
                     description = finding_data.get("description", "")
                     items_count = finding_data.get("items_count", 0)
-                    findings.append(Finding(
-                        title=f"ScoutSuite [{service}]: {description[:80]}",
-                        severity=sev,
-                        description=f"{description}\nAffected items: {items_count}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"service": service, "id": finding_id, "level": level},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"ScoutSuite [{service}]: {description[:80]}",
+                            severity=sev,
+                            description=f"{description}\nAffected items: {items_count}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"service": service, "id": finding_id, "level": level},
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings
@@ -60,12 +61,13 @@ class ScoutSuiteTool(AbstractTool):
             elif "gcp" in target.lower() or "google" in target.lower():
                 provider = "gcp"
             cmd = [
-                "scout", provider,
-                "--report-dir", tmpdir,
+                "scout",
+                provider,
+                "--report-dir",
+                tmpdir,
                 "--no-browser",
             ]
-            proc = subprocess.run(cmd, capture_output=True, text=True,
-                                 timeout=scan_input.timeout)
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=scan_input.timeout)
             duration = time.monotonic() - start
             # Look for results JSON
             raw = proc.stdout + proc.stderr
@@ -77,16 +79,24 @@ class ScoutSuiteTool(AbstractTool):
                     except OSError:
                         pass
             return ScanResult(
-                tool=self.name, target=target,
+                tool=self.name,
+                target=target,
                 findings=self.parse_output(raw, target),
-                duration=duration, status=ScanStatus.SUCCESS, raw_output=raw,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
+                raw_output=raw,
             )
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target, duration=0.0,
-                              status=ScanStatus.FAILED, error="Binary not found: scout")
+            return ScanResult(
+                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error="Binary not found: scout"
+            )
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)

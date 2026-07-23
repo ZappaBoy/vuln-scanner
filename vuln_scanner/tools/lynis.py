@@ -1,20 +1,15 @@
 """Lynis — system security audit for Linux/macOS/Unix hosts."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 # "[WARNING] ..." or "* Warning [AUTH-9328] : ..."
-_WARN_RE = re.compile(
-    r"(?:Warning|WARNING)\s*\[(?P<id>[A-Z0-9_\-]+)\]\s*[:\-]?\s*(?P<msg>.+)"
-)
-_SUGG_RE = re.compile(
-    r"(?:Suggestion|SUGGESTION)\s*\[(?P<id>[A-Z0-9_\-]+)\]\s*[:\-]?\s*(?P<msg>.+)"
-)
-_CRIT_RE = re.compile(
-    r"(?:Critical|CRITICAL)\s*\[(?P<id>[A-Z0-9_\-]+)\]\s*[:\-]?\s*(?P<msg>.+)"
-)
+_WARN_RE = re.compile(r"(?:Warning|WARNING)\s*\[(?P<id>[A-Z0-9_\-]+)\]\s*[:\-]?\s*(?P<msg>.+)")
+_SUGG_RE = re.compile(r"(?:Suggestion|SUGGESTION)\s*\[(?P<id>[A-Z0-9_\-]+)\]\s*[:\-]?\s*(?P<msg>.+)")
+_CRIT_RE = re.compile(r"(?:Critical|CRITICAL)\s*\[(?P<id>[A-Z0-9_\-]+)\]\s*[:\-]?\s*(?P<msg>.+)")
 
 _SEV_MAP = {
     "CRITICAL": Severity.HIGH,
@@ -27,14 +22,22 @@ class LynisTool(AbstractTool):
     name: str = "lynis"
     binary: str = "lynis"
     category: str = "system"
-    applicable_targets: frozenset[TargetType] = frozenset({
-        TargetType.HOST, TargetType.IP, TargetType.PATH,
-    })
+    applicable_targets: frozenset[TargetType] = frozenset(
+        {
+            TargetType.HOST,
+            TargetType.IP,
+            TargetType.PATH,
+        }
+    )
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
-            "lynis", "audit", "system",
-            "--no-colors", "--quiet", "--quick",
+            "lynis",
+            "audit",
+            "system",
+            "--no-colors",
+            "--quiet",
+            "--quick",
             "--noplugins",
         ]
         cmd += scan_input.extra_args
@@ -59,15 +62,17 @@ class LynisTool(AbstractTool):
                     if key in seen:
                         break
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"Lynis [{test_id}]: {msg[:80]}",
-                        severity=_SEV_MAP[sev_key],
-                        description=f"Lynis system audit {sev_key.lower()}: {msg}\nTest ID: {test_id}",
-                        tool=self.name,
-                        target=target,
-                        cwe=["CWE-732"] if sev_key == "WARNING" else [],
-                        raw={"test_id": test_id, "level": sev_key, "message": msg},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Lynis [{test_id}]: {msg[:80]}",
+                            severity=_SEV_MAP[sev_key],
+                            description=f"Lynis system audit {sev_key.lower()}: {msg}\nTest ID: {test_id}",
+                            tool=self.name,
+                            target=target,
+                            cwe=["CWE-732"] if sev_key == "WARNING" else [],
+                            raw={"test_id": test_id, "level": sev_key, "message": msg},
+                        )
+                    )
                     break
 
         return findings

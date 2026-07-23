@@ -1,4 +1,5 @@
 """Shared enums and severity helper for all tool modules."""
+
 from enum import Enum
 
 
@@ -36,13 +37,13 @@ class ScanMode(str, Enum):
 
 
 class TargetType(str, Enum):
-    HOST = "host"    # hostname (non-URL, non-IP)
-    IP = "ip"        # single IPv4/IPv6 address
-    CIDR = "cidr"    # IP range
-    URL = "url"      # http/https URL
-    PATH = "path"    # local filesystem path
+    HOST = "host"  # hostname (non-URL, non-IP)
+    IP = "ip"  # single IPv4/IPv6 address
+    CIDR = "cidr"  # IP range
+    URL = "url"  # http/https URL
+    PATH = "path"  # local filesystem path
     IMAGE = "image"  # container image reference (name:tag)
-    REPO = "repo"    # git repository URL or path
+    REPO = "repo"  # git repository URL or path
     CLOUD = "cloud"  # cloud account/project (AWS ARN, GCP project, Azure subscription)
 
 

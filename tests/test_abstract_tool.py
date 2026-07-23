@@ -1,19 +1,16 @@
 """Tests for AbstractTool verbose/silent flag mechanism."""
+
 import logging
-import subprocess
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from vuln_scanner.tools.abstract import AbstractTool, _log_tool_output
-from vuln_scanner.tools.models import ScanInput, ScanResult
-from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity
-from vuln_scanner.tools.models import Finding
+from vuln_scanner.tools.enums import ScanMode
+from vuln_scanner.tools.models import Finding, ScanInput
 
 
 class _EchoTool(AbstractTool):
     """Minimal tool for testing: echoes a fixed string."""
+
     name: str = "echo_tool"
     category: str = "test"
 
@@ -92,28 +89,33 @@ class TestVerboseFlags:
 
     def test_nuclei_silent_flag_declared(self):
         from vuln_scanner.tools.nuclei import NucleiTool
+
         t = NucleiTool()
         assert "-silent" in t.silent_flags
         assert "-v" in t.verbose_flags
 
     def test_nmap_verbose_flag_declared(self):
         from vuln_scanner.tools.nmap import NmapTool
+
         t = NmapTool()
         assert "-v" in t.verbose_flags
 
     def test_bandit_silent_flag_declared(self):
         from vuln_scanner.tools.bandit import BanditTool
+
         t = BanditTool()
         assert "-q" in t.silent_flags
 
     def test_semgrep_flags_declared(self):
         from vuln_scanner.tools.semgrep import SemgrepTool
+
         t = SemgrepTool()
         assert "--quiet" in t.silent_flags
         assert "-v" in t.verbose_flags
 
     def test_trivy_flags_declared(self):
         from vuln_scanner.tools.trivy import TrivyTool
+
         t = TrivyTool()
         assert "--quiet" in t.silent_flags
         assert "--debug" in t.verbose_flags
@@ -151,16 +153,19 @@ class TestLogToolOutput:
 class TestDirsearchDebugSafety:
     def test_no_color_not_in_silent_flags(self):
         from vuln_scanner.tools.dirsearch import DirsearchTool
+
         t = DirsearchTool()
         assert "--no-color" not in t.silent_flags
 
     def test_quiet_in_silent_flags(self):
         from vuln_scanner.tools.dirsearch import DirsearchTool
+
         t = DirsearchTool()
         assert "--quiet" in t.silent_flags
 
     def test_no_color_stays_in_debug_cmd(self):
         from vuln_scanner.tools.dirsearch import DirsearchTool
+
         t = DirsearchTool()
         inp = _scan_input()
         cmd = t.build_command("http://example.com", inp)
@@ -171,6 +176,7 @@ class TestDirsearchDebugSafety:
 
     def test_parse_output_unaffected_by_debug_mode(self):
         from vuln_scanner.tools.dirsearch import DirsearchTool
+
         t = DirsearchTool()
         # Simulate dirsearch output when --quiet is stripped: includes progress lines
         raw = (

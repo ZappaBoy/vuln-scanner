@@ -7,6 +7,7 @@ Run inside the Docker image:
 Exit code 0  → all binaries / scripts found (API-only tools are skipped).
 Exit code 1  → one or more binaries / scripts missing.
 """
+
 import inspect
 import os
 import re
@@ -18,7 +19,7 @@ from vuln_scanner.tools.models import ScanInput
 
 _SCRIPT_RE = re.compile(r'"(/opt/[^"]+\.py)"')
 
-OK      = "\033[32mOK\033[0m"
+OK = "\033[32mOK\033[0m"
 MISSING = "\033[31mMISSING\033[0m"
 SKIPPED = "\033[33mSKIPPED\033[0m"
 
@@ -68,11 +69,11 @@ def main() -> int:
             continue
 
         found, detail = _check(binary, cls)
-        plain  = "OK" if found else "MISSING"
+        plain = "OK" if found else "MISSING"
         colored = OK if found else MISSING
         rows.append((tool_name, detail, plain, colored))
 
-    w_name   = max(len(r[0]) for r in rows)
+    w_name = max(len(r[0]) for r in rows)
     w_detail = max(len(r[1]) for r in rows)
 
     header = f"{'TOOL':<{w_name}}  {'BINARY / SCRIPT':<{w_detail}}  STATUS"
@@ -86,10 +87,10 @@ def main() -> int:
             missing.append(f"{tool_name} ({detail})")
 
     print()
-    total   = len(rows)
+    total = len(rows)
     skipped = sum(1 for r in rows if r[2] == "SKIPPED")
     checked = total - skipped
-    found   = checked - len(missing)
+    found = checked - len(missing)
 
     print(f"Results: {found}/{checked} binaries found  ({skipped} API-only tools skipped)")
 

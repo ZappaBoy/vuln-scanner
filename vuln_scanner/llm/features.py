@@ -1,18 +1,18 @@
 """LLM feature flag matrix with per-tool / per-category override resolution."""
 
-
 from pydantic import BaseModel
 
 
 class LLMFeatures(BaseModel):
     """Named boolean feature flags for the LLM analysis pipeline."""
-    logs_analysis: bool = True        # feed tool raw_output/error into analysis
-    enrich: bool = True               # CWE/confidence/false_positive/exploitability triage
-    classify: bool = True             # classify findings (used in clustering pass)
-    cluster: bool = True              # group findings into root-cause clusters
-    mitigation: bool = True           # generate mitigation + remediation per finding
-    generate_poc: bool = True         # generate PoC scripts as report assets
-    execute_poc: bool = False         # execute PoCs (container-only, off by default)
+
+    logs_analysis: bool = True  # feed tool raw_output/error into analysis
+    enrich: bool = True  # CWE/confidence/false_positive/exploitability triage
+    classify: bool = True  # classify findings (used in clustering pass)
+    cluster: bool = True  # group findings into root-cause clusters
+    mitigation: bool = True  # generate mitigation + remediation per finding
+    generate_poc: bool = True  # generate PoC scripts as report assets
+    execute_poc: bool = False  # execute PoCs (container-only, off by default)
     false_positive_filter: bool = True  # suppress likely false positives from report
 
     def merge(self, override: "LLMFeatures | None") -> "LLMFeatures":

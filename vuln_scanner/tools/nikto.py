@@ -1,13 +1,14 @@
 import json
 
+from vuln_scanner.assets import AssetType
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL, _as_url
 
 _MODE_TUNING: dict[ScanMode, list[str]] = {
-    ScanMode.PARANOID: ["-Tuning", "b"],           # software identification only
-    ScanMode.PASSIVE:  ["-Tuning", "b"],
-    ScanMode.ACTIVE:   [],                          # default tuning
+    ScanMode.PARANOID: ["-Tuning", "b"],  # software identification only
+    ScanMode.PASSIVE: ["-Tuning", "b"],
+    ScanMode.ACTIVE: [],  # default tuning
     ScanMode.AGGRESSIVE: ["-Tuning", "1234567890ab"],  # all checks
 }
 
@@ -17,15 +18,20 @@ class NiktoTool(AbstractTool):
     binary: str = "nikto"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.LIVE_HOST})
     verbose_flags: list[str] = ["-Display", "V"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
             "nikto",
-            "-h", _as_url(target),
-            "-Format", "json",
-            "-o", OUTPUT_FILE_SENTINEL,
-            "-timeout", str(max(5, scan_input.timeout // 20)),
+            "-h",
+            _as_url(target),
+            "-Format",
+            "json",
+            "-o",
+            OUTPUT_FILE_SENTINEL,
+            "-timeout",
+            str(max(5, scan_input.timeout // 20)),
             "-nointeractive",
         ]
         cmd += _MODE_TUNING.get(scan_input.mode, [])
@@ -62,14 +68,16 @@ class NiktoTool(AbstractTool):
             for vuln in host.get("vulnerabilities", []):
                 msg = vuln.get("msg", "Unknown finding")
                 url = vuln.get("url", target)
-                findings.append(Finding(
-                    title=msg[:120],
-                    severity=Severity.MEDIUM,
-                    description=f"{msg}\nMethod: {vuln.get('method','?')} {url}",
-                    tool=self.name,
-                    target=host.get("host", target),
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=msg[:120],
+                        severity=Severity.MEDIUM,
+                        description=f"{msg}\nMethod: {vuln.get('method', '?')} {url}",
+                        tool=self.name,
+                        target=host.get("host", target),
+                        raw=vuln,
+                    )
+                )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:

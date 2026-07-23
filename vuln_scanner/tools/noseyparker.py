@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class NoseyParkerTool(AbstractTool):
@@ -13,8 +13,10 @@ class NoseyParkerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [
-            "noseyparker", "scan",
-            "--datastore", "/tmp/vs_noseyparker_ds",
+            "noseyparker",
+            "scan",
+            "--datastore",
+            "/tmp/vs_noseyparker_ds",
             target,
         ]
         cmd += scan_input.extra_args
@@ -37,17 +39,20 @@ class NoseyParkerTool(AbstractTool):
             line = loc.get("start_line", "")
             matching_input = snippet.get("matching", "")
 
-            findings.append(Finding(
-                title=f"Secret: {rule_name} in {filepath}",
-                severity=Severity.CRITICAL,
-                description=(
-                    f"Potential secret found: {rule_name}\n"
-                    f"File: {filepath}" + (f"\nLine: {line}" if line else "")
-                    + (f"\nSnippet: {matching_input[:100]}" if matching_input else "")
-                ),
-                tool=self.name,
-                target=target,
-                cwe=["CWE-798"],
-                raw=match,
-            ))
+            findings.append(
+                Finding(
+                    title=f"Secret: {rule_name} in {filepath}",
+                    severity=Severity.CRITICAL,
+                    description=(
+                        f"Potential secret found: {rule_name}\n"
+                        f"File: {filepath}"
+                        + (f"\nLine: {line}" if line else "")
+                        + (f"\nSnippet: {matching_input[:100]}" if matching_input else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-798"],
+                    raw=match,
+                )
+            )
         return findings

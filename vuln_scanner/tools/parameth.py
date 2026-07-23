@@ -1,9 +1,10 @@
 """Parameth — brute-discover hidden GET and POST parameters."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _FOUND_RE = re.compile(r"\[Found\]\s+(?:GET|POST)\s+param[:\s]+(\w+)", re.IGNORECASE)
 _SIZE_RE = re.compile(r"size[:=\s]+(\d+)", re.IGNORECASE)
@@ -35,13 +36,15 @@ class ParamethTool(AbstractTool):
             if m:
                 param = m.group(1)
                 sev = Severity.MEDIUM if _INTERESTING.search(param) else Severity.LOW
-                findings.append(Finding(
-                    title=f"Hidden parameter discovered: '{param}'",
-                    severity=sev,
-                    description=f"Parameth found a hidden parameter '{param}' on {target}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-200"],
-                    raw={"parameter": param, "line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Hidden parameter discovered: '{param}'",
+                        severity=sev,
+                        description=f"Parameth found a hidden parameter '{param}' on {target}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-200"],
+                        raw={"parameter": param, "line": line},
+                    )
+                )
         return findings

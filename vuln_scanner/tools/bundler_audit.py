@@ -1,10 +1,10 @@
 """Bundler-audit — Ruby gems vulnerability scanner."""
-import json
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _NAME_RE = re.compile(r"Name:\s+(\S+)")
 _VERSION_RE = re.compile(r"Version:\s+(\S+)")
@@ -43,14 +43,16 @@ class BundlerAuditTool(AbstractTool):
             title = title_m.group(1).strip() if title_m else ""
             crit = (crit_m.group(1) if crit_m else "medium").lower()
             sev = _SEV_MAP.get(crit, Severity.MEDIUM)
-            findings.append(Finding(
-                title=f"bundler-audit [{name} {version}]: {title or cve}",
-                severity=sev,
-                description=f"Vulnerable gem: {name} {version}\n{title}",
-                tool=self.name,
-                target=target,
-                cwe=["CWE-1035"],
-                cve=[cve] if cve else [],
-                raw={"name": name, "version": version, "cve": cve},
-            ))
+            findings.append(
+                Finding(
+                    title=f"bundler-audit [{name} {version}]: {title or cve}",
+                    severity=sev,
+                    description=f"Vulnerable gem: {name} {version}\n{title}",
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-1035"],
+                    cve=[cve] if cve else [],
+                    raw={"name": name, "version": version, "cve": cve},
+                )
+            )
         return findings

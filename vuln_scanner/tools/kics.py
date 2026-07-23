@@ -1,12 +1,18 @@
 """KICS — Checkmarx open-source IaC security scanner."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.models import Finding, ScanInput
 
-_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
-            "medium": Severity.MEDIUM, "low": Severity.LOW, "info": Severity.INFO}
+_SEV_MAP = {
+    "critical": Severity.CRITICAL,
+    "high": Severity.HIGH,
+    "medium": Severity.MEDIUM,
+    "low": Severity.LOW,
+    "info": Severity.INFO,
+}
 
 
 class KICSTool(AbstractTool):
@@ -17,10 +23,14 @@ class KICSTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return [
-            "kics", "scan",
-            "--path", target,
-            "--output-path", "/dev/stdout",
-            "--report-formats", "json",
+            "kics",
+            "scan",
+            "--path",
+            target,
+            "--output-path",
+            "/dev/stdout",
+            "--report-formats",
+            "json",
             "--no-progress",
             "--silent",
         ]
@@ -37,15 +47,17 @@ class KICSTool(AbstractTool):
                     fname = file_result.get("file_name", "")
                     line_num = file_result.get("line", "")
                     issue_type = file_result.get("issue_type", "")
-                    findings.append(Finding(
-                        title=f"KICS [{query_name}]: {issue_type or fname}",
-                        severity=sev,
-                        description=f"Query: {query_name}\nFile: {fname}:{line_num}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw=file_result,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"KICS [{query_name}]: {issue_type or fname}",
+                            severity=sev,
+                            description=f"Query: {query_name}\nFile: {fname}:{line_num}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw=file_result,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

@@ -28,7 +28,8 @@ class TestLoadModule:
 class TestCollectTools:
     def test_finds_concrete_abstract_tool_subclass(self, tmp_path):
         plugin = tmp_path / "scanner.py"
-        plugin.write_text(textwrap.dedent("""\
+        plugin.write_text(
+            textwrap.dedent("""\
             from vuln_scanner.tools.abstract import AbstractTool
             from vuln_scanner.tools.enums import TargetType
             from vuln_scanner.tools.models import Finding, ScanInput
@@ -43,7 +44,8 @@ class TestCollectTools:
 
                 def parse_output(self, raw, target):
                     return []
-        """))
+        """)
+        )
         mod = _load_module(plugin)
         assert mod is not None
         tools = _collect_tools(mod)
@@ -61,10 +63,12 @@ class TestCollectTools:
     def test_skips_classes_from_other_modules(self, tmp_path):
         """Classes imported from other modules (not defined here) must be ignored."""
         plugin = tmp_path / "importer.py"
-        plugin.write_text(textwrap.dedent("""\
+        plugin.write_text(
+            textwrap.dedent("""\
             from vuln_scanner.tools.nmap import NmapTool
             X = NmapTool
-        """))
+        """)
+        )
         mod = _load_module(plugin)
         assert mod is not None
         tools = _collect_tools(mod)

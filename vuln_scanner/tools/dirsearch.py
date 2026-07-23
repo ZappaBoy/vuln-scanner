@@ -1,9 +1,10 @@
 """Dirsearch — web path/directory brute-force scanner."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _LINE_RE = re.compile(r"(\d{3})\s+\d+\S*\s+(https?://\S+)")
 
@@ -42,13 +43,15 @@ class DirsearchTool(AbstractTool):
                 sev = Severity.LOW
             else:
                 continue
-            findings.append(Finding(
-                title=f"Found path [{status}]: {url}",
-                severity=sev,
-                description=f"Dirsearch found accessible path: {url} (HTTP {status})",
-                tool=self.name,
-                target=target,
-                cwe=["CWE-538"],
-                raw={"status": status, "url": url},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Found path [{status}]: {url}",
+                    severity=sev,
+                    description=f"Dirsearch found accessible path: {url} (HTTP {status})",
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-538"],
+                    raw={"status": status, "url": url},
+                )
+            )
         return findings

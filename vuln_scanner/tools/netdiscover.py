@@ -1,8 +1,8 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 # Netdiscover -P output line:
 # " 192.168.1.1     aa:bb:cc:dd:ee:ff      1    60  Intel Corporate"
@@ -24,7 +24,7 @@ class NetdiscoverTool(AbstractTool):
         cmd = ["netdiscover", "-r", target, "-P", "-N"]  # -P: print-only, -N: no header
 
         if scan_input.mode == ScanMode.PASSIVE:
-            cmd += ["-p"]   # passive mode (no ARP requests sent)
+            cmd += ["-p"]  # passive mode (no ARP requests sent)
 
         if scan_input.rate_limit is not None:
             cmd += ["-s", str(scan_input.rate_limit)]  # sleep between each ARP request
@@ -45,17 +45,19 @@ class NetdiscoverTool(AbstractTool):
             packets = m.group(3)
             vendor = m.group(5).strip()
 
-            findings.append(Finding(
-                title=f"Host discovered: {ip} ({mac})",
-                severity=Severity.INFO,
-                description=(
-                    f"Active host {ip} with MAC {mac}"
-                    + (f" ({vendor})" if vendor and vendor != "Unknown" else "")
-                    + f", {packets} ARP packet(s) seen."
-                ),
-                tool=self.name,
-                target=target,
-                raw={"ip": ip, "mac": mac, "packets": packets, "vendor": vendor},
-            ))
+            findings.append(
+                Finding(
+                    title=f"Host discovered: {ip} ({mac})",
+                    severity=Severity.INFO,
+                    description=(
+                        f"Active host {ip} with MAC {mac}"
+                        + (f" ({vendor})" if vendor and vendor != "Unknown" else "")
+                        + f", {packets} ARP packet(s) seen."
+                    ),
+                    tool=self.name,
+                    target=target,
+                    raw={"ip": ip, "mac": mac, "packets": packets, "vendor": vendor},
+                )
+            )
 
         return findings

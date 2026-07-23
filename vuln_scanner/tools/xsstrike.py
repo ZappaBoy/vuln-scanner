@@ -1,8 +1,8 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _XSS_RE = re.compile(r"XSS\s+Found\s+In\s+(.+)", re.IGNORECASE)
 _PARAM_RE = re.compile(r"(?:parameter|param)[:\s]+([^\s,]+)", re.IGNORECASE)
@@ -55,18 +55,20 @@ class XSStrikeTool(AbstractTool):
                 key = f"{location}:{param}"
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"XSS in {location}" + (f" (param: {param})" if param else ""),
-                        severity=Severity.HIGH,
-                        description=(
-                            f"Cross-Site Scripting vulnerability found in '{location}' on {target}."
-                            + (f"\nParameter: {param}" if param else "")
-                            + (f"\nPayload: {payload}" if payload else "")
-                        ),
-                        tool=self.name,
-                        target=target,
-                        raw={"location": location, "param": param, "payload": payload},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"XSS in {location}" + (f" (param: {param})" if param else ""),
+                            severity=Severity.HIGH,
+                            description=(
+                                f"Cross-Site Scripting vulnerability found in '{location}' on {target}."
+                                + (f"\nParameter: {param}" if param else "")
+                                + (f"\nPayload: {payload}" if payload else "")
+                            ),
+                            tool=self.name,
+                            target=target,
+                            raw={"location": location, "param": param, "payload": payload},
+                        )
+                    )
             i += 1
 
         return findings

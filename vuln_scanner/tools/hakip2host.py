@@ -1,11 +1,12 @@
 """hakip2host — resolve IP ranges to associated domain names via reverse DNS."""
+
 import re
 import subprocess
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 _RESULT_RE = re.compile(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(.+)")
 
@@ -29,15 +30,17 @@ class HakIp2HostTool(AbstractTool):
                 key = f"{ip}:{hostname}"
                 if key not in seen:
                     seen.add(key)
-                    findings.append(Finding(
-                        title=f"IP to hostname: {ip} → {hostname}",
-                        severity=Severity.INFO,
-                        description=f"Reverse DNS: {ip} → {hostname}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"ip": ip, "hostname": hostname},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"IP to hostname: {ip} → {hostname}",
+                            severity=Severity.INFO,
+                            description=f"Reverse DNS: {ip} → {hostname}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"ip": ip, "hostname": hostname},
+                        )
+                    )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
@@ -46,19 +49,33 @@ class HakIp2HostTool(AbstractTool):
             proc = subprocess.run(
                 ["hakip2host"],
                 input=target + "\n",
-                capture_output=True, text=True, timeout=scan_input.timeout,
+                capture_output=True,
+                text=True,
+                timeout=scan_input.timeout,
             )
             duration = time.monotonic() - start
             raw = proc.stdout + proc.stderr
             return ScanResult(
-                tool=self.name, target=target,
+                tool=self.name,
+                target=target,
                 findings=self.parse_output(raw, target),
-                duration=duration, status=ScanStatus.SUCCESS, raw_output=raw,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
+                raw_output=raw,
             )
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout), status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target, duration=0.0,
-                              status=ScanStatus.FAILED, error="Binary not found: hakip2host")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=0.0,
+                status=ScanStatus.FAILED,
+                error="Binary not found: hakip2host",
+            )

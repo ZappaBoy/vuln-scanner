@@ -1,12 +1,12 @@
 """Kube-score — Kubernetes object static analysis."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_GRADE_MAP = {"CRITICAL": Severity.CRITICAL, "WARNING": Severity.MEDIUM,
-              "OK": Severity.INFO, "SKIPPED": Severity.INFO}
+_GRADE_MAP = {"CRITICAL": Severity.CRITICAL, "WARNING": Severity.MEDIUM, "OK": Severity.INFO, "SKIPPED": Severity.INFO}
 
 
 class KubeScoreTool(AbstractTool):
@@ -22,7 +22,7 @@ class KubeScoreTool(AbstractTool):
         findings: list[Finding] = []
         try:
             data = json.loads(raw)
-            for obj in (data if isinstance(data, list) else []):
+            for obj in data if isinstance(data, list) else []:
                 for check in obj.get("checks", []):
                     grade = check.get("grade", "OK").upper()
                     if grade in ("OK", "SKIPPED"):
@@ -30,15 +30,17 @@ class KubeScoreTool(AbstractTool):
                     sev = _GRADE_MAP.get(grade, Severity.MEDIUM)
                     name = check.get("check", {}).get("name", "")
                     comments = [c.get("summary", "") for c in check.get("comments", [])]
-                    findings.append(Finding(
-                        title=f"kube-score [{grade}]: {name}",
-                        severity=sev,
-                        description="\n".join(comments) or name,
-                        tool=self.name,
-                        target=target,
-                        cwe=["CWE-284"],
-                        raw=check,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"kube-score [{grade}]: {name}",
+                            severity=sev,
+                            description="\n".join(comments) or name,
+                            tool=self.name,
+                            target=target,
+                            cwe=["CWE-284"],
+                            raw=check,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
         return findings

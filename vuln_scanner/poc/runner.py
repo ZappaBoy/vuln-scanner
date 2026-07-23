@@ -5,7 +5,6 @@ the Dockerfile via `ENV VS_IN_CONTAINER=1`) for any execution to proceed.
 This is a hard safety guard to ensure PoCs never run on the developer's host.
 """
 
-
 import logging
 import os
 import subprocess

@@ -47,38 +47,47 @@ class TestClassifyTarget:
 class TestAppliesto:
     def test_network_tool_applies_to_ip(self):
         from vuln_scanner.tools.nmap import NmapTool
+
         assert NmapTool().applies_to("192.168.1.1")
 
     def test_network_tool_skips_url(self):
         from vuln_scanner.tools.nmap import NmapTool
+
         assert not NmapTool().applies_to("http://example.com")
 
     def test_network_tool_skips_path(self):
         from vuln_scanner.tools.nmap import NmapTool
+
         assert not NmapTool().applies_to("/home/user/code")
 
     def test_web_tool_applies_to_url(self):
         from vuln_scanner.tools.dalfox import DalfoxTool
+
         assert DalfoxTool().applies_to("http://target.com")
 
     def test_web_tool_skips_path(self):
         from vuln_scanner.tools.dalfox import DalfoxTool
+
         assert not DalfoxTool().applies_to("/home/user/code")
 
     def test_sast_tool_applies_to_path(self):
         from vuln_scanner.tools.bandit import BanditTool
+
         assert BanditTool().applies_to("/home/user/project")
 
     def test_sast_tool_skips_ip(self):
         from vuln_scanner.tools.bandit import BanditTool
+
         assert not BanditTool().applies_to("10.0.0.1")
 
     def test_sast_tool_skips_url(self):
         from vuln_scanner.tools.bandit import BanditTool
+
         assert not BanditTool().applies_to("http://example.com")
 
     def test_container_tool_applies_to_image(self):
         from vuln_scanner.tools.trivy import TrivyTool
+
         # container images resolve to HOST by our classifier (name:tag with no dots)
         # trivy accepts PATH or IMAGE
         tool = TrivyTool()
@@ -86,4 +95,5 @@ class TestAppliesto:
 
     def test_applies_to_cidr(self):
         from vuln_scanner.tools.nmap import NmapTool
+
         assert NmapTool().applies_to("10.0.0.0/8")

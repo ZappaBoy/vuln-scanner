@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class OSVScannerTool(AbstractTool):
@@ -38,18 +38,16 @@ class OSVScannerTool(AbstractTool):
                     cve = [a.get("id") for a in vuln.get("aliases", []) if a.get("id", "").startswith("CVE")]
                     refs = [r.get("url", "") for r in vuln.get("references", []) if r.get("url")]
 
-                    findings.append(Finding(
-                        title=f"{pkg_name}@{pkg_version}: {vid}",
-                        severity=sev,
-                        description=(
-                            f"{summary}\n"
-                            f"Package: {pkg_name} {pkg_version}\n"
-                            f"Source: {source}"
-                        ),
-                        tool=self.name,
-                        target=target,
-                        cve=cve,
-                        references=refs[:5],
-                        raw=vuln,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"{pkg_name}@{pkg_version}: {vid}",
+                            severity=sev,
+                            description=(f"{summary}\nPackage: {pkg_name} {pkg_version}\nSource: {source}"),
+                            tool=self.name,
+                            target=target,
+                            cve=cve,
+                            references=refs[:5],
+                            raw=vuln,
+                        )
+                    )
         return findings

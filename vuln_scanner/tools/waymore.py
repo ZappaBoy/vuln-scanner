@@ -1,11 +1,10 @@
 """waymore — extended Wayback Machine URL discovery with extended filters."""
-import re
-import subprocess
-import time
 
-from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+import re
+
 from vuln_scanner.tools.abstract import AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput
 
 _INTERESTING = re.compile(
     r"(?:admin|api|auth|key|token|secret|password|config|backup|\.git|\.env|\.sql|internal)",
@@ -32,13 +31,15 @@ class WaymoreTool(AbstractTool):
                 continue
             seen.add(url)
             if _INTERESTING.search(url):
-                findings.append(Finding(
-                    title=f"Interesting archived URL: {url[:80]}",
-                    severity=Severity.LOW,
-                    description=f"waymore found interesting URL from web archives: {url}",
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-200"],
-                    raw={"url": url},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Interesting archived URL: {url[:80]}",
+                        severity=Severity.LOW,
+                        description=f"waymore found interesting URL from web archives: {url}",
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-200"],
+                        raw={"url": url},
+                    )
+                )
         return findings

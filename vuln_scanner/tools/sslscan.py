@@ -1,8 +1,8 @@
 import xml.etree.ElementTree as ET
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _WEAK_PROTOS = {
     ("ssl", "2"): ("SSL 2.0", Severity.CRITICAL),
@@ -63,14 +63,16 @@ class SSLScanTool(AbstractTool):
                     key = (ptype.lower(), version)
                     if key in _WEAK_PROTOS:
                         label, sev = _WEAK_PROTOS[key]
-                        findings.append(Finding(
-                            title=f"Weak protocol supported: {label}",
-                            severity=sev,
-                            description=f"Server {endpoint} accepts {label} connections.",
-                            tool=self.name,
-                            target=endpoint,
-                            raw={"type": ptype, "version": version},
-                        ))
+                        findings.append(
+                            Finding(
+                                title=f"Weak protocol supported: {label}",
+                                severity=sev,
+                                description=f"Server {endpoint} accepts {label} connections.",
+                                tool=self.name,
+                                target=endpoint,
+                                raw={"type": ptype, "version": version},
+                            )
+                        )
 
             # Weak ciphers
             for cipher_el in ssltest.findall("cipher"):
@@ -82,31 +84,34 @@ class SSLScanTool(AbstractTool):
                 ssl_ver = cipher_el.get("sslversion", "")
 
                 if bits < _WEAK_BITS:
-                    findings.append(Finding(
-                        title=f"Weak cipher: {cipher_name} ({bits}-bit)",
-                        severity=Severity.HIGH,
-                        description=(
-                            f"Server {endpoint} accepts weak cipher {cipher_name} "
-                            f"({bits}-bit key) via {ssl_ver}."
-                        ),
-                        tool=self.name,
-                        target=endpoint,
-                        raw={"cipher": cipher_name, "bits": bits, "ssl_version": ssl_ver},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Weak cipher: {cipher_name} ({bits}-bit)",
+                            severity=Severity.HIGH,
+                            description=(
+                                f"Server {endpoint} accepts weak cipher {cipher_name} ({bits}-bit key) via {ssl_ver}."
+                            ),
+                            tool=self.name,
+                            target=endpoint,
+                            raw={"cipher": cipher_name, "bits": bits, "ssl_version": ssl_ver},
+                        )
+                    )
 
             # Heartbleed
             for hb_el in ssltest.findall("heartbleed"):
                 if hb_el.get("vulnerable", "0") == "1":
                     ssl_ver = hb_el.get("sslversion", "")
-                    findings.append(Finding(
-                        title=f"Heartbleed (CVE-2014-0160) on {ssl_ver}",
-                        severity=Severity.CRITICAL,
-                        description=f"Server {endpoint} is vulnerable to Heartbleed via {ssl_ver}.",
-                        tool=self.name,
-                        target=endpoint,
-                        cve=["CVE-2014-0160"],
-                        raw={"sslversion": ssl_ver},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Heartbleed (CVE-2014-0160) on {ssl_ver}",
+                            severity=Severity.CRITICAL,
+                            description=f"Server {endpoint} is vulnerable to Heartbleed via {ssl_ver}.",
+                            tool=self.name,
+                            target=endpoint,
+                            cve=["CVE-2014-0160"],
+                            raw={"sslversion": ssl_ver},
+                        )
+                    )
 
             # Certificate expiry
             cert_el = ssltest.find("certificate")
@@ -116,22 +121,26 @@ class SSLScanTool(AbstractTool):
                 subject = cert_el.findtext("subject", "")
 
                 if expired == "true":
-                    findings.append(Finding(
-                        title=f"Expired certificate: {subject}",
-                        severity=Severity.HIGH,
-                        description=f"TLS certificate on {endpoint} has expired.",
-                        tool=self.name,
-                        target=endpoint,
-                        raw={"subject": subject, "expired": True},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Expired certificate: {subject}",
+                            severity=Severity.HIGH,
+                            description=f"TLS certificate on {endpoint} has expired.",
+                            tool=self.name,
+                            target=endpoint,
+                            raw={"subject": subject, "expired": True},
+                        )
+                    )
                 if self_signed == "true":
-                    findings.append(Finding(
-                        title=f"Self-signed certificate: {subject}",
-                        severity=Severity.MEDIUM,
-                        description=f"TLS certificate on {endpoint} is self-signed.",
-                        tool=self.name,
-                        target=endpoint,
-                        raw={"subject": subject, "self_signed": True},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Self-signed certificate: {subject}",
+                            severity=Severity.MEDIUM,
+                            description=f"TLS certificate on {endpoint} is self-signed.",
+                            tool=self.name,
+                            target=endpoint,
+                            raw={"subject": subject, "self_signed": True},
+                        )
+                    )
 
         return findings

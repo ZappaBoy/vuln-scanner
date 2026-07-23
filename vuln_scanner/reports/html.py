@@ -1,11 +1,10 @@
 """Self-contained professional HTML reporter."""
 
-
 import html as _html
 from collections import defaultdict
 from pathlib import Path
 
-from vuln_scanner.model import Assessment, Cluster
+from vuln_scanner.model import Assessment, deduplicate_findings
 from vuln_scanner.reports.base import AbstractReporter
 from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity, severity_passes
 from vuln_scanner.tools.models import Finding, ScanResult
@@ -26,9 +25,7 @@ _SEV_BG = {
     Severity.INFO: "#eceff1",
 }
 
-_SEV_ORDER = [
-    Severity.CRITICAL, Severity.HIGH, Severity.MEDIUM, Severity.LOW, Severity.INFO
-]
+_SEV_ORDER = [Severity.CRITICAL, Severity.HIGH, Severity.MEDIUM, Severity.LOW, Severity.INFO]
 
 _CONF_LABEL = {
     Confidence.HIGH: "High",
@@ -44,10 +41,7 @@ def _e(s: str) -> str:
 
 def _badge(sev: Severity) -> str:
     color = _SEV_COLOR.get(sev, "#546e7a")
-    return (
-        f'<span class="badge" style="background:{color}">'
-        f'{_e(sev.value.upper())}</span>'
-    )
+    return f'<span class="badge" style="background:{color}">{_e(sev.value.upper())}</span>'
 
 
 _CSS = """
@@ -130,7 +124,7 @@ class HTMLReporter(AbstractReporter):
   <div class="meta">
     Generated: {_e(stats.generated_at)} &nbsp;|&nbsp;
     Targets: {stats.targets_scanned} &nbsp;|&nbsp;
-    Findings: <strong>{stats.total_findings}</strong> &nbsp;|&nbsp;
+    Findings: <strong>{stats.unique_findings}</strong> unique ({stats.total_findings} raw) &nbsp;|&nbsp;
     Duration: {stats.total_duration:.0f}s
   </div>
 </div>
@@ -144,7 +138,7 @@ class HTMLReporter(AbstractReporter):
                 f'<div class="stat-card"><div class="num" style="color:{color}">{count}</div>'
                 f'<div class="label">{sev.value.capitalize()}</div></div>'
             )
-        parts.append('</div>')
+        parts.append("</div>")
 
         # Executive summary
         summary = assessment.executive_summary or self._computed_summary(assessment)
@@ -169,7 +163,7 @@ class HTMLReporter(AbstractReporter):
   {"<p><em>Tags: " + _e(", ".join(cluster.tags)) + "</em></p>" if cluster.tags else ""}
 </div>
 """)
-            parts.append('</div>')
+            parts.append("</div>")
 
         # Per-target findings
         parts.append('<div class="section"><h2>Findings</h2>')
@@ -179,7 +173,7 @@ class HTMLReporter(AbstractReporter):
 
         for target in sorted(by_target):
             target_results = by_target[target]
-            all_findings: list[tuple[str, Finding]] = []
+            raw_pairs: list[tuple[str, Finding]] = []
             errors: list[tuple[str, str]] = []
             for r in sorted(target_results, key=lambda x: x.tool):
                 if r.status == ScanStatus.SKIPPED and not r.findings:
@@ -191,34 +185,38 @@ class HTMLReporter(AbstractReporter):
                         continue
                     if not severity_passes(f.severity, self._min_severity):
                         continue
-                    all_findings.append((r.tool, f))
+                    raw_pairs.append((r.tool, f))
 
-            if not all_findings and not errors:
+            if not raw_pairs and not errors:
                 continue
 
-            parts.append(f'<details open><summary><code>{_e(target)}</code> — {len(all_findings)} finding(s)</summary>')
+            # Deduplicate cross-tool findings before rendering
+            groups = deduplicate_findings(raw_pairs)
+            groups.sort(key=lambda g: _SEV_ORDER.index(g.finding.severity))
+
+            parts.append(f"<details open><summary><code>{_e(target)}</code> — {len(groups)} finding(s)</summary>")
 
             for tool_name, err in errors:
                 parts.append(f'<p style="color:var(--high)"><strong>{_e(tool_name)} error:</strong> {_e(err)}</p>')
 
-            if all_findings:
-                all_findings.sort(key=lambda x: _SEV_ORDER.index(x[1].severity))
+            if groups:
                 parts.append("""
 <table>
 <thead><tr>
-  <th>Severity</th><th>Tool</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
+  <th>Severity</th><th>Tool(s)</th><th>Title</th><th>CWE</th><th>Confidence</th><th>CVEs</th>
 </tr></thead><tbody>
 """)
-                for tool_name, f in all_findings:
+                for g in groups:
+                    f = g.finding
                     badge = _badge(f.severity)
                     cwes = _e(", ".join(f.cwe)) if f.cwe else "—"
                     cves = _e(", ".join(f.cve)) if f.cve else "—"
                     conf = _e(_CONF_LABEL.get(f.confidence, "—"))
-                    detail_id = f"d-{id(f)}"
+                    tools_str = _e(", ".join(g.found_by))
                     parts.append(f"""
 <tr>
   <td>{badge}</td>
-  <td><code>{_e(tool_name)}</code></td>
+  <td><code>{tools_str}</code></td>
   <td>
     <strong>{_e(f.title)}</strong>
     <div class="finding-detail">
@@ -230,33 +228,33 @@ class HTMLReporter(AbstractReporter):
   <td>{cwes}</td><td>{conf}</td><td>{cves}</td>
 </tr>
 """)
-                parts.append('</tbody></table>')
+                parts.append("</tbody></table>")
 
-            parts.append('</details>')
+            parts.append("</details>")
 
-        parts.append('</div>')  # section
+        parts.append("</div>")  # section
 
         # PoC assets
         if assessment.poc_asset_paths:
             parts.append('<div class="section"><h2>PoC Assets</h2><ul>')
             for path in assessment.poc_asset_paths:
-                parts.append(f'<li><code>{_e(path)}</code></li>')
-            parts.append('</ul></div>')
+                parts.append(f"<li><code>{_e(path)}</code></li>")
+            parts.append("</ul></div>")
 
-        parts.append(f'<script>{_JS}</script></div></body></html>')
+        parts.append(f"<script>{_JS}</script></div></body></html>")
         return "\n".join(parts)
 
     @staticmethod
     def _mitigation_html(f: Finding) -> str:
         parts = []
         if f.llm_notes:
-            parts.append(f'<h5>Analyst notes</h5><p>{_e(f.llm_notes)}</p>')
+            parts.append(f"<h5>Analyst notes</h5><p>{_e(f.llm_notes)}</p>")
         if f.exploitability:
-            parts.append(f'<h5>Exploitability</h5><p>{_e(f.exploitability)}</p>')
+            parts.append(f"<h5>Exploitability</h5><p>{_e(f.exploitability)}</p>")
         if f.mitigation:
-            parts.append(f'<h5>Mitigation</h5><pre>{_e(f.mitigation)}</pre>')
+            parts.append(f"<h5>Mitigation</h5><pre>{_e(f.mitigation)}</pre>")
         if f.remediation:
-            parts.append(f'<h5>Remediation</h5><pre>{_e(f.remediation)}</pre>')
+            parts.append(f"<h5>Remediation</h5><pre>{_e(f.remediation)}</pre>")
         return "".join(parts)
 
     @staticmethod
@@ -264,7 +262,7 @@ class HTMLReporter(AbstractReporter):
         if not f.poc_ids:
             return ""
         ids = _e(", ".join(f.poc_ids))
-        return f'<h5>PoC scripts</h5><p><code>{ids}</code></p>'
+        return f"<h5>PoC scripts</h5><p><code>{ids}</code></p>"
 
     @staticmethod
     def _computed_summary(assessment: Assessment) -> str:

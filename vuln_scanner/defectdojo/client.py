@@ -25,10 +25,12 @@ class DefectDojoClient:
         self._config = config
         self._base = config.url.rstrip("/")
         self._session = requests.Session()
-        self._session.headers.update({
-            "Authorization": f"Token {config.api_key}",
-            "Accept": "application/json",
-        })
+        self._session.headers.update(
+            {
+                "Authorization": f"Token {config.api_key}",
+                "Accept": "application/json",
+            }
+        )
 
     def is_configured(self) -> bool:
         return bool(self._config.api_key and self._config.product_name)

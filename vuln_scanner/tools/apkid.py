@@ -1,10 +1,10 @@
 """APKiD — Android APK packer/protector identification."""
-import json
-import re
 
+import json
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _DANGEROUS = {"obfuscator", "packer", "protector", "anti_debug", "anti_emulation", "dropper"}
 
@@ -28,16 +28,18 @@ class APKiDTool(AbstractTool):
                 for category, items in matches.items():
                     is_suspicious = any(d in category.lower() for d in _DANGEROUS)
                     sev = Severity.HIGH if is_suspicious else Severity.INFO
-                    for item in (items if isinstance(items, list) else [items]):
-                        findings.append(Finding(
-                            title=f"APKiD [{category}]: {str(item)[:60]}",
-                            severity=sev,
-                            description=f"Detected {category} in {fname}: {item}",
-                            tool=self.name,
-                            target=target,
-                            cwe=["CWE-494"] if is_suspicious else [],
-                            raw={"category": category, "match": item, "file": fname},
-                        ))
+                    for item in items if isinstance(items, list) else [items]:
+                        findings.append(
+                            Finding(
+                                title=f"APKiD [{category}]: {str(item)[:60]}",
+                                severity=sev,
+                                description=f"Detected {category} in {fname}: {item}",
+                                tool=self.name,
+                                target=target,
+                                cwe=["CWE-494"] if is_suspicious else [],
+                                raw={"category": category, "match": item, "file": fname},
+                            )
+                        )
         except json.JSONDecodeError:
             pass
         return findings

@@ -1,5 +1,6 @@
 """Pydantic data models: Finding, ScanInput, ScanResult, AuthConfig."""
-from pydantic import BaseModel, Field, field_validator
+
+from pydantic import BaseModel, Field
 
 from vuln_scanner.tools.enums import Confidence, ScanMode, ScanStatus, Severity
 
@@ -11,6 +12,7 @@ class AuthConfig(BaseModel):
     [scan.auth.targets."<target>"] and take full precedence for that target.
     Call ``for_target(target)`` to get the resolved config for a specific target.
     """
+
     cookies: dict[str, str] = Field(default_factory=dict)
     headers: dict[str, str] = Field(default_factory=dict)
     bearer_token: str = ""
@@ -49,10 +51,7 @@ class AuthConfig(BaseModel):
 
     @property
     def is_configured(self) -> bool:
-        return bool(
-            self.cookies or self.headers or self.bearer_token
-            or self.username or self.login_url
-        )
+        return bool(self.cookies or self.headers or self.bearer_token or self.username or self.login_url)
 
 
 class Finding(BaseModel):
@@ -81,7 +80,7 @@ class Finding(BaseModel):
     poc_ids: list[str] = Field(default_factory=list)
 
     # CVSS v3.1
-    cvss_vector: str = ""          # e.g. "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+    cvss_vector: str = ""  # e.g. "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
     cvss_score: float | None = None
 
 
@@ -92,10 +91,7 @@ class ScanInput(BaseModel):
     rate_limit: int | None = None
     extra_args: list[str] = Field(default_factory=list)
     auth: AuthConfig = Field(default_factory=AuthConfig)
-    proxy: str | None = None   # e.g. "http://127.0.0.1:8080"
-
-
-_RAW_OUTPUT_KEEP = 4096
+    proxy: str | None = None  # e.g. "http://127.0.0.1:8080"
 
 
 class ScanResult(BaseModel):
@@ -106,10 +102,5 @@ class ScanResult(BaseModel):
     status: ScanStatus = ScanStatus.SUCCESS
     error: str | None = None
     raw_output: str = ""
-
-    @field_validator("raw_output")
-    @classmethod
-    def _truncate_raw(cls, v: str) -> str:
-        if len(v) > _RAW_OUTPUT_KEEP:
-            return v[:_RAW_OUTPUT_KEEP] + f"\n… [{len(v) - _RAW_OUTPUT_KEEP} chars truncated]"
-        return v
+    # Absolute path to the full tool log written by the orchestrator (empty if not written yet).
+    log_path: str = ""

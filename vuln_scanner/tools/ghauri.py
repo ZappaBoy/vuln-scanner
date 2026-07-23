@@ -1,9 +1,10 @@
 """Ghauri — advanced cross-platform SQL injection detection tool."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _VULN_RE = re.compile(
     r"(?:Parameter|Payload)[:\s]+([^\n]+?)(?:\s+is\s+(?:vulnerable|injectable)|$)",
@@ -39,16 +40,18 @@ class GhauriTool(AbstractTool):
             tech = m.group(1).strip()
         for m in _INJECTABLE_RE.finditer(raw):
             method, param = m.group(1), m.group(2)
-            findings.append(Finding(
-                title=f"SQL Injection: {method} parameter '{param}'",
-                severity=Severity.CRITICAL,
-                description=(
-                    f"Ghauri confirmed SQL injection in {method} parameter '{param}' on {target}."
-                    + (f"\nDatabase: {tech}" if tech else "")
-                ),
-                tool=self.name,
-                target=target,
-                cwe=["CWE-89"],
-                raw={"method": method, "parameter": param, "dbms": tech},
-            ))
+            findings.append(
+                Finding(
+                    title=f"SQL Injection: {method} parameter '{param}'",
+                    severity=Severity.CRITICAL,
+                    description=(
+                        f"Ghauri confirmed SQL injection in {method} parameter '{param}' on {target}."
+                        + (f"\nDatabase: {tech}" if tech else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-89"],
+                    raw={"method": method, "parameter": param, "dbms": tech},
+                )
+            )
         return findings

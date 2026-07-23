@@ -1,6 +1,6 @@
 # vuln-scanner
 
-An automated vulnerability assessment platform that orchestrates **86 open-source security tools**, aggregates and deduplicates findings, runs an optional **OpenAI-compatible LLM analysis layer** for triage, clustering, and remediation, generates **proof-of-concept scripts**, and produces professional **Markdown, HTML, and JSON reports** — all from a single BlackArch Linux Docker image.
+An automated vulnerability assessment platform that orchestrates **210 open-source security tools**, aggregates and deduplicates findings, runs an optional **OpenAI-compatible LLM analysis layer** for triage, clustering, and remediation, generates **proof-of-concept scripts**, and produces professional **Markdown, HTML, JSON, and PDF reports** — all from a single BlackArch Linux Docker image.
 
 ---
 
@@ -64,7 +64,7 @@ All scanning tools and PoC execution run inside a **BlackArch Linux** Docker con
 
 ## Tools
 
-86 tools organized by category. Each tool declares the target types it supports; the orchestrator skips incompatible pairings automatically.
+210 tools organized by category. Each tool declares the target types it supports; the orchestrator skips incompatible pairings automatically.
 
 ### Network & Port Scanning
 | Tool | Notes |
@@ -316,14 +316,14 @@ _token = "csrf-value-here"
 
 ## LLM Analysis
 
-When an API key is present, the LLM layer activates automatically. It performs four passes over the scan results:
+When an API key is present, the LLM layer activates automatically. It performs two passes over the scan results:
 
 | Pass | Name | What it does |
 |------|------|-------------|
-| 1 | **Triage** | Assigns CWE, confidence, false-positive flag, exploitability summary, and designs a PoC for each finding |
-| 2 | **PoC generation** | Writes self-contained Python/Bash scripts that confirm the finding using tools already in the container |
-| 3 | **Mitigation** | Produces concrete short-term mitigations and permanent remediations, optionally informed by PoC evidence |
-| 4 | **Clustering** | Groups findings by root cause, writes shared remediations, and produces an executive summary |
+| 1 | **Enrich & triage** | Assigns CWE, confidence, false-positive flag, exploitability summary, mitigation, remediation, and a PoC plan for each finding in a single call |
+| 2 | **Clustering** | Groups findings by root cause, writes shared remediations, and produces an executive summary |
+
+PoC generation and execution are a separate optional phase (see `[llm.features] generate_poc` / `execute_poc`), and post-PoC mitigation re-enrichment runs only when confirmed PoCs are produced.
 
 ### Provider configuration
 
@@ -857,8 +857,8 @@ vuln_scanner/
 │   ├── models.py        # Finding, ScanInput, ScanResult, AuthConfig (pydantic)
 │   ├── target.py        # classify_target() — maps target string to TargetType set
 │   ├── abstract.py      # AbstractTool ABC + subprocess execution helpers
-│   ├── __init__.py      # TOOL_REGISTRY (86 tools)
-│   └── <tool>.py        # One file per tool (86 total)
+│   ├── __init__.py      # TOOL_REGISTRY (210 tools)
+│   └── <tool>.py        # One file per tool (210 total)
 │
 ├── llm/
 │   ├── models.py        # LLMConfig, LLMFeatures, PocConfig (pydantic)

@@ -1,14 +1,14 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _SEV_MAP: dict[str, Severity] = {
-    "HIGH":     Severity.HIGH,
-    "MEDIUM":   Severity.MEDIUM,
-    "LOW":      Severity.LOW,
-    "INFO":     Severity.INFO,
+    "HIGH": Severity.HIGH,
+    "MEDIUM": Severity.MEDIUM,
+    "LOW": Severity.LOW,
+    "INFO": Severity.INFO,
     "CRITICAL": Severity.CRITICAL,
 }
 
@@ -24,9 +24,9 @@ class GraphQLCopTool(AbstractTool):
         cmd = ["graphql-cop", "-t", url, "-o", "json"]
 
         if scan_input.mode == ScanMode.PASSIVE:
-            cmd += ["--introspection"]   # only run introspection-based checks
+            cmd += ["--introspection"]  # only run introspection-based checks
         if scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["--dos"]             # include denial-of-service checks
+            cmd += ["--dos"]  # include denial-of-service checks
 
         cmd += scan_input.extra_args
         return cmd
@@ -53,16 +53,15 @@ class GraphQLCopTool(AbstractTool):
             severity_raw = item.get("severity", "MEDIUM").upper()
             sev = _SEV_MAP.get(severity_raw, Severity.MEDIUM)
 
-            findings.append(Finding(
-                title=f"GraphQL: {title}",
-                severity=sev,
-                description=(
-                    (description or title)
-                    + (f"\nImpact: {impact}" if impact else "")
-                ),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"GraphQL: {title}",
+                    severity=sev,
+                    description=((description or title) + (f"\nImpact: {impact}" if impact else "")),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings

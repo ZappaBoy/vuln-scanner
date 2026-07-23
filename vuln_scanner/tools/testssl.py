@@ -1,20 +1,19 @@
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 _SKIP_SEVERITIES = {"ok", "info", "hint", "debug", "not tested"}
 
 # testssl IDs that are scanner diagnostics, not target vulnerabilities
-_SKIP_IDS = {"engine_problem", "scanTime", "scanProblem", "fileCreation",
-             "service", "pre_info"}
+_SKIP_IDS = {"engine_problem", "scanTime", "scanProblem", "fileCreation", "service", "pre_info"}
 
 _MODE_FLAGS: dict[ScanMode, list[str]] = {
     ScanMode.PARANOID: ["--protocols", "--headers", "--cipher-per-proto"],
-    ScanMode.PASSIVE:  ["--protocols", "--headers", "--cipher-per-proto", "--server-defaults"],
-    ScanMode.ACTIVE:   [],                   # standard run
-    ScanMode.AGGRESSIVE: ["--full"],         # all checks including client simulation
+    ScanMode.PASSIVE: ["--protocols", "--headers", "--cipher-per-proto", "--server-defaults"],
+    ScanMode.ACTIVE: [],  # standard run
+    ScanMode.AGGRESSIVE: ["--full"],  # all checks including client simulation
 }
 
 
@@ -30,9 +29,11 @@ class TestSSLTool(AbstractTool):
             host = f"{host}:443"
         cmd = [
             "testssl",
-            "--jsonfile", OUTPUT_FILE_SENTINEL,
+            "--jsonfile",
+            OUTPUT_FILE_SENTINEL,
             "--quiet",
-            "--nodns", "min",
+            "--nodns",
+            "min",
         ]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
@@ -60,15 +61,17 @@ class TestSSLTool(AbstractTool):
             severity = _parse_severity(sev_raw)
             cve_raw = item.get("cve", "")
             cves = [c.strip() for c in cve_raw.split() if c.startswith("CVE-")]
-            findings.append(Finding(
-                title=f"[{item.get('id', '?')}] {item.get('finding', '')[:120]}",
-                severity=severity,
-                description=item.get("finding", ""),
-                tool=self.name,
-                target=target,
-                cve=cves,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{item.get('id', '?')}] {item.get('finding', '')[:120]}",
+                    severity=severity,
+                    description=item.get("finding", ""),
+                    tool=self.name,
+                    target=target,
+                    cve=cves,
+                    raw=item,
+                )
+            )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:

@@ -1,13 +1,12 @@
 """Retire.js — JavaScript library vulnerability detection."""
-import json
-import re
 
+import json
+
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH,
-            "medium": Severity.MEDIUM, "low": Severity.LOW}
+_SEV_MAP = {"critical": Severity.CRITICAL, "high": Severity.HIGH, "medium": Severity.MEDIUM, "low": Severity.LOW}
 
 
 class RetireJSTool(AbstractTool):
@@ -34,16 +33,18 @@ class RetireJSTool(AbstractTool):
                         sev = _SEV_MAP.get(severity_str, Severity.MEDIUM)
                         summary = vuln.get("summary", "")
                         cves = vuln.get("identifiers", {}).get("CVE", [])
-                        findings.append(Finding(
-                            title=f"retire.js [{lib} {version}]: {summary[:60]}",
-                            severity=sev,
-                            description=f"Vulnerable JS library: {lib} {version}\n{summary}\nFile: {fname}",
-                            tool=self.name,
-                            target=target,
-                            cwe=["CWE-1035"],
-                            cve=cves,
-                            raw=vuln,
-                        ))
+                        findings.append(
+                            Finding(
+                                title=f"retire.js [{lib} {version}]: {summary[:60]}",
+                                severity=sev,
+                                description=f"Vulnerable JS library: {lib} {version}\n{summary}\nFile: {fname}",
+                                tool=self.name,
+                                target=target,
+                                cwe=["CWE-1035"],
+                                cve=cves,
+                                raw=vuln,
+                            )
+                        )
         except json.JSONDecodeError:
             pass
         return findings

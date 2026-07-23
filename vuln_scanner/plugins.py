@@ -10,7 +10,6 @@ Each plugin file is imported as a module; all ``AbstractTool`` subclasses found
 in it (concrete, not abstract) are registered into the provided registry dict.
 """
 
-
 import importlib.util
 import inspect
 import logging
@@ -34,9 +33,7 @@ _BUILTIN_PLUGIN_DIRS: list[Path] = [
 def _load_module(path: Path) -> ModuleType | None:
     """Import a .py file as a module; return None on failure."""
     try:
-        spec = importlib.util.spec_from_file_location(
-            f"_vuln_scanner_plugin_{path.stem}", str(path)
-        )
+        spec = importlib.util.spec_from_file_location(f"_vuln_scanner_plugin_{path.stem}", str(path))
         if spec is None or spec.loader is None:
             return None
         mod = importlib.util.module_from_spec(spec)

@@ -7,20 +7,21 @@ Configure connection via environment variables:
   VS_OPENVAS_USER    (default: admin)
   VS_OPENVAS_PASS    (default: admin)
 """
+
 import os
 import subprocess
 import time
 import xml.etree.ElementTree as ET
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 # GVM built-in scan config UUIDs (Greenbone Community Edition defaults)
 _CONFIG_IDS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "2d3f051c-55ba-11e3-bf43-406186ea4fc5",  # Host Discovery
-    ScanMode.PASSIVE:    "2d3f051c-55ba-11e3-bf43-406186ea4fc5",  # Host Discovery
-    ScanMode.ACTIVE:     "daba56c8-73ec-11df-a475-002264764cea",  # Full and fast
+    ScanMode.PARANOID: "2d3f051c-55ba-11e3-bf43-406186ea4fc5",  # Host Discovery
+    ScanMode.PASSIVE: "2d3f051c-55ba-11e3-bf43-406186ea4fc5",  # Host Discovery
+    ScanMode.ACTIVE: "daba56c8-73ec-11df-a475-002264764cea",  # Full and fast
     ScanMode.AGGRESSIVE: "698f691e-7489-11df-9d8c-002264764cea",  # Full and very deep
 }
 
@@ -29,8 +30,16 @@ _DEFAULT_PORT_LIST = "730ef368-57e2-11e1-a90f-406186ea4fc5"  # All IANA assigned
 
 def _gvm(socket: str, user: str, password: str, xml: str, timeout: int = 60) -> str:
     cmd = [
-        "gvm-cli", "--gmp-username", user, "--gmp-password", password,
-        "socket", "--socketpath", socket, "--xml", xml,
+        "gvm-cli",
+        "--gmp-username",
+        user,
+        "--gmp-password",
+        password,
+        "socket",
+        "--socketpath",
+        socket,
+        "--xml",
+        xml,
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     return result.stdout
@@ -50,16 +59,19 @@ class OpenVASTool(AbstractTool):
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         import logging
+
         log = logging.getLogger(__name__)
         start = time.monotonic()
 
         socket = os.environ.get("VS_OPENVAS_SOCKET", "/var/run/gvm/gvmd.sock")
-        user   = os.environ.get("VS_OPENVAS_USER", "admin")
+        user = os.environ.get("VS_OPENVAS_USER", "admin")
         passwd = os.environ.get("VS_OPENVAS_PASS", "admin")
 
         if not os.path.exists(socket):
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
+                tool=self.name,
+                target=target,
+                duration=0.0,
                 status=ScanStatus.SKIPPED,
                 error=f"GVM socket not found at {socket}. Is OpenVAS running?",
             )
@@ -78,7 +90,8 @@ class OpenVASTool(AbstractTool):
             target_id = ET.fromstring(out).get("id", "")
             if not target_id:
                 return ScanResult(
-                    tool=self.name, target=target,
+                    tool=self.name,
+                    target=target,
                     duration=time.monotonic() - start,
                     status=ScanStatus.FAILED,
                     error=f"Failed to create GVM target: {out[:200]}",
@@ -96,7 +109,8 @@ class OpenVASTool(AbstractTool):
             task_id = ET.fromstring(out).get("id", "")
             if not task_id:
                 return ScanResult(
-                    tool=self.name, target=target,
+                    tool=self.name,
+                    target=target,
                     duration=time.monotonic() - start,
                     status=ScanStatus.FAILED,
                     error=f"Failed to create GVM task: {out[:200]}",
@@ -129,8 +143,7 @@ class OpenVASTool(AbstractTool):
             # 5. Fetch report
             findings: list[Finding] = []
             if report_id:
-                out = _gvm(socket, user, passwd,
-                           f"<get_reports report_id='{report_id}' filter='levels=hmlg'/>")
+                out = _gvm(socket, user, passwd, f"<get_reports report_id='{report_id}' filter='levels=hmlg'/>")
                 findings = self._parse_report_xml(out, target)
 
             # 6. Cleanup
@@ -138,27 +151,36 @@ class OpenVASTool(AbstractTool):
             _gvm(socket, user, passwd, f"<delete_target target_id='{target_id}' ultimate='false'/>")
 
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=time.monotonic() - start, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=time.monotonic() - start,
+                status=ScanStatus.SUCCESS,
             )
 
         except subprocess.TimeoutExpired:
             return ScanResult(
-                tool=self.name, target=target,
+                tool=self.name,
+                target=target,
                 duration=float(scan_input.timeout),
                 status=ScanStatus.TIMEOUT,
                 error=f"Timed out after {scan_input.timeout}s",
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error="gvm-cli binary not found.",
+                tool=self.name,
+                target=target,
+                duration=0.0,
+                status=ScanStatus.FAILED,
+                error="gvm-cli binary not found.",
             )
         except Exception as exc:  # noqa: BLE001
             return ScanResult(
-                tool=self.name, target=target,
+                tool=self.name,
+                target=target,
                 duration=time.monotonic() - start,
-                status=ScanStatus.FAILED, error=str(exc),
+                status=ScanStatus.FAILED,
+                error=str(exc),
             )
 
     def _parse_report_xml(self, xml_str: str, target: str) -> list[Finding]:
@@ -169,8 +191,10 @@ class OpenVASTool(AbstractTool):
             return findings
 
         _sev_map = {
-            "high": Severity.HIGH, "medium": Severity.MEDIUM,
-            "low": Severity.LOW, "log": Severity.INFO,
+            "high": Severity.HIGH,
+            "medium": Severity.MEDIUM,
+            "low": Severity.LOW,
+            "log": Severity.INFO,
         }
 
         for result in root.iter("result"):
@@ -182,18 +206,22 @@ class OpenVASTool(AbstractTool):
             port = result.findtext("port") or ""
             desc = result.findtext("description") or ""
             nvt = result.find("nvt") or {}
-            cves = [c.text for c in (nvt.findall("cve") if hasattr(nvt, "findall") else [])
-                    if c.text and c.text.startswith("CVE-")]
-            refs = [r.text for r in (nvt.findall("refs/ref") if hasattr(nvt, "findall") else [])
-                    if r.text]
-            findings.append(Finding(
-                title=name + (f" ({port})" if port else ""),
-                severity=severity,
-                description=desc,
-                tool=self.name,
-                target=host,
-                cve=cves,
-                references=refs,
-                raw={"threat": threat, "port": port},
-            ))
+            cves = [
+                c.text
+                for c in (nvt.findall("cve") if hasattr(nvt, "findall") else [])
+                if c.text and c.text.startswith("CVE-")
+            ]
+            refs = [r.text for r in (nvt.findall("refs/ref") if hasattr(nvt, "findall") else []) if r.text]
+            findings.append(
+                Finding(
+                    title=name + (f" ({port})" if port else ""),
+                    severity=severity,
+                    description=desc,
+                    tool=self.name,
+                    target=host,
+                    cve=cves,
+                    references=refs,
+                    raw={"threat": threat, "port": port},
+                )
+            )
         return findings

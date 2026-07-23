@@ -1,6 +1,5 @@
 """Data models for generated PoC scripts and execution results."""
 
-
 from enum import Enum
 from typing import Any
 
@@ -8,11 +7,11 @@ from pydantic import BaseModel, Field
 
 
 class PocVerdict(str, Enum):
-    CONFIRMED = "confirmed"        # PoC ran and output matched expected indicator
+    CONFIRMED = "confirmed"  # PoC ran and output matched expected indicator
     INCONCLUSIVE = "inconclusive"  # PoC ran but outcome unclear
-    FAILED = "failed"              # PoC script error / non-zero exit
-    NOT_RUN = "not_run"            # generation-only; execution skipped or not allowed
-    UNSAFE = "unsafe"              # LLM flagged safe_to_run=false; script not executed
+    FAILED = "failed"  # PoC script error / non-zero exit
+    NOT_RUN = "not_run"  # generation-only; execution skipped or not allowed
+    UNSAFE = "unsafe"  # LLM flagged safe_to_run=false; script not executed
 
 
 class Poc(BaseModel):

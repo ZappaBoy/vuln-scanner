@@ -1,12 +1,12 @@
 """Cloudsploit — open-source cloud security scanner."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_STATUS_SEV = {"FAIL": Severity.HIGH, "WARN": Severity.MEDIUM,
-               "PASS": Severity.INFO, "UNKNOWN": Severity.LOW}
+_STATUS_SEV = {"FAIL": Severity.HIGH, "WARN": Severity.MEDIUM, "PASS": Severity.INFO, "UNKNOWN": Severity.LOW}
 
 
 class CloudsploitTool(AbstractTool):
@@ -31,15 +31,17 @@ class CloudsploitTool(AbstractTool):
                 plugin = item.get("plugin", "")
                 category = item.get("category", "")
                 message = item.get("message", "")
-                findings.append(Finding(
-                    title=f"Cloudsploit [{category}/{plugin}]: {message[:80]}",
-                    severity=sev,
-                    description=f"{message}\nCategory: {category}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw=item,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Cloudsploit [{category}/{plugin}]: {message[:80]}",
+                        severity=sev,
+                        description=f"{message}\nCategory: {category}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw=item,
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

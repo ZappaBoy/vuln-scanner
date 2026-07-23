@@ -1,12 +1,12 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
-_EXPIRED_SEV   = Severity.HIGH
+_EXPIRED_SEV = Severity.HIGH
 _SELF_SIGN_SEV = Severity.MEDIUM
-_WEAK_PROTO    = {"ssl2.0", "ssl3.0", "tls1.0", "tls1.1"}
+_WEAK_PROTO = {"ssl2.0", "ssl3.0", "tls1.0", "tls1.1"}
 
 
 class TlsxTool(AbstractTool):
@@ -50,57 +50,67 @@ class TlsxTool(AbstractTool):
             mismatched = item.get("mismatched", False)
 
             # Informational: TLS version + cert
-            findings.append(Finding(
-                title=f"TLS: {host} — {tls_version}" + (f" ({subject})" if subject else ""),
-                severity=Severity.INFO,
-                description=(
-                    f"TLS connection to {host}: version={tls_version}, subject={subject}"
-                    + (f", cipher={cipher}" if cipher else "")
-                ),
-                tool=self.name,
-                target=host,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"TLS: {host} — {tls_version}" + (f" ({subject})" if subject else ""),
+                    severity=Severity.INFO,
+                    description=(
+                        f"TLS connection to {host}: version={tls_version}, subject={subject}"
+                        + (f", cipher={cipher}" if cipher else "")
+                    ),
+                    tool=self.name,
+                    target=host,
+                    raw=item,
+                )
+            )
 
             # Weak protocol
             if tls_version.lower().replace(" ", "").replace("v", "") in _WEAK_PROTO:
-                findings.append(Finding(
-                    title=f"Weak TLS protocol: {tls_version}",
-                    severity=Severity.MEDIUM if "tls1" in tls_version.lower() else Severity.HIGH,
-                    description=f"Host {host} uses deprecated protocol {tls_version}.",
-                    tool=self.name,
-                    target=host,
-                    raw={"tls_version": tls_version},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Weak TLS protocol: {tls_version}",
+                        severity=Severity.MEDIUM if "tls1" in tls_version.lower() else Severity.HIGH,
+                        description=f"Host {host} uses deprecated protocol {tls_version}.",
+                        tool=self.name,
+                        target=host,
+                        raw={"tls_version": tls_version},
+                    )
+                )
 
             if expired:
-                findings.append(Finding(
-                    title=f"Expired certificate on {host}",
-                    severity=_EXPIRED_SEV,
-                    description=f"TLS certificate on {host} has expired.",
-                    tool=self.name,
-                    target=host,
-                    raw={"expired": True, "subject": subject},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Expired certificate on {host}",
+                        severity=_EXPIRED_SEV,
+                        description=f"TLS certificate on {host} has expired.",
+                        tool=self.name,
+                        target=host,
+                        raw={"expired": True, "subject": subject},
+                    )
+                )
 
             if self_signed:
-                findings.append(Finding(
-                    title=f"Self-signed certificate on {host}",
-                    severity=_SELF_SIGN_SEV,
-                    description=f"TLS certificate on {host} is self-signed.",
-                    tool=self.name,
-                    target=host,
-                    raw={"self_signed": True, "subject": subject},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Self-signed certificate on {host}",
+                        severity=_SELF_SIGN_SEV,
+                        description=f"TLS certificate on {host} is self-signed.",
+                        tool=self.name,
+                        target=host,
+                        raw={"self_signed": True, "subject": subject},
+                    )
+                )
 
             if mismatched:
-                findings.append(Finding(
-                    title=f"Certificate hostname mismatch on {host}",
-                    severity=Severity.HIGH,
-                    description=f"Certificate subject '{subject}' does not match host '{host}'.",
-                    tool=self.name,
-                    target=host,
-                    raw={"mismatched": True, "subject": subject},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Certificate hostname mismatch on {host}",
+                        severity=Severity.HIGH,
+                        description=f"Certificate subject '{subject}' does not match host '{host}'.",
+                        tool=self.name,
+                        target=host,
+                        raw={"mismatched": True, "subject": subject},
+                    )
+                )
 
         return findings

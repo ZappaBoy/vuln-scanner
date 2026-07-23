@@ -1,9 +1,10 @@
 """zmap — stateless large-scale internet-wide port/network scanner."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _IP_RE = re.compile(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})")
 _OPEN_RE = re.compile(r"(?:open|success)[:\s]+(\S+)", re.IGNORECASE)
@@ -31,13 +32,15 @@ class ZmapTool(AbstractTool):
                 ip = m.group(1)
                 if ip not in seen:
                     seen.add(ip)
-                    findings.append(Finding(
-                        title=f"Open host: {ip}",
-                        severity=Severity.INFO,
-                        description=f"zmap found responsive host: {ip}",
-                        tool=self.name,
-                        target=target,
-                        cwe=[],
-                        raw={"ip": ip},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Open host: {ip}",
+                            severity=Severity.INFO,
+                            description=f"zmap found responsive host: {ip}",
+                            tool=self.name,
+                            target=target,
+                            cwe=[],
+                            raw={"ip": ip},
+                        )
+                    )
         return findings

@@ -1,8 +1,8 @@
 import json
 
+from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool, OUTPUT_FILE_SENTINEL
 
 
 class APIFuzzerTool(AbstractTool):
@@ -16,6 +16,7 @@ class APIFuzzerTool(AbstractTool):
         #   - a URL  (server base URL; spec must be provided via --src_file in extra_args)
         #   - a file path (OpenAPI/Swagger spec; server is inferred from the spec)
         import os as _os
+
         if _os.path.isfile(target):
             cmd = ["APIFuzzer", "--src_file", target, "--report_file", OUTPUT_FILE_SENTINEL]
         else:
@@ -56,17 +57,16 @@ class APIFuzzerTool(AbstractTool):
             if status == 500:
                 sev = Severity.HIGH
 
-            findings.append(Finding(
-                title=f"API fuzz: {method} {endpoint} [{status}]",
-                severity=sev,
-                description=(
-                    f"Unexpected response from {method} {endpoint}: "
-                    f"HTTP {status}. {description}"
-                ).strip(),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"API fuzz: {method} {endpoint} [{status}]",
+                    severity=sev,
+                    description=(f"Unexpected response from {method} {endpoint}: HTTP {status}. {description}").strip(),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings
 

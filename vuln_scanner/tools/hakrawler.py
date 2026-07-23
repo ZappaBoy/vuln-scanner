@@ -2,9 +2,9 @@ import json
 import subprocess
 import time
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
-from vuln_scanner.tools.abstract import AbstractTool
 
 
 class HakrawlerTool(AbstractTool):
@@ -17,7 +17,7 @@ class HakrawlerTool(AbstractTool):
         # hakrawler reads the URL from stdin; extra flags passed here
         cmd = ["hakrawler", "-json"]
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
-            cmd += ["-subs"]    # include subdomains
+            cmd += ["-subs"]  # include subdomains
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-depth", "3"]
         auth = scan_input.auth
@@ -42,14 +42,16 @@ class HakrawlerTool(AbstractTool):
             except json.JSONDecodeError:
                 # plain URL line (non-JSON mode)
                 if line.startswith("http"):
-                    findings.append(Finding(
-                        title=f"URL: {line}",
-                        severity=Severity.INFO,
-                        description=f"Crawled URL: {line}",
-                        tool=self.name,
-                        target=target,
-                        raw={"url": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"URL: {line}",
+                            severity=Severity.INFO,
+                            description=f"Crawled URL: {line}",
+                            tool=self.name,
+                            target=target,
+                            raw={"url": line},
+                        )
+                    )
                 continue
 
             url = item.get("url", item.get("href", ""))
@@ -58,15 +60,16 @@ class HakrawlerTool(AbstractTool):
             if not url:
                 continue
 
-            findings.append(Finding(
-                title=f"URL: {url}",
-                severity=Severity.INFO,
-                description=f"Crawled URL: {url}"
-                            + (f" (tag: {tag}, source: {source})" if tag or source else ""),
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"URL: {url}",
+                    severity=Severity.INFO,
+                    description=f"Crawled URL: {url}" + (f" (tag: {tag}, source: {source})" if tag or source else ""),
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
         return findings
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
@@ -84,16 +87,22 @@ class HakrawlerTool(AbstractTool):
             duration = time.monotonic() - start
             findings = self.parse_output(proc.stdout, target)
             return ScanResult(
-                tool=self.name, target=target, findings=findings,
-                duration=duration, status=ScanStatus.SUCCESS,
+                tool=self.name,
+                target=target,
+                findings=findings,
+                duration=duration,
+                status=ScanStatus.SUCCESS,
                 raw_output=proc.stdout + proc.stderr,
             )
         except subprocess.TimeoutExpired:
-            return ScanResult(tool=self.name, target=target,
-                              duration=float(scan_input.timeout),
-                              status=ScanStatus.TIMEOUT,
-                              error=f"Timed out after {scan_input.timeout}s")
+            return ScanResult(
+                tool=self.name,
+                target=target,
+                duration=float(scan_input.timeout),
+                status=ScanStatus.TIMEOUT,
+                error=f"Timed out after {scan_input.timeout}s",
+            )
         except FileNotFoundError:
-            return ScanResult(tool=self.name, target=target,
-                              status=ScanStatus.FAILED,
-                              error="Binary not found: hakrawler")
+            return ScanResult(
+                tool=self.name, target=target, status=ScanStatus.FAILED, error="Binary not found: hakrawler"
+            )

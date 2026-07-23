@@ -1,9 +1,10 @@
 """CMSmap — open-source multi-CMS security scanner (WordPress, Joomla, Drupal)."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 _CRIT_RE = re.compile(r"\[C\]\s*(.+)", re.IGNORECASE)
 _HIGH_RE = re.compile(r"\[H\]\s*(.+)", re.IGNORECASE)
@@ -37,15 +38,17 @@ class CMSmapTool(AbstractTool):
                 if m:
                     msg = m.group(1).strip()
                     cves = _CVE_RE.findall(msg)
-                    findings.append(Finding(
-                        title=f"CMSmap: {msg[:80]}",
-                        severity=sev,
-                        description=msg,
-                        tool=self.name,
-                        target=target,
-                        cwe=["CWE-693"],
-                        cve=cves,
-                        raw={"line": line},
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"CMSmap: {msg[:80]}",
+                            severity=sev,
+                            description=msg,
+                            tool=self.name,
+                            target=target,
+                            cwe=["CWE-693"],
+                            cve=cves,
+                            raw={"line": line},
+                        )
+                    )
                     break
         return findings

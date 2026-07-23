@@ -1,13 +1,13 @@
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _WORDLISTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "/usr/share/wordlists/dirb/small.txt",
-    ScanMode.PASSIVE:    "/usr/share/wordlists/dirb/common.txt",
-    ScanMode.ACTIVE:     "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
+    ScanMode.PARANOID: "/usr/share/wordlists/dirb/small.txt",
+    ScanMode.PASSIVE: "/usr/share/wordlists/dirb/common.txt",
+    ScanMode.ACTIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
     ScanMode.AGGRESSIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-big.txt",
 }
 
@@ -23,10 +23,14 @@ class WfuzzTool(AbstractTool):
         wordlist = _WORDLISTS[scan_input.mode]
         cmd = [
             "wfuzz",
-            "-z", f"file,{wordlist}",
-            "--hc", "404",
-            "--color", "off",
-            "-f", "-,json",  # stdout JSON
+            "-z",
+            f"file,{wordlist}",
+            "--hc",
+            "404",
+            "--color",
+            "off",
+            "-f",
+            "-,json",  # stdout JSON
             f"{url}/FUZZ",
         ]
         if scan_input.rate_limit is not None:
@@ -68,13 +72,15 @@ class WfuzzTool(AbstractTool):
             if code == 500:
                 sev = Severity.MEDIUM
 
-            findings.append(Finding(
-                title=f"[{code}] {url}",
-                severity=sev,
-                description=f"Resource discovered: {url} (HTTP {code}, {lines} lines, {words} words)",
-                tool=self.name,
-                target=target,
-                raw=item,
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{code}] {url}",
+                    severity=sev,
+                    description=f"Resource discovered: {url} (HTTP {code}, {lines} lines, {words} words)",
+                    tool=self.name,
+                    target=target,
+                    raw=item,
+                )
+            )
 
         return findings

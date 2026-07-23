@@ -1,13 +1,13 @@
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _WORDLISTS: dict[ScanMode, str] = {
-    ScanMode.PARANOID:   "/usr/share/wordlists/dirb/small.txt",
-    ScanMode.PASSIVE:    "/usr/share/wordlists/dirb/common.txt",
-    ScanMode.ACTIVE:     "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
+    ScanMode.PARANOID: "/usr/share/wordlists/dirb/small.txt",
+    ScanMode.PASSIVE: "/usr/share/wordlists/dirb/common.txt",
+    ScanMode.ACTIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt",
     ScanMode.AGGRESSIVE: "/usr/share/wordlists/dirbuster/directory-list-2.3-big.txt",
 }
 
@@ -26,9 +26,12 @@ class GobusterTool(AbstractTool):
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
         wordlist = _WORDLISTS[scan_input.mode]
         cmd = [
-            "gobuster", "dir",
-            "-u", url,
-            "-w", wordlist,
+            "gobuster",
+            "dir",
+            "-u",
+            url,
+            "-w",
+            wordlist,
             "-q",
             "--no-progress",
         ]
@@ -69,13 +72,15 @@ class GobusterTool(AbstractTool):
             elif status == 500:
                 sev = Severity.MEDIUM
 
-            findings.append(Finding(
-                title=f"[{status}] {target}{path}",
-                severity=sev,
-                description=f"Directory/file found: {target}{path} (HTTP {status}, size {size_str})",
-                tool=self.name,
-                target=target,
-                raw={"path": path, "status": status, "size": size_str},
-            ))
+            findings.append(
+                Finding(
+                    title=f"[{status}] {target}{path}",
+                    severity=sev,
+                    description=f"Directory/file found: {target}{path} (HTTP {status}, size {size_str})",
+                    tool=self.name,
+                    target=target,
+                    raw={"path": path, "status": status, "size": size_str},
+                )
+            )
 
         return findings

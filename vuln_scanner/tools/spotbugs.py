@@ -1,9 +1,9 @@
 """SpotBugs — Java bytecode static analysis."""
-import xml.etree.ElementTree as ET
-import re
 
-from vuln_scanner.tools.enums import Severity, TargetType
+import xml.etree.ElementTree as ET
+
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
+from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _PRIORITY_MAP = {"1": Severity.HIGH, "2": Severity.MEDIUM, "3": Severity.LOW}
@@ -17,8 +17,11 @@ class SpotBugsTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return [
-            "spotbugs", "-textui", "-xml:withMessages",
-            "-output", OUTPUT_FILE_SENTINEL,
+            "spotbugs",
+            "-textui",
+            "-xml:withMessages",
+            "-output",
+            OUTPUT_FILE_SENTINEL,
             target,
         ]
 
@@ -38,15 +41,17 @@ class SpotBugsTool(AbstractTool):
                 loc = ""
                 if source is not None:
                     loc = f"{source.get('sourcepath', '')}:{source.get('start', '')}"
-                findings.append(Finding(
-                    title=f"SpotBugs [{bug_type}]: {msg[:80]}",
-                    severity=sev,
-                    description=f"{msg}\nLocation: {loc}" if loc else msg,
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw={"type": bug_type, "priority": priority, "location": loc},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"SpotBugs [{bug_type}]: {msg[:80]}",
+                        severity=sev,
+                        description=f"{msg}\nLocation: {loc}" if loc else msg,
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw={"type": bug_type, "priority": priority, "location": loc},
+                    )
+                )
         except ET.ParseError:
             pass
         return findings

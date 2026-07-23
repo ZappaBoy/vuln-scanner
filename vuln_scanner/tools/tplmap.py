@@ -1,9 +1,10 @@
 """tplmap — Server-Side Template Injection (SSTI) detection and exploitation."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 # "[+] Jinja2 plugin is testing..."
 # "[+] https://target.com/?name=* is vulnerable to SSTI with engine Jinja2"
@@ -54,38 +55,42 @@ class TplmapTool(AbstractTool):
             if m:
                 url = m.group("url")
                 engine = m.group("engine")
-                findings.append(Finding(
-                    title=f"SSTI via {engine} template engine at {url}",
-                    severity=Severity.CRITICAL,
-                    description=(
-                        f"Server-Side Template Injection detected at {url}.\n"
-                        f"Template engine: {engine}\n"
-                        f"SSTI can lead to Remote Code Execution (RCE)."
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-94"],
-                    raw={"url": url, "engine": engine, "line": line},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"SSTI via {engine} template engine at {url}",
+                        severity=Severity.CRITICAL,
+                        description=(
+                            f"Server-Side Template Injection detected at {url}.\n"
+                            f"Template engine: {engine}\n"
+                            f"SSTI can lead to Remote Code Execution (RCE)."
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-94"],
+                        raw={"url": url, "engine": engine, "line": line},
+                    )
+                )
                 continue
 
             # Fallback: generic injection banner
             if _INJECT_RE.search(line):
                 eng_m = _ENGINE_RE.search(raw)
                 engine = eng_m.group("engine") if eng_m else "unknown"
-                findings.append(Finding(
-                    title=f"SSTI detected at {target} (engine: {engine})",
-                    severity=Severity.CRITICAL,
-                    description=(
-                        f"Tplmap identified a Server-Side Template Injection vulnerability at {target}.\n"
-                        f"Template engine: {engine}\n"
-                        f"SSTI can lead to Remote Code Execution (RCE)."
-                    ),
-                    tool=self.name,
-                    target=target,
-                    cwe=["CWE-94"],
-                    raw={"engine": engine},
-                ))
+                findings.append(
+                    Finding(
+                        title=f"SSTI detected at {target} (engine: {engine})",
+                        severity=Severity.CRITICAL,
+                        description=(
+                            f"Tplmap identified a Server-Side Template Injection vulnerability at {target}.\n"
+                            f"Template engine: {engine}\n"
+                            f"SSTI can lead to Remote Code Execution (RCE)."
+                        ),
+                        tool=self.name,
+                        target=target,
+                        cwe=["CWE-94"],
+                        raw={"engine": engine},
+                    )
+                )
                 break
 
         return findings

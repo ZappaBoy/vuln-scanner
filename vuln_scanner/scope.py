@@ -19,6 +19,7 @@ import fnmatch
 import ipaddress
 import logging
 from urllib.parse import urlparse
+
 from pydantic import BaseModel, Field
 
 log = logging.getLogger(__name__)
@@ -75,9 +76,7 @@ class ScopeValidator:
         # for user-provided targets, use check() which respects strict mode
     """
 
-    def __init__(
-        self, include: list[str], exclude: list[str], strict: bool = False
-    ) -> None:
+    def __init__(self, include: list[str], exclude: list[str], strict: bool = False) -> None:
         self._include = include
         self._exclude = exclude
         self._strict = strict
@@ -89,6 +88,11 @@ class ScopeValidator:
             exclude=config.exclude,
             strict=config.strict,
         )
+
+    @property
+    def has_rules(self) -> bool:
+        """True when at least one include/exclude pattern or strict mode is active."""
+        return bool(self._include or self._exclude or self._strict)
 
     def is_in_scope(self, target: str, discovered: bool = False) -> bool:
         """Return True if *target* is in scope.

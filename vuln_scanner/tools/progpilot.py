@@ -1,9 +1,10 @@
 """ProgPilot — PHP SAST tool for detecting security vulnerabilities."""
+
 import json
 
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool
 
 _VULN_SEV = {
     "sql_injection": Severity.CRITICAL,
@@ -40,15 +41,17 @@ class ProgPilotTool(AbstractTool):
                 source = vuln.get("source_name", "")
                 fname = vuln.get("source_file", "")
                 line_num = vuln.get("source_line", "")
-                findings.append(Finding(
-                    title=f"ProgPilot [{name}] via {source}",
-                    severity=sev,
-                    description=f"Vulnerability: {name}\nSource: {source}\nFile: {fname}:{line_num}",
-                    tool=self.name,
-                    target=target,
-                    cwe=[],
-                    raw=vuln,
-                ))
+                findings.append(
+                    Finding(
+                        title=f"ProgPilot [{name}] via {source}",
+                        severity=sev,
+                        description=f"Vulnerability: {name}\nSource: {source}\nFile: {fname}:{line_num}",
+                        tool=self.name,
+                        target=target,
+                        cwe=[],
+                        raw=vuln,
+                    )
+                )
         except json.JSONDecodeError:
             pass
         return findings

@@ -1,9 +1,10 @@
 """nomore403 — automated 403/40x restriction bypass tool."""
+
 import re
 
+from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
-from vuln_scanner.tools.abstract import AbstractTool, _as_url
 
 # "[200] https://target.com/admin with header: X-Original-URL: /"
 # "BYPASS FOUND: https://target.com/admin via ..."
@@ -56,18 +57,19 @@ class Nomore403Tool(AbstractTool):
             if key in seen:
                 continue
             seen.add(key)
-            findings.append(Finding(
-                title=f"403 bypass [{code}]: {url}",
-                severity=Severity.MEDIUM,
-                description=(
-                    f"nomore403 bypassed a 403 restriction on {url} "
-                    f"(returned HTTP {code})."
-                    + (f"\nBypass technique: {method}" if method else "")
-                ),
-                tool=self.name,
-                target=target,
-                cwe=["CWE-284"],
-                raw={"url": url, "status": code, "technique": method},
-            ))
+            findings.append(
+                Finding(
+                    title=f"403 bypass [{code}]: {url}",
+                    severity=Severity.MEDIUM,
+                    description=(
+                        f"nomore403 bypassed a 403 restriction on {url} "
+                        f"(returned HTTP {code})." + (f"\nBypass technique: {method}" if method else "")
+                    ),
+                    tool=self.name,
+                    target=target,
+                    cwe=["CWE-284"],
+                    raw={"url": url, "status": code, "technique": method},
+                )
+            )
 
         return findings

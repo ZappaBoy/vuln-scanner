@@ -33,6 +33,7 @@ class WhatWebTool(AbstractTool):
     binary: str = "whatweb"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.LIVE_HOST})
     produces: frozenset[AssetType] = frozenset({AssetType.TECH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:

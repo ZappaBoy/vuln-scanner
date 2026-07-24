@@ -3,7 +3,7 @@
 import re
 
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
+from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
 
 # "[200] https://target.com/admin with header: X-Original-URL: /"
@@ -25,9 +25,6 @@ class Nomore403Tool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
         cmd = ["nomore403", "-u", url]
-
-        if scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["--techniques", "all"]
 
         auth = scan_input.auth
         if auth.is_configured:

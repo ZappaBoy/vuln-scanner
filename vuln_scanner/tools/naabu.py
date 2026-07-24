@@ -1,8 +1,9 @@
 import json
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _PORTS: dict[ScanMode, str] = {
     ScanMode.PARANOID: "22,80,443,8080,8443",
@@ -24,6 +25,7 @@ class NaabuTool(AbstractTool):
     binary: str = "naabu"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
+    produces: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "").split("/")[0]
@@ -74,3 +76,19 @@ class NaabuTool(AbstractTool):
             )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            port = str(f.raw.get("port", ""))
+            protocol = f.raw.get("protocol", "tcp")
+            host = f.raw.get("ip", f.raw.get("host", f.target))
+            if port:
+                assets.append(Asset(
+                    type=AssetType.OPEN_PORT,
+                    value=f"{host}:{port}/{protocol}",
+                    source=self.name,
+                    target=result.target,
+                    meta={"service": "unknown"},
+                ))
+        return assets

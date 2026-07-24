@@ -30,7 +30,7 @@ class CommixTool(AbstractTool):
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
             cmd += ["--technique=C"]  # classic only (least intrusive)
         elif scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["--all-techniques", "--crawl=2"]
+            cmd += ["--crawl=2"]
 
         if scan_input.rate_limit is not None:
             cmd += [f"--delay={max(1, 1 // scan_input.rate_limit)}"]

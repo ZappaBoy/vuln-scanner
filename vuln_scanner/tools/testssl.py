@@ -1,5 +1,6 @@
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -22,6 +23,7 @@ class TestSSLTool(AbstractTool):
     binary: str = "testssl"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "")

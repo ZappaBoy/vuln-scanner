@@ -1,8 +1,9 @@
 import re
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _IP_RE = re.compile(r"\b(\d{1,3}(?:\.\d{1,3}){3})\b")
 _SUBDOMAIN_RE = re.compile(r"Found:\s+(\S+)\s+(?:==>|->)?\s*(\d{1,3}(?:\.\d{1,3}){3})?")
@@ -15,6 +16,7 @@ class FierceTool(AbstractTool):
     binary: str = "fierce"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
+    produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         domain = target.replace("https://", "").replace("http://", "").split("/")[0]
@@ -89,3 +91,9 @@ class FierceTool(AbstractTool):
                 )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        return [
+            Asset(type=AssetType.SUBDOMAIN, value=f.raw["subdomain"], source=self.name, target=result.target)
+            for f in result.findings if f.raw.get("subdomain")
+        ]

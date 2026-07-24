@@ -3,6 +3,7 @@
 import subprocess
 import time
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -13,6 +14,8 @@ class GotatorTool(AbstractTool):
     binary: str = "gotator"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST})
+    consumes: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
+    produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []
@@ -37,6 +40,12 @@ class GotatorTool(AbstractTool):
                     )
                 )
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        return [
+            Asset(type=AssetType.SUBDOMAIN, value=f.raw["permutation"], source=self.name, target=result.target)
+            for f in result.findings if f.raw.get("permutation")
+        ]
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         start = time.monotonic()

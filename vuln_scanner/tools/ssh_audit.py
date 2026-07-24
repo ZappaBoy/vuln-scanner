@@ -1,8 +1,11 @@
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
-from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+
+_SSH_PORTS = {"22", "2222"}
 
 
 class SSHAuditTool(AbstractTool):
@@ -10,6 +13,7 @@ class SSHAuditTool(AbstractTool):
     binary: str = "ssh-audit"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "")
@@ -71,3 +75,10 @@ class SSHAuditTool(AbstractTool):
             )
 
         return findings
+
+    def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+        from vuln_scanner.tools.abstract import _parse_open_port
+        host, port = _parse_open_port(target)
+        if port and port not in _SSH_PORTS:
+            return ScanResult(tool=self.name, target=target, duration=0.0, status=ScanStatus.SKIPPED)
+        return super().run(f"{host}:{port}" if port else target, scan_input)

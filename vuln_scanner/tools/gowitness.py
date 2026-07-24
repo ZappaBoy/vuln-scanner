@@ -9,6 +9,7 @@ import subprocess
 import time
 from pathlib import Path
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -28,11 +29,13 @@ class GowitnesssTool(AbstractTool):
     binary: str = "gowitness"
     category: str = "recon"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
+    consumes: frozenset[AssetType] = frozenset({AssetType.LIVE_HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
         cmd = [
             "gowitness",
+            "scan",
             "single",
             "--url",
             url,

@@ -1,8 +1,9 @@
 import xml.etree.ElementTree as ET
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _RATE: dict[ScanMode, int] = {
     ScanMode.PARANOID: 100,
@@ -24,6 +25,7 @@ class MasscanTool(AbstractTool):
     binary: str = "masscan"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
+    produces: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         rate = scan_input.rate_limit or _RATE[scan_input.mode]
@@ -77,3 +79,19 @@ class MasscanTool(AbstractTool):
                 )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        assets = []
+        for f in result.findings:
+            port = str(f.raw.get("port", ""))
+            protocol = f.raw.get("protocol", "tcp")
+            service = f.raw.get("service", "unknown")
+            if port:
+                assets.append(Asset(
+                    type=AssetType.OPEN_PORT,
+                    value=f"{f.target}:{port}/{protocol}",
+                    source=self.name,
+                    target=result.target,
+                    meta={"service": service},
+                ))
+        return assets

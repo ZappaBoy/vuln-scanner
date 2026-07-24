@@ -2,6 +2,7 @@ import json
 import subprocess
 import time
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -12,6 +13,7 @@ class CariddiTool(AbstractTool):
     binary: str = "cariddi"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    produces: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # cariddi reads URLs from stdin — target is injected via run(), not as a flag
@@ -103,3 +105,9 @@ class CariddiTool(AbstractTool):
                 )
             )
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        return [
+            Asset(type=AssetType.URL, value=f.raw["url"], source=self.name, target=result.target)
+            for f in result.findings if f.raw.get("url", "").startswith("http")
+        ]

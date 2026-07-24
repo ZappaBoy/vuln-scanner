@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -19,6 +20,7 @@ class SSLScanTool(AbstractTool):
     binary: str = "sslscan"
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "")

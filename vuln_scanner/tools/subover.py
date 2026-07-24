@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -19,6 +20,7 @@ class SubOverTool(AbstractTool):
     binary: str = "subover"
     category: str = "takeover"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []
@@ -65,7 +67,7 @@ class SubOverTool(AbstractTool):
             with os.fdopen(fd, "w") as f:
                 f.write(target + "\n")
             proc = subprocess.run(
-                ["subover", "-l", hosts_file, "-json"],
+                ["subover", "-l", hosts_file],
                 capture_output=True,
                 text=True,
                 timeout=scan_input.timeout,

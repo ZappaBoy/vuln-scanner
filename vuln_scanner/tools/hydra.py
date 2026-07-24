@@ -6,6 +6,7 @@ import os
 import re
 import tempfile
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -61,6 +62,7 @@ class HydraTool(AbstractTool):
     binary: str = "hydra"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # Service defaults to ssh; override via extra_args e.g. "--service ftp"

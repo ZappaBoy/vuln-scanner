@@ -2,6 +2,7 @@ import re
 import subprocess
 import time
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -21,11 +22,15 @@ _ACCESS_SEV: dict[str, Severity] = {
 }
 
 
+_SMB_PORTS = {"139", "445"}
+
+
 class SMBMapTool(AbstractTool):
     name: str = "smbmap"
     binary: str = "smbmap"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
+    consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]
@@ -38,6 +43,10 @@ class SMBMapTool(AbstractTool):
         return cmd
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+        from vuln_scanner.tools.abstract import _parse_open_port
+        h, p = _parse_open_port(target)
+        if p and p not in _SMB_PORTS:
+            return ScanResult(tool=self.name, target=target, duration=0.0, status=ScanStatus.SKIPPED)
         # smbmap exits with a non-zero code and writes to stderr when the target has no
         # SMB service or authentication fails — that is an expected (empty) result, not
         # a tool error.  Read stdout+stderr for share parsing.

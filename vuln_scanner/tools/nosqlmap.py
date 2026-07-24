@@ -29,7 +29,7 @@ class NoSQLMapTool(AbstractTool):
         parsed = urlparse(target if "://" in target else f"http://{target}")
         host = parsed.hostname or target
         port = str(parsed.port) if parsed.port else ("443" if parsed.scheme == "https" else "80")
-        cmd = ["nosqlmap", "--attack", attack, "--victim", host, "--webPort", port]
+        cmd = ["nosqlmap", "--attack", attack, "--victim", host, "--webPort", port, "--webUri", "/"]
 
         cmd += scan_input.extra_args
         return cmd

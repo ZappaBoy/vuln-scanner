@@ -1,5 +1,6 @@
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -16,6 +17,7 @@ class DrheaderTool(AbstractTool):
     binary: str = "drheader"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["drheader", "scan", "single", _as_url(target), "--json"]

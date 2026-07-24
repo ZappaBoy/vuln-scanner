@@ -27,7 +27,7 @@ class KatanaTool(AbstractTool):
             "katana",
             "-u",
             url,
-            "-json",
+            "-jsonl",
             "-silent",
             "-depth",
             str(_DEPTH[scan_input.mode]),

@@ -4,6 +4,7 @@ import subprocess
 import time
 import urllib.request
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -34,6 +35,7 @@ class JSluiceTool(AbstractTool):
     binary: str = "jsluice"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.JS_URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # jsluice reads from stdin; mode determines what we extract

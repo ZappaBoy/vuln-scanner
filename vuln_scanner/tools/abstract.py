@@ -47,6 +47,15 @@ def _as_url(target: str, scheme: str = "http") -> str:
     return f"{scheme}://{target}"
 
 
+def _parse_open_port(value: str) -> tuple[str, str]:
+    """Parse 'host:port/proto' asset value → (host, port). Returns (value, '') on failure."""
+    bare = value.split("/")[0]  # strip "/tcp" suffix
+    if ":" in bare:
+        host, port = bare.rsplit(":", 1)
+        return host, port
+    return value, ""
+
+
 class AbstractTool(ABC, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

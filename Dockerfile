@@ -205,7 +205,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     clone_reqs https://github.com/r0075h3ll/Oralyzer        /opt/oralyzer      && \
     clone_reqs https://github.com/rfc-st/humble             /opt/humble    && mkwrap humble    /opt/humble/humble.py       && \
     clone_reqs https://github.com/s0md3v/Photon             /opt/photon    && mkwrap photon    /opt/photon/photon.py       && \
-    clone_reqs https://github.com/maaaaz/androwarn          /opt/androwarn && mkwrap androwarn /opt/androwarn/androwarn.py
+    clone_reqs https://github.com/maaaaz/androwarn          /opt/androwarn && mkwrap androwarn /opt/androwarn/androwarn.py && \
+    pip install --break-system-packages beautifulsoup4 tld
 
 # csprecon — pip install if it has a package, else fall back to a module shim.
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -477,6 +478,16 @@ RUN --mount=type=bind,from=tool-builder,source=/,target=/mnt \
     cp -a /mnt/root/.dotnet /root/ && \
     cp -a /mnt/usr/lib/python3*/site-packages/. /usr/lib/python3*/site-packages/ && \
     cp -a /mnt/usr/lib/ruby/gems/. /usr/lib/ruby/gems/
+
+# ── Wordlists & DNS resolvers ─────────────────────────────────────────────────
+RUN mkdir -p /usr/share/wordlists/dirbuster /usr/share/wordlists/kiterunner && \
+    curl -sL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/directory-list-2.3-medium.txt" \
+        -o /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt && \
+    curl -sL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/directory-list-2.3-small.txt" \
+        -o /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt && \
+    curl -sL "https://github.com/assetnote/kiterunner/releases/download/v1.0.2/routes-small.kite" \
+        -o /usr/share/wordlists/kiterunner/routes-small.kite && \
+    printf '8.8.8.8\n8.8.4.4\n1.1.1.1\n1.0.0.1\n9.9.9.9\n208.67.222.222\n208.67.220.220\n' > /etc/resolvers.txt
 
 # ── Wrappers that depend on pacman-installed tool files ───────────────────────
 # SecretFinder + spiderfoot ship their CLI as a script under /usr/share|/usr/lib;

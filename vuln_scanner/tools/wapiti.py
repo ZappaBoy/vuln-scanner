@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -25,6 +26,7 @@ class WapitiTool(AbstractTool):
     binary: str = "wapiti"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # Not used directly; run() builds command with tmpfile

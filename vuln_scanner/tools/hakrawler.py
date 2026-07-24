@@ -2,6 +2,7 @@ import json
 import subprocess
 import time
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -12,6 +13,7 @@ class HakrawlerTool(AbstractTool):
     binary: str = "hakrawler"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
+    produces: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # hakrawler reads the URL from stdin; extra flags passed here
@@ -19,7 +21,7 @@ class HakrawlerTool(AbstractTool):
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-subs"]  # include subdomains
         if scan_input.mode == ScanMode.AGGRESSIVE:
-            cmd += ["-depth", "3"]
+            cmd += ["-d", "3"]
         auth = scan_input.auth
         if auth.is_configured:
             for k, v in auth.effective_headers.items():
@@ -71,6 +73,12 @@ class HakrawlerTool(AbstractTool):
                 )
             )
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        return [
+            Asset(type=AssetType.URL, value=f.raw.get("url", f.raw.get("href", "")), source=self.name, target=result.target)
+            for f in result.findings if f.raw.get("url", f.raw.get("href", "")).startswith("http")
+        ]
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

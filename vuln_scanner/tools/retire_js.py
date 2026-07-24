@@ -13,7 +13,7 @@ class RetireJSTool(AbstractTool):
     name: str = "retire-js"
     binary: str = "retire"
     category: str = "sca"
-    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.URL})
+    applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return ["retire", "--outputformat", "json", "--path", target]

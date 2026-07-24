@@ -18,7 +18,7 @@ class GitjackerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        return ["gitjacker", "--url", url, "--output", "/tmp/gitjacker_output"]
+        return ["gitjacker", "-t", url, "--output-path", "/tmp/gitjacker_output"]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

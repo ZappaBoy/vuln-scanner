@@ -66,7 +66,7 @@ def _nuclei_available() -> bool:
     try:
         subprocess.run(["nuclei", "-version"], capture_output=True, timeout=5)
         return True
-    except FileNotFoundError, subprocess.TimeoutExpired:
+    except (FileNotFoundError, subprocess.TimeoutExpired):
         return False
 
 
@@ -157,7 +157,7 @@ def _build_nuclei_command(
     cfg = nuclei_cfg or NucleiConfig()
     mode = scan_input.mode
 
-    cmd = ["nuclei", "-u", _as_url(target), "-json"]
+    cmd = ["nuclei", "-u", _as_url(target), "-jsonl"]
 
     # ── Template directories ───────────────────────────────────────────────
     if cfg.templates_dir:

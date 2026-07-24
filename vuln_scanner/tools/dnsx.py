@@ -1,8 +1,9 @@
 import json
 
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 
 class DnsxTool(AbstractTool):
@@ -10,6 +11,8 @@ class DnsxTool(AbstractTool):
     binary: str = "dnsx"
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
+    consumes: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
+    produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = ["dnsx", "-d", target, "-json", "-silent", "-resp"]
@@ -64,3 +67,9 @@ class DnsxTool(AbstractTool):
             )
 
         return findings
+
+    def extract_assets(self, result: ScanResult) -> list[Asset]:
+        return [
+            Asset(type=AssetType.SUBDOMAIN, value=f.raw.get("host", ""), source=self.name, target=result.target)
+            for f in result.findings if f.raw.get("host")
+        ]

@@ -104,3 +104,25 @@ class ScanResult(BaseModel):
     raw_output: str = ""
     # Absolute path to the full tool log written by the orchestrator (empty if not written yet).
     log_path: str = ""
+
+
+class ExecResult(BaseModel):
+    """Raw result of a custom-argv tool invocation (agent-driven `exec`).
+
+    Unlike ScanResult this carries no parsed Findings — agents reason over the
+    raw stdout/stderr.  Produced by ``AbstractTool.exec``.
+    """
+
+    tool: str
+    binary: str
+    argv: list[str] = Field(default_factory=list)
+    stdout: str = ""
+    stderr: str = ""
+    exit_code: int | None = None
+    duration: float = 0.0
+    timed_out: bool = False
+    error: str = ""  # populated on FileNotFoundError / launch failure
+
+    @property
+    def ok(self) -> bool:
+        return not self.timed_out and not self.error and self.exit_code == 0

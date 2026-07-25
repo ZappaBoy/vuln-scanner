@@ -257,6 +257,51 @@ class HTMLReporter(AbstractReporter):
                 parts.append("</tbody></table>")
             parts.append("</div>")
 
+        # Agent operations
+        if assessment.agent_reports:
+            parts.append('<div class="section"><h2>Agent Operations</h2>')
+            for r in assessment.agent_reports:
+                parts.append(
+                    f"<h3>{_e(r.agent_name)} <small>({_e(r.kind.value)})</small></h3>"
+                    f"<p><strong>Status:</strong> {_e(r.status.value)} &nbsp;|&nbsp; "
+                    f"<strong>Actions:</strong> {r.actions_taken}"
+                    + (f" &nbsp;|&nbsp; <strong>Tokens:</strong> {r.tokens_used}" if r.tokens_used else "")
+                    + f" &nbsp;|&nbsp; <strong>Duration:</strong> {r.duration:.0f}s</p>"
+                )
+                if r.summary:
+                    parts.append(f'<div class="exec-summary">{_e(r.summary)}</div>')
+                if r.findings:
+                    parts.append(
+                        "<table><thead><tr><th>Severity</th><th>Title</th><th>Class</th>"
+                        "<th>Affected</th><th>Verified</th></tr></thead><tbody>"
+                    )
+                    for f in r.findings:
+                        cls = _e(", ".join(f.vuln_class)) or "—"
+                        affected = _e(f.affected_url or f.target) or "—"
+                        parts.append(
+                            f"<tr><td>{_badge(f.severity)}</td><td>{_e(f.title)}</td>"
+                            f"<td>{cls}</td><td><code>{affected}</code></td>"
+                            f"<td>{'yes' if f.verified else 'no'}</td></tr>"
+                        )
+                    parts.append("</tbody></table>")
+                if r.pocs:
+                    parts.append("<h4>PoC artifacts</h4><ul>")
+                    for p in r.pocs:
+                        ran = "executed" if p.executed else "not executed"
+                        parts.append(
+                            f"<li><code>{_e(p.id)}</code> [{_e(p.language)}] {_e(p.description)} "
+                            f"({ran}, {_e(p.verdict)})</li>"
+                        )
+                    parts.append("</ul>")
+                if r.exploit_plan:
+                    parts.append("<h4>Dry-run exploit plan (not executed)</h4><ol>")
+                    for step in r.exploit_plan:
+                        parts.append(f"<li><code>{_e(step[:200])}</code></li>")
+                    parts.append("</ol>")
+                if r.action_log_path:
+                    parts.append(f"<p><small>Audit log: <code>{_e(r.action_log_path)}</code></small></p>")
+            parts.append("</div>")
+
         # PoC assets
         if assessment.poc_asset_paths:
             parts.append('<div class="section"><h2>PoC Assets</h2><ul>')

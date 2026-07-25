@@ -144,7 +144,7 @@ engagement_name = "Automated Scan"
 
 # ─── LLM analysis (OpenAI-compatible) ────────────────────────────────────────
 [llm]
-# enabled = "auto"      # "auto" = on when api_key present; true/false to force
+enabled = "auto"      # "auto" = on when api_key present; true/false to force
                         # env: VS_LLM_ENABLED
 # api_key  = ""         # env: VS_LLM_API_KEY  or  OPENAI_API_KEY
 # base_url = ""         # env: VS_LLM_BASE_URL or  OPENAI_BASE_URL
@@ -230,3 +230,55 @@ allow_git_clone = false                # clone official exploit PoCs from git
 max_pocs        = 20                   # cap to avoid runaway generation
 only_severities = ["critical", "high", "medium"]
 # assets_dir    = ""                   # default: <report_dir>/<timestamp>_assets/poc/
+
+# ─── Tool chaining (discovery data-flow graph) ───────────────────────────────
+# Off by default = flat tool×target matrix. When enabled, tools that produce
+# assets feed tools that consume them in wave/fixpoint order. Surfaces a
+# "Discovery Chain" section in every report. See the README "Tool Chaining".
+[chaining]
+enabled         = true
+max_depth       = 5      # max wave count (prevents unbounded expansion)
+max_new_targets = 200    # hard cap on newly-discovered targets per run
+
+[chaining.asset_budgets]  # per-asset-type carry-forward caps
+subdomain = 500
+live_host = 500
+url       = 1000
+open_port = 300
+
+# ─── Agentic testing (bug-bounty / pentester) ────────────────────────────────
+# Container-only (requires VS_IN_CONTAINER=1). Agents run one at a time. See the
+# "Agentic Testing" section of the README for the full safety model.
+[agents]
+enabled           = true              # master switch
+scope_enforcement = true               # validate every host an agent touches
+
+[agents.sandbox]                        # POSIX rlimits for run_code
+cpu_seconds  = 30
+memory_mb    = 512
+max_procs    = 64                       # fork-bomb guard
+file_size_mb = 50
+timeout      = 120
+network      = "lab"                    # "lab" | "none" | "host"
+
+[agents.submission]                     # per-bug bug-bounty submission reports
+enabled = true
+formats = ["markdown", "json"]
+# template = ""                         # optional override; {title} {severity} …
+
+[[agents.agents]]
+name           = "hunter"
+kind           = "bug_bounty"           # prove bugs exist; non-destructive
+timeout        = 600
+max_tool_calls = 40
+# token_budget = 200000
+# model        = ""                     # inherits [llm].model if empty
+# system_prompt = ""                    # inherits built-in default if empty
+
+[[agents.agents]]
+name               = "operator"
+kind               = "pentester"        # PoC exploitation; dry-run by default
+timeout            = 900
+max_tool_calls     = 60
+allow_exploitation = false              # true + active/aggressive mode → live exec
+require_approval   = true              # true → always emit plan, never fire

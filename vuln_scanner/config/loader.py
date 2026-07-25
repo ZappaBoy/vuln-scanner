@@ -79,6 +79,9 @@ class _EnvSettings(BaseSettings):
     nuclei_new_templates: str | None = None
     # Recon (VS_NO_RECON)
     no_recon: str | None = None
+    # Agents (VS_AGENTS_*)
+    agents_enabled: str | None = None
+    agents_scope_enforcement: str | None = None
 
 
 def _parse_bool_env(v: str | None) -> bool | None:
@@ -152,6 +155,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--llm-model", metavar="MODEL", help="LLM model name (required when LLM active). (env: VS_LLM_MODEL)"
     )
     parser.add_argument("--no-llm", action="store_true", help="Disable LLM analysis entirely.")
+    parser.add_argument(
+        "--agents",
+        action="store_true",
+        help="Enable the agentic layer (bug-bounty/pentester). Container-only. (env: VS_AGENTS_ENABLED)",
+    )
+    parser.add_argument("--no-agents", action="store_true", help="Disable the agentic layer.")
     parser.add_argument(
         "--llm-min-severity",
         choices=["info", "low", "medium", "high", "critical"],
@@ -322,6 +331,7 @@ def load_config(args: Namespace) -> AppConfig:
     data.setdefault("llm", {})
     data.setdefault("nuclei", {})
     data.setdefault("recon", {})
+    data.setdefault("agents", {})
 
     # [scan.auth] in TOML nests under scan for readability, but AppConfig.auth
     # is a top-level field.  Hoist it out before the env/CLI layers write to it.
@@ -476,6 +486,14 @@ def load_config(args: Namespace) -> AppConfig:
     if env.no_recon is not None and _parse_bool_env(env.no_recon):
         data["recon"]["enabled"] = False
 
+    # Agents env layer (VS_AGENTS_*)
+    _agents_enabled = _parse_bool_env(env.agents_enabled)
+    if _agents_enabled is not None:
+        data["agents"]["enabled"] = _agents_enabled
+    _agents_scope = _parse_bool_env(env.agents_scope_enforcement)
+    if _agents_scope is not None:
+        data["agents"]["scope_enforcement"] = _agents_scope
+
     # --- layer 3: CLI args ---
     if args.targets:
         data["scan"]["targets"] = args.targets
@@ -574,5 +592,11 @@ def load_config(args: Namespace) -> AppConfig:
     # Recon CLI layer
     if getattr(args, "no_recon", False):
         data["recon"]["enabled"] = False
+
+    # Agents CLI layer (--no-agents wins over --agents)
+    if getattr(args, "agents", False):
+        data["agents"]["enabled"] = True
+    if getattr(args, "no_agents", False):
+        data["agents"]["enabled"] = False
 
     return AppConfig.model_validate(data)

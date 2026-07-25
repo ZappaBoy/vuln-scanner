@@ -1,6 +1,6 @@
 # vuln-scanner
 
-An automated vulnerability assessment platform that orchestrates **210 open-source security tools**, aggregates and deduplicates findings, runs an optional **OpenAI-compatible LLM analysis layer** for triage, clustering, and remediation, generates **proof-of-concept scripts**, and produces professional **Markdown, HTML, JSON, and PDF reports** — all from a single BlackArch Linux Docker image.
+An automated vulnerability assessment platform that orchestrates **210 open-source security tools**, aggregates and deduplicates findings, optionally chains tools into a **discovery data-flow graph**, runs an optional **OpenAI-compatible LLM analysis layer** for triage, clustering, and remediation, generates **proof-of-concept scripts**, drives optional **bug-bounty and pentester agents** (Pydantic AI) to prove and PoC findings, and produces professional **Markdown, HTML, JSON, and PDF reports** — all from a single BlackArch Linux Docker image.
 
 ---
 
@@ -10,19 +10,21 @@ An automated vulnerability assessment platform that orchestrates **210 open-sour
 2. [Tools](#tools)
 3. [Target Type Gating](#target-type-gating)
 4. [Scan Modes](#scan-modes)
-5. [Authenticated Scanning](#authenticated-scanning)
-6. [LLM Analysis](#llm-analysis)
-7. [PoC Generation and Execution](#poc-generation-and-execution)
-8. [Plugin System](#plugin-system)
-9. [Report Formats](#report-formats)
-10. [Quick Start](#quick-start)
-11. [scanner.sh — Docker Wrapper](#scannersh--docker-wrapper)
-12. [Configuration](#configuration)
-13. [Environment Variables](#environment-variables)
-14. [Project Structure](#project-structure)
-15. [Adding a New Tool](#adding-a-new-tool)
-16. [Development](#development)
-17. [DefectDojo Integration](#defectdojo-integration)
+5. [Tool Chaining](#tool-chaining)
+6. [Authenticated Scanning](#authenticated-scanning)
+7. [LLM Analysis](#llm-analysis)
+8. [PoC Generation and Execution](#poc-generation-and-execution)
+9. [Agentic Testing](#agentic-testing-bug-bounty--pentester)
+10. [Plugin System](#plugin-system)
+11. [Report Formats](#report-formats)
+12. [Quick Start](#quick-start)
+13. [scanner.sh — Docker Wrapper](#scannersh--docker-wrapper)
+14. [Configuration](#configuration)
+15. [Environment Variables](#environment-variables)
+16. [Project Structure](#project-structure)
+17. [Adding a New Tool](#adding-a-new-tool)
+18. [Development](#development)
+19. [DefectDojo Integration](#defectdojo-integration)
 
 ---
 
@@ -40,8 +42,9 @@ config.toml / env vars / CLI args
       • tool.applies_to(target) — skips mismatched pairs
       • asyncio + ThreadPoolExecutor — parallel (tool × target) tasks
       • AuthConfig forwarded to every applicable tool
+      • optional chaining: produces/consumes assets in a wave/fixpoint loop
              ↓
-      ScanResult[]  →  Assessment
+      ScanResult[]  →  Assessment  (+ chain_edges / assets_by_type)
              ↓
     LLMAnalyzer (optional)
       • Pass 1: triage + PoC design  (threaded, per result)
@@ -51,6 +54,11 @@ config.toml / env vars / CLI args
              ↓
       PocRunner (container-only, VS_IN_CONTAINER=1 guard)
              ↓
+    AgentOrchestrator (optional, container-only, sequential)
+      • bug-bounty / pentester agents (Pydantic AI)
+      • drive tools with custom args + run sandboxed code
+      • scope-guarded, denylisted, audited → Assessment.agent_reports
+             ↓
     ┌────────┬────────┬────────┐
     │   .md  │  .html │  .json │   (all formats written in parallel)
     └────────┴────────┴────────┘
@@ -58,7 +66,7 @@ config.toml / env vars / CLI args
         DefectDojo (optional)
 ```
 
-All scanning tools and PoC execution run inside a **BlackArch Linux** Docker container — nothing is installed on the host.
+All scanning tools, PoC execution, and agent actions run inside a **BlackArch Linux** Docker container — nothing is installed on the host.
 
 ---
 
@@ -237,6 +245,41 @@ Cloud target formats recognised:
 | `passive` | No active attacks — enumeration and banner grabbing only **(default)** |
 | `active` | Standard vulnerability checks enabled |
 | `aggressive` | Full scan: all templates, brute-force, fast timing |
+
+---
+
+## Tool Chaining
+
+By default the orchestrator runs a flat **tool × target** matrix. Enable
+`[chaining]` to turn it into a live **data-flow graph** instead: tools that
+*produce* assets (subdomains, live hosts, open ports, URLs, params, tech
+fingerprints…) feed tools that *consume* those asset types in later waves.
+
+- **Wave 0** runs tools with no dependencies against the CLI targets.
+- Each subsequent wave is triggered by the assets discovered so far, up to
+  `max_depth`, until a fixpoint (no new work) is reached.
+- An `asset_predicate` gates routing so, e.g., `wpscan` only fires on a `tech`
+  asset whose fingerprint contains `wordpress`, and TLS tools only on TLS ports.
+- Passive/paranoid modes only propagate passive asset types; budgets cap how
+  many assets of each type carry forward.
+
+```toml
+[chaining]
+enabled         = true
+max_depth       = 5      # max wave count (prevents unbounded expansion)
+max_new_targets = 200    # hard cap on newly-discovered targets per run
+
+[chaining.asset_budgets]  # per-asset-type carry-forward caps
+subdomain = 500
+live_host = 500
+url       = 1000
+open_port = 300
+```
+
+The discovery graph is surfaced in every report as a **Discovery Chain** section
+— assets found per type, wave count, and the chain edges
+(`source_tool → asset → triggered_tool`) — and in JSON as `chain_edges`,
+`stats.assets_by_type`, and `stats.waves_run`.
 
 ---
 
@@ -447,6 +490,95 @@ VS_LLM_FEATURE_EXECUTE_POC=true docker compose ... run --rm scanner ...
 
 ---
 
+## Agentic Testing (bug-bounty & pentester)
+
+After tool execution and the static LLM analysis pass, an optional **agentic
+layer** (built on Pydantic AI) can drive the existing tools with custom
+arguments and run sandboxed code to prove or exploit findings. It is
+**container-only** and off by default.
+
+Two profiles, same machinery / different permissions and prompt:
+
+| Profile | Goal | Exploitation |
+| --- | --- | --- |
+| `bug_bounty` | Prove a bug **exists** (non-destructive) | Never — evidence only |
+| `pentester` | Produce a working **PoC** | **Dry-run by default**; live exec opt-in |
+
+Agents run **strictly one at a time** (no parallelism) so they never contend on
+a target. Each agent has its own tunable prompt, model, timeout, and ceilings;
+when a wall-clock deadline or tool-call/token ceiling is hit, the agent is asked
+for a final summary — a report is **always** produced.
+
+### Safety model (enforced in code, not just the prompt)
+
+- **Container gate** — nothing runs unless `VS_IN_CONTAINER=1`.
+- **Scope enforcement** — every host an agent touches (in `run_tool` args, in
+  `run_code` source, in OOB payloads) is validated against `[scope]` + the scan
+  allowlist. Out-of-scope actions are refused.
+- **Sandbox** — `run_code` runs under POSIX rlimits (CPU, memory, process count,
+  file size) so a runaway or fork bomb cannot take down the host.
+- **Denylist** — destructive/anti-forensic patterns (`rm -rf /`, `mkfs`, fork
+  bombs, reverse shells, credential-file access…) are rejected before execution.
+- **Audit trail** — every action is appended to `run_dir/agent_logs/<agent>.jsonl`.
+- **Verification** — a bug's PoC is independently re-run before it is marked
+  `verified`.
+- **Secret scrubbing** — API keys, tokens, and private keys are redacted from
+  agent output before it reaches any report or submission.
+
+### Configuration
+
+```toml
+[agents]
+enabled           = true   # master switch (also requires VS_IN_CONTAINER=1)
+scope_enforcement = true    # keep on; every host is scope-checked
+
+# Resource limits applied to run_code
+[agents.sandbox]
+cpu_seconds   = 30
+memory_mb     = 512
+max_procs     = 64          # fork-bomb guard
+file_size_mb  = 50
+timeout       = 120
+network       = "lab"       # "lab" | "none" | "host"
+
+# Bug-bounty submission reports (per confirmed bug)
+[agents.submission]
+enabled  = true
+formats  = ["markdown", "json"]
+# template = "..."          # optional; {title} {severity} {affected_url} …
+
+# One [[agents.agents]] block per agent — run in listed order.
+[[agents.agents]]
+name           = "hunter"
+kind           = "bug_bounty"
+timeout        = 600        # wall-clock seconds
+max_tool_calls = 40
+# system_prompt = "..."     # optional; overrides the built-in default
+# model         = "gpt-4o"  # optional; else inherits [llm].model
+
+[[agents.agents]]
+name               = "operator"
+kind               = "pentester"
+allow_exploitation = true   # required for live exec …
+require_approval   = false  # … and this must be false, in active/aggressive mode
+```
+
+Live exploitation for a `pentester` requires **all** of: `allow_exploitation =
+true`, `require_approval = false`, scan mode `active`/`aggressive`, and the
+container gate. Absent any of these it emits an ordered **exploit plan** instead
+of firing it.
+
+Agent tools available to the model: `list_tools`, `run_tool`, `run_code`,
+`oob_get_callback` / `oob_check` (interactsh OAST for blind bugs), `save_bug`,
+`record_poc`.
+
+Results appear in an **Agent Operations** report section and, for bug-bounty
+findings, as ready-to-submit files under `run_dir/agent_submissions/`.
+
+Env toggles: `VS_AGENTS_ENABLED`, `VS_AGENTS_SCOPE_ENFORCEMENT`.
+
+---
+
 ## Plugin System
 
 Drop a `.py` file defining one or more `AbstractTool` subclasses into `./plugins/` (or `~/.vuln-scanner/plugins/`) and they are auto-discovered at startup — no code changes needed.
@@ -506,15 +638,15 @@ There is no config-level per-target plugin filter — that logic belongs in the 
 
 ## Report Formats
 
-Three formats are generated in parallel. Select any combination:
+Four formats are generated in parallel. Select any combination:
 
 ```toml
 [report]
-formats    = ["markdown", "html", "json"]
+formats    = ["markdown", "html", "json", "pdf"]
 output_dir = "./reports"
 ```
 
-Or via CLI: `--formats markdown html json`
+Or via CLI: `--formats markdown html json pdf`
 
 ### Markdown (`.md`)
 
@@ -526,8 +658,10 @@ Professional structured report following industry pentest conventions:
 4. **Findings Overview** — risk distribution matrix + per-target breakdown
 5. **Vulnerability Clusters** — root-cause groupings (LLM-generated)
 6. **Detailed Findings** — per finding: ID, severity, affected system, description, business impact, analyst note, mitigation, permanent remediation, PoC references
-7. **Appendix A** — scan errors
-8. **Appendix B** — PoC asset index
+7. **Discovery Chain** — assets discovered per type, wave count, and chain edges (`source_tool → asset → triggered_tool`) — present when `[chaining]` is enabled
+8. **Agent Operations** — per-agent summary, proven bugs, PoC artifacts, dry-run exploit plans, and audit-log paths — present when the agentic layer ran
+9. **Appendix A** — scan errors
+10. **Appendix B** — PoC asset index
 
 Findings from multiple tools reporting the same issue on the same target are deduplicated into a single entry showing all contributing tools.
 
@@ -538,10 +672,15 @@ Self-contained single-file report (no external dependencies) with:
 - Severity-colour-coded finding cards
 - Collapsible cluster sections
 - Stats grid and executive summary hero
+- Discovery Chain and Agent Operations sections (when applicable)
 
 ### JSON (`.json`)
 
-Full structured dump of the `Assessment` model — findings, LLM enrichment, clusters, stats, PoC records. Suitable for CI/CD pipeline ingestion and downstream tooling.
+Full structured dump of the `Assessment` model — findings, LLM enrichment, clusters, stats, PoC records, `chain_edges` / `stats.assets_by_type`, and `agent_reports`. Suitable for CI/CD pipeline ingestion and downstream tooling.
+
+### PDF (`.pdf`)
+
+Print-ready report (reportlab) with cover page, executive summary, stats, clusters, and detailed findings.
 
 ---
 
@@ -815,6 +954,16 @@ allow_git_clone = false
 | `VS_LLM_FEATURE_<NAME>` | `--llm-feature NAME=on` | Global feature toggle, e.g. `VS_LLM_FEATURE_GENERATE_POC=false` |
 | `VS_LLM_FEATURE_EXECUTE_POC` | `--llm-poc-execute` | Enable PoC execution (container-only) |
 
+### Agents
+
+| Variable | CLI flag | Description |
+|----------|----------|-------------|
+| `VS_AGENTS_ENABLED` | — | Enable the agentic layer (also requires `VS_IN_CONTAINER=1`) |
+| `VS_AGENTS_SCOPE_ENFORCEMENT` | — | Toggle per-host scope validation (default on) |
+
+Per-agent settings (profiles, prompts, timeouts, sandbox, submissions) are set
+under `[agents]` in the config file — see [Agentic Testing](#agentic-testing-bug-bounty--pentester).
+
 ### Authenticated Scanning
 
 | Variable | CLI flag | Description |
@@ -849,16 +998,18 @@ Cookies and extra headers must be set via config file or `--auth-cookie` / `--au
 ```
 vuln_scanner/
 ├── config/
-│   ├── models.py        # AppConfig, AppLLMConfig, PluginsConfig (pydantic)
+│   ├── models.py        # AppConfig, AppLLMConfig, AppAgentsConfig, ChainingConfig (pydantic)
 │   └── loader.py        # 3-layer merge: TOML + env (VS_*) + CLI
 │
 ├── tools/
 │   ├── enums.py         # Severity, Confidence, ScanStatus, ScanMode, TargetType
-│   ├── models.py        # Finding, ScanInput, ScanResult, AuthConfig (pydantic)
+│   ├── models.py        # Finding, ScanInput, ScanResult, ExecResult, AuthConfig (pydantic)
 │   ├── target.py        # classify_target() — maps target string to TargetType set
-│   ├── abstract.py      # AbstractTool ABC + subprocess execution helpers
+│   ├── abstract.py      # AbstractTool ABC + run()/exec() subprocess helpers
 │   ├── __init__.py      # TOOL_REGISTRY (210 tools)
 │   └── <tool>.py        # One file per tool (210 total)
+│
+├── assets.py            # Asset, AssetType, AssetStore (tool-chaining data flow)
 │
 ├── llm/
 │   ├── models.py        # LLMConfig, LLMFeatures, PocConfig (pydantic)
@@ -872,18 +1023,33 @@ vuln_scanner/
 │   ├── generator.py     # PocGenerator — writes scripts, never executes (host-safe)
 │   └── runner.py        # PocRunner — executes scripts (VS_IN_CONTAINER guard)
 │
+├── agents/              # Agentic layer (Pydantic AI, container-only)
+│   ├── models.py        # AgentConfig, AgentsConfig, AgentReport, AgentFinding, …
+│   ├── guards.py        # container gate, denylist, host extraction (scope)
+│   ├── deps.py          # AgentDeps — scope guard + ceilings shared by all tools
+│   ├── sandbox.py       # run_code under POSIX rlimits (CPU/mem/procs/fsize)
+│   ├── audit.py         # ActionLog — append-only JSONL per agent
+│   ├── oob.py           # interactsh/OAST wrapper for blind bugs
+│   ├── agent_tools.py   # list_tools, run_tool, run_code, save_bug, record_poc, oob_*
+│   ├── prompts.py       # bug-bounty / pentester system prompts (overridable)
+│   ├── runner.py        # AgentOrchestrator — sequential, timeout/ceiling→summary
+│   ├── submission.py    # per-bug submission reports (overridable template)
+│   ├── scrub.py         # secret redaction before reports/submissions
+│   └── verifier.py      # independent PoC re-run before a bug is marked verified
+│
 ├── reports/
 │   ├── base.py          # AbstractReporter
-│   ├── markdown.py      # Professional structured Markdown report
+│   ├── markdown.py      # Professional Markdown (+ Discovery Chain, Agent Operations)
 │   ├── html.py          # Self-contained HTML with light/dark theme
-│   └── json_reporter.py # Full Assessment JSON dump
+│   ├── json_reporter.py # Full Assessment JSON dump
+│   └── pdf.py           # PDF report (reportlab)
 │
 ├── defectdojo/
 │   └── client.py        # DefectDojoClient — push findings via REST API
 │
 ├── plugins.py           # Plugin auto-discovery (./plugins/, ~/.vuln-scanner/plugins/)
-├── model.py             # Assessment, Cluster, AssessmentStats
-└── orchestrator.py      # ScanOrchestrator — type-gated, async concurrent execution
+├── model.py             # Assessment, Cluster, AssessmentStats, ChainEdge
+└── orchestrator.py      # ScanOrchestrator — type-gated async exec + chaining scheduler
 
 plugins/                 # Drop .py plugin files here (auto-discovered at startup)
 main.py                  # Entry point

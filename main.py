@@ -278,6 +278,64 @@ def main() -> None:
         except Exception:
             log.exception("PoC phase failed — continuing without PoC artifacts.")
 
+    # ── Phase: Agentic testing (bug-bounty / pentester) ───────────────────────
+    # Container-only, opt-in.  Runs configured agents sequentially after the
+    # static LLM pass; attaches AgentReports + writes submission artifacts.
+    agents_cfg = config.build_agents_config()
+    if assessment is not None and agents_cfg.enabled:
+        try:
+            from vuln_scanner.agents.guards import is_in_container
+            from vuln_scanner.agents.runner import AgentOrchestrator, build_allowlist_hosts
+            from vuln_scanner.agents.submission import write_submissions
+
+            if not is_in_container():
+                log.warning("Agent phase skipped: agents require VS_IN_CONTAINER=1.")
+            else:
+                allowlist = build_allowlist_hosts(targets)
+                agent_orch = AgentOrchestrator(
+                    agents_cfg=agents_cfg,
+                    llm_config=llm_config,
+                    scope=scope,
+                    run_dir=run_dir,
+                    mode=config.scan.mode,
+                    allowlist_hosts=allowlist,
+                    code_languages=llm_config.poc.languages,
+                    oob_server=config.nuclei.interactsh_server,
+                    oob_token=config.nuclei.interactsh_token,
+                )
+                reports = agent_orch.run(assessment)
+                assessment.agent_reports = reports
+                if reports:
+                    written = write_submissions(
+                        reports,
+                        agents_cfg.submission,
+                        run_dir / "agent_submissions",
+                        default_formats=[f.value for f in config.report.formats],
+                    )
+                    if written:
+                        assessment.poc_asset_paths += written
+
+                    # Bridge agent findings into the findings pipeline so they
+                    # count in stats and can be clustered/summarized, then
+                    # re-run clustering + executive summary to include them.
+                    from vuln_scanner.agents.bridge import bridge_into_assessment
+
+                    bridged = bridge_into_assessment(assessment)
+                    if bridged and analyzer is not None and llm_config.features.cluster:
+                        try:
+                            analyzer._cluster(assessment)
+                        except Exception as exc:
+                            log.warning("Post-agent clustering failed: %s", exc)
+
+                    log.info(
+                        "Agent phase: %d report(s), %d bug(s) across agents (%d bridged into findings).",
+                        len(reports),
+                        sum(len(r.findings) for r in reports),
+                        bridged,
+                    )
+        except Exception:
+            log.exception("Agent phase failed — continuing without agent results.")
+
     # ── Phase: Report writing ─────────────────────────────────────────────────
     # If assembly failed but we have raw results, build a minimal partial report.
     if assessment is None and results:

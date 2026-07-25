@@ -16,7 +16,7 @@ from pydantic import BaseModel, ConfigDict
 
 from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.enums import ScanStatus, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.models import ExecResult, Finding, ScanInput, ScanResult
 from vuln_scanner.tools.target import _ALL_TARGET_TYPES, classify_target
 
 if TYPE_CHECKING:
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 _RAW_TRUNCATE = 8192  # chars logged per stream in DEBUG mode
+_EXEC_TRUNCATE = 16384  # chars kept per stream in an ExecResult (bounds LLM payloads)
 
 
 def _log_tool_output(logger: logging.Logger, name: str, stdout: str, stderr: str) -> None:
@@ -123,6 +124,67 @@ class AbstractTool(ABC, BaseModel):
         """Execute against *target*, capturing stdout."""
         cmd = self.build_command(target, scan_input)
         return self._exec(cmd, target, scan_input, raw_from="stdout")
+
+    def exec(self, argv: list[str], *, timeout: int, target: str | None = None) -> ExecResult:
+        """Run this tool's binary with fully custom *argv* (agent-driven).
+
+        Unlike :meth:`run`, this returns the raw ``ExecResult`` (stdout/stderr/
+        exit code) without parsing findings, so an agent can reason over the
+        output.  Callers are responsible for scope-validation, denylisting, and
+        container-gating *before* invoking this — ``exec`` itself only runs the
+        process safely (own process group, hard timeout with group SIGKILL).
+        """
+        binary = self.binary or self.name
+        cmd = [binary, *argv]
+        log.debug("[%s] exec: %s", self.name, " ".join(cmd))
+        start = time.monotonic()
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                start_new_session=True,
+            )
+        except FileNotFoundError:
+            log.error("[%s] exec binary not found: %r", self.name, binary)
+            return ExecResult(
+                tool=self.name,
+                binary=binary,
+                argv=argv,
+                error=f"Binary not found: {binary}",
+            )
+
+        try:
+            stdout, stderr = proc.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            try:
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            except (ProcessLookupError, OSError):
+                proc.kill()
+            stdout, stderr = proc.communicate()  # drain pipes
+            log.warning("[%s] exec timed out after %ds", self.name, timeout)
+            return ExecResult(
+                tool=self.name,
+                binary=binary,
+                argv=argv,
+                stdout=(stdout or "")[:_EXEC_TRUNCATE],
+                stderr=(stderr or "")[:_EXEC_TRUNCATE],
+                duration=float(timeout),
+                timed_out=True,
+                error=f"Timed out after {timeout}s",
+            )
+
+        duration = time.monotonic() - start
+        return ExecResult(
+            tool=self.name,
+            binary=binary,
+            argv=argv,
+            stdout=(stdout or "")[:_EXEC_TRUNCATE],
+            stderr=(stderr or "")[:_EXEC_TRUNCATE],
+            exit_code=proc.returncode,
+            duration=duration,
+        )
 
     def _run_with_tempfile(self, target: str, scan_input: ScanInput, suffix: str = ".json") -> ScanResult:
         """Execute against *target*; tool writes results to a temp file."""

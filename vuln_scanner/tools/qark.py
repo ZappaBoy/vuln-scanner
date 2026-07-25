@@ -23,7 +23,7 @@ class QARKTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return ["qark", "--apk", target, "--report-type", "json", "--output", "/dev/stdout"]
+        return ["qark", "--apk", target, "--report-type", "json"]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

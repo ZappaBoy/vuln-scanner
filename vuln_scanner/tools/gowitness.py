@@ -43,7 +43,7 @@ class GowitnesssTool(AbstractTool):
             str(_SCREENSHOT_DIR),
             "--timeout",
             str(min(30, scan_input.timeout)),
-            "--disable-db",
+            "--write-none",
         ]
         if scan_input.proxy:
             cmd += ["--proxy", scan_input.proxy]

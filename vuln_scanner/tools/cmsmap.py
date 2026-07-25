@@ -30,7 +30,7 @@ class CMSmapTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        return ["cmsmap", url, "--noedb", "-q"]
+        return ["cmsmap", url, "--noedb"]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

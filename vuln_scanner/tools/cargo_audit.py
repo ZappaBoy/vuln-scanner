@@ -17,12 +17,12 @@ _SEV_MAP = {
 
 class CargoAuditTool(AbstractTool):
     name: str = "cargo-audit"
-    binary: str = "cargo-audit"
+    binary: str = "cargo"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return ["cargo-audit", "--json", "--file", f"{target}/Cargo.lock"]
+        return ["cargo", "audit", "--json", "--file", f"{target}/Cargo.lock"]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

@@ -2,9 +2,9 @@
 
 import json
 
-from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
+from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
+from vuln_scanner.tools.models import Finding, ScanInput
 
 _SEV_MAP = {"error": Severity.HIGH, "warning": Severity.MEDIUM, "info": Severity.INFO, "debug": Severity.INFO}
 
@@ -16,7 +16,8 @@ class KubeauditTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.CLOUD})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["kubeaudit", "all", "--format", "json", "--output", OUTPUT_FILE_SENTINEL]
+        # kubeaudit emits NDJSON by default; no format flag needed.
+        cmd = ["kubeaudit", "all"]
         if target != "cluster":
             cmd += ["--manifest", target]
         return cmd
@@ -50,6 +51,3 @@ class KubeauditTool(AbstractTool):
             except json.JSONDecodeError:
                 continue
         return findings
-
-    def run(self, target: str, scan_input: ScanInput) -> ScanResult:
-        return self._run_with_tempfile(target, scan_input, suffix=".json")

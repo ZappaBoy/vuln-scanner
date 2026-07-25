@@ -88,7 +88,7 @@ class PhotonTool(AbstractTool):
         try:
             depth = "3" if scan_input.mode == ScanMode.AGGRESSIVE else "1"
             proc = subprocess.run(
-                ["python3", "/opt/photon/photon.py", "-u", url, "-l", depth, "-o", tmpdir, "--only-urls", "--json"],
+                ["/usr/bin/python3", "/opt/photon/photon.py", "-u", url, "-l", depth, "-o", tmpdir, "-e", "json"],
                 capture_output=True,
                 text=True,
                 timeout=scan_input.timeout,

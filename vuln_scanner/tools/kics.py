@@ -1,10 +1,13 @@
 """KICS — Checkmarx open-source IaC security scanner."""
 
 import json
+import shutil
+import tempfile
+from pathlib import Path
 
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
-from vuln_scanner.tools.models import Finding, ScanInput
+from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
 
 _SEV_MAP = {
     "critical": Severity.CRITICAL,
@@ -22,18 +25,8 @@ class KICSTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return [
-            "kics",
-            "scan",
-            "--path",
-            target,
-            "--output-path",
-            "/dev/stdout",
-            "--report-formats",
-            "json",
-            "--no-progress",
-            "--silent",
-        ]
+        # Placeholder; run() injects the real temp output dir.
+        return []
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []
@@ -61,3 +54,25 @@ class KICSTool(AbstractTool):
         except json.JSONDecodeError:
             pass
         return findings
+
+    def run(self, target: str, scan_input: ScanInput) -> ScanResult:
+        # kics --output-path requires a DIRECTORY (it writes results.json inside it).
+        tmpdir = tempfile.mkdtemp(prefix="vs_kics_")
+        try:
+            cmd = [
+                "kics", "scan",
+                "--path", target,
+                "--output-path", tmpdir,
+                "--report-formats", "json",
+                "--no-progress",
+                "--silent",
+            ]
+            result = self._exec(cmd, target, scan_input)
+            report = Path(tmpdir) / "results.json"
+            if report.exists():
+                raw = report.read_text(encoding="utf-8", errors="replace")
+                findings = self.parse_output(raw, target)
+                return result.model_copy(update={"findings": findings, "raw_output": raw})
+            return result
+        finally:
+            shutil.rmtree(tmpdir, ignore_errors=True)

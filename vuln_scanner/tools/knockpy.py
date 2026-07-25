@@ -17,7 +17,7 @@ class KnockpyTool(AbstractTool):
     produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return ["knockpy", target, "--json", "--silent"]
+        return ["knockpy", "-d", target, "--json", "--silent"]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

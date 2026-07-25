@@ -35,7 +35,8 @@ class TerrascanTool(AbstractTool):
 
         findings: list[Finding] = []
         results = data.get("results", data)
-        violations = results.get("violations", []) if isinstance(results, dict) else []
+        # violations may be null in the JSON when terrascan finds no issues
+        violations = (results.get("violations") or []) if isinstance(results, dict) else []
 
         for v in violations:
             sev = _parse_severity(v.get("severity", "medium"))

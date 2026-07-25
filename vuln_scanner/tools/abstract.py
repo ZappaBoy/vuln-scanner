@@ -1,9 +1,10 @@
 """AbstractTool ABC and subprocess execution helpers."""
 
-from __future__ import annotations
+
 
 import logging
 import os
+import signal
 import subprocess
 import tempfile
 import time
@@ -143,17 +144,38 @@ class AbstractTool(ABC, BaseModel):
         log.debug("[%s] cmd: %s", self.name, " ".join(cmd))
         start = time.monotonic()
         try:
-            proc = subprocess.run(
+            # start_new_session puts the tool in its own process group so we can
+            # kill the whole group (parent + any spawned children) on timeout.
+            proc = subprocess.Popen(
                 cmd,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                timeout=scan_input.timeout,
+                start_new_session=True,
             )
+            try:
+                stdout, stderr = proc.communicate(timeout=scan_input.timeout)
+            except subprocess.TimeoutExpired:
+                # Kill the entire process group, not just the parent.
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except (ProcessLookupError, OSError):
+                    proc.kill()
+                proc.communicate()  # drain pipes so the thread doesn't block
+                log.warning("[%s] timed out after %ds on %s", self.name, scan_input.timeout, target)
+                return ScanResult(
+                    tool=self.name,
+                    target=target,
+                    duration=float(scan_input.timeout),
+                    status=ScanStatus.TIMEOUT,
+                    error=f"Tool timed out after {scan_input.timeout}s",
+                )
+
             duration = time.monotonic() - start
-            proc_output = proc.stdout + proc.stderr
+            proc_output = stdout + stderr
 
             if debug:
-                _log_tool_output(log, self.name, proc.stdout, proc.stderr)
+                _log_tool_output(log, self.name, stdout, stderr)
 
             if raw_from == "file" and output_file:
                 try:
@@ -161,7 +183,7 @@ class AbstractTool(ABC, BaseModel):
                 except OSError:
                     raw = ""
             else:
-                raw = proc.stdout
+                raw = stdout
 
             if proc.returncode not in (0, 1) and not raw.strip():
                 log.warning("[%s] exited %d on %s", self.name, proc.returncode, target)
@@ -170,7 +192,7 @@ class AbstractTool(ABC, BaseModel):
                     target=target,
                     duration=duration,
                     status=ScanStatus.FAILED,
-                    error=f"Exit code {proc.returncode}: {proc.stderr.strip()[:200]}",
+                    error=f"Exit code {proc.returncode}: {stderr.strip()[:200]}",
                     raw_output=proc_output,
                 )
 
@@ -185,15 +207,6 @@ class AbstractTool(ABC, BaseModel):
                 raw_output=proc_output,
             )
 
-        except subprocess.TimeoutExpired:
-            log.warning("[%s] timed out after %ds on %s", self.name, scan_input.timeout, target)
-            return ScanResult(
-                tool=self.name,
-                target=target,
-                duration=float(scan_input.timeout),
-                status=ScanStatus.TIMEOUT,
-                error=f"Tool timed out after {scan_input.timeout}s",
-            )
         except FileNotFoundError:
             binary_name = self.binary or (cmd[0] if cmd else self.name)
             log.error("[%s] binary not found: %r — tool must be installed in the image", self.name, binary_name)

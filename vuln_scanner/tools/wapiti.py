@@ -16,8 +16,8 @@ _VULN_SEVERITY: dict[int, Severity] = {
     0: Severity.INFO,
 }
 
-_PASSIVE_MODULES = "mod_wapp"  # tech detection only
-_ACTIVE_MODULES = "mod_sql,mod_xss,mod_file,mod_exec,mod_blindsql,mod_ssrf,mod_wapp"
+_PASSIVE_MODULES = ""  # no -m flag: let wapiti 3.3 pick its own defaults
+_ACTIVE_MODULES = "mod_sql,mod_xss,mod_file,mod_exec,mod_blindsql,mod_ssrf"
 _AGGRESSIVE_MODULES = ""  # empty = all modules
 
 

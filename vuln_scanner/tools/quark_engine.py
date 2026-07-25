@@ -14,7 +14,15 @@ class QuarkEngineTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return ["quark", "-a", target, "-s", "--output", "json_report", "/dev/stdout"]
+        # quark -a expects an APK file; if target is a directory, look for *.apk inside
+        import os
+        if os.path.isdir(target):
+            apks = [os.path.join(target, f) for f in os.listdir(target) if f.endswith(".apk")]
+            apk_path = apks[0] if apks else os.path.join(target, "app.apk")
+        else:
+            apk_path = target
+        # -s summary; rules downloaded at image build time via `quark --update`.
+        return ["quark", "-a", apk_path, "-s"]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

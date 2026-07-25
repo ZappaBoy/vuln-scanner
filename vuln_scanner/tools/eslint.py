@@ -30,7 +30,7 @@ class ESLintTool(AbstractTool):
             "eslint",
             "--format",
             "json",
-            "--no-eslintrc",
+            "--no-config-lookup",
             "--plugin",
             "security",
             "--rule",

@@ -19,7 +19,7 @@ class GatoTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         org = target.replace("https://github.com/", "").split("/")[0]
-        cmd = [self.binary, "enumerate", "--org", org, "--output-json"]
+        cmd = [self.binary, "enumerate", "--target", org, "--output-json", "/tmp/gato_output.json"]
         if scan_input.auth.bearer_token:
             cmd += ["--token", scan_input.auth.bearer_token]
         return cmd

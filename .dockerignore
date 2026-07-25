@@ -42,3 +42,4 @@ docs/
 # Tests (not installed in the --no-dev sync)
 tests/
 !tests/check_binaries.py
+!tests/check_invocations.py

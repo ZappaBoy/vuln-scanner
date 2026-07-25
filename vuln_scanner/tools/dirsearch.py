@@ -21,7 +21,7 @@ class DirsearchTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
         threads = "50" if scan_input.mode == ScanMode.AGGRESSIVE else "20"
-        cmd = ["dirsearch", "-u", url, "-t", threads, "--format", "plain", "--quiet", "--no-color"]
+        cmd = ["dirsearch", "-u", url, "-t", threads, "--quiet", "--no-color"]
         if scan_input.mode in (ScanMode.PASSIVE, ScanMode.PARANOID):
             cmd += ["--extensions", "php,html,txt,json,xml"]
         if scan_input.proxy:

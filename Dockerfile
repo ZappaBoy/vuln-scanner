@@ -110,6 +110,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --break-system-packages "$pkg" ; \
     done ; \
     pip install --break-system-packages --no-deps apifuzzer ; \
+    quark --update 2>/dev/null || true ; \
     ls -1 /usr/bin | sort > /tmp/bin.after && \
     comm -13 /tmp/bin.before /tmp/bin.after | while read -r f; do \
     mv "/usr/bin/$f" /usr/local/bin/ 2>/dev/null || true ; \
@@ -145,7 +146,7 @@ COPY --from=go-builder /kics/bin/kics /usr/local/bin/kics-bin
 COPY --from=go-builder /kics/assets /opt/kics/assets
 RUN printf '#!/bin/sh\nexec /usr/local/bin/kics-bin "$@" --queries-path /opt/kics/assets/queries --libraries-path /opt/kics/assets/libraries\n' \
     > /usr/local/bin/kics && \
-    chmod +x /usr/local/bin/kics
+    chmod +x /usr/local/bin/kics /usr/local/bin/kics-bin
 
 # rusty-hog — New Relic's suite of secret scanners (one binary per source type).
 RUN RHVER=1.0.11 && \
@@ -194,7 +195,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     clone_reqs() { git clone --depth 1 "$1" "$2" && \
         if [ -f "$2/requirements.txt" ]; then pip install --break-system-packages -r "$2/requirements.txt"; fi && \
         rm -rf "$2/.git"; }; \
-    mkwrap() { printf '#!/bin/sh\nexec python3 %s "$@"\n' "$2" > "/usr/local/bin/$1" && chmod +x "/usr/local/bin/$1"; }; \
+    mkwrap() { printf '#!/bin/sh\nexec /usr/bin/python3 %s "$@"\n' "$2" > "/usr/local/bin/$1" && chmod +x "/usr/local/bin/$1"; }; \
     clone_reqs https://github.com/swisskyrepo/SSRFmap       /opt/SSRFmap       && \
     clone_reqs https://github.com/vladko312/SSTImap         /opt/SSTImap       && \
     clone_reqs https://github.com/s0md3v/Corsy              /opt/Corsy         && \
@@ -206,7 +207,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     clone_reqs https://github.com/rfc-st/humble             /opt/humble    && mkwrap humble    /opt/humble/humble.py       && \
     clone_reqs https://github.com/s0md3v/Photon             /opt/photon    && mkwrap photon    /opt/photon/photon.py       && \
     clone_reqs https://github.com/maaaaz/androwarn          /opt/androwarn && mkwrap androwarn /opt/androwarn/androwarn.py && \
-    pip install --break-system-packages beautifulsoup4 tld
+    pip install --break-system-packages \
+        beautifulsoup4 tld h2 simplejson defusedxml cherrypy colorama pycurl
 
 # csprecon — pip install if it has a package, else fall back to a module shim.
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -214,7 +216,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --break-system-packages /opt/csprecon  || \
     pip install --break-system-packages -r /opt/csprecon/requirements.txt  && \
     which csprecon  || \
-    printf '#!/bin/sh\nexec python3 -m csprecon "$@"\n' > /usr/local/bin/csprecon && chmod +x /usr/local/bin/csprecon && \
+    printf '#!/bin/sh\nexec /usr/bin/python3 -m csprecon "$@"\n' > /usr/local/bin/csprecon && chmod +x /usr/local/bin/csprecon && \
     rm -rf /opt/csprecon/.git
 
 # cloudsploit — Node app; wrapper runs its entrypoint.
@@ -236,13 +238,13 @@ RUN git clone --depth 1 https://github.com/six2dez/reconftw /opt/reconftw && \
     rm -rf /opt/docker-bench-security/.git
 
 # ── Wrapper scripts for source-only Python tools ──────────────────────────────
-RUN for spec in \
-    "blackwidow:/opt/blackwidow/blackwidow.py" \
-    "oralyzer:/opt/oralyzer/oralyzer.py"; do \
-    name="${spec%%:*}"; path="${spec##*:}"; \
-    printf '#!/bin/sh\nexec python3 %s "$@"\n' "$path" > "/usr/local/bin/$name" && \
-    chmod +x "/usr/local/bin/$name"; \
-    done
+# Use /usr/bin/python3 (absolute path) so uv-venv PATH changes don't hijack python3.
+RUN printf '#!/bin/sh\nexec /usr/bin/python3 /opt/oralyzer/oralyzer.py "$@"\n' \
+        > /usr/local/bin/oralyzer && chmod +x /usr/local/bin/oralyzer && \
+    BW=$(find /opt/blackwidow -maxdepth 2 -name "blackwidow" 2>/dev/null | head -1) && \
+    [ -n "$BW" ] && \
+    printf '#!/bin/sh\nexec /usr/bin/python3 %s "$@"\n' "$BW" > /usr/local/bin/blackwidow && \
+    chmod +x /usr/local/bin/blackwidow || true
 
 # cloudscraper — library only on PyPI; wrap it as a minimal CLI.
 RUN printf '#!/usr/bin/env python3\nimport sys, json, argparse\nimport cloudscraper\np = argparse.ArgumentParser()\np.add_argument("--keyword")\np.add_argument("--output")\na = p.parse_args()\ns = cloudscraper.create_scraper()\ntry:\n    r = s.get(a.keyword)\n    out = {"url": a.keyword, "status": r.status_code, "body": r.text[:4096]}\n    print(json.dumps(out) if a.output == "json" else r.text)\nexcept Exception as e:\n    print(json.dumps({"error": str(e)}), file=sys.stderr)\n    sys.exit(1)\n' > /usr/local/bin/cloudscraper && \
@@ -312,7 +314,7 @@ RUN --mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
     pacman -Syu --noconfirm && \
     pacman -S --noconfirm --needed \
     jdk-openjdk git base-devel sudo python python-pip unzip curl \
-    nodejs npm ruby php openscap dotnet-runtime && \
+    nodejs npm ruby php openscap dotnet-runtime openssl-1.1 && \
     useradd -m -G wheel builder && \
     echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && \
     git clone https://aur.archlinux.org/yay.git /tmp/yay && \
@@ -479,12 +481,20 @@ RUN --mount=type=bind,from=tool-builder,source=/,target=/mnt \
     cp -a /mnt/usr/lib/python3*/site-packages/. /usr/lib/python3*/site-packages/ && \
     cp -a /mnt/usr/lib/ruby/gems/. /usr/lib/ruby/gems/
 
+# Fix pip-generated entry scripts from tool-builder: replace '#!/usr/bin/env python3'
+# with '/usr/bin/python3' so uv-venv PATH modification doesn't hijack their interpreter.
+RUN find /usr/local/bin -maxdepth 1 -type f \
+        -exec grep -lI '#!/usr/bin/env python3' {} \; 2>/dev/null | \
+    xargs -r sed -i '1s|#!/usr/bin/env python3|#!/usr/bin/python3|'
+
 # ── Wordlists & DNS resolvers ─────────────────────────────────────────────────
 RUN mkdir -p /usr/share/wordlists/dirbuster /usr/share/wordlists/kiterunner && \
-    curl -sL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/directory-list-2.3-medium.txt" \
-        -o /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt && \
     curl -sL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/directory-list-2.3-small.txt" \
         -o /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt && \
+    curl -sL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/directory-list-2.3-medium.txt" \
+        -o /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt && \
+    curl -sL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/directory-list-2.3-big.txt" \
+        -o /usr/share/wordlists/dirbuster/directory-list-2.3-big.txt && \
     curl -sL "https://github.com/assetnote/kiterunner/releases/download/v1.0.2/routes-small.kite" \
         -o /usr/share/wordlists/kiterunner/routes-small.kite && \
     printf '8.8.8.8\n8.8.4.4\n1.1.1.1\n1.0.0.1\n9.9.9.9\n208.67.222.222\n208.67.220.220\n' > /etc/resolvers.txt
@@ -494,16 +504,16 @@ RUN mkdir -p /usr/share/wordlists/dirbuster /usr/share/wordlists/kiterunner && \
 # expose each at the binary name the scanner expects.
 RUN SF=$(find /usr/share /usr/lib -name "SecretFinder.py" 2>/dev/null | head -1) && \
     [ -n "$SF" ] && \
-    printf '#!/bin/sh\nexec python3 %s "$@"\n' "$SF" > /usr/local/bin/SecretFinder && \
+    printf '#!/bin/sh\nexec /usr/bin/python3 %s "$@"\n' "$SF" > /usr/local/bin/SecretFinder && \
     chmod +x /usr/local/bin/SecretFinder ; \
     SFP=$(find /usr/share/spiderfoot /usr/lib/spiderfoot -name "sf.py" 2>/dev/null | head -1) && \
     [ -n "$SFP" ] && \
-    printf '#!/bin/sh\nexec python3 %s "$@"\n' "$SFP" > /usr/local/bin/sf && \
+    printf '#!/bin/sh\nexec /usr/bin/python3 %s "$@"\n' "$SFP" > /usr/local/bin/sf && \
     chmod +x /usr/local/bin/sf ; \
     command -v theHarvester >/dev/null 2>&1 || \
     { TH=$(find /usr/share /usr/lib -name "theHarvester.py" 2>/dev/null | head -1) && \
       [ -n "$TH" ] && \
-      printf '#!/bin/sh\nexec python3 %s "$@"\n' "$TH" > /usr/local/bin/theHarvester && \
+      printf '#!/bin/sh\nexec /usr/bin/python3 %s "$@"\n' "$TH" > /usr/local/bin/theHarvester && \
       chmod +x /usr/local/bin/theHarvester ; }
 
 # ── uv ────────────────────────────────────────────────────────────────────────
@@ -528,6 +538,19 @@ COPY . .
 RUN uv sync --no-dev && \
     uv cache clean && \
     rm -rf /tmp/*
+
+# ── Python deps for pacman-installed scan tools ───────────────────────────────
+# These packages are missing from the BlackArch pacman distributions of their
+# respective tools (dirsearch→defusedxml, spiderfoot→cherrypy, etc.).
+# Install into both system Python (for absolute-shebang scripts) and the app
+# venv (for any wrapper that resolves python3 through PATH when uv run is used).
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --break-system-packages --no-cache-dir \
+        h2 simplejson defusedxml cherrypy colorama pycurl \
+        beautifulsoup4 tld jsbeautifier tornado bitstring && \
+    VIRTUAL_ENV=/app/.venv uv pip install --no-cache-dir \
+        h2 simplejson defusedxml cherrypy colorama pycurl \
+        beautifulsoup4 tld jsbeautifier tornado bitstring
 
 # Safety marker — PoC execution is only permitted inside this container.
 # The poc/runner.py checks for this env var and refuses to execute otherwise.

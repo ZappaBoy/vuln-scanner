@@ -21,7 +21,7 @@ class BinwalkTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return ["binwalk", "--entropy", "--signature", target]
+        return ["binwalk", "--entropy", target]
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []

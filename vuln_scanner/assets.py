@@ -6,7 +6,7 @@ targets, runs Wave 0 (tools with consumes=∅), collects produced assets, then
 unlocks subsequent waves until a fixpoint is reached.
 """
 
-from __future__ import annotations
+
 
 import threading
 from dataclasses import dataclass, field

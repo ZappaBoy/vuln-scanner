@@ -1,6 +1,6 @@
 """Hydra — brute-force login tool (SSH, FTP, HTTP-form, HTTP-get, ...)."""
 
-from __future__ import annotations
+
 
 import os
 import re

@@ -51,7 +51,7 @@ class ParamSpiderTool(AbstractTool):
         start = time.monotonic()
 
         try:
-            cmd = ["paramspider", "-d", domain]
+            cmd = [self.binary, "-d", domain]
             if scan_input.mode == ScanMode.AGGRESSIVE:
                 cmd += ["--subs"]
             cmd += scan_input.extra_args
@@ -94,7 +94,7 @@ class ParamSpiderTool(AbstractTool):
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, status=ScanStatus.FAILED, error="Binary not found: paramspider"
+                tool=self.name, target=target, status=ScanStatus.FAILED, error=f"Binary not found: {self.binary}"
             )
         finally:
             shutil.rmtree(workdir, ignore_errors=True)

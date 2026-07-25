@@ -24,7 +24,7 @@ class HadolintTool(AbstractTool):
                     if "dockerfile" in f.lower():
                         dockerfiles.append(os.path.join(root, f))
 
-        cmd = ["hadolint", "-f", "json"] + (dockerfiles or [target])
+        cmd = [self.binary, "-f", "json"] + (dockerfiles or [target])
         cmd += scan_input.extra_args
         return cmd
 

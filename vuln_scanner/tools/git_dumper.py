@@ -29,7 +29,7 @@ class GitDumperTool(AbstractTool):
         tmpdir = tempfile.mkdtemp(prefix="vs_gitdumper_")
         start = time.monotonic()
         try:
-            cmd = ["git-dumper", git_url, tmpdir] + list(scan_input.extra_args)
+            cmd = [self.binary, git_url, tmpdir] + list(scan_input.extra_args)
 
             if scan_input.auth.is_configured:
                 for k, v in scan_input.auth.effective_headers.items():
@@ -101,7 +101,7 @@ class GitDumperTool(AbstractTool):
                     target=target,
                     duration=0.0,
                     status=ScanStatus.FAILED,
-                    error="Binary not found: git-dumper",
+                    error=f"Binary not found: {self.binary}",
                 )
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)

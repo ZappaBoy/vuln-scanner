@@ -29,7 +29,7 @@ class HttpxTool(AbstractTool):
     consumes: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["httpx", "-u", target, "-json", "-silent", "-status-code", "-title", "-tech-detect"]
+        cmd = [self.binary, "-u", target, "-json", "-silent", "-status-code", "-title", "-tech-detect"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-follow-redirects", "-content-length", "-web-server", "-ip"]

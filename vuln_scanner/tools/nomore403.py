@@ -24,7 +24,7 @@ class Nomore403Tool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["nomore403", "-u", url]
+        cmd = [self.binary, "-u", url]
 
         auth = scan_input.auth
         if auth.is_configured:

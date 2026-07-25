@@ -17,7 +17,7 @@ class HakrawlerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # hakrawler reads the URL from stdin; extra flags passed here
-        cmd = ["hakrawler", "-json"]
+        cmd = [self.binary, "-json"]
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-subs"]  # include subdomains
         if scan_input.mode == ScanMode.AGGRESSIVE:
@@ -112,5 +112,5 @@ class HakrawlerTool(AbstractTool):
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, status=ScanStatus.FAILED, error="Binary not found: hakrawler"
+                tool=self.name, target=target, status=ScanStatus.FAILED, error=f"Binary not found: {self.binary}"
             )

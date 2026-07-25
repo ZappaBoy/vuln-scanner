@@ -25,7 +25,7 @@ class GhauriTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
         level = "3" if scan_input.mode == ScanMode.AGGRESSIVE else "1"
-        cmd = ["ghauri", "-u", url, "--level", level, "--batch"]
+        cmd = [self.binary, "-u", url, "--level", level, "--batch"]
         if scan_input.auth.bearer_token:
             cmd += ["--headers", f"Authorization: Bearer {scan_input.auth.bearer_token}"]
         if scan_input.auth.cookie_string:

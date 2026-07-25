@@ -20,9 +20,9 @@ class APIFuzzerTool(AbstractTool):
         import os as _os
 
         if _os.path.isfile(target):
-            cmd = ["APIFuzzer", "--src_file", target, "--report_file", OUTPUT_FILE_SENTINEL]
+            cmd = [self.binary, "--src_file", target, "--report_file", OUTPUT_FILE_SENTINEL]
         else:
-            cmd = ["APIFuzzer", "--url", target, "--report_file", OUTPUT_FILE_SENTINEL]
+            cmd = [self.binary, "--url", target, "--report_file", OUTPUT_FILE_SENTINEL]
 
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
             cmd += ["--level", "1"]

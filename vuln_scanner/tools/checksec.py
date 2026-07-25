@@ -38,7 +38,7 @@ class ChecksecTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["checksec", "file", target]
+        cmd = [self.binary, "file", target]
         cmd += scan_input.extra_args
         return cmd
 

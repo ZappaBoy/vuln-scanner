@@ -20,7 +20,7 @@ class TfsecTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."
-        cmd = ["tfsec", path, "--format", "json", "--no-color", "--soft-fail"]
+        cmd = [self.binary, path, "--format", "json", "--no-color", "--soft-fail"]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
         return cmd

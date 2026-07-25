@@ -20,7 +20,7 @@ class PipAuditTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["pip-audit", "-f", "json", "-l"]
+        cmd = [self.binary, "-f", "json", "-l"]
 
         # If target looks like a requirements file, use it; else scan environment
         req_candidates = (

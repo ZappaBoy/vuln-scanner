@@ -83,7 +83,7 @@ class SubzyTool(AbstractTool):
             with os.fdopen(fd, "w") as f:
                 f.write(host + "\n")
 
-            cmd = ["subzy", "run", "--targets", tmp, "--output", "json", "--hide_fails"]
+            cmd = [self.binary, "run", "--targets", tmp, "--output", "json", "--hide_fails"]
             cmd += scan_input.extra_args
 
             start = time.monotonic()
@@ -118,7 +118,7 @@ class SubzyTool(AbstractTool):
                     target=target,
                     duration=0.0,
                     status=ScanStatus.FAILED,
-                    error="Binary not found: subzy",
+                    error=f"Binary not found: {self.binary}",
                 )
         finally:
             try:

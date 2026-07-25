@@ -19,7 +19,7 @@ class XSStrikeTool(AbstractTool):
     consumes: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["xsstrike", "-u", target, "--skip", "--timeout", "10"]
+        cmd = [self.binary, "-u", target, "--skip", "--timeout", "10"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["--crawl"]

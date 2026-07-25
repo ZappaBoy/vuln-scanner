@@ -121,7 +121,7 @@ class RESTlerTool(AbstractTool):
                     )
                 spec_file = dest
 
-            compile_cmd = ["restler-fuzzer", "compile", "--api_spec", spec_file]
+            compile_cmd = [self.binary, "compile", "--api_spec", spec_file]
             try:
                 proc = _run_proc(compile_cmd, workdir, timeout=120)
             except subprocess.TimeoutExpired:
@@ -149,7 +149,7 @@ class RESTlerTool(AbstractTool):
             fuzzing_mode, time_budget = fuzzing_mode_map.get(scan_input.mode, ("bfs", "0.5"))
 
             fuzz_cmd = [
-                "restler-fuzzer",
+                self.binary,
                 "--restler_grammar", grammar,
                 "--custom_mutations", dictionary,
                 "--fuzzing_mode", fuzzing_mode,
@@ -194,7 +194,7 @@ class RESTlerTool(AbstractTool):
         except FileNotFoundError:
             return ScanResult(
                 tool=self.name, target=target, status=ScanStatus.FAILED,
-                error="Binary not found: restler-fuzzer",
+                error=f"Binary not found: {self.binary}",
             )
         finally:
             shutil.rmtree(workdir, ignore_errors=True)

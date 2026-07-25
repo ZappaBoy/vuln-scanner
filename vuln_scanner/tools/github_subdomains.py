@@ -14,7 +14,7 @@ class GithubSubdomainsTool(AbstractTool):
     produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["github-subdomains", "-d", target, "-silent"]
+        cmd = [self.binary, "-d", target, "-silent"]
         if scan_input.auth.bearer_token:
             cmd += ["-t", scan_input.auth.bearer_token]
         return cmd

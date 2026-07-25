@@ -27,7 +27,7 @@ class FlawfinderTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["flawfinder", "--csv", "--quiet", target]
+        cmd = [self.binary, "--csv", "--quiet", target]
         cmd += scan_input.extra_args
         return cmd
 

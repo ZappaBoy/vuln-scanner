@@ -50,12 +50,12 @@ class ROADreconTool(AbstractTool):
         start = time.monotonic()
         try:
             # roadrecon gather then dump
-            gather_cmd = ["roadrecon", "gather"]
+            gather_cmd = [self.binary, "gather"]
             if scan_input.auth.bearer_token:
                 gather_cmd += ["--access-token", scan_input.auth.bearer_token]
             subprocess.run(gather_cmd, capture_output=True, text=True, timeout=scan_input.timeout // 2)
             dump_proc = subprocess.run(
-                ["roadrecon", "dump", "--users", "--groups", "--apps", "--json"],
+                [self.binary, "dump", "--users", "--groups", "--apps", "--json"],
                 capture_output=True,
                 text=True,
                 timeout=scan_input.timeout // 2,
@@ -84,5 +84,5 @@ class ROADreconTool(AbstractTool):
                 target=target,
                 duration=0.0,
                 status=ScanStatus.FAILED,
-                error="Binary not found: roadrecon",
+                error=f"Binary not found: {self.binary}",
             )

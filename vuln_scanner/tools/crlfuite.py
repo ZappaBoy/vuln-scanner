@@ -19,7 +19,7 @@ class CRLFsuiteTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["crlfuzz", "-u", url, "-s"]
+        cmd = [self.binary, "-u", url, "-s"]
         if scan_input.proxy:
             cmd += ["-x", scan_input.proxy]
         return cmd

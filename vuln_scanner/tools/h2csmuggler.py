@@ -26,7 +26,7 @@ class H2cSmugglerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["h2csmuggler", "--scan-list", url]
+        cmd = [self.binary, "--scan-list", url]
 
         auth = scan_input.auth
         if auth.is_configured:

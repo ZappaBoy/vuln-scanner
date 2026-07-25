@@ -69,9 +69,9 @@ class MVTTool(AbstractTool):
         try:
             # Detect APK vs backup
             if target.endswith(".apk"):
-                cmd = ["mvt-android", "check-apks", "--apks", target, "--output", tmpdir]
+                cmd = [self.binary, "check-apks", "--apks", target, "--output", tmpdir]
             else:
-                cmd = ["mvt-android", "check-backup", target, "--output", tmpdir]
+                cmd = [self.binary, "check-backup", target, "--output", tmpdir]
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=scan_input.timeout)
             duration = time.monotonic() - start
             raw = proc.stdout + proc.stderr
@@ -104,7 +104,7 @@ class MVTTool(AbstractTool):
                 target=target,
                 duration=0.0,
                 status=ScanStatus.FAILED,
-                error="Binary not found: mvt-android",
+                error=f"Binary not found: {self.binary}",
             )
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)

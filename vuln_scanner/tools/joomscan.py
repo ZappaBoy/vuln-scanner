@@ -22,7 +22,7 @@ class JoomscanTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["joomscan", "-u", url, "--enumerate-components"]
+        cmd = [self.binary, "-u", url, "--enumerate-components"]
         if scan_input.proxy:
             cmd += ["--proxy", scan_input.proxy]
         return cmd

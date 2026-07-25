@@ -15,7 +15,7 @@ class AmassTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a domain name (e.g. example.com)
-        cmd = ["amass", "enum", "-d", target, "-json", OUTPUT_FILE_SENTINEL]
+        cmd = [self.binary, "enum", "-d", target, "-json", OUTPUT_FILE_SENTINEL]
 
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
             cmd += ["-passive"]

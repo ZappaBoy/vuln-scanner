@@ -17,7 +17,7 @@ class HttprobeTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # -prefer-https was removed in httprobe v0.2+; probe HTTPS explicitly via -p
-        cmd = ["httprobe", "-c", "20", "-p", "https:443"]
+        cmd = [self.binary, "-c", "20", "-p", "https:443"]
         cmd += scan_input.extra_args
         return cmd
 
@@ -82,5 +82,5 @@ class HttprobeTool(AbstractTool):
                 target=target,
                 duration=0.0,
                 status=ScanStatus.FAILED,
-                error="Binary not found: httprobe",
+                error=f"Binary not found: {self.binary}",
             )

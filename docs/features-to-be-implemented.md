@@ -73,6 +73,14 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] CMSmap *(open-source multi-CMS security scanner — WordPress, Joomla, Drupal)*
 - [x] aemhacker *(Adobe Experience Manager vulnerability scanner)*
 - [~] RouterSploit *(exploitation framework for routers — interactive session required)*
+- [ ] gospider *(fast Go web spider — link extraction, robots.txt, sitemap, JS parsing)*
+- [ ] skipfish *(Google's web app security recon — high-speed recursive crawl with anomaly detection)*
+- [ ] w3af *(web application attack and audit framework — 200+ plugins)*
+- [ ] xsser *(automatic XSS vulnerability framework — 1300+ injection vectors, WAF bypass)*
+- [ ] bxss *(blind XSS scanner with OOB callback server — catches payloads firing in admin panels)*
+- [ ] sqlninja *(MS SQL Server injection and escalation — xp_cmdshell, DNS exfil, shell upload)*
+- [ ] interactsh *(OOB interaction server/client — OAST callbacks for blind SSRF, XXE, log4shell)*
+- [~] uro *(URL list deduplication — pipeline utility, produces no vulnerability findings)*
 - [x] WhatWaf *(detect and bypass web application firewalls and protection systems)*
 - [x] Jaeles *(Swiss Army knife for automated web application testing — Go, rule-based)*
 - [x] BlackWidow *(Python web application scanner for OSINT and OWASP vulnerability discovery)*
@@ -125,6 +133,27 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] VHostScan *(virtual host scanner with reverse lookup and wordlist support)*
 - [x] subdominator *(fast subdomain enumeration aggregating 50+ passive sources)*
 - [x] zmap *(stateless large-scale internet-wide port/network scanner)*
+- [ ] sublist3r *(passive subdomain enumeration via OSINT sources — Google, Bing, Netcraft, VirusTotal)*
+- [ ] altdns *(subdomain permutation/alteration generator from discovered names)*
+- [ ] dnstwist *(domain name typosquatting and variation finder — homoglyphs, bitsquatting, combosquatting)*
+- [ ] oneforall *(comprehensive subdomain discovery with 30+ enumeration modules)*
+- [ ] asnmap *(map ASN numbers to IP CIDR ranges for target expansion — ProjectDiscovery)*
+- [ ] cdncheck *(CDN, WAF, and cloud provider detection from IPs/domains — ProjectDiscovery)*
+- [ ] uncover *(aggregate Shodan/Censys/Fofa/Quake/Hunter/ZoomEye into unified host discovery — requires API keys)*
+- [ ] netexec *(active successor to CrackMapExec — nxc; SMB/WMI/LDAP/MSSQL/SSH with BloodHound integration)*
+- [ ] impacket *(Python Windows/AD protocol suite — secretsdump, psexec, wmiexec, GetSPN, ticketer)*
+- [ ] bloodhound-python *(Python BloodHound ingestor — collects AD objects, ACLs, GPOs as JSON for attack-path analysis)*
+- [ ] kerbrute *(Kerberos user enumeration and password spraying without lockout risk)*
+- [ ] certipy *(AD Certificate Services abuse — finds ESC1–ESC8 misconfigs, forges Kerberos tickets)*
+- [ ] responder *(NBT-NS/LLMNR/mDNS poisoning — captures NTLMv1/v2 hashes from Windows hosts)*
+- [ ] mitm6 *(IPv6 DHCPv6+DNS MitM for AD environments — relays credentials to take over accounts)*
+- [ ] ldeep *(in-depth LDAP enumeration — GPOs, ACLs, Kerberoastable accounts, delegations, trusts)*
+- [ ] ncrack *(high-speed network authentication cracker — SSH, RDP, FTP, HTTP, POP3, SMB)*
+- [ ] patator *(modular multi-purpose brute forcer — SSH, FTP, HTTP, LDAP, SMTP, SNMPv3, DNS)*
+- [ ] legba *(modern Rust async network service credential tester — SSH/FTP/HTTP/LDAP/RDP/SMB)*
+- [ ] crowbar *(brute force for RDP, SSH key, VNC, OpenVPN — fills protocol gaps in hydra/medusa)*
+- [ ] bettercap *(MITM and network attack framework — ARP/DNS spoofing, HTTP MITM, BLE/WiFi recon)*
+- [ ] nbtscan *(NetBIOS network scanner — resolves NetBIOS names, MAC addresses, logged-on users)*
 - [x] alterx *(fast, customizable subdomain wordlist generator — ProjectDiscovery)*
 - [x] gotator *(DNS wordlist generator through permutations and mutations)*
 - [x] ripgen *(high-performance domain permutation generator — Rust)*
@@ -208,6 +237,9 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] Joern *(code property graph — multi-language semantic vulnerability analysis)*
 - [x] Insider *(SAST for mobile and web: Swift, Kotlin, Java, JS, C#)*
 - [x] weggli *(fast C/C++ semantic search — finds vulnerability patterns)*
+- [ ] nodejsscan *(Node.js/JavaScript static security analyzer — prototype pollution, insecure deserialization, regex DoS)*
+- [ ] sobelow *(security-focused code analysis for Phoenix/Elixir — XSS, SQLi, insecure configs)*
+- [ ] dlint *(Python security linter for Django/Flask — CSRF exemptions, weak password hashing, unsafe deserialization)*
 - [~] Checkmarx (One, CxFlow, OSA)
 - [~] Contrast
 - [~] Coverity
@@ -287,6 +319,11 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] Cloudsploit *(open-source cloud security scanner)*
 - [x] Threagile *(threat modeling as code)*
 - [~] Pacu *(interactive exploitation framework — requires active AWS session; not a passive scanner)*
+- [ ] azurehound *(Azure AD attack-path data collection for BloodHound CE — Entra ID, roles, service principals)*
+- [ ] cloud_enum *(multi-cloud storage enumeration — S3, GCS, Azure Blob, Firebase from a keyword)*
+- [ ] enumerate-iam *(AWS IAM permission bruteforcing via dry-run API calls — no IAM:ListPolicies needed)*
+- [ ] cloudsplaining *(AWS IAM least-privilege analyzer — identifies data-exfil and privilege-escalation risks)*
+- [ ] cloudlist *(multi-cloud asset inventory — instances, functions, buckets, DNS across AWS/GCP/Azure/DO)*
 - [x] Cloudfox *(AWS/Azure attack surface discovery for pentesting)*
 - [x] ROADrecon *(Azure AD and Entra ID reconnaissance)*
 - [x] S3Scanner *(scan for open and misconfigured AWS S3 buckets)*
@@ -339,6 +376,9 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] kiterunner *(API route content discovery — assetnote, wordlist-based)*
 - [x] APIFuzzer *(REST API fuzzer driven from OpenAPI/Swagger spec)*
 - [x] RESTler *(Microsoft automated stateful REST API fuzzer)*
+- [ ] clairvoyance *(extract full GraphQL schema even when introspection is disabled — field-suggestion enumeration)*
+- [ ] noir *(API endpoint discovery from source code — Ruby/Go/Python/JS/TS static analysis)*
+- [ ] offat *(OpenAPI/Swagger-driven REST API fuzz testing — BOLA/BFLA checks, SARIF output)*
 - [~] 42Crunch API Security Audit *(SaaS OpenAPI security analysis)*
 - [~] Traceable AI *(API threat detection — SaaS)*
 
@@ -352,6 +392,15 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [x] xnLinkFinder *(endpoint and parameter discovery from responses and JavaScript)*
 - [x] hakip2host *(resolve IP ranges to associated domain names via reverse DNS)*
 - [x] WitnessMe *(web inventory tool — screenshots via Pyppeteer, identifies default credentials)*
+- [ ] eyewitness *(web screenshot + header capture — HTML reports with thumbnails and tech grouping)*
+- [ ] finalrecon *(web recon framework — DNS, WHOIS, SSL cert parsing, header analysis in one pass)*
+- [ ] h8mail *(email breach lookup — queries HaveIBeenPwned, Hunter, Snusbase, local breach databases)*
+- [ ] sherlock *(social media username enumeration across 300+ platforms)*
+- [ ] holehe *(check if an email is registered on 120+ sites via account-recovery flows)*
+- [ ] maigret *(deep OSINT username profiling — checks 3000+ sites, builds relationship graphs)*
+- [ ] metagoofil *(metadata extraction from public documents — reveals usernames, software versions, emails)*
+- [ ] inspy *(LinkedIn employee and technology enumeration via LinkedIn API)*
+- [ ] emailharvester *(passive email collection from search engines and PGP keyservers)*
 - [~] anew *(append new unique lines from stdin to a file — pipeline deduplication utility, not a scanner)*
 - [~] unfurl *(extract URL components from stdin — pipeline transformation utility, not a scanner)*
 - [~] theHarvester *(see Network & Infrastructure — already listed there)*
@@ -378,6 +427,11 @@ A tool is marked `[~]` when it falls into one or more of the following categorie
 - [~] Radamsa *(mutation input generator — produces test cases, not findings)*
 - [~] Jazzer *(requires Java project and build integration — not a standalone CLI scanner)*
 - [~] LibAFL *(Rust fuzzing framework / library — not a CLI tool)*
+
+## Password Cracking
+
+- [ ] hashcat *(GPU-accelerated password hash cracking — NTLM, bcrypt, WPA, SHA, MD5, 300+ algorithms)*
+- [ ] john *(John the Ripper — CPU-based multi-format hash cracker; auto-detection, wordlist+rule attacks)*
 
 ## Binary / Reverse Engineering
 

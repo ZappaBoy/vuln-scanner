@@ -19,7 +19,7 @@ class ProwlerTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["prowler", "-M", "json-asff", "--output-directory", "/tmp/vs_prowler"]
+        cmd = [self.binary, "-M", "json-asff", "--output-directory", "/tmp/vs_prowler"]
         # target may be "aws:profile=myprofile" or "arn:aws:..."
         if target.startswith("aws:"):
             suffix = target[4:]

@@ -15,7 +15,7 @@ class DnsxTool(AbstractTool):
     produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["dnsx", "-d", target, "-json", "-silent", "-resp"]
+        cmd = [self.binary, "-d", target, "-json", "-silent", "-resp"]
 
         if scan_input.mode == ScanMode.AGGRESSIVE:
             # query all common record types

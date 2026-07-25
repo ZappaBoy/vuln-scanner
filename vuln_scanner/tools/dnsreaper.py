@@ -21,7 +21,7 @@ class DnsReaperTool(AbstractTool):
         import re
 
         domain = re.sub(r"^https?://", "", target).rstrip("/")
-        cmd = ["dnsreaper", "single", "--target", domain, "--output", "json"]
+        cmd = [self.binary, "single", "--target", domain, "--output", "json"]
         cmd += scan_input.extra_args
         return cmd
 
@@ -104,5 +104,5 @@ class DnsReaperTool(AbstractTool):
                 target=target,
                 duration=0.0,
                 status=ScanStatus.FAILED,
-                error="Binary not found: dnsreaper",
+                error=f"Binary not found: {self.binary}",
             )

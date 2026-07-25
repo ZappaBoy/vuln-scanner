@@ -20,7 +20,7 @@ class FierceTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         domain = target.replace("https://", "").replace("http://", "").split("/")[0]
-        cmd = ["fierce", "--domain", domain]
+        cmd = [self.binary, "--domain", domain]
 
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["--subdomains", "/usr/share/wordlists/fierce/hosts.txt"]

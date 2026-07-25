@@ -20,7 +20,7 @@ class GauplusTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "").split("/")[0]
-        cmd = ["gauplus", host]
+        cmd = [self.binary, host]
         if scan_input.proxy:
             cmd += ["-p", scan_input.proxy]
         return cmd

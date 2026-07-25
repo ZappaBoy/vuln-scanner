@@ -15,7 +15,7 @@ class WafW00fTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
-        cmd = ["wafw00f", url, "-o", OUTPUT_FILE_SENTINEL, "-f", "json"]
+        cmd = [self.binary, url, "-o", OUTPUT_FILE_SENTINEL, "-f", "json"]
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-a"]  # test all WAFs even if one is detected
         cmd += scan_input.extra_args

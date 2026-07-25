@@ -12,7 +12,7 @@ class DetectSecretsTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["detect-secrets", "scan", "--all-files", target]
+        cmd = [self.binary, "scan", "--all-files", target]
         cmd += scan_input.extra_args
         return cmd
 

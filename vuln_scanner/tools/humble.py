@@ -43,7 +43,7 @@ class HumbleTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
-        cmd = ["humble", "-u", url, "-j"]  # JSON output
+        cmd = [self.binary, "-u", url, "-j"]  # JSON output
 
         if scan_input.mode in (ScanMode.PASSIVE, ScanMode.PARANOID):
             cmd += ["-g"]  # skip the fingerprinting requests

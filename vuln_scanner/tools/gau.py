@@ -14,7 +14,7 @@ class GauTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         domain = target.replace("https://", "").replace("http://", "").split("/")[0]
-        cmd = ["gau", domain]
+        cmd = [self.binary, domain]
 
         providers = ["wayback", "commoncrawl", "otx"]
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):

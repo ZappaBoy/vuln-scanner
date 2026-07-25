@@ -14,7 +14,7 @@ class DalfoxTool(AbstractTool):
     consumes: frozenset[AssetType] = frozenset({AssetType.PARAM, AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["dalfox", "scan", target, "-f", "jsonl", "-S", "--no-color"]
+        cmd = [self.binary, "scan", target, "-f", "jsonl", "-S", "--no-color"]
 
         if scan_input.mode == ScanMode.PARANOID:
             cmd += ["--only-discovery"]

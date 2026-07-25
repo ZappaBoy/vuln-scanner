@@ -24,7 +24,7 @@ class ParamethTool(AbstractTool):
         url = _as_url(target)
         # parameth uses -u for URL and -t for threads; -p for params wordlist
         wordlist = "/usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt"
-        cmd = ["parameth", "-u", url, "-p", wordlist]
+        cmd = [self.binary, "-u", url, "-p", wordlist]
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-t", "10"]
         return cmd

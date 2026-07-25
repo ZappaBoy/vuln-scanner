@@ -19,7 +19,7 @@ class ShuffleDNSTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         wordlist = _WORDLIST if os.path.exists(_WORDLIST) else ""
         resolvers = _RESOLVERS if os.path.exists(_RESOLVERS) else ""
-        cmd = ["shuffledns", "-d", target, "-silent"]
+        cmd = [self.binary, "-d", target, "-silent"]
         if wordlist:
             cmd += ["-w", wordlist]
         if resolvers:

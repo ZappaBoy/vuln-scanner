@@ -49,7 +49,7 @@ class SecretFinderTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
-        cmd = ["SecretFinder", "-i", url, "-o", "cli"]
+        cmd = [self.binary, "-i", url, "-o", "cli"]
 
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-e"]  # include all JS files linked from the page

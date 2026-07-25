@@ -12,7 +12,7 @@ class CRLFuzzTool(AbstractTool):
     consumes: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["crlfuzz", "-u", _as_url(target), "-s"]
+        cmd = [self.binary, "-u", _as_url(target), "-s"]
         auth = scan_input.auth
         if auth.is_configured:
             for k, v in auth.effective_headers.items():

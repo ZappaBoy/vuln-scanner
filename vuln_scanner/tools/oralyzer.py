@@ -21,7 +21,7 @@ class OralyzerTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["oralyzer", "-s", url]
+        cmd = [self.binary, "-s", url]
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["--level", "3"]
         if scan_input.proxy:

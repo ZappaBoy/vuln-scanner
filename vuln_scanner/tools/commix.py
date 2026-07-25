@@ -25,7 +25,7 @@ class CommixTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["commix", "--url", target, "--batch"]
+        cmd = [self.binary, "--url", target, "--batch"]
 
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
             cmd += ["--technique=C"]  # classic only (least intrusive)

@@ -20,7 +20,7 @@ class ZmapTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         rate = "100" if scan_input.mode in (ScanMode.PASSIVE, ScanMode.PARANOID) else "1000"
-        cmd = ["zmap", "-p", "80", "-r", rate, "--output-filter", "success=1", target]
+        cmd = [self.binary, "-p", "80", "-r", rate, "--output-filter", "success=1", target]
         return cmd
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:

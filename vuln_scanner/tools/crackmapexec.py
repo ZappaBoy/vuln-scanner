@@ -30,7 +30,7 @@ class CrackMapExecTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]
         protocol = _PROTOCOLS.get(scan_input.mode, "smb")
-        cmd = ["crackmapexec", protocol, host]
+        cmd = [self.binary, protocol, host]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["--shares"]

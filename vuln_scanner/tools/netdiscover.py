@@ -21,7 +21,7 @@ class NetdiscoverTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a CIDR range e.g. 192.168.1.0/24
-        cmd = ["netdiscover", "-r", target, "-P", "-N"]  # -P: print-only, -N: no header
+        cmd = [self.binary, "-r", target, "-P", "-N"]  # -P: print-only, -N: no header
 
         if scan_input.mode == ScanMode.PASSIVE:
             cmd += ["-p"]  # passive mode (no ARP requests sent)

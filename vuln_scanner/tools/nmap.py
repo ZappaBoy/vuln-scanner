@@ -23,7 +23,7 @@ class NmapTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         timing = _TIMING[scan_input.mode]
-        cmd = ["nmap", timing, "-oX", "-"]
+        cmd = [self.binary, timing, "-oX", "-"]
 
         if scan_input.mode == ScanMode.PASSIVE:
             # no TCP connect, only ping sweep + service banner

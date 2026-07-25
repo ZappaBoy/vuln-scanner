@@ -22,7 +22,7 @@ class SemgrepTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."
-        cmd = ["semgrep", "--json", "--quiet", "--no-git-ignore"]
+        cmd = [self.binary, "--json", "--quiet", "--no-git-ignore"]
         cmd += _MODE_CONFIG.get(scan_input.mode, _MODE_CONFIG[ScanMode.ACTIVE])
         cmd += scan_input.extra_args
         cmd.append(path)

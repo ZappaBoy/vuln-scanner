@@ -26,7 +26,7 @@ class TplmapTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["tplmap", "-u", url]
+        cmd = [self.binary, "-u", url]
 
         if scan_input.mode == ScanMode.PARANOID:
             cmd += ["--level", "1"]

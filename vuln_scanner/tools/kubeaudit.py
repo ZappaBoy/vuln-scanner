@@ -17,7 +17,7 @@ class KubeauditTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # kubeaudit emits NDJSON by default; no format flag needed.
-        cmd = ["kubeaudit", "all"]
+        cmd = [self.binary, "all"]
         if target != "cluster":
             cmd += ["--manifest", target]
         return cmd

@@ -21,8 +21,17 @@ class TestNucleiCommandBuilder:
         cmd = _cmd()
         assert cmd[0] == "nuclei"
         assert "-u" in cmd
-        assert "-json" in cmd
+        assert "-jsonl" in cmd
         assert "-silent" in cmd
+
+    def test_binary_parameter_overrides_default(self):
+        cmd = _build_nuclei_command("https://target.example.com", _si(), None, binary="custom-nuclei")
+        assert cmd[0] == "custom-nuclei"
+
+    def test_tool_passes_self_binary(self):
+        tool = NucleiTool()
+        cmd = tool.build_command("https://target.example.com", _si())
+        assert cmd[0] == tool.binary
 
     # ── Severity profiles ──────────────────────────────────────────────────
     def test_paranoid_severity(self):

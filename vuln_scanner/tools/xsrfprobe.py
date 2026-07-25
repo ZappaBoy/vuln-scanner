@@ -21,7 +21,7 @@ class XSRFProbeTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)
-        cmd = ["xsrfprobe", "-u", url, "--no-prompt"]
+        cmd = [self.binary, "-u", url, "--no-prompt"]
         if scan_input.auth.cookie_string:
             cmd += ["--cookie", scan_input.auth.cookie_string]
         if scan_input.proxy:

@@ -17,7 +17,7 @@ class SSHAuditTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "")
-        cmd = ["ssh-audit", "-j"]
+        cmd = [self.binary, "-j"]
 
         if scan_input.mode == ScanMode.PARANOID:
             cmd += ["-T", "5"]  # shorter connect timeout, less footprint

@@ -14,7 +14,7 @@ class ChaosClientTool(AbstractTool):
     produces: frozenset[AssetType] = frozenset({AssetType.SUBDOMAIN})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["chaos", "-d", target, "-silent"]
+        cmd = [self.binary, "-d", target, "-silent"]
         if scan_input.auth.bearer_token:
             cmd += ["-key", scan_input.auth.bearer_token]
         return cmd

@@ -25,7 +25,7 @@ class Enum4linuxTool(AbstractTool):
         else:
             flags = ["-A", "-R"]  # aggressive: include RID cycling
 
-        cmd = ["enum4linux-ng"] + flags + ["-oJ", OUTPUT_FILE_SENTINEL, host]
+        cmd = [self.binary] + flags + ["-oJ", OUTPUT_FILE_SENTINEL, host]
         cmd += scan_input.extra_args
         return cmd
 

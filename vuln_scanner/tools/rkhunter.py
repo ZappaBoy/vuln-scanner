@@ -18,7 +18,7 @@ class RkhunterTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["rkhunter", "--check", "--skip-keypress", "--nocolors"]
+        cmd = [self.binary, "--check", "--skip-keypress", "--nocolors"]
         if target and target != "localhost":
             cmd += ["--rwo"]
         return cmd

@@ -18,7 +18,7 @@ class VHostScanTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         threads = "20" if scan_input.mode == ScanMode.AGGRESSIVE else "5"
-        cmd = ["VHostScan", "-t", target, "--threads", threads, "--fuzzy-logic"]
+        cmd = [self.binary, "-t", target, "--threads", threads, "--fuzzy-logic"]
         return cmd
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:

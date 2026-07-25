@@ -34,7 +34,7 @@ class SMBMapTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]
-        cmd = ["smbmap", "-H", host, "-u", "guest", "--no-pass"]
+        cmd = [self.binary, "-H", host, "-u", "guest", "--no-pass"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-R"]  # recursive share listing
@@ -72,7 +72,7 @@ class SMBMapTool(AbstractTool):
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error="Binary not found: smbmap"
+                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error=f"Binary not found: {self.binary}"
             )
         except subprocess.TimeoutExpired:
             return ScanResult(

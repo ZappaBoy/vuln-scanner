@@ -20,7 +20,7 @@ class CheckovTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         path = target if target.startswith("/") else "."
-        cmd = ["checkov", "-d", path, "-o", "json", "--quiet", "--compact"]
+        cmd = [self.binary, "-d", path, "-o", "json", "--quiet", "--compact"]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
         return cmd

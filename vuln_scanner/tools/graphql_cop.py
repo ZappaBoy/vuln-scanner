@@ -21,7 +21,7 @@ class GraphQLCopTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"
-        cmd = ["graphql-cop", "-t", url, "-o", "json"]
+        cmd = [self.binary, "-t", url, "-o", "json"]
 
         if scan_input.mode == ScanMode.PASSIVE:
             cmd += ["--introspection"]  # only run introspection-based checks

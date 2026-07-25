@@ -28,7 +28,7 @@ class CherrybombTool(AbstractTool):
             spec = target
         else:
             spec = target  # cherrybomb can also accept a URL to the spec
-        cmd = ["cherrybomb", "--file", spec, "--format", "json"]
+        cmd = [self.binary, "--file", spec, "--format", "json"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["--verbosity", "2"]

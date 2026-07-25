@@ -103,7 +103,7 @@ class NucleiTool(AbstractTool):
     verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        return _build_nuclei_command(target, scan_input, _active_nuclei_cfg)
+        return _build_nuclei_command(target, scan_input, _active_nuclei_cfg, self.binary)
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:
         findings: list[Finding] = []
@@ -150,6 +150,7 @@ def _build_nuclei_command(
     target: str,
     scan_input: ScanInput,
     nuclei_cfg: "NucleiConfig | None",
+    binary: str = "nuclei",
 ) -> list[str]:
     """Build the full nuclei argv list from scan_input + NucleiConfig."""
     from vuln_scanner.config.models import NucleiConfig
@@ -157,7 +158,7 @@ def _build_nuclei_command(
     cfg = nuclei_cfg or NucleiConfig()
     mode = scan_input.mode
 
-    cmd = ["nuclei", "-u", _as_url(target), "-jsonl"]
+    cmd = [binary, "-u", _as_url(target), "-jsonl"]
 
     # ── Template directories ───────────────────────────────────────────────
     if cfg.templates_dir:

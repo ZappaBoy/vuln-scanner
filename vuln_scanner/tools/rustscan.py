@@ -44,7 +44,7 @@ class RustScanTool(AbstractTool):
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         ulimit = _ULIMIT[scan_input.mode]
         nmap_flags = _NMAP_FLAGS[scan_input.mode] + ["-oX", "-"]
-        cmd = ["rustscan", "-a", target, "--ulimit", str(ulimit)]
+        cmd = [self.binary, "-a", target, "--ulimit", str(ulimit)]
         ports = _PORTS[scan_input.mode]
         if ports is not None:
             cmd += ["-p", ports]

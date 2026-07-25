@@ -12,7 +12,7 @@ class LinkFinderTool(AbstractTool):
     consumes: frozenset[AssetType] = frozenset({AssetType.JS_URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["linkfinder", "-i", _as_url(target), "-o", "cli"]
+        cmd = [self.binary, "-i", _as_url(target), "-o", "cli"]
         if scan_input.mode in ("active", "aggressive"):
             cmd += ["-d"]  # domain crawl mode
         cmd += scan_input.extra_args

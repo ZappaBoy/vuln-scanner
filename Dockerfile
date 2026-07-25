@@ -9,26 +9,34 @@ FROM golang:latest AS go-builder
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go install github.com/projectdiscovery/katana/cmd/katana@latest       && \
-    go install github.com/securego/gosec/v2/cmd/gosec@latest              && \
-    go install github.com/aquasecurity/kube-bench@latest                  && \
-    go install github.com/BishopFox/jsluice/cmd/jsluice@latest            && \
-    go install github.com/devploit/nomore403@latest                       && \
-    go install github.com/haccer/subjack@latest                           && \
-    go install github.com/projectdiscovery/chaos-client/cmd/chaos@latest  && \
-    go install github.com/gwen001/github-subdomains@latest                && \
-    go install github.com/hakluke/hakip2host@latest                       && \
-    go install github.com/hakluke/haktrails@latest                        && \
-    go install github.com/bp0lr/gauplus@latest                            && \
-    go install github.com/d3mondev/puredns/v2@latest                      && \
-    go install github.com/mhmdiaa/second-order@latest                     && \
-    go install github.com/BishopFox/cloudfox@latest                       && \
-    go install github.com/Josue87/gotator@latest                          && \
-    go install github.com/Emoe/kxss@latest                                && \
-    go install github.com/xeol-io/xeol/cmd/xeol@latest                   && \
-    go install github.com/zricethezav/gitleaks/v8@latest                  && \
-    go install github.com/sonatype-nexus-community/nancy@latest           && \
-    go install github.com/threagile/threagile@latest
+    go install github.com/projectdiscovery/katana/cmd/katana@latest                           && \
+    go install github.com/securego/gosec/v2/cmd/gosec@latest                                  && \
+    go install github.com/aquasecurity/kube-bench@latest                                      && \
+    go install github.com/BishopFox/jsluice/cmd/jsluice@latest                               && \
+    go install github.com/devploit/nomore403@latest                                           && \
+    go install github.com/haccer/subjack@latest                                               && \
+    go install github.com/projectdiscovery/chaos-client/cmd/chaos@latest                      && \
+    go install github.com/gwen001/github-subdomains@latest                                    && \
+    go install github.com/hakluke/hakip2host@latest                                           && \
+    go install github.com/hakluke/haktrails@latest                                            && \
+    go install github.com/bp0lr/gauplus@latest                                                && \
+    go install github.com/d3mondev/puredns/v2@latest                                          && \
+    go install github.com/mhmdiaa/second-order@latest                                         && \
+    go install github.com/BishopFox/cloudfox@latest                                           && \
+    go install github.com/Josue87/gotator@latest                                              && \
+    go install github.com/Emoe/kxss@latest                                                    && \
+    go install github.com/xeol-io/xeol/cmd/xeol@latest                                       && \
+    go install github.com/zricethezav/gitleaks/v8@latest                                      && \
+    go install github.com/sonatype-nexus-community/nancy@latest                               && \
+    go install github.com/threagile/threagile@latest                                          && \
+    go install github.com/jaeles-project/gospider@latest                                      && \
+    go install github.com/ropnop/kerbrute@latest                                              && \
+    go install github.com/ethicalhackingplayground/bxss/v2/cmd/bxss@latest                    && \
+    go install github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest            && \
+    go install github.com/projectdiscovery/uncover/cmd/uncover@latest                         && \
+    go install github.com/projectdiscovery/asnmap/cmd/asnmap@latest                           && \
+    go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest                       && \
+    go install github.com/projectdiscovery/cloudlist/cmd/cloudlist@latest
 
 # KICS is built from source to get the binary plus its on-disk query/library assets.
 RUN --mount=type=cache,target=/go/pkg/mod \
@@ -50,7 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
-    cargo install cargo-audit ripgen weggli
+    OPENSSL_NO_VENDOR=1 cargo install cargo-audit ripgen weggli
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 3 – tool-builder
@@ -79,7 +87,7 @@ RUN --mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 
 # ── Ruby gems (scripts → /usr/local/bin, libs → /usr/lib/ruby/gems) ────────────
 RUN gem install --no-document --no-user-install --bindir /usr/local/bin \
-    bundler-audit cfn-nag dawnscanner license_finder rubocop rubocop-ast && \
+    bundler-audit cfn-nag dawnscanner license_finder rubocop rubocop-ast noir && \
     gem cleanup --silent && \
     rm -rf /root/.gem/ruby/*/cache /usr/lib/ruby/gems/*/cache
 
@@ -116,6 +124,48 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     mv "/usr/bin/$f" /usr/local/bin/ 2>/dev/null || true ; \
     done && \
     rm -f /tmp/bin.before /tmp/bin.after
+
+# ── Additional pip packages (gap analysis — new tools) ───────────────────────
+RUN --mount=type=cache,target=/root/.cache/pip \
+    ls -1 /usr/bin | sort > /tmp/bin2.before ; \
+    for pkg in \
+    uro \
+    netexec \
+    impacket \
+    bloodhound \
+    clairvoyance \
+    offat \
+    nodejsscan \
+    dlint \
+    cloud-enum \
+    enumerate-iam \
+    cloudsplaining ; do \
+    pip install --break-system-packages "$pkg" ; \
+    done ; \
+    ls -1 /usr/bin | sort > /tmp/bin2.after && \
+    comm -13 /tmp/bin2.before /tmp/bin2.after | while read -r f; do \
+    mv "/usr/bin/$f" /usr/local/bin/ 2>/dev/null || true ; \
+    done && \
+    rm -f /tmp/bin2.before /tmp/bin2.after
+
+# ── EmailHarvester ────────────────────────────────────────────────────────────
+RUN --mount=type=cache,target=/root/.cache/pip \
+    git clone --depth 1 https://github.com/maldevel/EmailHarvester /opt/EmailHarvester && \
+    pip install --break-system-packages -r /opt/EmailHarvester/requirements.txt && \
+    printf '#!/bin/sh\nexec /usr/bin/python3 /opt/EmailHarvester/EmailHarvester.py "$@"\n' \
+        > /usr/local/bin/emailharvester && \
+    chmod +x /usr/local/bin/emailharvester && \
+    rm -rf /opt/EmailHarvester/.git
+
+# ── AzureHound (binary release) ───────────────────────────────────────────────
+RUN AZHVER=$(curl -sL https://api.github.com/repos/SpecterOps/AzureHound/releases/latest \
+    | grep '"tag_name"' | cut -d'"' -f4) && \
+    [ -n "$AZHVER" ] && \
+    curl -sL "https://github.com/SpecterOps/AzureHound/releases/download/${AZHVER}/AzureHound_${AZHVER}_linux_amd64.zip" \
+        -o /tmp/azurehound.zip && \
+    unzip -q /tmp/azurehound.zip -d /tmp/azurehound && \
+    find /tmp/azurehound -maxdepth 2 -type f \( -name 'azurehound' -o -name 'AzureHound' \) -exec install -m755 {} /usr/local/bin/azurehound \; && \
+    rm -rf /tmp/azurehound.zip /tmp/azurehound
 
 # ── npm global tools (prefix /usr/local so they land in the copied tree) ───────
 RUN --mount=type=cache,target=/root/.npm \
@@ -329,16 +379,20 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     --mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
     yay -S --noconfirm --needed \
     alterx \
+    altdns \
     amass \
     arachni \
     arjun \
     assetfinder \
     bandit \
     bbot \
+    bettercap \
     binwalk \
     blackarch/androbugs \
     blackarch/apkid \
     blackarch/brakeman \
+    blackarch/certipy \
+    blackarch/crowbar \
     blackarch/dawnscanner \
     blackarch/gitrob \
     blackarch/horusec \
@@ -362,10 +416,13 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     dependency-check \
     detect-secrets \
     dirsearch \
+    dnstwist \
     dnsrecon \
     dnsx \
     dockle-bin \
     enum4linux-ng \
+    blackarch/eyewitness \
+    blackarch/finalrecon \
     extra/dive \
     extra/kube-linter \
     extra/psalm \
@@ -377,6 +434,8 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     flawfinder \
     gau \
     ghauri \
+    blackarch/h8mail \
+    hashcat \
     git-dumper \
     gitjacker  \
     gitleaks \
@@ -391,27 +450,39 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     hakrawler \
     httprobe \
     httpx \
+    blackarch/holehe \
     hydra \
+    blackarch/inspy \
+    john \
     joomscan \
     jwt-tool \
     kiterunner \
     kube-hunter \
+    blackarch/legba \
+    blackarch/ldeep \
     kubescape-bin \
     linkfinder \
     lynis \
+    blackarch/maigret \
     masscan \
     massdns \
     medusa \
+    blackarch/metagoofil \
+    blackarch/mitm6 \
     naabu \
+    nbtscan \
+    ncrack \
     netdiscover \
     nikto \
     nmap \
     noseyparker \
     nosqlmap \
     nuclei \
+    blackarch/oneforall \
     openvas \
     osv-scanner \
     parameth  \
+    blackarch/patator \
     paramspider \
     popeye-bin \
     prowler \
@@ -419,6 +490,7 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     python-jsbeautifier \
     python-requests \
     python-witnessme  \
+    blackarch/responder \
     restler-fuzzer \
     retire \
     rkhunter \
@@ -427,7 +499,11 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     second-order \
     secretfinder \
     semgrep \
+    blackarch/sherlock \
     shuffledns \
+    skipfish \
+    blackarch/sqlninja \
+    sublist3r \
     smbmap \
     smuggler \
     spiderfoot \
@@ -456,6 +532,7 @@ RUN --mount=type=cache,target=/home/builder/.cache,uid=1000,gid=1000,sharing=loc
     whatwaf \
     whatweb \
     wpscan \
+    blackarch/xsser \
     xsstrike \
     yara \
     zaproxy \

@@ -21,7 +21,7 @@ class GrypeTool(AbstractTool):
     verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["grype", target, "-o", "json", "--quiet"]
+        cmd = [self.binary, target, "-o", "json", "--quiet"]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
         return cmd

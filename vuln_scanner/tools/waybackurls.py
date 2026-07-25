@@ -13,7 +13,7 @@ class WaybackURLsTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         domain = target.split("//")[-1].split("/")[0].split(":")[0]
-        cmd = ["waybackurls", domain]
+        cmd = [self.binary, domain]
         cmd += scan_input.extra_args
         return cmd
 

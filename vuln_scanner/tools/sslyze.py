@@ -17,7 +17,7 @@ class SSLyzeTool(AbstractTool):
         host = target.replace("https://", "").replace("http://", "")
         if ":" not in host:
             host = f"{host}:443"
-        cmd = ["sslyze", "--json_out=-"]
+        cmd = [self.binary, "--json_out=-"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["--heartbleed", "--robot", "--compression", "--reneg"]

@@ -19,7 +19,7 @@ class DNSReconTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["dnsrecon", "-d", target, "-j", OUTPUT_FILE_SENTINEL]
+        cmd = [self.binary, "-d", target, "-j", OUTPUT_FILE_SENTINEL]
         cmd += _TYPE_FLAGS.get(scan_input.mode, ["-t", "std"])
 
         if scan_input.rate_limit is not None:

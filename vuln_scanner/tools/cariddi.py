@@ -17,7 +17,7 @@ class CariddiTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # cariddi reads URLs from stdin — target is injected via run(), not as a flag
-        cmd = ["cariddi", "-s", "-json"]
+        cmd = [self.binary, "-s", "-json"]
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["-intensive"]
         auth = scan_input.auth
@@ -50,7 +50,7 @@ class CariddiTool(AbstractTool):
             )
         except FileNotFoundError:
             return ScanResult(
-                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error="Binary not found: cariddi"
+                tool=self.name, target=target, duration=0.0, status=ScanStatus.FAILED, error=f"Binary not found: {self.binary}"
             )
         except subprocess.TimeoutExpired:
             return ScanResult(

@@ -19,7 +19,7 @@ class TlsxTool(AbstractTool):
         host = target.replace("https://", "").replace("http://", "")
         if ":" not in host:
             host = f"{host}:443"
-        cmd = ["tlsx", "-host", host, "-json", "-silent", "-san", "-cn"]
+        cmd = [self.binary, "-host", host, "-json", "-silent", "-san", "-cn"]
 
         if scan_input.mode == ScanMode.AGGRESSIVE:
             cmd += ["-expired", "-self-signed", "-mismatched"]

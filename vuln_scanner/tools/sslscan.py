@@ -26,7 +26,7 @@ class SSLScanTool(AbstractTool):
         host = target.replace("https://", "").replace("http://", "")
         if ":" not in host:
             host = f"{host}:443"
-        cmd = ["sslscan", "--xml=-", "--no-colour"]
+        cmd = [self.binary, "--xml=-", "--no-colour"]
 
         if scan_input.mode in (ScanMode.ACTIVE, ScanMode.AGGRESSIVE):
             cmd += ["--show-certificate", "--show-ciphers"]

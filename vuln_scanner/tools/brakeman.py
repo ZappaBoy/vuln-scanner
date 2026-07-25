@@ -14,7 +14,7 @@ class BrakemanTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["brakeman", "-p", target, "-f", "json", "-q", "--no-progress"]
+        cmd = [self.binary, "-p", target, "-f", "json", "-q", "--no-progress"]
         cmd += scan_input.extra_args
         return cmd
 

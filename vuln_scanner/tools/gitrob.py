@@ -21,9 +21,9 @@ class GitrobTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         org = target.replace("https://github.com/", "").split("/")[0]
-        cmd = ["gitrob", "--output-json", "/dev/stdout", org]
+        cmd = [self.binary, "--output-json", "/dev/stdout", org]
         if scan_input.auth.bearer_token:
-            cmd = ["gitrob", "--github-access-token", scan_input.auth.bearer_token, "--output-json", "/dev/stdout", org]
+            cmd = [self.binary, "--github-access-token", scan_input.auth.bearer_token, "--output-json", "/dev/stdout", org]
         return cmd
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:

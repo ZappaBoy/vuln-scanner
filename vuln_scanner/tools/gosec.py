@@ -22,7 +22,7 @@ class GosecTool(AbstractTool):
         path = target if target.startswith("/") else "./..."
         if not path.endswith("/...") and not path.endswith(".go"):
             path = path.rstrip("/") + "/..."
-        cmd = ["gosec", "-fmt", "json", "-quiet"]
+        cmd = [self.binary, "-fmt", "json", "-quiet"]
         cmd += _MODE_FLAGS.get(scan_input.mode, [])
         cmd += scan_input.extra_args
         cmd.append(path)

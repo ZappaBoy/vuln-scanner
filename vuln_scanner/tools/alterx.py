@@ -20,7 +20,7 @@ class AlterxTool(AbstractTool):
 
     def run(self, target: str, scan_input: ScanInput) -> ScanResult:
         domain = target.split("//")[-1].split("/")[0].split(":")[0]
-        cmd = ["alterx", "-enrich", "-silent"] + scan_input.extra_args
+        cmd = [self.binary, "-enrich", "-silent"] + scan_input.extra_args
         start = time.monotonic()
         try:
             proc = subprocess.run(
@@ -48,7 +48,7 @@ class AlterxTool(AbstractTool):
         except FileNotFoundError:
             return ScanResult(
                 tool=self.name, target=target, duration=0.0,
-                status=ScanStatus.FAILED, error="Binary not found: alterx",
+                status=ScanStatus.FAILED, error=f"Binary not found: {self.binary}",
             )
 
     def parse_output(self, raw: str, target: str) -> list[Finding]:

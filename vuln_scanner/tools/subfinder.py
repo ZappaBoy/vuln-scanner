@@ -15,7 +15,7 @@ class SubfinderTool(AbstractTool):
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # target should be a domain (e.g. example.com)
-        cmd = ["subfinder", "-d", target, "-json", "-silent"]
+        cmd = [self.binary, "-d", target, "-json", "-silent"]
 
         if scan_input.mode in (ScanMode.PARANOID, ScanMode.PASSIVE):
             cmd += ["-sources", "passive"]

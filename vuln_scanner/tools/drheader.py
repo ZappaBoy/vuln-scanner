@@ -20,7 +20,7 @@ class DrheaderTool(AbstractTool):
     consumes: frozenset[AssetType] = frozenset({AssetType.URL})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["drheader", "scan", "single", _as_url(target), "--json"]
+        cmd = [self.binary, "scan", "single", _as_url(target), "--json"]
         cmd += scan_input.extra_args
         return cmd
 

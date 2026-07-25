@@ -12,7 +12,7 @@ class KubeBenchTool(AbstractTool):
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.CLOUD, TargetType.HOST})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
-        cmd = ["kube-bench", "--json"]
+        cmd = [self.binary, "--json"]
         cmd += scan_input.extra_args
         return cmd
 

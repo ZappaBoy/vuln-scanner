@@ -1,5 +1,6 @@
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -10,6 +11,7 @@ class NoseyParkerTool(AbstractTool):
     binary: str = "noseyparker"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [

@@ -1,5 +1,6 @@
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -12,6 +13,7 @@ class BrakemanTool(AbstractTool):
     binary: str = "brakeman"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [self.binary, "-p", target, "-f", "json", "-q", "--no-progress"]

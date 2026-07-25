@@ -99,6 +99,15 @@ class AbstractTool(ABC, BaseModel):
         """
         return []
 
+    def asset_predicate(self, asset: Asset) -> bool:
+        """Return True if *asset* should trigger this tool as a chaining target.
+
+        Override to add conditional routing logic (e.g. only run wpscan when
+        the TECH asset indicates WordPress, or only run testssl on TLS ports).
+        The default accepts every asset of the declared consumed types.
+        """
+        return True
+
     @abstractmethod
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         """Return the subprocess argv list for *target*.

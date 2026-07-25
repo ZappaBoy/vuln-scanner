@@ -2,7 +2,7 @@ import re
 import subprocess
 import time
 
-from vuln_scanner.assets import AssetType
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -31,6 +31,11 @@ class SMBMapTool(AbstractTool):
     category: str = "network"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.CIDR})
     consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
+
+    def asset_predicate(self, asset: Asset) -> bool:
+        port = asset.meta.get("port", "")
+        service = asset.meta.get("service", "").lower()
+        return port in _SMB_PORTS or "smb" in service or "netbios" in service or "microsoft-ds" in service
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("http://", "").replace("https://", "").split("/")[0]

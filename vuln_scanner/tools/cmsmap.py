@@ -2,7 +2,7 @@
 
 import re
 
-from vuln_scanner.assets import AssetType
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -26,7 +26,15 @@ class CMSmapTool(AbstractTool):
     binary: str = "cmsmap"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL, TargetType.HOST})
-    consumes: frozenset[AssetType] = frozenset({AssetType.LIVE_HOST})
+    consumes: frozenset[AssetType] = frozenset({AssetType.LIVE_HOST, AssetType.TECH})
+
+    _CMS_TECHS = {"wordpress", "joomla", "drupal", "typo3", "magento"}
+
+    def asset_predicate(self, asset: Asset) -> bool:
+        if asset.type == AssetType.TECH:
+            tech = asset.meta.get("tech", "").lower()
+            return any(cms in tech for cms in self._CMS_TECHS)
+        return True
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = _as_url(target)

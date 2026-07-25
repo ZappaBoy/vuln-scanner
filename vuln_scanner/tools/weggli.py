@@ -4,6 +4,7 @@ import re
 import subprocess
 import time
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -24,6 +25,7 @@ class WeggliTool(AbstractTool):
     binary: str = "weggli"
     category: str = "sast"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []

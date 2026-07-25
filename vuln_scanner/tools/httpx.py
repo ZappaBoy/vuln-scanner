@@ -95,6 +95,12 @@ class HttpxTool(AbstractTool):
                 assets.append(Asset(type=AssetType.LIVE_HOST, value=url, source=self.name, target=result.target))
                 assets.append(Asset(type=AssetType.URL, value=url, source=self.name, target=result.target))
             for tech in f.raw.get("tech", []):
-                if tech:
-                    assets.append(Asset(type=AssetType.TECH, value=tech, source=self.name, target=result.target))
+                if tech and url:
+                    assets.append(Asset(
+                        type=AssetType.TECH,
+                        value=url,
+                        source=self.name,
+                        target=result.target,
+                        meta={"tech": tech.lower()},
+                    ))
         return assets

@@ -68,6 +68,16 @@ def deduplicate_findings(pairs: list[tuple[str, Finding]]) -> list[FindingGroup]
 # ── Stats ─────────────────────────────────────────────────────────────────────
 
 
+class ChainEdge(BaseModel):
+    """One chaining hop: asset discovered by source_tool triggered triggered_tool."""
+
+    source_tool: str
+    asset_type: str
+    asset_value: str
+    triggered_tool: str
+    wave: int
+
+
 class AssessmentStats(BaseModel):
     total_findings: int = 0
     unique_findings: int = 0  # after cross-tool deduplication
@@ -79,6 +89,8 @@ class AssessmentStats(BaseModel):
     tools_failed: int = 0
     total_duration: float = 0.0
     generated_at: str = Field(default_factory=lambda: datetime.now(tz=timezone.utc).isoformat())
+    assets_by_type: dict[str, int] = Field(default_factory=dict)
+    waves_run: int = 0
 
 
 def _compute_stats(results: list[ScanResult]) -> AssessmentStats:
@@ -119,6 +131,7 @@ class Assessment(BaseModel):
     stats: AssessmentStats = Field(default_factory=AssessmentStats)
     poc_asset_paths: list[str] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
+    chain_edges: list[ChainEdge] = Field(default_factory=list)
 
     @classmethod
     def from_results(
@@ -129,14 +142,22 @@ class Assessment(BaseModel):
         executive_summary: str = "",
         poc_asset_paths: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
+        chain_edges: list[ChainEdge] | None = None,
+        assets_by_type: dict[str, int] | None = None,
+        waves_run: int = 0,
     ) -> "Assessment":
+        stats = _compute_stats(results)
+        if assets_by_type:
+            stats.assets_by_type = assets_by_type
+        stats.waves_run = waves_run
         return cls(
             results=results,
             clusters=clusters or [],
             executive_summary=executive_summary,
-            stats=_compute_stats(results),
+            stats=stats,
             poc_asset_paths=poc_asset_paths or [],
             metadata=metadata or {},
+            chain_edges=chain_edges or [],
         )
 
     @property

@@ -2,6 +2,7 @@
 
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -12,6 +13,7 @@ class CycloneDXTool(AbstractTool):
     binary: str = "cyclonedx"
     category: str = "sca"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.IMAGE})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return [

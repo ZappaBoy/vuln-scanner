@@ -92,6 +92,6 @@ class MasscanTool(AbstractTool):
                     value=f"{f.target}:{port}/{protocol}",
                     source=self.name,
                     target=result.target,
-                    meta={"service": service},
+                    meta={"port": port, "protocol": protocol, "service": service},
                 ))
         return assets

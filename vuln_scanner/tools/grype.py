@@ -1,5 +1,6 @@
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -17,6 +18,7 @@ class GrypeTool(AbstractTool):
     binary: str = "grype"
     category: str = "container"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.IMAGE, TargetType.PATH})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
     silent_flags: list[str] = ["--quiet"]
     verbose_flags: list[str] = ["-v"]
 

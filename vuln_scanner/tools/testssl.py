@@ -1,6 +1,6 @@
 import json
 
-from vuln_scanner.assets import AssetType
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import OUTPUT_FILE_SENTINEL, AbstractTool
 from vuln_scanner.tools.enums import ScanMode, TargetType, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -24,6 +24,13 @@ class TestSSLTool(AbstractTool):
     category: str = "ssl"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.HOST, TargetType.IP, TargetType.URL})
     consumes: frozenset[AssetType] = frozenset({AssetType.OPEN_PORT})
+
+    _TLS_PORTS = {"443", "8443", "465", "587", "993", "995", "636", "8883"}
+
+    def asset_predicate(self, asset: Asset) -> bool:
+        port = asset.meta.get("port", "")
+        service = asset.meta.get("service", "").lower()
+        return port in self._TLS_PORTS or "ssl" in service or "https" in service or "tls" in service
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         host = target.replace("https://", "").replace("http://", "")

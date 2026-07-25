@@ -139,11 +139,12 @@ class MarkdownReporter(AbstractReporter):
         has_clusters = bool(assessment.clusters)
         has_errors = any(target_errors.values())
         has_pocs = bool(assessment.poc_asset_paths)
+        has_chain = bool(assessment.chain_edges or assessment.stats.assets_by_type)
         active_targets = list(target_groups)
 
         lines: list[str] = []
         lines += self._section_cover(stats)
-        lines += self._section_toc(active_targets, has_clusters, has_errors, has_pocs)
+        lines += self._section_toc(active_targets, has_clusters, has_errors, has_pocs, has_chain)
         lines += self._section_executive_summary(assessment)
         lines += self._section_scope(assessment, by_target, stats)
         lines += self._section_severity_guide()
@@ -152,6 +153,8 @@ class MarkdownReporter(AbstractReporter):
             lines += self._section_clusters(assessment.clusters)
         findings_section = 6 if has_clusters else 5
         lines += self._section_detailed_findings(target_groups, section_num=findings_section)
+        if has_chain:
+            lines += self._section_chain(assessment)
         if has_errors:
             lines += self._appendix_errors(target_errors)
         if has_pocs:
@@ -195,6 +198,7 @@ class MarkdownReporter(AbstractReporter):
         has_clusters: bool,
         has_errors: bool,
         has_pocs: bool,
+        has_chain: bool = False,
     ) -> list[str]:
         lines = ["## Table of Contents", ""]
         n = 1
@@ -207,6 +211,8 @@ class MarkdownReporter(AbstractReporter):
         if has_clusters:
             sections.append("Vulnerability Clusters")
         sections.append("Detailed Findings")
+        if has_chain:
+            sections.append("Discovery Chain")
 
         for title in sections:
             lines.append(f"{n}. [{title}](#{_anchor(title)})")
@@ -567,6 +573,37 @@ class MarkdownReporter(AbstractReporter):
         for path in paths:
             lines.append(f"- `{path}`")
         lines += ["", "---", ""]
+        return lines
+
+    # ── Discovery Chain ───────────────────────────────────────────────────────
+
+    def _section_chain(self, assessment: Assessment) -> list[str]:
+        stats = assessment.stats
+        lines = ["## Discovery Chain", ""]
+        if stats.waves_run:
+            lines.append(f"Chaining ran **{stats.waves_run}** wave(s) beyond the initial scan.")
+            lines.append("")
+        if stats.assets_by_type:
+            lines += ["### Assets Discovered", "", "| Asset Type | Count |", "| --- | --- |"]
+            for atype, count in sorted(stats.assets_by_type.items(), key=lambda x: -x[1]):
+                lines.append(f"| `{atype}` | {count} |")
+            lines.append("")
+        if assessment.chain_edges:
+            lines += [
+                "### Chain Edges",
+                "",
+                "| Wave | Source Tool | Asset Type | Asset Value | Triggered Tool |",
+                "| --- | --- | --- | --- | --- |",
+            ]
+            for edge in assessment.chain_edges:
+                val = edge.asset_value
+                if len(val) > 80:
+                    val = val[:77] + "..."
+                lines.append(
+                    f"| {edge.wave} | `{edge.source_tool}` | `{edge.asset_type}` | `{val}` | `{edge.triggered_tool}` |"
+                )
+            lines.append("")
+        lines += ["---", ""]
         return lines
 
     # ── Helpers ───────────────────────────────────────────────────────────────

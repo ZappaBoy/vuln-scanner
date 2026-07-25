@@ -2,6 +2,7 @@
 
 import re
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -16,6 +17,7 @@ class RkhunterTool(AbstractTool):
     binary: str = "rkhunter"
     category: str = "system"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.HOST})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         cmd = [self.binary, "--check", "--skip-keypress", "--nocolors"]

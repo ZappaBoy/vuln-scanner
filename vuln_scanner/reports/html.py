@@ -234,6 +234,29 @@ class HTMLReporter(AbstractReporter):
 
         parts.append("</div>")  # section
 
+        # Tool chain
+        if assessment.chain_edges or assessment.stats.assets_by_type:
+            parts.append('<div class="section"><h2>Discovery Chain</h2>')
+            if assessment.stats.assets_by_type:
+                parts.append("<h3>Assets Discovered</h3><table><thead><tr><th>Asset Type</th><th>Count</th></tr></thead><tbody>")
+                for atype, count in sorted(assessment.stats.assets_by_type.items(), key=lambda x: -x[1]):
+                    parts.append(f"<tr><td><code>{_e(atype)}</code></td><td>{count}</td></tr>")
+                parts.append("</tbody></table>")
+            if assessment.chain_edges:
+                parts.append("<h3>Chain Edges</h3>")
+                parts.append("<table><thead><tr><th>Wave</th><th>Source Tool</th><th>Asset Type</th><th>Asset Value</th><th>Triggered Tool</th></tr></thead><tbody>")
+                for edge in assessment.chain_edges:
+                    val = edge.asset_value
+                    if len(val) > 80:
+                        val = val[:77] + "..."
+                    parts.append(
+                        f"<tr><td>{edge.wave}</td><td><code>{_e(edge.source_tool)}</code></td>"
+                        f"<td><code>{_e(edge.asset_type)}</code></td><td><code>{_e(val)}</code></td>"
+                        f"<td><code>{_e(edge.triggered_tool)}</code></td></tr>"
+                    )
+                parts.append("</tbody></table>")
+            parts.append("</div>")
+
         # PoC assets
         if assessment.poc_asset_paths:
             parts.append('<div class="section"><h2>PoC Assets</h2><ul>')

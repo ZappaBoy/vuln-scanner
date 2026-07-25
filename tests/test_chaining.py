@@ -570,8 +570,11 @@ class TestExtractAssets:
         assert AssetType.LIVE_HOST in types
         assert AssetType.URL in types
         assert types.count(AssetType.TECH) == 2
-        tech_values = {a.value for a in assets if a.type == AssetType.TECH}
-        assert tech_values == {"nginx", "jQuery"}
+        # TECH asset value is now the URL; tech name is in meta["tech"]
+        tech_assets = [a for a in assets if a.type == AssetType.TECH]
+        assert all(a.value == "https://api.example.com" for a in tech_assets)
+        tech_names = {a.meta.get("tech") for a in tech_assets}
+        assert tech_names == {"nginx", "jquery"}
 
     def test_nmap_extract_assets(self):
         from vuln_scanner.tools.enums import ScanStatus
@@ -702,10 +705,12 @@ class TestExtractAssets:
             ],
         )
         assets = t.extract_assets(result)
-        vals = {a.value for a in assets}
-        assert "WordPress:6.4" in vals
-        assert "nginx" in vals
+        # TECH asset value is now the URL; tech name is in meta["tech"]
         assert all(a.type == AssetType.TECH for a in assets)
+        assert all(a.value == "https://example.com" for a in assets)
+        tech_names = {a.meta.get("tech") for a in assets}
+        assert "wordpress" in tech_names
+        assert "nginx" in tech_names
 
     def test_gau_extract_assets(self):
         from vuln_scanner.tools.enums import ScanStatus

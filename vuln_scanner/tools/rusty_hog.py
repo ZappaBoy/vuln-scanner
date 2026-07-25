@@ -10,6 +10,7 @@ rest are available as binaries but require service credentials/IDs to run.
 import json
 import re
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -22,6 +23,7 @@ class RustyHogTool(AbstractTool):
     binary: str = "choctaw_hog"
     category: str = "secrets"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH, TargetType.REPO})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # Rusty Hog has no --json flag; JSON is emitted to stdout by default.

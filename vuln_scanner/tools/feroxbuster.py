@@ -25,7 +25,7 @@ class FeroxbusterTool(AbstractTool):
     binary: str = "feroxbuster"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
-    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.ENDPOINT})
     silent_flags: list[str] = ["--silent"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:

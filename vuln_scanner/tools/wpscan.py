@@ -1,6 +1,6 @@
 import json
 
-from vuln_scanner.assets import AssetType
+from vuln_scanner.assets import Asset, AssetType
 from vuln_scanner.tools.abstract import AbstractTool, _as_url
 from vuln_scanner.tools.enums import ScanMode, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -25,7 +25,12 @@ class WPScanTool(AbstractTool):
     binary: str = "wpscan"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
-    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.LIVE_HOST})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.LIVE_HOST, AssetType.TECH})
+
+    def asset_predicate(self, asset: Asset) -> bool:
+        if asset.type == AssetType.TECH:
+            return "wordpress" in asset.meta.get("tech", "").lower()
+        return True
     verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:

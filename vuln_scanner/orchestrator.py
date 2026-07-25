@@ -9,6 +9,7 @@ from pathlib import Path
 
 from vuln_scanner.assets import Asset, AssetStore, AssetType
 from vuln_scanner.config.models import AppConfig
+from vuln_scanner.model import ChainEdge
 from vuln_scanner.scope import ScopeValidator
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanMode, ScanStatus
@@ -26,6 +27,7 @@ _PASSIVE_ASSET_TYPES: frozenset[AssetType] = frozenset(
         AssetType.EMAIL,
         AssetType.TECH,
         AssetType.VHOST,
+        AssetType.PATH,  # local paths are always safe to propagate
     }
 )
 
@@ -123,6 +125,10 @@ class ScanOrchestrator:
         self._log_dir = log_dir
         if log_dir is not None:
             log_dir.mkdir(parents=True, exist_ok=True)
+        # Populated after run() when chaining is enabled
+        self.chain_edges: list[ChainEdge] = []
+        self.assets_by_type: dict[str, int] = {}
+        self.waves_run: int = 0
 
     def _filter_tools(self) -> list[AbstractTool]:
         cfg_tools = self._config.tools
@@ -266,9 +272,11 @@ class ScanOrchestrator:
         )
 
         all_results: list[ScanResult] = []
+        chain_edges: list[ChainEdge] = []
         # (tool.name, target) pairs already executed — prevents re-running
         done_set: set[tuple[str, str]] = set()
         new_targets_added = 0
+        waves_completed = 0
 
         loop = asyncio.get_event_loop()
         tracker = _ProgressTracker(0)
@@ -313,6 +321,8 @@ class ScanOrchestrator:
                                 continue
                             if not tool.applies_to(target_val):
                                 continue
+                            if not tool.asset_predicate(asset):
+                                continue
                             next_wave.append((tool, target_val, asset))
 
                 if not next_wave:
@@ -327,6 +337,13 @@ class ScanOrchestrator:
                     if key not in seen_wave:
                         seen_wave.add(key)
                         deduped.append((tool, t, asset))
+                        chain_edges.append(ChainEdge(
+                            source_tool=asset.source or "seed",
+                            asset_type=asset.type.value,
+                            asset_value=asset.value,
+                            triggered_tool=tool.name,
+                            wave=wave_num,
+                        ))
 
                 tracker.add_total(len(deduped))
                 log.info("Wave %d: %d task(s).", wave_num, len(deduped))
@@ -349,7 +366,12 @@ class ScanOrchestrator:
                     for asset in tool.extract_assets(r):
                         self._maybe_add_asset(asset, store, scope_cfg, mode, budgets)
 
+                waves_completed = wave_num
+
         log.info("%s  [asset store: %d assets]", tracker.summary_line(), store.total)
+        self.chain_edges = chain_edges
+        self.assets_by_type = {t.value: len(store.get(t)) for t in AssetType if store.get(t)}
+        self.waves_run = waves_completed
         return all_results
 
     @staticmethod

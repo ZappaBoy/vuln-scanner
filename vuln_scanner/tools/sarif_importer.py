@@ -2,6 +2,7 @@
 
 import json
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput
@@ -14,6 +15,7 @@ class SARIFImporterTool(AbstractTool):
     binary: str = "cat"
     category: str = "generic"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         # Target is a SARIF file; just cat it

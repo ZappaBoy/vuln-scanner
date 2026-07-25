@@ -20,7 +20,7 @@ class FfufTool(AbstractTool):
     binary: str = "ffuf"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
-    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.ENDPOINT})
     verbose_flags: list[str] = ["-v"]
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:

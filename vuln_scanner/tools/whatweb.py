@@ -108,15 +108,15 @@ class WhatWebTool(AbstractTool):
         for f in result.findings:
             tech = f.raw.get("tech", "")
             version = f.raw.get("version", "")
-            if tech:
-                value = f"{tech}:{version}" if version else tech
+            url = f.raw.get("target", result.target)
+            if tech and url:
                 assets.append(
                     Asset(
                         type=AssetType.TECH,
-                        value=value,
+                        value=url,
                         source=self.name,
                         target=result.target,
-                        meta={"version": version} if version else {},
+                        meta={"tech": tech.lower(), "version": version},
                     )
                 )
         return assets

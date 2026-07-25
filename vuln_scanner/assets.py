@@ -20,17 +20,18 @@ if TYPE_CHECKING:
 class AssetType(str, Enum):
     SUBDOMAIN = "subdomain"  # bare hostname (sub.example.com)
     LIVE_HOST = "live_host"  # confirmed live host (http/https probe passed)
-    OPEN_PORT = "open_port"  # "host:port" or "host:port/service"
+    OPEN_PORT = "open_port"  # "host:port/proto"; meta: port, protocol, service
     URL = "url"  # http/https URL
-    ENDPOINT = "endpoint"  # relative URL path (/api/v1/users)
+    ENDPOINT = "endpoint"  # full URL of a discovered API/app endpoint
     PARAM = "param"  # "target::param_name" or bare param name
     JS_URL = "js_url"  # JavaScript file URL
-    TECH = "tech"  # technology fingerprint ("wordpress", "nginx:1.19")
+    TECH = "tech"  # live host URL running a known tech; meta: tech, version
     VHOST = "vhost"  # virtual hostname
     EMAIL = "email"  # email address
     BUCKET = "bucket"  # cloud storage bucket name/URL
     SECRET = "secret"  # credential / token / API key
     IP = "ip"  # discovered IP address
+    PATH = "path"  # local filesystem path (repo, archive, directory)
 
 
 # Maps TargetType → AssetType for seeding the store from CLI targets.
@@ -40,6 +41,8 @@ _TARGET_TO_ASSET: dict[str, AssetType] = {
     "cidr": AssetType.IP,
     "url": AssetType.URL,
     "live_host": AssetType.LIVE_HOST,
+    "path": AssetType.PATH,
+    "repo": AssetType.PATH,
 }
 
 

@@ -89,6 +89,6 @@ class NaabuTool(AbstractTool):
                     value=f"{host}:{port}/{protocol}",
                     source=self.name,
                     target=result.target,
-                    meta={"service": "unknown"},
+                    meta={"port": port, "protocol": protocol, "service": "unknown"},
                 ))
         return assets

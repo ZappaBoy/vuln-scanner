@@ -30,7 +30,7 @@ class KiterunnerTool(AbstractTool):
     binary: str = "kiterunner"
     category: str = "api"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
-    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.ENDPOINT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target if target.startswith(("http://", "https://")) else f"https://{target}"

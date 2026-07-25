@@ -18,7 +18,7 @@ class WfuzzTool(AbstractTool):
     binary: str = "wfuzz"
     category: str = "web"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.URL})
-    consumes: frozenset[AssetType] = frozenset({AssetType.URL})
+    consumes: frozenset[AssetType] = frozenset({AssetType.URL, AssetType.ENDPOINT})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         url = target.rstrip("/")

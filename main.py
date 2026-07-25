@@ -232,6 +232,9 @@ def main() -> None:
         assessment = Assessment.from_results(
             results,
             metadata={"scan_mode": config.scan.mode.value, "timestamp": timestamp},
+            chain_edges=orchestrator.chain_edges,
+            assets_by_type=orchestrator.assets_by_type,
+            waves_run=orchestrator.waves_run,
         )
     except Exception:
         log.exception("Assessment assembly failed.")

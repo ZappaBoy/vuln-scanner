@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import time
 
+from vuln_scanner.assets import AssetType
 from vuln_scanner.tools.abstract import AbstractTool
 from vuln_scanner.tools.enums import ScanStatus, Severity, TargetType
 from vuln_scanner.tools.models import Finding, ScanInput, ScanResult
@@ -25,6 +26,7 @@ class ThreagileToool(AbstractTool):
     binary: str = "threagile"
     category: str = "iac"
     applicable_targets: frozenset[TargetType] = frozenset({TargetType.PATH})
+    consumes: frozenset[AssetType] = frozenset({AssetType.PATH})
 
     def build_command(self, target: str, scan_input: ScanInput) -> list[str]:
         return []

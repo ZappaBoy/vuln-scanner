@@ -2,8 +2,6 @@
 
 import asyncio
 import logging
-import sys
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -31,91 +29,14 @@ _PASSIVE_ASSET_TYPES: frozenset[AssetType] = frozenset(
     }
 )
 
-# Module-level reference to the active progress tracker so the logging handler
-# can clear/redraw the bar line around each log record.
-_active_tracker = None  # set to _ProgressTracker instance when TTY scan is running
+# The progress bar + TTY-aware log handler live in vuln_scanner.progress so the
+# LLM / PoC / agent phases can share them.  Re-exported here for compatibility
+# (main.py imports ProgressAwareHandler from this module).
+from vuln_scanner.progress import ProgressAwareHandler, ProgressTracker  # noqa: E402,F401
 
+_ProgressTracker = ProgressTracker  # internal alias used throughout this module
 
-class _ProgressTracker:
-    """Thread-safe progress counter; renders inline in TTY, logs otherwise."""
-
-    def __init__(self, total: int) -> None:
-        global _active_tracker
-        self._total = total
-        self._done = 0
-        self._ok = 0
-        self._fail = 0
-        self._skip = 0
-        self._running: set[str] = set()
-        self._lock = threading.Lock()
-        self._tty = sys.stderr.isatty()
-        if self._tty:
-            _active_tracker = self
-
-    def deactivate(self) -> None:
-        global _active_tracker
-        if _active_tracker is self:
-            _active_tracker = None
-
-    def add_total(self, n: int) -> None:
-        with self._lock:
-            self._total += n
-
-    def start(self, label: str) -> None:
-        with self._lock:
-            self._running.add(label)
-
-    def finish(self, label: str, status: ScanStatus) -> None:
-        with self._lock:
-            self._running.discard(label)
-            self._done += 1
-            if status == ScanStatus.SUCCESS:
-                self._ok += 1
-            elif status == ScanStatus.SKIPPED:
-                self._skip += 1
-            else:
-                self._fail += 1
-            if self._tty:
-                self._render_tty()
-
-    def _render_tty(self) -> None:
-        # Called with _lock held (from finish) or from ProgressAwareHandler (also with _lock held).
-        width = 24
-        filled = int(width * self._done / max(self._total, 1))
-        bar = "█" * filled + "░" * (width - filled)
-        # Show tool name only (strip the "→target" suffix) to keep the bar short.
-        tool_names = sorted(label.split("→")[0] for label in self._running)
-        display = ", ".join(tool_names[:5])
-        if len(tool_names) > 5:
-            display += f" +{len(tool_names) - 5}"
-        suffix = f"  [{display}]" if display else ""
-        line = f"\r  [{bar}] {self._done}/{self._total}  ✓{self._ok} ✗{self._fail} ~{self._skip}{suffix}"
-        print(line, end="", flush=True, file=sys.stderr)
-        if self._done == self._total:
-            print(file=sys.stderr)
-            self.deactivate()
-
-    def summary_line(self) -> str:
-        return f"{self._total} task(s) completed: ✓ {self._ok} success  ✗ {self._fail} failed  ~ {self._skip} skipped"
-
-
-class ProgressAwareHandler(logging.StreamHandler):
-    """Logging handler that clears and redraws the TTY progress bar around each record.
-
-    Prevents log lines from being concatenated onto the bar's overwrite line.
-    """
-
-    def emit(self, record: logging.LogRecord) -> None:
-        tracker = _active_tracker
-        if tracker is None or not tracker._tty:
-            super().emit(record)
-            return
-        with tracker._lock:
-            # Erase the current bar line, emit the log record, then redraw.
-            self.stream.write("\r\033[2K")
-            self.stream.flush()
-            super().emit(record)
-            tracker._render_tty()
+__all__ = ["ScanOrchestrator", "ProgressAwareHandler"]
 
 
 class ScanOrchestrator:
@@ -240,6 +161,7 @@ class ScanOrchestrator:
             ]
             results = list(await asyncio.gather(*coroutines))
 
+        tracker.close()
         log.info(tracker.summary_line())
         return results
 
@@ -368,6 +290,7 @@ class ScanOrchestrator:
 
                 waves_completed = wave_num
 
+        tracker.close()
         log.info("%s  [asset store: %d assets]", tracker.summary_line(), store.total)
         self.chain_edges = chain_edges
         self.assets_by_type = {t.value: len(store.get(t)) for t in AssetType if store.get(t)}

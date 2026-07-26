@@ -951,6 +951,7 @@ allow_git_clone = false
 | `VS_LLM_MODEL` | `--llm-model` | Model name (required when active) |
 | `VS_LLM_TEMPERATURE` | — | Sampling temperature |
 | `VS_LLM_MAX_TOKENS` | — | Max output tokens |
+| `VS_LLM_LOG_RESPONSES` | — | Log a one-line summary of each LLM response live (default `true`) |
 | `VS_LLM_FEATURE_<NAME>` | `--llm-feature NAME=on` | Global feature toggle, e.g. `VS_LLM_FEATURE_GENERATE_POC=false` |
 | `VS_LLM_FEATURE_EXECUTE_POC` | `--llm-poc-execute` | Enable PoC execution (container-only) |
 

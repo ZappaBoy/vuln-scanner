@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from vuln_scanner.poc.models import Poc
+from vuln_scanner.progress import ProgressTracker
+from vuln_scanner.tools.enums import ScanStatus
 from vuln_scanner.tools.models import Finding
 
 if TYPE_CHECKING:
@@ -79,35 +81,38 @@ class PocGenerator:
         poc_cfg = self._config.poc
         assets_dir.mkdir(parents=True, exist_ok=True)
 
-        pocs: list[Poc] = []
-        count = 0
-
+        # Collect eligible findings up front so the progress bar has a total.
+        eligible: list[Finding] = []
         for r in assessment.results:
             features = self._config.resolve_features(r.tool, self._get_category(r))
             if not features.generate_poc:
                 continue
-
             for finding in r.findings:
-                if finding.false_positive:
+                if finding.false_positive or not self._should_generate(finding):
                     continue
-                if not self._should_generate(finding):
-                    continue
-                if count >= poc_cfg.max_pocs:
-                    log.debug("PoC limit (%d) reached.", poc_cfg.max_pocs)
-                    break
+                eligible.append(finding)
+        eligible = eligible[: poc_cfg.max_pocs]
 
-                fkey = self._finding_key(finding)
-                poc_plan = poc_plans.get(fkey, "")
+        pocs: list[Poc] = []
+        count = 0
+        tracker = ProgressTracker(len(eligible), phase="PoC gen")
 
-                try:
-                    poc = self._generate_one(finding, poc_plan, assets_dir, count)
-                    if poc:
-                        pocs.append(poc)
-                        finding.poc_ids.append(poc.id)
-                        count += 1
-                except Exception as exc:
-                    log.warning("PoC generation failed for '%s': %s", finding.title, exc)
+        for finding in eligible:
+            poc_plan = poc_plans.get(self._finding_key(finding), "")
+            try:
+                poc = self._generate_one(finding, poc_plan, assets_dir, count)
+                if poc:
+                    pocs.append(poc)
+                    finding.poc_ids.append(poc.id)
+                    count += 1
+                    tracker.advance(ScanStatus.SUCCESS)
+                else:
+                    tracker.advance(ScanStatus.SKIPPED)
+            except Exception as exc:
+                log.warning("PoC generation failed for '%s': %s", finding.title, exc)
+                tracker.advance(ScanStatus.FAILED)
 
+        tracker.close()
         log.info("PoC generator: produced %d script(s).", len(pocs))
         return pocs
 
@@ -186,6 +191,15 @@ class PocGenerator:
             script_path.chmod(0o755)
 
         log.debug("PoC written: %s", script_path)
+
+        if self._config.log_responses:
+            log.info(
+                "LLM PoC · %s → lang=%s safe=%s indicator=%s",
+                finding.title[:60],
+                lang,
+                safe_to_run,
+                (data.get("expected_indicator", "") or "-")[:40],
+            )
 
         return Poc(
             id=poc_id,

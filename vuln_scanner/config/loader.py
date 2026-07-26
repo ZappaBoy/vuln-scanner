@@ -46,6 +46,7 @@ class _EnvSettings(BaseSettings):
     llm_presence_penalty: float | None = None
     llm_seed: int | None = None
     llm_min_severity: str | None = None  # VS_LLM_MIN_SEVERITY=medium
+    llm_log_responses: str | None = None  # VS_LLM_LOG_RESPONSES=true|false
     # Per-feature toggles: VS_LLM_FEATURE_<NAME>=true|false
     llm_feature_logs_analysis: str | None = None
     llm_feature_enrich: str | None = None
@@ -417,6 +418,9 @@ def load_config(args: Namespace) -> AppConfig:
         llm["seed"] = env.llm_seed
     if env.llm_min_severity is not None:
         llm["min_severity"] = env.llm_min_severity
+    _llm_log_resp = _parse_bool_env(env.llm_log_responses)
+    if _llm_log_resp is not None:
+        llm["log_responses"] = _llm_log_resp
 
     # Per-feature env overrides
     llm.setdefault("features", {})

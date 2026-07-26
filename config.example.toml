@@ -181,6 +181,12 @@ enabled = "auto"      # "auto" = on when api_key present; true/false to force
 # env: VS_LLM_MIN_SEVERITY   CLI: --llm-min-severity
 # min_severity = "medium"
 
+# ── Live response logging ────────────────────────────────────────────────────
+# Log a concise one-line summary of each LLM response as it arrives (triage,
+# mitigation, clustering, PoC, agent summaries) so you can watch progress live.
+# env: VS_LLM_LOG_RESPONSES
+# log_responses = true
+
 # ─── LLM feature matrix ─────────────────��─────────────────────────────────────
 # Each flag can be overridden per-tool or per-category (see below).
 [llm.features]

@@ -89,9 +89,33 @@ class AgentOrchestrator:
 
     async def _run_all(self, active: list[AgentConfig], assessment: "Assessment") -> list[AgentReport]:
         reports: list[AgentReport] = []
-        for agent_cfg in active:  # strictly sequential
+        total = len(active)
+        for i, agent_cfg in enumerate(active, 1):  # strictly sequential
+            log.info(
+                "▶ Agent %d/%d: %s [%s] (timeout %ds, max %d tool calls)…",
+                i,
+                total,
+                agent_cfg.name,
+                agent_cfg.kind.value,
+                agent_cfg.timeout,
+                agent_cfg.max_tool_calls,
+            )
             try:
-                reports.append(await self._run_one(agent_cfg, assessment))
+                report = await self._run_one(agent_cfg, assessment)
+                log.info(
+                    "✓ Agent %d/%d: %s — %s (%d bug(s), %d PoC(s), %d action(s))",
+                    i,
+                    total,
+                    agent_cfg.name,
+                    report.status.value,
+                    len(report.findings),
+                    len(report.pocs),
+                    report.actions_taken,
+                )
+                if self._llm.log_responses and report.summary:
+                    flat = " ".join(report.summary.split())
+                    log.info("  ↳ %s: %s", agent_cfg.name, flat if len(flat) <= 200 else flat[:199] + "…")
+                reports.append(report)
             except Exception as exc:
                 log.exception("Agent '%s' crashed: %s", agent_cfg.name, exc)
                 reports.append(

@@ -230,6 +230,8 @@ class AppLLMConfig(BaseModel):
     seed: int | None = None
     stop: list[str] | None = None
     extra_body: dict[str, Any] = Field(default_factory=dict)
+    min_severity: str = "medium"
+    log_responses: bool = True
     include_tools: list[str] = Field(default_factory=list)
     exclude_tools: list[str] = Field(default_factory=list)
     include_categories: list[str] = Field(default_factory=list)

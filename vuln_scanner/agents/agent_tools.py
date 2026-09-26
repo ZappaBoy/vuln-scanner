@@ -533,8 +533,5 @@ def recall(deps: AgentDeps, tag: str = "") -> str:
         scope = f" tagged [{tag}]" if tag else ""
         return f"No notes recorded{scope} yet."
 
-    lines = [
-        f"#{n['seq']}" + (f" [{n['tag']}]" if n["tag"] else "") + f": {n['text']}"
-        for n in entries
-    ]
+    lines = [f"#{n['seq']}" + (f" [{n['tag']}]" if n["tag"] else "") + f": {n['text']}" for n in entries]
     return "\n".join(lines)

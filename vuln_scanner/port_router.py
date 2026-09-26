@@ -123,7 +123,7 @@ def extract_web_targets(
 
             try:
                 port = int(port_str)
-            except ValueError, TypeError:
+            except (ValueError, TypeError):
                 continue
 
             scheme = _infer_scheme(port, service)

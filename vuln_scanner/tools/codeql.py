@@ -55,7 +55,7 @@ class CodeQLTool(AbstractTool):
                             raw=result,
                         )
                     )
-            except json.JSONDecodeError, IndexError:
+            except (json.JSONDecodeError, IndexError):
                 continue
         return findings
 

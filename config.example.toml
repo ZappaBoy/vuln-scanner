@@ -272,6 +272,23 @@ enabled = true
 formats = ["markdown", "json"]
 # template = ""                         # optional override; {title} {severity} …
 
+# Multi-agent orchestration: a lead agent delegates to specialist agents that
+# collaborate through a shared blackboard and run concurrently (per-host locked).
+# When enabled, the flat [[agents.agents]] list below is ignored. See
+# docs/multi-agent.md for the architecture and security model.
+[agents.orchestration]
+enabled        = false                  # off → sequential single-agent mode
+max_concurrent = 3                      # specialists in flight at once (never same host)
+max_rounds     = 3                      # lead plan→execute iterations
+max_agent_runs = 20                     # hard ceiling on total specialist runs
+max_tasks      = 100                    # task-queue cap (queue-flood guard)
+max_depth      = 3                      # delegation recursion cap
+agent_timeout  = 600                    # per-role-agent wall-clock seconds
+max_tool_calls = 40
+# token_budget = 500000
+lead_role      = "lead"
+# specialists  = ["recon", "web", "network", "cloud", "exploit"]  # empty = all
+
 [[agents.agents]]
 name           = "hunter"
 kind           = "bug_bounty"           # prove bugs exist; non-destructive

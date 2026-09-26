@@ -320,6 +320,32 @@ class SubmissionConfig(BaseModel):
     )
 
 
+class OrchestrationConfig(BaseModel):
+    """Multi-agent orchestration: a lead delegates to concurrent specialists.
+
+    When ``enabled``, the agent phase ignores the flat ``agents`` list and runs
+    a lead-plus-specialists team scheduled by the supervisor instead of the
+    sequential single-agent loop.  The caps bound the blast radius and cost of
+    the team the same way per-agent ceilings bound one agent.
+    """
+
+    enabled: bool = Field(False, description="Run the lead-plus-specialists team instead of the flat list.")
+    max_concurrent: int = Field(
+        3, description="Max specialists running at once; never two on the same host."
+    )
+    max_rounds: int = Field(3, description="Plan→execute rounds; each round the lead may post follow-ups.")
+    max_agent_runs: int = Field(20, description="Hard ceiling on total specialist runs across all rounds.")
+    max_tasks: int = Field(100, description="Task-queue cap on total tasks posted (see tasks.TaskQueue).")
+    max_depth: int = Field(3, description="Task-queue cap on delegation depth (see tasks.TaskQueue).")
+    agent_timeout: int = Field(600, description="Per-role-agent wall-clock timeout in seconds.")
+    max_tool_calls: int = Field(40, description="Per-role-agent tool-call ceiling.")
+    token_budget: int | None = Field(500_000, description="Per-role-agent total-token ceiling (None = unbounded).")
+    lead_role: str = Field("lead", description="Role name of the coordinating lead agent.")
+    specialists: list[str] = Field(
+        default_factory=list, description="Specialist role names to run; empty means all built-in specialists."
+    )
+
+
 class AgentsConfig(BaseModel):
     """Top-level configuration for the agentic layer."""
 
@@ -331,6 +357,9 @@ class AgentsConfig(BaseModel):
     sandbox: SandboxConfig = Field(default_factory=SandboxConfig, description="Sandbox resource limits.")
     submission: SubmissionConfig = Field(
         default_factory=SubmissionConfig, description="Submission rendering config."
+    )
+    orchestration: OrchestrationConfig = Field(
+        default_factory=OrchestrationConfig, description="Multi-agent orchestration config."
     )
 
     def active_agents(self) -> list[AgentConfig]:

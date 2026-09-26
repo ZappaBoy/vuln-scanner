@@ -257,6 +257,7 @@ class AppAgentsConfig(BaseModel):
     agents: list[dict[str, Any]] = Field(default_factory=list)
     sandbox: dict[str, Any] = Field(default_factory=dict)
     submission: dict[str, Any] = Field(default_factory=dict)
+    orchestration: dict[str, Any] = Field(default_factory=dict)
 
 
 class AppConfig(BaseModel):

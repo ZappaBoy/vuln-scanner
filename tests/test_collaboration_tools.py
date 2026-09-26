@@ -18,9 +18,10 @@ from vuln_scanner.agents.agent_tools import (
 from vuln_scanner.agents.audit import ActionLog
 from vuln_scanner.agents.blackboard import Credential, EngagementState
 from vuln_scanner.agents.deps import AgentDeps
-from vuln_scanner.agents.models import AgentConfig, AgentKind, AgentsConfig
+from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentKind, AgentsConfig
 from vuln_scanner.agents.tasks import TaskQueue
 from vuln_scanner.scope import ScopeValidator
+from vuln_scanner.tools.enums import Severity
 
 
 def _deps(
@@ -122,8 +123,11 @@ def test_record_credential_never_writes_secret_to_audit_log(tmp_path):
 def test_share_finding_publishes_and_dedups(tmp_path):
     board = EngagementState()
     deps = _deps(tmp_path, blackboard=board)
-    assert "Shared finding" in share_finding(deps, "SQLi", severity="high", affected_url="https://t.lab/q")
-    assert "already known" in share_finding(deps, "SQLi", severity="high", affected_url="https://t.lab/q")
+    finding = AgentFinding(title="SQLi", severity=Severity.HIGH, affected_url="https://t.lab/q")
+    assert "Shared finding" in share_finding(deps, finding)
+    assert "already known" in share_finding(
+        deps, AgentFinding(title="SQLi", severity=Severity.HIGH, affected_url="https://t.lab/q")
+    )
     assert board.counts()["findings"] == 1
 
 

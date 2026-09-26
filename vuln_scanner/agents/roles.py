@@ -11,12 +11,16 @@ what its prompt says.  Prompt text is advisory; the kind is enforced in code
 (see :mod:`vuln_scanner.agents.agent_tools`).  Only roles with
 ``can_delegate=True`` may post tasks for other roles; this is likewise enforced
 at the tool layer, not merely requested in the prompt.
+
+Role specialization prompt text lives in ``templates/roles/*.jinja`` rather than
+in Python string literals.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from vuln_scanner.agents.models import AgentKind
 from vuln_scanner.agents.prompts import system_prompt_for
+from vuln_scanner.agents.templating import render_template
 
 LEAD_ROLE = "lead"
 
@@ -24,69 +28,24 @@ LEAD_ROLE = "lead"
 class AgentRole(BaseModel):
     """A specialist profile the supervisor can instantiate as an agent."""
 
-    name: str
-    kind: AgentKind
-    description: str
-    system_prompt: str
-    can_delegate: bool = False
+    name: str = Field(description="Unique role name.")
+    kind: AgentKind = Field(description="Enforced safety profile the role runs under.")
+    description: str = Field(description="Short human-readable summary of the role's focus.")
+    system_prompt: str = Field(description="Full system prompt for an agent in this role.")
+    can_delegate: bool = Field(False, description="Whether the role may post tasks for other roles.")
 
 
-_LEAD_FOCUS = """\
+_LEAD_FOCUS = render_template("roles/lead.jinja")
+_SPECIALIST_FOOTER = render_template("roles/specialist_footer.jinja")
 
-ROLE SPECIALIZATION: Lead coordinator.
-You do not scan or exploit directly.  Read the assessment and the shared
-blackboard, decompose the objective into concrete tasks, and delegate each to
-the most suitable specialist role (recon, web, network, cloud, exploit) with
-post_task.  Prefer a handful of sharp, well-scoped tasks over many vague ones.
-As specialists report back, read shared state and post follow-up tasks to chase
-promising leads.  Stop delegating and summarize once the objective is covered
-or the task budget is nearly spent.
-"""
-
-_SPECIALIST_FOOTER = """\
-Publish anything another specialist could use (new hosts, endpoints, params,
-credentials) to the shared blackboard with share_finding / record_asset /
-record_credential.  Read shared state before you start so you do not repeat
-work already done by another agent.
-"""
-
-_ROLE_FOCUS: dict[str, tuple[AgentKind, str, str]] = {
-    "recon": (
-        AgentKind.BUG_BOUNTY,
-        "Reconnaissance and attack-surface mapping.",
-        "ROLE SPECIALIZATION: Reconnaissance. Enumerate subdomains, live hosts, "
-        "endpoints, parameters, and technologies. Do not test for vulnerabilities; "
-        "map the surface and publish assets for the other specialists.",
-    ),
-    "web": (
-        AgentKind.BUG_BOUNTY,
-        "Web-application vulnerability hunting.",
-        "ROLE SPECIALIZATION: Web application testing. Probe the mapped web "
-        "surface for injection, access-control, and misconfiguration bugs, and "
-        "prove each with request/response evidence.",
-    ),
-    "network": (
-        AgentKind.BUG_BOUNTY,
-        "Network and service enumeration.",
-        "ROLE SPECIALIZATION: Network services. Enumerate open ports and service "
-        "versions, identify exposed or misconfigured services, and flag weak "
-        "authentication surfaces for the exploit specialist.",
-    ),
-    "cloud": (
-        AgentKind.BUG_BOUNTY,
-        "Cloud and infrastructure posture.",
-        "ROLE SPECIALIZATION: Cloud posture. Inspect cloud storage, IAM, and "
-        "infrastructure exposure for misconfigurations that leak data or grant "
-        "unintended access.",
-    ),
-    "exploit": (
-        AgentKind.PENTESTER,
-        "Proof-of-concept exploitation of confirmed weaknesses.",
-        "ROLE SPECIALIZATION: Exploitation. Take confirmed weaknesses from shared "
-        "state and build a minimal, non-destructive proof of concept. The dry-run "
-        "gate applies: without live-exploitation clearance you record an exploit "
-        "plan rather than executing it.",
-    ),
+# Role name → (enforced safety profile, short description).  The specialization
+# prompt for each name is loaded from ``templates/roles/<name>.jinja``.
+_SPECIALIST_SPECS: dict[str, tuple[AgentKind, str]] = {
+    "recon": (AgentKind.BUG_BOUNTY, "Reconnaissance and attack-surface mapping."),
+    "web": (AgentKind.BUG_BOUNTY, "Web-application vulnerability hunting."),
+    "network": (AgentKind.BUG_BOUNTY, "Network and service enumeration."),
+    "cloud": (AgentKind.BUG_BOUNTY, "Cloud and infrastructure posture."),
+    "exploit": (AgentKind.PENTESTER, "Proof-of-concept exploitation of confirmed weaknesses."),
 }
 
 
@@ -100,7 +59,8 @@ def _build_registry() -> dict[str, AgentRole]:
             can_delegate=True,
         )
     }
-    for name, (kind, description, focus) in _ROLE_FOCUS.items():
+    for name, (kind, description) in _SPECIALIST_SPECS.items():
+        focus = render_template(f"roles/{name}.jinja")
         roles[name] = AgentRole(
             name=name,
             kind=kind,
@@ -130,4 +90,4 @@ def get_role(name: str) -> AgentRole | None:
 
 def specialist_role_names() -> list[str]:
     """Delegatable target roles (everything except the lead)."""
-    return [name for name in _ROLE_FOCUS]
+    return list(_SPECIALIST_SPECS)

@@ -19,21 +19,22 @@ from vuln_scanner.agents.guards import is_in_container
 
 log = logging.getLogger(__name__)
 
-_BINARY = "interactsh-client"
+INTERACTSH_BINARY = "interactsh-client"
 _DOMAIN_RE = re.compile(r"\b([a-z0-9]{20,}\.[a-z0-9.\-]+\.[a-z]{2,})\b", re.IGNORECASE)
+_DEFAULT_REGISTER_TIMEOUT = 15.0
 
 
 def parse_callback_domain(text: str) -> str:
     """Extract the registered interactsh payload domain from client output."""
     for line in text.splitlines():
-        m = _DOMAIN_RE.search(line)
-        if m:
-            return m.group(1)
+        match = _DOMAIN_RE.search(line)
+        if match:
+            return match.group(1)
     return ""
 
 
 def parse_interaction(line: str) -> dict | None:
-    """Parse one JSONL interaction record from interactsh-client -json."""
+    """Parse one JSONL interaction record from ``interactsh-client -json``."""
     line = line.strip()
     if not line or not line.startswith("{"):
         return None
@@ -57,22 +58,22 @@ class OobSession:
     def __init__(self, server: str = "", token: str = "") -> None:
         self._server = server
         self._token = token
-        self._proc: subprocess.Popen | None = None
-        self._q: "queue.Queue[str]" = queue.Queue()
+        self._process: subprocess.Popen | None = None
+        self._queue: "queue.Queue[str]" = queue.Queue()
         self._reader: threading.Thread | None = None
         self.domain: str = ""
         self.available: bool = False
         self.interactions: list[dict] = []
 
     def _argv(self) -> list[str]:
-        argv = [_BINARY, "-json", "-v"]
+        argv = [INTERACTSH_BINARY, "-json", "-v"]
         if self._server:
             argv += ["-server", self._server]
         if self._token:
             argv += ["-token", self._token]
         return argv
 
-    def start(self, register_timeout: float = 15.0) -> bool:
+    def start(self, register_timeout: float = _DEFAULT_REGISTER_TIMEOUT) -> bool:
         """Launch the client and capture the registered callback domain.
 
         Returns True if a domain was registered.  Never raises.
@@ -80,11 +81,11 @@ class OobSession:
         if not is_in_container():
             log.debug("OOB unavailable: not in container.")
             return False
-        if shutil.which(_BINARY) is None:
-            log.warning("OOB unavailable: %s not installed.", _BINARY)
+        if shutil.which(INTERACTSH_BINARY) is None:
+            log.warning("OOB unavailable: %s not installed.", INTERACTSH_BINARY)
             return False
         try:
-            self._proc = subprocess.Popen(
+            self._process = subprocess.Popen(
                 self._argv(),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -99,47 +100,45 @@ class OobSession:
         self._reader.start()
 
         deadline = time.monotonic() + register_timeout
-        buffer: list[str] = []
         while time.monotonic() < deadline and not self.domain:
             try:
-                line = self._q.get(timeout=0.5)
+                line = self._queue.get(timeout=0.5)
             except queue.Empty:
                 continue
-            buffer.append(line)
-            dom = parse_callback_domain(line)
-            if dom:
-                self.domain = dom
+            domain = parse_callback_domain(line)
+            if domain:
+                self.domain = domain
                 self.available = True
                 break
         return self.available
 
     def _read_loop(self) -> None:  # pragma: no cover - thread I/O
-        if not self._proc or not self._proc.stdout:
+        if not self._process or not self._process.stdout:
             return
-        for line in self._proc.stdout:
-            self._q.put(line)
+        for line in self._process.stdout:
+            self._queue.put(line)
 
     def check(self) -> list[dict]:
         """Drain and parse any interactions observed since the last check."""
-        new: list[dict] = []
+        new_interactions: list[dict] = []
         while True:
             try:
-                line = self._q.get_nowait()
+                line = self._queue.get_nowait()
             except queue.Empty:
                 break
-            rec = parse_interaction(line)
-            if rec:
-                new.append(rec)
-        self.interactions.extend(new)
-        return new
+            record = parse_interaction(line)
+            if record:
+                new_interactions.append(record)
+        self.interactions.extend(new_interactions)
+        return new_interactions
 
     def stop(self) -> None:
-        if self._proc and self._proc.poll() is None:
+        if self._process and self._process.poll() is None:
             try:
-                self._proc.terminate()
-                self._proc.wait(timeout=3)
+                self._process.terminate()
+                self._process.wait(timeout=3)
             except (subprocess.TimeoutExpired, OSError):
                 try:
-                    self._proc.kill()
+                    self._process.kill()
                 except OSError:
                     pass

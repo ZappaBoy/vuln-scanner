@@ -59,7 +59,12 @@ def _lead_posts(*specs):
         if _has_tool_return(messages):
             return ModelResponse(parts=[TextPart("done")])
         return ModelResponse(
-            parts=[ToolCallPart(tool_name="share_finding", args={"title": "bug " + text[-8:], "severity": "high"})]
+            parts=[
+                ToolCallPart(
+                    tool_name="share_finding",
+                    args={"finding": {"title": "bug " + text[-8:], "severity": "high"}},
+                )
+            ]
         )
 
     return FunctionModel(_driver)
@@ -206,9 +211,11 @@ def test_same_role_runs_do_not_overwrite_artifacts(tmp_path, monkeypatch):
                 ToolCallPart(
                     tool_name="record_poc",
                     args={
-                        "finding_title": "poc " + marker,
-                        "language": "python",
-                        "description": "d",
+                        "poc": {
+                            "finding_title": "poc " + marker,
+                            "language": "python",
+                            "description": "d",
+                        },
                         "script": f"print('POC FROM {marker}')\n",
                     },
                 )

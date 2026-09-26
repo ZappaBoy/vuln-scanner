@@ -226,6 +226,23 @@ class AgentOrchestrator:
         def _run_code(ctx: RunContext[AgentDeps], language: str, code: str) -> dict:
             return agent_tools.run_code(ctx.deps, language, code)
 
+        def _http_request(
+            ctx: RunContext[AgentDeps],
+            method: str,
+            url: str,
+            headers: dict[str, str] | None = None,
+            body: str = "",
+            follow_redirects: bool = False,
+        ) -> dict:
+            return agent_tools.http_request(
+                ctx.deps,
+                method=method,
+                url=url,
+                headers=headers,
+                body=body,
+                follow_redirects=follow_redirects,
+            )
+
         def _save_bug(
             ctx: RunContext[AgentDeps],
             title: str,
@@ -302,6 +319,7 @@ class AgentOrchestrator:
             Tool(_list_tools, takes_ctx=True, name="list_tools"),
             Tool(_run_tool, takes_ctx=True, name="run_tool"),
             Tool(_run_code, takes_ctx=True, name="run_code"),
+            Tool(_http_request, takes_ctx=True, name="http_request"),
             Tool(_save_bug, takes_ctx=True, name="save_bug"),
             Tool(_record_poc, takes_ctx=True, name="record_poc"),
             Tool(_oob_get_callback, takes_ctx=True, name="oob_get_callback"),

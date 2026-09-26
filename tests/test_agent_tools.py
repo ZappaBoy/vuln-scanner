@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from vuln_scanner.agents.agent_tools import (
+    http_request,
     list_tools,
     oob_get_callback,
     record_poc,
@@ -192,3 +193,140 @@ def test_parse_interaction_valid():
 def test_parse_interaction_ignores_noise():
     assert parse_interaction("not json") is None
     assert parse_interaction('{"no":"protocol"}') is None
+
+
+# ── http_request ──────────────────────────────────────────────────────────────
+
+
+class _FakeResp:
+    """Minimal requests.Response stand-in for http_request tests."""
+
+    def __init__(self, status_code=200, reason="OK", headers=None, body=b"", url="http://t.lab/"):
+        self.status_code = status_code
+        self.reason = reason
+        self.headers = headers or {"Content-Type": "text/html"}
+        self.encoding = "utf-8"
+        self.url = url
+        self._body = body
+
+    def iter_content(self, chunk_size=4096):
+        for i in range(0, len(self._body), chunk_size):
+            yield self._body[i : i + chunk_size]
+
+    def close(self):
+        pass
+
+
+def _patch_requests(monkeypatch, resp=None, exc=None):
+    import requests
+
+    calls = {}
+
+    def _fake_request(method, url, **kwargs):
+        calls["method"] = method
+        calls["url"] = url
+        calls["kwargs"] = kwargs
+        if exc is not None:
+            raise exc
+        return resp
+
+    monkeypatch.setattr(requests, "request", _fake_request)
+    return calls
+
+
+def test_http_request_success(tmp_path, monkeypatch):
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    calls = _patch_requests(
+        monkeypatch,
+        resp=_FakeResp(status_code=200, body=b"<html>marker42</html>"),
+    )
+    deps = _deps(tmp_path, allowlist={"t.lab"})
+    out = http_request(deps, "GET", "http://t.lab/path?x=1", headers={"X-Test": "1"})
+    assert out["status_code"] == 200
+    assert "marker42" in out["body"]
+    assert out["request"].startswith("GET /path?x=1 HTTP/1.1")
+    assert "Host: t.lab" in out["request"]
+    assert "HTTP/1.1 200 OK" in out["response"]
+    # scope-check must have short-circuited to the real request
+    assert calls["method"] == "GET"
+    assert calls["kwargs"]["verify"] is False
+
+
+def test_http_request_refuses_out_of_scope(tmp_path, monkeypatch):
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    _patch_requests(monkeypatch, resp=_FakeResp())
+    deps = _deps(tmp_path, include=["t.lab"])
+    out = http_request(deps, "GET", "http://evil.example.com/")
+    assert "out of scope" in out["error"].lower()
+
+
+def test_http_request_refuses_outside_container(tmp_path, monkeypatch):
+    monkeypatch.delenv("VS_IN_CONTAINER", raising=False)
+    _patch_requests(monkeypatch, resp=_FakeResp())
+    deps = _deps(tmp_path, allowlist={"t.lab"})
+    out = http_request(deps, "GET", "http://t.lab/")
+    assert "container" in out["error"].lower()
+
+
+def test_http_request_denylisted_body(tmp_path, monkeypatch):
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    _patch_requests(monkeypatch, resp=_FakeResp())
+    deps = _deps(tmp_path, allowlist={"t.lab"})
+    out = http_request(deps, "POST", "http://t.lab/", body="cmd=mkfs /dev/sda")
+    assert "Refused" in out["error"]
+
+
+def test_http_request_unsupported_method(tmp_path, monkeypatch):
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    _patch_requests(monkeypatch, resp=_FakeResp())
+    deps = _deps(tmp_path, allowlist={"t.lab"})
+    out = http_request(deps, "TRACE", "http://t.lab/")
+    assert "Unsupported HTTP method" in out["error"]
+
+
+def test_http_request_ceiling(tmp_path):
+    deps = _deps(tmp_path, max_tool_calls=0)
+    out = http_request(deps, "GET", "http://t.lab/")
+    assert "ceiling" in out["error"].lower()
+
+
+def test_http_request_pentester_dry_run_mutating(tmp_path, monkeypatch):
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    calls = _patch_requests(monkeypatch, resp=_FakeResp())
+    deps = _deps(tmp_path, kind=AgentKind.PENTESTER, allowlist={"t.lab"}, live_exploit=False)
+    out = http_request(deps, "POST", "http://t.lab/login", body="u=a&p=b")
+    assert out["executed"] is False
+    assert "dry-run" in out["note"].lower()
+    assert deps.exploit_plan  # recorded, not sent
+    assert "method" not in calls  # requests.request was never called
+
+
+def test_http_request_pentester_safe_method_sent(tmp_path, monkeypatch):
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    calls = _patch_requests(monkeypatch, resp=_FakeResp(body=b"ok"))
+    deps = _deps(tmp_path, kind=AgentKind.PENTESTER, allowlist={"t.lab"}, live_exploit=False)
+    out = http_request(deps, "GET", "http://t.lab/")
+    assert out["status_code"] == 200
+    assert calls["method"] == "GET"
+
+
+def test_http_request_network_error(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    _patch_requests(monkeypatch, exc=requests.ConnectionError("boom"))
+    deps = _deps(tmp_path, allowlist={"t.lab"})
+    out = http_request(deps, "GET", "http://t.lab/")
+    assert "Request failed" in out["error"]
+
+
+def test_http_request_body_truncated(tmp_path, monkeypatch):
+    from vuln_scanner.agents.agent_tools import _MAX_RESP_BYTES
+
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    _patch_requests(monkeypatch, resp=_FakeResp(body=b"A" * (_MAX_RESP_BYTES + 100)))
+    deps = _deps(tmp_path, allowlist={"t.lab"})
+    out = http_request(deps, "GET", "http://t.lab/big")
+    assert out["truncated"] is True
+    assert len(out["body"]) == _MAX_RESP_BYTES
+    assert "truncated" in out["response"].lower()

@@ -15,6 +15,8 @@ your tool-call and time budget: when told to stop, immediately finalize.
 Available tools:
 - list_tools(category): list installed scanners you can drive.
 - run_tool(tool_name, args, target): run a scanner binary with custom args.
+- http_request(method, url, headers, body): send one scoped HTTP request and
+  capture raw request/response evidence (the primary in-band probe).
 - run_code(language, code): run code in the hardened sandbox for proof.
 - oob_get_callback() / oob_check(): out-of-band (OAST) callback for blind bugs.
 - save_bug(...): persist a confirmed bug with evidence.

@@ -19,6 +19,10 @@ from vuln_scanner.tools.enums import Severity, _parse_severity
 log = logging.getLogger(__name__)
 
 _DEFAULT_EXEC_TIMEOUT = 300
+_DEFAULT_HTTP_TIMEOUT = 30
+_MAX_RESP_BYTES = 16384  # cap captured response body (matches sandbox _OUT_TRUNCATE)
+_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+_HTTP_METHODS = _SAFE_METHODS | {"POST", "PUT", "PATCH", "DELETE"}
 
 
 def _remaining_timeout(deps: AgentDeps, default: int) -> int:
@@ -179,6 +183,148 @@ def run_code(deps: AgentDeps, language: str, code: str) -> dict:
         "timed_out": result.timed_out,
         "stdout": result.stdout,
         "stderr": result.stderr,
+    }
+
+
+# ── http_request ──────────────────────────────────────────────────────────────
+
+
+def _format_request(method: str, url: str, headers: dict[str, str], body: str) -> str:
+    """Render a request as HTTP-wire-like evidence, ready for save_bug.request."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(url)
+    path = parts.path or "/"
+    if parts.query:
+        path = f"{path}?{parts.query}"
+    lines = [f"{method} {path} HTTP/1.1"]
+    if parts.netloc:
+        lines.append(f"Host: {parts.hostname or parts.netloc}")
+    lines.extend(f"{k}: {v}" for k, v in headers.items())
+    if body:
+        lines.append("")
+        lines.append(body)
+    return "\n".join(lines)
+
+
+def _format_response(status_code: int, reason: str, headers: dict[str, str], body: str, truncated: bool) -> str:
+    """Render a response as HTTP-wire-like evidence, ready for save_bug.response."""
+    lines = [f"HTTP/1.1 {status_code} {reason}".rstrip()]
+    lines.extend(f"{k}: {v}" for k, v in headers.items())
+    lines.append("")
+    lines.append(body)
+    if truncated:
+        lines.append(f"… [response truncated at {_MAX_RESP_BYTES} bytes]")
+    return "\n".join(lines)
+
+
+def http_request(
+    deps: AgentDeps,
+    method: str,
+    url: str,
+    headers: dict[str, str] | None = None,
+    body: str = "",
+    follow_redirects: bool = False,
+) -> dict:
+    """Send one scoped HTTP(S) request and capture raw request/response evidence.
+
+    The core in-band bug-bounty primitive: craft a request, observe the
+    response.  Routes through the same guards as ``run_tool`` — ceiling/
+    deadline, allow/deny filter, denylist (url + body), container gate, and
+    scope — then returns HTTP-wire-shaped ``request``/``response`` strings that
+    drop straight into :func:`save_bug`.  For a pentester without live-
+    exploitation clearance, a mutating method (POST/PUT/PATCH/DELETE) is NOT
+    sent: it is recorded as a dry-run exploit-plan step, mirroring ``run_code``.
+    """
+    blocked = _precheck(deps, "http_request")
+    if blocked:
+        return {"error": blocked}
+
+    method = (method or "GET").strip().upper()
+    if method not in _HTTP_METHODS:
+        return {"error": f"Unsupported HTTP method {method!r}. Use one of {sorted(_HTTP_METHODS)}."}
+
+    safe, reason = denylist_check(f"{url}\n{body}")
+    if not safe:
+        deps.audit.record("http_request", refused=reason, method=method, url=url)
+        return {"error": f"Refused: {reason}"}
+
+    try:
+        deps.require_container("http_request")
+        deps.assert_in_scope(url)
+    except ContainerGateError as exc:
+        return {"error": str(exc)}
+    except ScopeViolation as exc:
+        return {"error": str(exc)}
+
+    hdrs = {str(k): str(v) for k, v in (headers or {}).items()}
+
+    # Pentester dry-run gate: a mutating request is a state change → record, don't send.
+    if deps.agent.kind == AgentKind.PENTESTER and not deps.live_exploit_allowed and method not in _SAFE_METHODS:
+        step = _format_request(method, url, hdrs, body)
+        deps.exploit_plan.append(step)
+        deps.audit.record("http_request", mode="dry_run", method=method, url=url)
+        return {
+            "executed": False,
+            "note": "Recorded as dry-run exploit-plan step (mutating request; live exploitation not authorized).",
+            "request": step,
+        }
+
+    import requests
+    from urllib3.exceptions import InsecureRequestWarning
+
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # lab targets: self-signed certs
+
+    timeout = _remaining_timeout(deps, _DEFAULT_HTTP_TIMEOUT)
+    try:
+        resp = requests.request(
+            method,
+            url,
+            headers=hdrs or None,
+            data=body.encode("utf-8", "replace") if body else None,
+            timeout=timeout,
+            allow_redirects=follow_redirects,
+            verify=False,  # in-scope lab hosts frequently use self-signed certs
+            stream=True,
+        )
+    except requests.RequestException as exc:
+        deps.audit.record("http_request", method=method, url=url, error=str(exc))
+        return {"error": f"Request failed: {exc}"}
+
+    try:
+        total = 0
+        chunks: list[bytes] = []
+        for chunk in resp.iter_content(chunk_size=4096):
+            chunks.append(chunk)
+            total += len(chunk)
+            if total > _MAX_RESP_BYTES:
+                break
+        raw = b"".join(chunks)
+        truncated = total > _MAX_RESP_BYTES
+        text = raw[:_MAX_RESP_BYTES].decode(resp.encoding or "utf-8", "replace")
+        resp_headers = dict(resp.headers)
+        status_code = resp.status_code
+        reason = resp.reason or ""
+        final_url = resp.url
+    finally:
+        resp.close()
+
+    deps.audit.record(
+        "http_request",
+        method=method,
+        url=url,
+        status=status_code,
+        bytes=total,
+        response=text,
+    )
+    return {
+        "status_code": status_code,
+        "url": final_url,
+        "response_headers": resp_headers,
+        "body": text,
+        "truncated": truncated,
+        "request": _format_request(method, url, hdrs, body),
+        "response": _format_response(status_code, reason, resp_headers, text, truncated),
     }
 
 

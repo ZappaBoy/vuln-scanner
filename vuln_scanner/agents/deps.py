@@ -11,9 +11,11 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field
 
 from vuln_scanner.agents.audit import ActionLog
-from vuln_scanner.agents.guards import extract_hosts, is_in_container
+from vuln_scanner.agents.blackboard import EngagementState
+from vuln_scanner.agents.guards import canonical_host, extract_hosts, is_in_container
 from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentNote, AgentPoc, AgentsConfig
 from vuln_scanner.agents.oob import OobSession
+from vuln_scanner.agents.tasks import Task, TaskQueue
 from vuln_scanner.scope import ScopeValidator
 
 
@@ -66,6 +68,20 @@ class AgentDeps(BaseModel):
         description="Working-memory scratchpad notes; never surfaced into the report by default.",
     )
 
+    # Multi-agent collaboration — all default to the safe, non-collaborative
+    # value so a solo agent behaves exactly as before.
+    blackboard: EngagementState | None = Field(
+        None, description="Shared engagement blackboard, or None on the single-agent path."
+    )
+    task_queue: TaskQueue | None = Field(
+        None, description="Shared delegation task queue, or None on the single-agent path."
+    )
+    role: str = Field("", description="This agent's specialist role name.")
+    current_task: Task | None = Field(None, description="The task this agent is currently handling.")
+    can_delegate: bool = Field(
+        False, description="Enforced privilege boundary: only a delegating role may post tasks."
+    )
+
     # ── Gates ────────────────────────────────────────────────────────────────
 
     def require_container(self, action: str) -> None:
@@ -88,16 +104,47 @@ class AgentDeps(BaseModel):
             self.audit.record("scope_check", enforcement="disabled", values=list(values))
             return
 
-        hosts = extract_hosts(*values)
+        for host in extract_hosts(*values):
+            self._reject_if_out_of_scope(host, values=list(values))
+
+    def assert_target_in_scope(self, target: str) -> None:
+        """Fail-closed scope check for an *explicit* single target field.
+
+        Where :meth:`assert_in_scope` scans free text and allows values with no
+        extractable host (a bare path, pure code), this is for a field the
+        caller declares to be a host / URL to act on: ``record_credential(host=)``,
+        ``record_asset`` of a host-like type, ``post_task(target=)``.  A
+        non-empty target that resolves to no in-scope host is REJECTED, so a
+        single-label host (``localhost``), an IPv6 literal, or a homoglyph
+        domain cannot slip through the way it would on the best-effort path.
+        """
+        if not self.agents_cfg.scope_enforcement:
+            self.audit.record("scope_check", enforcement="disabled", target=target)
+            return
+        target = (target or "").strip()
+        if not target:
+            return
+
+        hosts = extract_hosts(target)
+        if not hosts:
+            candidate = canonical_host(target)
+            if candidate:
+                hosts = {candidate}
+        if not hosts:
+            self.audit.record("scope_deny", reason="unparseable_target", target=target)
+            raise ScopeViolation(f"Target {target!r} could not be validated against scope and was refused.")
         for host in hosts:
-            if host in self.allowlist:
-                continue
-            if not self.scope.is_in_scope(host, discovered=True):
-                self.audit.record("scope_deny", host=host, values=list(values))
-                raise ScopeViolation(
-                    f"Host {host!r} is out of scope. Allowed targets are limited to the "
-                    f"assessment scope; pick an in-scope target."
-                )
+            self._reject_if_out_of_scope(host, target=target)
+
+    def _reject_if_out_of_scope(self, host: str, **audit_fields: object) -> None:
+        if host in self.allowlist:
+            return
+        if not self.scope.is_in_scope(host, discovered=True):
+            self.audit.record("scope_deny", host=host, **audit_fields)
+            raise ScopeViolation(
+                f"Host {host!r} is out of scope. Allowed targets are limited to the "
+                f"assessment scope; pick an in-scope target."
+            )
 
     # ── Tool-call ceiling ────────────────────────────────────────────────────
 

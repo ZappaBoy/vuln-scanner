@@ -34,6 +34,12 @@ _HTTP_CHUNK_BYTES = 4096  # streamed response read size
 
 _SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 _HTTP_METHODS = _SAFE_METHODS | {"POST", "PUT", "PATCH", "DELETE"}
+_STATE_LIST_LIMIT = 50  # cap items returned by read_state so shared state can't blow the context
+_MAX_OBJECTIVE_LEN = 2000  # cap a delegated objective so a runaway agent can't post huge tasks
+# record_asset types whose value IS a host/URL, so it must pass the fail-closed
+# target scope check.  Other types (param, path, endpoint, tech, email) carry no
+# reachable host and use the best-effort check instead.
+_HOST_LIKE_ASSET_TYPES = {"host", "hostname", "subdomain", "domain", "ip", "url", "vhost", "live_host"}
 
 
 def _remaining_timeout(deps: AgentDeps, default: int) -> int:
@@ -473,3 +479,186 @@ def recall(deps: AgentDeps, tag: str = "") -> str:
         f"#{entry.seq}" + (f" [{entry.tag}]" if entry.tag else "") + f": {entry.text}" for entry in entries
     ]
     return "\n".join(lines)
+
+
+# ── Multi-agent collaboration ───────────────────────────────────────────────────
+#
+# These tools share state between agents through the engagement blackboard and
+# task queue.  They degrade gracefully to an informative message when the agent
+# runs solo (no blackboard / queue injected), so the single-agent path is
+# unaffected.  Every one routes through ``_precheck`` (ceiling / deadline /
+# allow-deny), and every host-bearing value is scope-validated before it is
+# published, so the blackboard cannot be used to smuggle an out-of-scope target
+# to another agent.
+
+
+def read_state(deps: AgentDeps, section: str = "") -> dict:
+    """Read shared engagement state: assets, findings, credentials, and tasks.
+
+    Network-free — it reads the in-process blackboard and task queue only.
+    Credential *secrets* are never returned (only their shape: kind / username /
+    host), so reading shared state cannot leak loot into an agent's context.
+    """
+    blocked = _precheck(deps, "read_state")
+    if blocked:
+        return {"error": blocked}
+
+    want = (section or "").strip().lower()
+    state: dict = {}
+    if deps.blackboard is not None:
+        state["counts"] = deps.blackboard.counts()
+        if want in ("", "assets"):
+            state["assets"] = [
+                {"type": asset.type, "value": asset.value, "source": asset.source}
+                for asset in deps.blackboard.assets()[:_STATE_LIST_LIMIT]
+            ]
+        if want in ("", "findings"):
+            state["findings"] = [
+                {
+                    "title": finding.title,
+                    "severity": finding.severity.value,
+                    "target": finding.affected_url or finding.target,
+                    "by": finding.discovered_by,
+                }
+                for finding in deps.blackboard.findings()[:_STATE_LIST_LIMIT]
+            ]
+        if want in ("", "credentials"):
+            state["credentials"] = [
+                # The secret is intentionally omitted so reads cannot leak loot.
+                {"kind": credential.kind, "username": credential.username, "host": credential.host}
+                for credential in deps.blackboard.credentials()[:_STATE_LIST_LIMIT]
+            ]
+    if deps.task_queue is not None and want in ("", "tasks"):
+        state["tasks"] = [
+            {
+                "id": task.id,
+                "role": task.role,
+                "objective": task.objective,
+                "status": task.status.value,
+                "claimed_by": task.claimed_by,
+            }
+            for task in deps.task_queue.list()[:_STATE_LIST_LIMIT]
+        ]
+    deps.audit.record("read_state", section=want, counts=state.get("counts"))
+    if not state:
+        return {"note": "No shared engagement state available (running solo)."}
+    return state
+
+
+def share_finding(deps: AgentDeps, finding: AgentFinding) -> str:
+    """Publish a finding to the shared blackboard for other agents to build on.
+
+    Distinct from :func:`save_bug`, which persists a full bug into *this*
+    agent's report.  Use this to make a discovery visible mid-engagement.
+    """
+    blocked = _precheck(deps, "share_finding")
+    if blocked:
+        return blocked
+    if deps.blackboard is None:
+        return "No shared blackboard available (running solo) — use save_bug to record locally."
+
+    finding.discovered_by = deps.agent.name
+    added = deps.blackboard.add_finding(finding)
+    deps.audit.record("share_finding", title=finding.title, severity=finding.severity.value, added=added)
+    return f"Shared finding '{finding.title}'" + ("" if added else " (already known)")
+
+
+def record_asset(deps: AgentDeps, asset_type: str, value: str) -> str:
+    """Publish a discovered asset (host, URL, endpoint, parameter) to the blackboard.
+
+    Host-bearing values are scope-validated first, so an out-of-scope asset is
+    never propagated to other agents.
+    """
+    blocked = _precheck(deps, "record_asset")
+    if blocked:
+        return blocked
+    if deps.blackboard is None:
+        return "No shared blackboard available (running solo)."
+
+    try:
+        if asset_type.strip().lower() in _HOST_LIKE_ASSET_TYPES:
+            deps.assert_target_in_scope(value)
+        else:
+            deps.assert_in_scope(value)
+    except ScopeViolation as exc:
+        deps.audit.record("record_asset", refused="scope", value=value)
+        return str(exc)
+
+    added = deps.blackboard.add_asset(asset_type, value, source=deps.agent.name)
+    deps.audit.record("record_asset", asset_type=asset_type, value=value, added=added)
+    return f"Recorded {asset_type} asset '{value}'" + ("" if added else " (already known)")
+
+
+def record_credential(
+    deps: AgentDeps,
+    kind: str,
+    secret: str,
+    username: str = "",
+    host: str = "",
+) -> str:
+    """Store a captured credential in the engagement-private loot store.
+
+    The host is scope-validated.  Secrets stay in the blackboard for reuse
+    during the run and are scrubbed from reports before they leave the process.
+    """
+    blocked = _precheck(deps, "record_credential")
+    if blocked:
+        return blocked
+    if deps.blackboard is None:
+        return "No shared blackboard available (running solo)."
+
+    if host:
+        try:
+            deps.assert_target_in_scope(host)
+        except ScopeViolation as exc:
+            deps.audit.record("record_credential", refused="scope", host=host)
+            return str(exc)
+
+    from vuln_scanner.agents.blackboard import Credential
+
+    credential = Credential(kind=kind, username=username, secret=secret, host=host, source=deps.agent.name)
+    added = deps.blackboard.add_credential(credential)
+    # The secret is never echoed back or audited — only the fact of capture.
+    deps.audit.record("record_credential", kind=kind, username=username, host=host, added=added)
+    return f"Recorded {kind} credential for '{username or '?'}@{host or '?'}'" + ("" if added else " (already known)")
+
+
+def post_task(deps: AgentDeps, role: str, objective: str, target: str = "") -> str:
+    """Delegate a task to a specialist role via the shared task queue.
+
+    Privilege boundary: only an agent whose role may delegate (the lead) can
+    post tasks; a specialist that calls this is refused.  The target role must
+    be a known specialist, the target host is scope-validated, and the queue's
+    own depth / count caps bound the delegation tree.
+    """
+    blocked = _precheck(deps, "post_task")
+    if blocked:
+        return blocked
+    if deps.task_queue is None:
+        return "No task queue available (running solo) — cannot delegate."
+    if not deps.can_delegate:
+        deps.audit.record("post_task", refused="not_delegator", role=deps.role)
+        return "Refused: this role is not permitted to delegate work."
+
+    from vuln_scanner.agents.roles import get_role, specialist_role_names
+
+    target_role = (role or "").strip()
+    if get_role(target_role) is None or target_role not in specialist_role_names():
+        return f"Unknown specialist role '{target_role}'. Choose one of: {', '.join(specialist_role_names())}."
+
+    if target:
+        try:
+            deps.assert_target_in_scope(target)
+        except ScopeViolation as exc:
+            deps.audit.record("post_task", refused="scope", target=target)
+            return str(exc)
+
+    objective = objective.strip()[:_MAX_OBJECTIVE_LEN]
+    task = deps.task_queue.post(
+        target_role, objective, target=target, created_by=deps.agent.name, parent=deps.current_task
+    )
+    if task is None:
+        deps.audit.record("post_task", refused="cap", role=target_role)
+        return "Refused: delegation budget reached (task count or depth cap)."
+    deps.audit.record("post_task", task_id=task.id, role=target_role, objective=objective, target=target)
+    return f"Posted {task.id} to '{target_role}': {objective}"

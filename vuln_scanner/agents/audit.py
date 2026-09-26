@@ -11,6 +11,8 @@ import threading
 import time
 from pathlib import Path
 
+from vuln_scanner.agents.models import ActionRecord
+
 log = logging.getLogger(__name__)
 
 _MAX_FIELD = 4000  # truncate long stdout/stderr/code fields in the log
@@ -43,14 +45,12 @@ class ActionLog:
         String fields are truncated to keep the log bounded.  Never raises —
         an audit-write failure must not crash an agent run.
         """
-        rec: dict[str, object] = {
-            "ts": time.time(),
-            "agent": self._agent,
-            "action": action,
-        }
-        for k, v in fields.items():
-            rec[k] = _truncate(v) if isinstance(v, str) else v
-        line = json.dumps(rec, ensure_ascii=False, default=str)
+        record = ActionRecord(ts=time.time(), agent=self._agent, action=action, **fields)
+        data = record.model_dump()
+        for key, value in data.items():
+            if isinstance(value, str):
+                data[key] = _truncate(value)
+        line = json.dumps(data, ensure_ascii=False, default=str)
         try:
             with self._lock:
                 with open(self.path, "a", encoding="utf-8") as fh:

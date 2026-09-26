@@ -12,54 +12,61 @@ import re
 # Reuse the PoC denylist as the base and extend it with agent-specific patterns.
 from vuln_scanner.poc.generator import _DENYLIST_RE as _POC_DENYLIST_RE
 
-_CONTAINER_MARKER = "VS_IN_CONTAINER"
+CONTAINER_MARKER = "VS_IN_CONTAINER"
+CONTAINER_MARKER_VALUE = "1"
 
+# ── Denylist patterns (destructive / anti-forensic argv + code) ───────────────
 
-def is_in_container() -> bool:
-    """True only inside the Docker image (VS_IN_CONTAINER=1)."""
-    return os.environ.get(_CONTAINER_MARKER, "").strip() == "1"
+FILESYSTEM_FORMAT_PATTERN = r"\bmkfs\b"
+FILESYSTEM_WIPE_PATTERN = r"\bwipefs\b"
+RAW_DISK_WRITE_PATTERN = r">\s*/dev/sd[a-z]"
+PARTITION_TABLE_PATTERN = r"\bfdisk\b|\bparted\b|\bgdisk\b"
+ACCOUNT_DELETE_PATTERN = r"\buserdel\b|\bgroupdel\b"
+CREDENTIAL_TAMPER_PATTERN = r"\bchpasswd\b|\bpasswd\s+root\b"
+FORK_BOMB_PATTERN = r":\s*\(\s*\)\s*\{\s*:\s*\|\s*:"
+ANTI_FORENSICS_PATTERN = r"\bhistory\s+-c\b|rm\s+.*\.bash_history"
+REVERSE_SHELL_PATTERN = r"\bnc\b.*-e\b|\bncat\b.*-e\b|/dev/tcp/"
+CRON_WIPE_PATTERN = r"\bcrontab\b\s+-r"
+FIREWALL_DISABLE_PATTERN = r"\bufw\s+disable\b|iptables\s+-F"
 
+_AGENT_DENYLIST_PATTERNS = (
+    FILESYSTEM_FORMAT_PATTERN,
+    FILESYSTEM_WIPE_PATTERN,
+    RAW_DISK_WRITE_PATTERN,
+    PARTITION_TABLE_PATTERN,
+    ACCOUNT_DELETE_PATTERN,
+    CREDENTIAL_TAMPER_PATTERN,
+    FORK_BOMB_PATTERN,
+    ANTI_FORENSICS_PATTERN,
+    REVERSE_SHELL_PATTERN,
+    CRON_WIPE_PATTERN,
+    FIREWALL_DISABLE_PATTERN,
+)
 
-# ── Denylist (argv + code) ────────────────────────────────────────────────────
-
-# Additional destructive/anti-forensic patterns beyond the PoC generator's list.
-_AGENT_EXTRA_RE = [
-    re.compile(p, re.IGNORECASE | re.MULTILINE)
-    for p in [
-        r"\bmkfs\b",  # any filesystem format
-        r"\bwipefs\b",  # wipe filesystem signatures
-        r">\s*/dev/sd[a-z]",  # write to raw disk
-        r"\bfdisk\b|\bparted\b|\bgdisk\b",  # partition tables
-        r"\buserdel\b|\bgroupdel\b",  # delete accounts
-        r"\bchpasswd\b|\bpasswd\s+root\b",  # credential tampering
-        r":\s*\(\s*\)\s*\{\s*:\s*\|\s*:",  # classic fork bomb :(){ :|: }
-        r"\bhistory\s+-c\b|rm\s+.*\.bash_history",  # anti-forensics
-        r"\bnc\b.*-e\b|\bncat\b.*-e\b|/dev/tcp/",  # reverse shells off-box
-        r"\bcrontab\b\s+-r",  # wipe cron
-        r"\bufw\s+disable\b|iptables\s+-F",  # disable firewalling
-    ]
-]
+_AGENT_EXTRA_RE = [re.compile(pattern, re.IGNORECASE | re.MULTILINE) for pattern in _AGENT_DENYLIST_PATTERNS]
 
 _ALL_DENYLIST_RE = list(_POC_DENYLIST_RE) + _AGENT_EXTRA_RE
 
-
-def denylist_check(text: str) -> tuple[bool, str]:
-    """Return (safe, reason).  ``safe`` is False on any destructive pattern."""
-    for pattern in _ALL_DENYLIST_RE:
-        m = pattern.search(text or "")
-        if m:
-            return False, f"Denylist match: {m.group()!r}"
-    return True, ""
-
-
-# ── Host extraction (for scope validation) ────────────────────────────────────
+# ── Host extraction patterns (for scope validation) ───────────────────────────
 
 _URL_RE = re.compile(r"\bhttps?://([^\s/\\:'\"]+)", re.IGNORECASE)
-# host:port or bare host token — conservative; used to catch args like
-# "example.com:445" or "10.0.0.5".
 _HOSTPORT_RE = re.compile(
     r"\b((?:[a-zA-Z0-9_](?:[a-zA-Z0-9_-]{0,61}[a-zA-Z0-9_])?\.)+[a-zA-Z]{2,}|(?:\d{1,3}\.){3}\d{1,3})(?::\d+)?\b"
 )
+
+
+def is_in_container() -> bool:
+    """True only inside the Docker image (``VS_IN_CONTAINER=1``)."""
+    return os.environ.get(CONTAINER_MARKER, "").strip() == CONTAINER_MARKER_VALUE
+
+
+def denylist_check(text: str) -> tuple[bool, str]:
+    """Return ``(safe, reason)``.  ``safe`` is False on any destructive pattern."""
+    for pattern in _ALL_DENYLIST_RE:
+        match = pattern.search(text or "")
+        if match:
+            return False, f"Denylist match: {match.group()!r}"
+    return True, ""
 
 
 def extract_hosts(*values: str) -> set[str]:
@@ -72,16 +79,16 @@ def extract_hosts(*values: str) -> set[str]:
     for value in values:
         if not value:
             continue
-        for m in _URL_RE.finditer(value):
-            hosts.add(_strip_port(m.group(1)))
-        for m in _HOSTPORT_RE.finditer(value):
-            hosts.add(_strip_port(m.group(1)))
-    return {h for h in hosts if h}
+        for match in _URL_RE.finditer(value):
+            hosts.add(_strip_port(match.group(1)))
+        for match in _HOSTPORT_RE.finditer(value):
+            hosts.add(_strip_port(match.group(1)))
+    return {host for host in hosts if host}
 
 
 def _strip_port(host: str) -> str:
     host = host.strip().rstrip(".").lower()
-    # Strip a trailing :port (but keep bare IPv6 out of scope — rare here).
+    # A trailing :port is dropped; bare IPv6 is intentionally left out of scope.
     if host.count(":") == 1:
         left, right = host.split(":", 1)
         if right.isdigit():

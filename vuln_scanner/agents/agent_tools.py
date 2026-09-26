@@ -14,17 +14,24 @@ import time
 from vuln_scanner.agents.audit import _MAX_FIELD, _truncate
 from vuln_scanner.agents.deps import AgentDeps, ContainerGateError, ScopeViolation
 from vuln_scanner.agents.guards import denylist_check
-from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentPoc
+from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentNote, AgentPoc, CodeLanguage
 from vuln_scanner.agents.sandbox import run_code_sandboxed
-from vuln_scanner.tools.enums import Severity, _parse_severity
 
 log = logging.getLogger(__name__)
 
 _DEFAULT_EXEC_TIMEOUT = 300
 _DEFAULT_HTTP_TIMEOUT = 30
-_MAX_NOTES = 200  # cap scratchpad size so a runaway agent can't blow memory/tokens
-_MAX_NOTE_LEN = _MAX_FIELD  # per-note text cap (reuse audit truncation width)
-_MAX_RESP_BYTES = 16384  # cap captured response body (matches sandbox _OUT_TRUNCATE)
+_POC_ID_PREFIX = "agent-poc-"
+
+_STOP_DEADLINE = "STOP: time budget exhausted — finalize and summarize your findings now."
+_STOP_CEILING = "STOP: tool-call ceiling reached — finalize and summarize your findings now."
+
+# Scratchpad caps so a runaway agent cannot blow memory / tokens.
+_MAX_NOTES = 200
+_MAX_NOTE_LEN = _MAX_FIELD  # per-note text cap; reuse the audit truncation width
+_MAX_RESP_BYTES = 16384  # captured response-body cap; matches the sandbox output cap
+_HTTP_CHUNK_BYTES = 4096  # streamed response read size
+
 _SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 _HTTP_METHODS = _SAFE_METHODS | {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -40,9 +47,9 @@ def _remaining_timeout(deps: AgentDeps, default: int) -> int:
 def _precheck(deps: AgentDeps, tool: str) -> str | None:
     """Shared gate for every agent tool. Returns an error string if blocked."""
     if deps.past_deadline():
-        return "STOP: time budget exhausted — finalize and summarize your findings now."
+        return _STOP_DEADLINE
     if deps.ceiling_reached():
-        return "STOP: tool-call ceiling reached — finalize and summarize your findings now."
+        return _STOP_CEILING
     allowed = deps.agent.allowed_tools
     if allowed and tool not in allowed:
         return f"Tool '{tool}' is not permitted for this agent."
@@ -62,16 +69,15 @@ def list_tools(deps: AgentDeps, category: str = "") -> str:
     lines: list[str] = []
     for name, cls in sorted(TOOL_REGISTRY.items()):
         try:
-            inst = cls()
+            instance = cls()
         except Exception:
             continue
-        if category and inst.category != category:
+        if category and instance.category != category:
             continue
-        binary = inst.binary or name
-        present = shutil.which(binary) is not None
-        if not present:
+        binary = instance.binary or name
+        if shutil.which(binary) is None:
             continue
-        lines.append(f"{name} [{inst.category}] → {binary}")
+        lines.append(f"{name} [{instance.category}] → {binary}")
     deps.audit.record("list_tools", category=category, count=len(lines))
     return "\n".join(lines) if lines else "No installed tools match."
 
@@ -154,8 +160,7 @@ def run_code(deps: AgentDeps, language: str, code: str) -> dict:
 
     # Pentester dry-run gate: record the plan instead of executing.
     if deps.agent.kind == AgentKind.PENTESTER and not deps.live_exploit_allowed:
-        step = f"[{language}] {code}"
-        deps.exploit_plan.append(step)
+        deps.exploit_plan.append(f"[{language}] {code}")
         deps.audit.record("run_code", mode="dry_run", language=language, code=code)
         return {
             "executed": False,
@@ -204,7 +209,7 @@ def _format_request(method: str, url: str, headers: dict[str, str], body: str) -
     lines = [f"{method} {path} HTTP/1.1"]
     if parts.netloc:
         lines.append(f"Host: {parts.hostname or parts.netloc}")
-    lines.extend(f"{k}: {v}" for k, v in headers.items())
+    lines.extend(f"{name}: {value}" for name, value in headers.items())
     if body:
         lines.append("")
         lines.append(body)
@@ -214,7 +219,7 @@ def _format_request(method: str, url: str, headers: dict[str, str], body: str) -
 def _format_response(status_code: int, reason: str, headers: dict[str, str], body: str, truncated: bool) -> str:
     """Render a response as HTTP-wire-like evidence, ready for save_bug.response."""
     lines = [f"HTTP/1.1 {status_code} {reason}".rstrip()]
-    lines.extend(f"{k}: {v}" for k, v in headers.items())
+    lines.extend(f"{name}: {value}" for name, value in headers.items())
     lines.append("")
     lines.append(body)
     if truncated:
@@ -261,11 +266,11 @@ def http_request(
     except ScopeViolation as exc:
         return {"error": str(exc)}
 
-    hdrs = {str(k): str(v) for k, v in (headers or {}).items()}
+    request_headers = {str(name): str(value) for name, value in (headers or {}).items()}
 
     # Pentester dry-run gate: a mutating request is a state change → record, don't send.
     if deps.agent.kind == AgentKind.PENTESTER and not deps.live_exploit_allowed and method not in _SAFE_METHODS:
-        step = _format_request(method, url, hdrs, body)
+        step = _format_request(method, url, request_headers, body)
         deps.exploit_plan.append(step)
         deps.audit.record("http_request", mode="dry_run", method=method, url=url)
         return {
@@ -281,10 +286,10 @@ def http_request(
 
     timeout = _remaining_timeout(deps, _DEFAULT_HTTP_TIMEOUT)
     try:
-        resp = requests.request(
+        response = requests.request(
             method,
             url,
-            headers=hdrs or None,
+            headers=request_headers or None,
             data=body.encode("utf-8", "replace") if body else None,
             timeout=timeout,
             allow_redirects=follow_redirects,
@@ -296,137 +301,70 @@ def http_request(
         return {"error": f"Request failed: {exc}"}
 
     try:
-        total = 0
+        total_bytes = 0
         chunks: list[bytes] = []
-        for chunk in resp.iter_content(chunk_size=4096):
+        for chunk in response.iter_content(chunk_size=_HTTP_CHUNK_BYTES):
             chunks.append(chunk)
-            total += len(chunk)
-            if total > _MAX_RESP_BYTES:
+            total_bytes += len(chunk)
+            if total_bytes > _MAX_RESP_BYTES:
                 break
-        raw = b"".join(chunks)
-        truncated = total > _MAX_RESP_BYTES
-        text = raw[:_MAX_RESP_BYTES].decode(resp.encoding or "utf-8", "replace")
-        resp_headers = dict(resp.headers)
-        status_code = resp.status_code
-        reason = resp.reason or ""
-        final_url = resp.url
+        raw_body = b"".join(chunks)
+        truncated = total_bytes > _MAX_RESP_BYTES
+        body_text = raw_body[:_MAX_RESP_BYTES].decode(response.encoding or "utf-8", "replace")
+        response_headers = dict(response.headers)
+        status_code = response.status_code
+        reason = response.reason or ""
+        final_url = response.url
     finally:
-        resp.close()
+        response.close()
 
     deps.audit.record(
         "http_request",
         method=method,
         url=url,
         status=status_code,
-        bytes=total,
-        response=text,
+        bytes=total_bytes,
+        response=body_text,
     )
     return {
         "status_code": status_code,
         "url": final_url,
-        "response_headers": resp_headers,
-        "body": text,
+        "response_headers": response_headers,
+        "body": body_text,
         "truncated": truncated,
-        "request": _format_request(method, url, hdrs, body),
-        "response": _format_response(status_code, reason, resp_headers, text, truncated),
+        "request": _format_request(method, url, request_headers, body),
+        "response": _format_response(status_code, reason, response_headers, body_text, truncated),
     }
 
 
 # ── save_bug ──────────────────────────────────────────────────────────────────
 
 
-def save_bug(
-    deps: AgentDeps,
-    title: str,
-    severity: str = "info",
-    target: str = "",
-    affected_url: str = "",
-    affected_param: str = "",
-    vuln_class: list[str] | None = None,
-    summary: str = "",
-    reproduction_steps: list[str] | None = None,
-    request: str = "",
-    response: str = "",
-    impact: str = "",
-    remediation: str = "",
-    references: list[str] | None = None,
-    oob_evidence: str = "",
-    cvss_vector: str = "",
-    cvss_score: float | None = None,
-    confidence: str = "unknown",
-) -> str:
+def save_bug(deps: AgentDeps, bug: AgentFinding) -> str:
     """Persist a confirmed bug (evidence of existence) for reporting/submission."""
-    try:
-        sev: Severity = _parse_severity(severity)
-    except Exception:
-        sev = Severity.INFO
-    finding = AgentFinding(
-        title=title,
-        severity=sev,
-        target=target,
-        affected_url=affected_url,
-        affected_param=affected_param,
-        vuln_class=vuln_class or [],
-        summary=summary,
-        reproduction_steps=reproduction_steps or [],
-        request=request,
-        response=response,
-        impact=impact,
-        remediation=remediation,
-        references=references or [],
-        oob_evidence=oob_evidence,
-        cvss_vector=cvss_vector,
-        cvss_score=cvss_score,
-        confidence=confidence,
-        discovered_by=deps.agent.name,
-    )
-    deps.findings.append(finding)
-    deps.audit.record("save_bug", title=title, severity=sev.value, target=target)
-    return f"Saved bug #{len(deps.findings)}: {title} [{sev.value}]"
+    bug.discovered_by = deps.agent.name
+    deps.findings.append(bug)
+    deps.audit.record("save_bug", title=bug.title, severity=bug.severity.value, target=bug.target)
+    return f"Saved bug #{len(deps.findings)}: {bug.title} [{bug.severity.value}]"
 
 
 # ── record_poc ────────────────────────────────────────────────────────────────
 
 
-def record_poc(
-    deps: AgentDeps,
-    finding_title: str,
-    language: str,
-    description: str,
-    command: str = "",
-    script: str = "",
-    expected_indicator: str = "",
-    executed: bool = False,
-    verdict: str = "not_run",
-    evidence: str = "",
-) -> str:
-    """Record a PoC artifact; writes the script to the agent artifact dir."""
-    poc_id = f"agent-poc-{len(deps.pocs) + 1:03d}"
-    script_path = ""
+def record_poc(deps: AgentDeps, poc: AgentPoc, script: str = "") -> str:
+    """Record a PoC artifact; writes *script* (if any) to the agent artifact dir."""
+    poc.id = f"{_POC_ID_PREFIX}{len(deps.pocs) + 1:03d}"
     if script.strip():
-        ext = {"python": ".py", "bash": ".sh", "sh": ".sh"}.get(language.lower(), ".txt")
-        path = deps.artifact_dir / f"{poc_id}{ext}"
+        path = deps.artifact_dir / f"{poc.id}{CodeLanguage.extension_for(poc.language)}"
         try:
             deps.artifact_dir.mkdir(parents=True, exist_ok=True)
             path.write_text(script, encoding="utf-8")
-            script_path = str(path)
+            poc.script_path = str(path)
         except OSError as exc:  # pragma: no cover - defensive
             log.warning("PoC write failed: %s", exc)
-    poc = AgentPoc(
-        id=poc_id,
-        finding_title=finding_title,
-        language=language,
-        description=description,
-        command=command,
-        script_path=script_path,
-        expected_indicator=expected_indicator,
-        executed=executed,
-        verdict=verdict,
-        evidence=evidence,
-    )
     deps.pocs.append(poc)
-    deps.audit.record("record_poc", id=poc_id, finding=finding_title, verdict=verdict)
-    return f"Recorded {poc_id} for '{finding_title}' (verdict: {verdict})"
+    deps.audit.record("record_poc", id=poc.id, finding=poc.finding_title, verdict=poc.verdict)
+    return f"Recorded {poc.id} for '{poc.finding_title}' (verdict: {poc.verdict})"
 
 
 # ── OOB / OAST ────────────────────────────────────────────────────────────────
@@ -462,15 +400,15 @@ def oob_check(deps: AgentDeps) -> dict:
         return {"error": blocked}
     if deps.oob_session is None or not deps.oob_session.available:
         return {"interactions": [], "note": "No active OOB session."}
-    new = deps.oob_session.check()
-    deps.audit.record("oob_check", new_interactions=len(new))
-    return {"interactions": new, "count": len(new)}
+    new_interactions = deps.oob_session.check()
+    deps.audit.record("oob_check", new_interactions=len(new_interactions))
+    return {"interactions": new_interactions, "count": len(new_interactions)}
 
 
 # ── note / recall (agent scratchpad) ───────────────────────────────────────────
 
 
-def _persist_note(deps: AgentDeps, entry: dict) -> None:
+def _persist_note(deps: AgentDeps, entry: AgentNote) -> None:
     """Best-effort append of a note to ``<agent>.notes.jsonl`` beside the action log.
 
     Gives the scratchpad the same post-hoc auditability as the action log without
@@ -480,7 +418,7 @@ def _persist_note(deps: AgentDeps, entry: dict) -> None:
     path = deps.audit.path.parent / f"{deps.audit.path.stem}.notes.jsonl"
     try:
         with open(path, "a", encoding="utf-8") as fh:
-            fh.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+            fh.write(json.dumps(entry.model_dump(), ensure_ascii=False, default=str) + "\n")
     except OSError as exc:  # pragma: no cover - defensive
         log.warning("Notes log write failed for %s: %s", deps.agent.name, exc)
 
@@ -507,13 +445,11 @@ def note(deps: AgentDeps, text: str, tag: str = "") -> str:
         return f"Scratchpad full ({_MAX_NOTES} notes) — recall and consolidate before adding more."
 
     tag = (tag or "").strip()
-    text = _truncate(text)  # caps at _MAX_NOTE_LEN and appends a truncation marker
-    seq = len(deps.notes) + 1
-    entry = {"seq": seq, "tag": tag, "text": text, "ts": time.time()}
+    entry = AgentNote(seq=len(deps.notes) + 1, tag=tag, text=_truncate(text))
     deps.notes.append(entry)
-    deps.audit.record("note", seq=seq, tag=tag, text=text)
+    deps.audit.record("note", seq=entry.seq, tag=entry.tag, text=entry.text)
     _persist_note(deps, entry)
-    return f"Noted #{seq}" + (f" [{tag}]" if tag else "")
+    return f"Noted #{entry.seq}" + (f" [{entry.tag}]" if entry.tag else "")
 
 
 def recall(deps: AgentDeps, tag: str = "") -> str:
@@ -527,11 +463,13 @@ def recall(deps: AgentDeps, tag: str = "") -> str:
         return blocked
 
     tag = (tag or "").strip()
-    entries = [n for n in deps.notes if not tag or n["tag"] == tag]
+    entries = [entry for entry in deps.notes if not tag or entry.tag == tag]
     deps.audit.record("recall", tag=tag, count=len(entries))
     if not entries:
         scope = f" tagged [{tag}]" if tag else ""
         return f"No notes recorded{scope} yet."
 
-    lines = [f"#{n['seq']}" + (f" [{n['tag']}]" if n["tag"] else "") + f": {n['text']}" for n in entries]
+    lines = [
+        f"#{entry.seq}" + (f" [{entry.tag}]" if entry.tag else "") + f": {entry.text}" for entry in entries
+    ]
     return "\n".join(lines)

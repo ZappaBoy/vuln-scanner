@@ -157,6 +157,36 @@ class SubmissionConfig(BaseModel):
     formats: list[str] = Field(default_factory=list)
 
 
+class OrchestrationConfig(BaseModel):
+    """Multi-agent orchestration: a lead delegates to concurrent specialists.
+
+    When ``enabled``, the agent phase ignores the flat ``agents`` list and runs
+    a lead-plus-specialists team scheduled by the supervisor instead of the
+    sequential single-agent loop.  The caps bound the blast radius and cost of
+    the team the same way per-agent ceilings bound one agent.
+    """
+
+    enabled: bool = False
+    # Specialist agents run concurrently, but never more than this many at once,
+    # and never two on the same host (per-host mutual exclusion in the supervisor).
+    max_concurrent: int = 3
+    # Plan→execute rounds: each round the lead re-reads shared state and may post
+    # follow-up tasks, so the team iterates on what earlier rounds discovered.
+    max_rounds: int = 3
+    # Hard ceiling on total specialist runs across all rounds (cost guard).
+    max_agent_runs: int = 20
+    # Task-queue guardrails (see tasks.TaskQueue): total tasks and delegation depth.
+    max_tasks: int = 100
+    max_depth: int = 3
+    # Per-role-agent lifecycle defaults (mirror AgentConfig fields).
+    agent_timeout: int = 600
+    max_tool_calls: int = 40
+    token_budget: int | None = 500_000
+    # Role selection.  Empty ``specialists`` = all built-in specialist roles.
+    lead_role: str = "lead"
+    specialists: list[str] = Field(default_factory=list)
+
+
 class AgentsConfig(BaseModel):
     """Top-level configuration for the agentic layer."""
 
@@ -167,6 +197,7 @@ class AgentsConfig(BaseModel):
     agents: list[AgentConfig] = Field(default_factory=list)
     sandbox: SandboxConfig = Field(default_factory=SandboxConfig)
     submission: SubmissionConfig = Field(default_factory=SubmissionConfig)
+    orchestration: OrchestrationConfig = Field(default_factory=OrchestrationConfig)
 
     def active_agents(self) -> list[AgentConfig]:
         return [a for a in self.agents if a.enabled]

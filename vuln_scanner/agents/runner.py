@@ -27,6 +27,8 @@ from vuln_scanner.scope import ScopeValidator
 from vuln_scanner.tools.enums import ScanMode
 
 if TYPE_CHECKING:
+    from vuln_scanner.agents.blackboard import EngagementState
+    from vuln_scanner.agents.tasks import TaskQueue
     from vuln_scanner.llm.models import LLMConfig
     from vuln_scanner.model import Assessment
 
@@ -64,14 +66,20 @@ class AgentOrchestrator:
     # ── Entry point ──────────────────────────────────────────────────────────
 
     def run(self, assessment: "Assessment") -> list[AgentReport]:
-        """Run all active agents sequentially. Blocking."""
+        """Run the agent phase. Blocking.
+
+        Orchestrated mode (``orchestration.enabled``) runs a lead-plus-specialists
+        team via the supervisor; otherwise the configured agents run sequentially.
+        """
         if not self._cfg.enabled:
             return []
         if not is_in_container():
             log.warning("Agent phase skipped: not inside container (VS_IN_CONTAINER != 1).")
             return []
+
+        orchestrated = self._cfg.orchestration.enabled
         active = self._cfg.active_agents()
-        if not active:
+        if not orchestrated and not active:
             log.info("Agent phase: no active agents configured.")
             return []
         if self._model is None:
@@ -83,6 +91,12 @@ class AgentOrchestrator:
             except Exception:
                 log.exception("Agent phase skipped: could not build LLM model.")
                 return []
+
+        if orchestrated:
+            from vuln_scanner.agents.supervisor import Supervisor
+
+            log.info("Agent phase: orchestrated (lead + specialists).")
+            return asyncio.run(Supervisor(self, self._cfg.orchestration).orchestrate(assessment))
 
         log.info("Agent phase: running %d agent(s) sequentially.", len(active))
         return asyncio.run(self._run_all(active, assessment))
@@ -132,13 +146,22 @@ class AgentOrchestrator:
 
     async def _run_one(self, agent_cfg: AgentConfig, assessment: "Assessment") -> AgentReport:
         deps = self._build_deps(agent_cfg)
+        prompt = self._seed_prompt(agent_cfg, assessment)
+        return await self._run_agent(agent_cfg, deps, prompt)
+
+    async def _run_agent(self, agent_cfg: AgentConfig, deps: AgentDeps, prompt: str) -> AgentReport:
+        """Run one agent to completion under its ceilings, then verify + scrub.
+
+        The single place an agent is driven: shared by the sequential path
+        (:meth:`_run_one`) and the orchestrated path (the supervisor), so both
+        get identical timeout / usage-ceiling handling and finalization.
+        """
         start = time.monotonic()
         status = AgentStatus.COMPLETED
         summary = ""
         tokens: int | None = None
 
         agent = self._build_agent(agent_cfg)
-        prompt = self._seed_prompt(agent_cfg, assessment)
         usage_limits = self._usage_limits(agent_cfg)
 
         try:
@@ -190,7 +213,16 @@ class AgentOrchestrator:
 
     # ── Construction helpers ─────────────────────────────────────────────────
 
-    def _build_deps(self, agent_cfg: AgentConfig) -> AgentDeps:
+    def _build_deps(
+        self,
+        agent_cfg: AgentConfig,
+        *,
+        blackboard: "EngagementState | None" = None,
+        task_queue: "TaskQueue | None" = None,
+        role: str = "",
+        current_task=None,
+        can_delegate: bool = False,
+    ) -> AgentDeps:
         log_dir = self._run_dir / "agent_logs"
         artifact_dir = self._run_dir / "agent_artifacts" / agent_cfg.name
         live = (
@@ -211,7 +243,52 @@ class AgentOrchestrator:
             code_languages=self._code_languages,
             oob_server=self._oob_server,
             oob_token=self._oob_token,
+            blackboard=blackboard,
+            task_queue=task_queue,
+            role=role,
+            current_task=current_task,
+            can_delegate=can_delegate,
         )
+
+    # ── Orchestration hooks (used by the supervisor) ─────────────────────────
+
+    def new_blackboard(self) -> "EngagementState":
+        from vuln_scanner.agents.blackboard import EngagementState
+
+        return EngagementState(run_dir=self._run_dir)
+
+    def _role_agent_config(self, role) -> AgentConfig:
+        """Synthesize an AgentConfig for a role from the orchestration defaults."""
+        orchestration = self._cfg.orchestration
+        return AgentConfig(
+            name=role.name,
+            kind=role.kind,
+            system_prompt=role.system_prompt,
+            timeout=orchestration.agent_timeout,
+            max_tool_calls=orchestration.max_tool_calls,
+            token_budget=orchestration.token_budget,
+        )
+
+    async def run_role_agent(
+        self,
+        role,
+        prompt: str,
+        *,
+        blackboard: "EngagementState",
+        task_queue: "TaskQueue",
+        current_task=None,
+    ) -> AgentReport:
+        """Run one role's agent against shared state; verify + scrub as usual."""
+        agent_cfg = self._role_agent_config(role)
+        deps = self._build_deps(
+            agent_cfg,
+            blackboard=blackboard,
+            task_queue=task_queue,
+            role=role.name,
+            current_task=current_task,
+            can_delegate=role.can_delegate,
+        )
+        return await self._run_agent(agent_cfg, deps, prompt)
 
     def _build_agent(self, agent_cfg: AgentConfig):
         from pydantic_ai import Agent, RunContext, Tool

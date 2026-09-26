@@ -1,0 +1,90 @@
+name: Docker image
+
+# The final image is based on blackarchlinux/blackarch and is very large
+# (~30 GB) and slow to build, so this is deliberately NOT run on pushes or
+# pull requests. It builds only on demand (manual dispatch) and on version
+# tags (release builds, pushed to GHCR).
+#
+# WARNING: a ~30 GB image very likely will NOT fit on a standard GitHub-hosted
+# runner even after the disk-reclaim step below. If the build fails on
+# "no space left on device", run it on a larger/self-hosted runner (change
+# `runs-on`) rather than expecting the default runner to cope.
+
+on:
+  workflow_dispatch:
+    inputs:
+      push:
+        description: "Push the built image to GHCR"
+        type: boolean
+        default: false
+  push:
+    tags: ["v*"]
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build (and optionally push) image
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reclaim ~30 GB by removing preinstalled toolchains we don't need.
+      # Necessary (but may still be insufficient) for an image this large.
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          large-packages: true
+          docker-images: false
+          swap-storage: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Push happens on tags, or on manual dispatch when the `push` input is set.
+      - name: Decide whether to push
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ inputs.push }}" = "true" ]; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "push=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to GHCR
+        if: steps.decide.outputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata (tags)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable=${{ github.ref_type == 'tag' }}
+            type=raw,value=manual-${{ github.run_id }},enable=${{ github.event_name == 'workflow_dispatch' }}
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ steps.decide.outputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # No GHA layer cache: the image is far larger than the 10 GB cache cap,
+          # so caching would thrash rather than help.

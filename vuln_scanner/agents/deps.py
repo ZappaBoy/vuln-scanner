@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from vuln_scanner.agents.audit import ActionLog
 from vuln_scanner.agents.guards import extract_hosts, is_in_container
-from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentPoc, AgentsConfig
+from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentNote, AgentPoc, AgentsConfig
 from vuln_scanner.agents.oob import OobSession
 from vuln_scanner.scope import ScopeValidator
 
@@ -60,6 +60,10 @@ class AgentDeps(BaseModel):
     pocs: list[AgentPoc] = Field(default_factory=list, description="PoC artifacts the agent has recorded.")
     exploit_plan: list[str] = Field(
         default_factory=list, description="Dry-run exploit-plan steps recorded but not executed."
+    )
+    notes: list[AgentNote] = Field(
+        default_factory=list,
+        description="Working-memory scratchpad notes; never surfaced into the report by default.",
     )
 
     # ── Gates ────────────────────────────────────────────────────────────────

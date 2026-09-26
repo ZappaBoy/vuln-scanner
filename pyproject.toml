@@ -3,7 +3,7 @@ name = "vuln-scanner"
 version = "0.1.0"
 description = "Automated Vulnerability Assessment and Report Generator"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     "pydantic>=2.0",
     "pydantic-settings>=2.0",
@@ -33,7 +33,7 @@ dev = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py314"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]

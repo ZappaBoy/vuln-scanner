@@ -3,7 +3,7 @@
 import asyncio
 from pathlib import Path
 
-from pydantic_ai.messages import ModelResponse, TextPart
+from pydantic_ai.messages import ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 from pydantic_ai.models.test import TestModel
 
@@ -135,6 +135,54 @@ def test_timeout_triggers_summary(tmp_path, monkeypatch):
     assert len(reports) == 1
     assert reports[0].status == AgentStatus.TIMED_OUT
     assert "partial results" in reports[0].summary
+
+
+# ── Tool wiring (end-to-end registration + dispatch) ────────────────────────────
+
+_EXPECTED_TOOLS = {
+    "list_tools",
+    "run_tool",
+    "run_code",
+    "http_request",
+    "save_bug",
+    "record_poc",
+    "oob_get_callback",
+    "oob_check",
+    "note",
+    "recall",
+}
+
+
+def test_all_tools_registered_and_dispatch(tmp_path, monkeypatch):
+    """Every agent tool registers on the pydantic-ai agent, and a real note→recall
+    round-trip dispatches through the runner wrappers into agent_tools + AgentDeps."""
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+    seen: dict = {"tools": None}
+
+    def _driver(messages, info: AgentInfo) -> ModelResponse:
+        seen["tools"] = {t.name for t in info.function_tools}
+        text = " ".join(str(getattr(p, "content", "")) for m in messages for p in m.parts)
+        # Recall output flows back as a tool return; once we see it, finalize.
+        if "found /admin" in text and "recon" in text:
+            return ModelResponse(parts=[TextPart("done")])
+        if any(getattr(p, "part_kind", "") == "tool-return" for m in messages for p in m.parts):
+            return ModelResponse(parts=[ToolCallPart(tool_name="recall", args={})])
+        return ModelResponse(
+            parts=[ToolCallPart(tool_name="note", args={"text": "found /admin", "tag": "recon"})]
+        )
+
+    agent = AgentConfig(name="hunter", kind=AgentKind.BUG_BOUNTY)
+    orch = _orch(tmp_path, [agent], model=FunctionModel(_driver))
+    reports = orch.run(_assessment())
+
+    assert seen["tools"] == _EXPECTED_TOOLS
+    r = reports[0]
+    assert r.status == AgentStatus.COMPLETED
+    assert r.summary == "done"
+    # The note dispatched through the runner into the real impl: persisted to disk.
+    notes_file = Path(tmp_path) / "agent_logs" / "hunter.notes.jsonl"
+    assert notes_file.exists()
+    assert "found /admin" in notes_file.read_text(encoding="utf-8")
 
 
 # ── Crash isolation ───────────────────────────────────────────────────────────

@@ -6,22 +6,34 @@ host-touching function routes through the M2 guards (container gate, scope,
 denylist, audit) before acting.
 """
 
+import json
 import logging
 import shutil
 import time
 
+from vuln_scanner.agents.audit import _MAX_FIELD, _truncate
 from vuln_scanner.agents.deps import AgentDeps, ContainerGateError, ScopeViolation
 from vuln_scanner.agents.guards import denylist_check
-from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentPoc, CodeLanguage
+from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentNote, AgentPoc, CodeLanguage
 from vuln_scanner.agents.sandbox import run_code_sandboxed
 
 log = logging.getLogger(__name__)
 
 _DEFAULT_EXEC_TIMEOUT = 300
+_DEFAULT_HTTP_TIMEOUT = 30
 _POC_ID_PREFIX = "agent-poc-"
 
 _STOP_DEADLINE = "STOP: time budget exhausted — finalize and summarize your findings now."
 _STOP_CEILING = "STOP: tool-call ceiling reached — finalize and summarize your findings now."
+
+# Scratchpad caps so a runaway agent cannot blow memory / tokens.
+_MAX_NOTES = 200
+_MAX_NOTE_LEN = _MAX_FIELD  # per-note text cap; reuse the audit truncation width
+_MAX_RESP_BYTES = 16384  # captured response-body cap; matches the sandbox output cap
+_HTTP_CHUNK_BYTES = 4096  # streamed response read size
+
+_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+_HTTP_METHODS = _SAFE_METHODS | {"POST", "PUT", "PATCH", "DELETE"}
 
 
 def _remaining_timeout(deps: AgentDeps, default: int) -> int:
@@ -183,6 +195,148 @@ def run_code(deps: AgentDeps, language: str, code: str) -> dict:
     }
 
 
+# ── http_request ──────────────────────────────────────────────────────────────
+
+
+def _format_request(method: str, url: str, headers: dict[str, str], body: str) -> str:
+    """Render a request as HTTP-wire-like evidence, ready for save_bug.request."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(url)
+    path = parts.path or "/"
+    if parts.query:
+        path = f"{path}?{parts.query}"
+    lines = [f"{method} {path} HTTP/1.1"]
+    if parts.netloc:
+        lines.append(f"Host: {parts.hostname or parts.netloc}")
+    lines.extend(f"{name}: {value}" for name, value in headers.items())
+    if body:
+        lines.append("")
+        lines.append(body)
+    return "\n".join(lines)
+
+
+def _format_response(status_code: int, reason: str, headers: dict[str, str], body: str, truncated: bool) -> str:
+    """Render a response as HTTP-wire-like evidence, ready for save_bug.response."""
+    lines = [f"HTTP/1.1 {status_code} {reason}".rstrip()]
+    lines.extend(f"{name}: {value}" for name, value in headers.items())
+    lines.append("")
+    lines.append(body)
+    if truncated:
+        lines.append(f"… [response truncated at {_MAX_RESP_BYTES} bytes]")
+    return "\n".join(lines)
+
+
+def http_request(
+    deps: AgentDeps,
+    method: str,
+    url: str,
+    headers: dict[str, str] | None = None,
+    body: str = "",
+    follow_redirects: bool = False,
+) -> dict:
+    """Send one scoped HTTP(S) request and capture raw request/response evidence.
+
+    The core in-band bug-bounty primitive: craft a request, observe the
+    response.  Routes through the same guards as ``run_tool`` — ceiling/
+    deadline, allow/deny filter, denylist (url + body), container gate, and
+    scope — then returns HTTP-wire-shaped ``request``/``response`` strings that
+    drop straight into :func:`save_bug`.  For a pentester without live-
+    exploitation clearance, a mutating method (POST/PUT/PATCH/DELETE) is NOT
+    sent: it is recorded as a dry-run exploit-plan step, mirroring ``run_code``.
+    """
+    blocked = _precheck(deps, "http_request")
+    if blocked:
+        return {"error": blocked}
+
+    method = (method or "GET").strip().upper()
+    if method not in _HTTP_METHODS:
+        return {"error": f"Unsupported HTTP method {method!r}. Use one of {sorted(_HTTP_METHODS)}."}
+
+    safe, reason = denylist_check(f"{url}\n{body}")
+    if not safe:
+        deps.audit.record("http_request", refused=reason, method=method, url=url)
+        return {"error": f"Refused: {reason}"}
+
+    try:
+        deps.require_container("http_request")
+        deps.assert_in_scope(url)
+    except ContainerGateError as exc:
+        return {"error": str(exc)}
+    except ScopeViolation as exc:
+        return {"error": str(exc)}
+
+    request_headers = {str(name): str(value) for name, value in (headers or {}).items()}
+
+    # Pentester dry-run gate: a mutating request is a state change → record, don't send.
+    if deps.agent.kind == AgentKind.PENTESTER and not deps.live_exploit_allowed and method not in _SAFE_METHODS:
+        step = _format_request(method, url, request_headers, body)
+        deps.exploit_plan.append(step)
+        deps.audit.record("http_request", mode="dry_run", method=method, url=url)
+        return {
+            "executed": False,
+            "note": "Recorded as dry-run exploit-plan step (mutating request; live exploitation not authorized).",
+            "request": step,
+        }
+
+    import requests
+    from urllib3.exceptions import InsecureRequestWarning
+
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # lab targets: self-signed certs
+
+    timeout = _remaining_timeout(deps, _DEFAULT_HTTP_TIMEOUT)
+    try:
+        response = requests.request(
+            method,
+            url,
+            headers=request_headers or None,
+            data=body.encode("utf-8", "replace") if body else None,
+            timeout=timeout,
+            allow_redirects=follow_redirects,
+            verify=False,  # in-scope lab hosts frequently use self-signed certs
+            stream=True,
+        )
+    except requests.RequestException as exc:
+        deps.audit.record("http_request", method=method, url=url, error=str(exc))
+        return {"error": f"Request failed: {exc}"}
+
+    try:
+        total_bytes = 0
+        chunks: list[bytes] = []
+        for chunk in response.iter_content(chunk_size=_HTTP_CHUNK_BYTES):
+            chunks.append(chunk)
+            total_bytes += len(chunk)
+            if total_bytes > _MAX_RESP_BYTES:
+                break
+        raw_body = b"".join(chunks)
+        truncated = total_bytes > _MAX_RESP_BYTES
+        body_text = raw_body[:_MAX_RESP_BYTES].decode(response.encoding or "utf-8", "replace")
+        response_headers = dict(response.headers)
+        status_code = response.status_code
+        reason = response.reason or ""
+        final_url = response.url
+    finally:
+        response.close()
+
+    deps.audit.record(
+        "http_request",
+        method=method,
+        url=url,
+        status=status_code,
+        bytes=total_bytes,
+        response=body_text,
+    )
+    return {
+        "status_code": status_code,
+        "url": final_url,
+        "response_headers": response_headers,
+        "body": body_text,
+        "truncated": truncated,
+        "request": _format_request(method, url, request_headers, body),
+        "response": _format_response(status_code, reason, response_headers, body_text, truncated),
+    }
+
+
 # ── save_bug ──────────────────────────────────────────────────────────────────
 
 
@@ -249,3 +403,73 @@ def oob_check(deps: AgentDeps) -> dict:
     new_interactions = deps.oob_session.check()
     deps.audit.record("oob_check", new_interactions=len(new_interactions))
     return {"interactions": new_interactions, "count": len(new_interactions)}
+
+
+# ── note / recall (agent scratchpad) ───────────────────────────────────────────
+
+
+def _persist_note(deps: AgentDeps, entry: AgentNote) -> None:
+    """Best-effort append of a note to ``<agent>.notes.jsonl`` beside the action log.
+
+    Gives the scratchpad the same post-hoc auditability as the action log without
+    ever surfacing raw notes into the submission report.  Never raises — a
+    notes-write failure must not crash an agent run.
+    """
+    path = deps.audit.path.parent / f"{deps.audit.path.stem}.notes.jsonl"
+    try:
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry.model_dump(), ensure_ascii=False, default=str) + "\n")
+    except OSError as exc:  # pragma: no cover - defensive
+        log.warning("Notes log write failed for %s: %s", deps.agent.name, exc)
+
+
+def note(deps: AgentDeps, text: str, tag: str = "") -> str:
+    """Record a working-memory note to the run's scratchpad.
+
+    A lightweight, persistent scratchpad for intermediate observations
+    (discovered endpoints, params, hypotheses, credentials-to-retest) that
+    should survive across tool calls without being burned into the final
+    summary.  Network-free — it never contacts a host, so there is no scope or
+    container gate — but it still goes through :func:`_precheck` (ceiling/
+    deadline, allow/deny filter) and is audited.
+    """
+    blocked = _precheck(deps, "note")
+    if blocked:
+        return blocked
+
+    text = (text or "").strip()
+    if not text:
+        return "Empty note ignored — pass text to record."
+    if len(deps.notes) >= _MAX_NOTES:
+        deps.audit.record("note", refused="cap", cap=_MAX_NOTES)
+        return f"Scratchpad full ({_MAX_NOTES} notes) — recall and consolidate before adding more."
+
+    tag = (tag or "").strip()
+    entry = AgentNote(seq=len(deps.notes) + 1, tag=tag, text=_truncate(text))
+    deps.notes.append(entry)
+    deps.audit.record("note", seq=entry.seq, tag=entry.tag, text=entry.text)
+    _persist_note(deps, entry)
+    return f"Noted #{entry.seq}" + (f" [{entry.tag}]" if entry.tag else "")
+
+
+def recall(deps: AgentDeps, tag: str = "") -> str:
+    """Return the scratchpad notes recorded so far, oldest first.
+
+    Optionally filter by *tag*.  Read these back before summarizing so nothing
+    discovered mid-run is lost when the context window rolls.
+    """
+    blocked = _precheck(deps, "recall")
+    if blocked:
+        return blocked
+
+    tag = (tag or "").strip()
+    entries = [entry for entry in deps.notes if not tag or entry.tag == tag]
+    deps.audit.record("recall", tag=tag, count=len(entries))
+    if not entries:
+        scope = f" tagged [{tag}]" if tag else ""
+        return f"No notes recorded{scope} yet."
+
+    lines = [
+        f"#{entry.seq}" + (f" [{entry.tag}]" if entry.tag else "") + f": {entry.text}" for entry in entries
+    ]
+    return "\n".join(lines)

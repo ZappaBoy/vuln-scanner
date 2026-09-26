@@ -227,6 +227,15 @@ class AgentPoc(BaseModel):
         self.command = scrub_text(self.command)
 
 
+class AgentNote(BaseModel):
+    """One timestamped working-memory note in an agent's scratchpad."""
+
+    seq: int = Field(description="1-based sequence number in the scratchpad.")
+    tag: str = Field("", description="Optional grouping tag for the note.")
+    text: str = Field(description="Note body (truncated to the audit field width).")
+    ts: float = Field(default_factory=time.time, description="Unix timestamp when the note was recorded.")
+
+
 class AgentReport(BaseModel):
     """The typed result of a single agent run — the agent's structured output."""
 

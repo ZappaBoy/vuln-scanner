@@ -1,8 +1,9 @@
 """Bug-bounty submission report rendering.
 
-Renders one submission-ready report per confirmed agent finding, from an
-overridable template, in the configured formats (markdown/json).  Written to
-``<run_dir>/agent_submissions/``.
+Renders one submission-ready report per confirmed agent finding.  The generic
+report layout lives in an external Jinja template (``templates/submission.md.jinja``);
+a per-config ``template`` override is rendered with ``str.format`` fields so
+simple custom one-liners keep working.  Written to ``<run_dir>/agent_submissions/``.
 """
 
 import json
@@ -11,53 +12,23 @@ from collections import defaultdict
 from pathlib import Path
 
 from vuln_scanner.agents.models import AgentFinding, AgentReport, SubmissionConfig
+from vuln_scanner.agents.templating import read_template_source, render_template
 
 log = logging.getLogger(__name__)
 
-DEFAULT_SUBMISSION_TEMPLATE = """\
-# {title}
+SUBMISSION_TEMPLATE_NAME = "submission.md.jinja"
+JSON_FORMAT = "json"
+MARKDOWN_FORMAT = "markdown"
+_SLUG_LIMIT = 50
 
-- **Severity:** {severity}
-- **Vulnerability class:** {vuln_class}
-- **Affected URL:** {affected_url}
-- **Affected parameter:** {affected_param}
-- **CVSS:** {cvss_score} {cvss_vector}
-- **Confidence:** {confidence}
-- **Discovered by:** {discovered_by}
-- **Verified:** {verified}
-
-## Summary
-{summary}
-
-## Steps to Reproduce
-{reproduction_steps}
-
-## Proof / Evidence
-### Request
-```
-{request}
-```
-### Response
-```
-{response}
-```
-### Out-of-band interaction
-{oob_evidence}
-
-## Impact
-{impact}
-
-## Remediation
-{remediation}
-
-## References
-{references}
-"""
+# The built-in template source, exported for callers that want to inspect or
+# clone the default layout.
+DEFAULT_SUBMISSION_TEMPLATE = read_template_source(SUBMISSION_TEMPLATE_NAME)
 
 
 def _fields(finding: AgentFinding) -> dict[str, str]:
-    steps = "\n".join(f"{i}. {s}" for i, s in enumerate(finding.reproduction_steps, 1))
-    refs = "\n".join(f"- {r}" for r in finding.references)
+    steps = "\n".join(f"{index}. {step}" for index, step in enumerate(finding.reproduction_steps, 1))
+    references = "\n".join(f"- {reference}" for reference in finding.references)
     return {
         "title": finding.title,
         "severity": finding.severity.value,
@@ -76,27 +47,29 @@ def _fields(finding: AgentFinding) -> dict[str, str]:
         "oob_evidence": finding.oob_evidence or "n/a",
         "impact": finding.impact or "n/a",
         "remediation": finding.remediation or "n/a",
-        "references": refs or "n/a",
+        "references": references or "n/a",
     }
 
 
 def render_submission(finding: AgentFinding, template: str = "") -> str:
-    """Render a single finding to a Markdown submission using *template*.
+    """Render a single finding to a Markdown submission.
 
-    A blank *template* uses the built-in default.  Unknown placeholders in a
-    custom template resolve to an empty string rather than raising.
+    A blank *template* renders the built-in Jinja template.  A custom *template*
+    is rendered with ``str.format`` semantics; unknown placeholders resolve to an
+    empty string rather than raising.
     """
-    tmpl = template or DEFAULT_SUBMISSION_TEMPLATE
-    fields: dict[str, str] = defaultdict(str, _fields(finding))
+    fields = _fields(finding)
+    if not template:
+        return render_template(SUBMISSION_TEMPLATE_NAME, **fields)
     try:
-        return tmpl.format_map(fields)
+        return template.format_map(defaultdict(str, fields))
     except (ValueError, IndexError) as exc:  # malformed custom template
         log.warning("Submission template error: %s — using default.", exc)
-        return DEFAULT_SUBMISSION_TEMPLATE.format_map(fields)
+        return render_template(SUBMISSION_TEMPLATE_NAME, **fields)
 
 
-def _slug(text: str, limit: int = 50) -> str:
-    keep = [c if c.isalnum() else "-" for c in text.lower()]
+def _slug(text: str, limit: int = _SLUG_LIMIT) -> str:
+    keep = [char if char.isalnum() else "-" for char in text.lower()]
     return "".join(keep).strip("-")[:limit] or "bug"
 
 
@@ -112,16 +85,16 @@ def write_submissions(
     """
     if not cfg.enabled:
         return []
-    formats = [f.lower() for f in (cfg.formats or default_formats or ["markdown"])]
+    formats = [fmt.lower() for fmt in (cfg.formats or default_formats or [MARKDOWN_FORMAT])]
     written: list[str] = []
-    idx = 0
+    index = 0
     for report in reports:
         for finding in report.findings:
-            idx += 1
-            base = f"{idx:03d}-{_slug(finding.title)}"
+            index += 1
+            base = f"{index:03d}-{_slug(finding.title)}"
             for fmt in formats:
                 try:
-                    if fmt == "json":
+                    if fmt == JSON_FORMAT:
                         path = out_dir / f"{base}.json"
                         content = json.dumps(finding.model_dump(mode="json"), indent=2, ensure_ascii=False)
                     else:  # markdown (default) — html/pdf submissions fall back to md

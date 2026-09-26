@@ -15,9 +15,10 @@ from vuln_scanner.agents.agent_tools import (
 )
 from vuln_scanner.agents.audit import ActionLog
 from vuln_scanner.agents.deps import AgentDeps
-from vuln_scanner.agents.models import AgentConfig, AgentKind, AgentsConfig
+from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentKind, AgentPoc, AgentsConfig
 from vuln_scanner.agents.oob import parse_callback_domain, parse_interaction
 from vuln_scanner.scope import ScopeValidator
+from vuln_scanner.tools.enums import Severity
 
 
 def _deps(
@@ -131,11 +132,13 @@ def test_save_bug_appends(tmp_path):
     deps = _deps(tmp_path)
     msg = save_bug(
         deps,
-        title="Reflected XSS in q param",
-        severity="high",
-        target="t.lab",
-        affected_param="q",
-        reproduction_steps=["visit /?q=<script>", "observe alert"],
+        AgentFinding(
+            title="Reflected XSS in q param",
+            severity=Severity.HIGH,
+            target="t.lab",
+            affected_param="q",
+            reproduction_steps=["visit /?q=<script>", "observe alert"],
+        ),
     )
     assert "Saved bug" in msg
     assert len(deps.findings) == 1
@@ -149,11 +152,13 @@ def test_record_poc_writes_script(tmp_path):
     deps = _deps(tmp_path)
     msg = record_poc(
         deps,
-        finding_title="SSRF",
-        language="python",
-        description="fetch internal metadata",
+        AgentPoc(
+            finding_title="SSRF",
+            language="python",
+            description="fetch internal metadata",
+            verdict="confirmed",
+        ),
         script="print('poc')",
-        verdict="confirmed",
     )
     assert "agent-poc-001" in msg
     assert len(deps.pocs) == 1
@@ -342,12 +347,9 @@ def test_note_appends_and_increments_seq(tmp_path):
     assert note(deps, "found /admin endpoint", tag="recon") == "Noted #1 [recon]"
     assert note(deps, "param id looks injectable") == "Noted #2"
     assert len(deps.notes) == 2
-    assert deps.notes[0] == {
-        "seq": 1,
-        "tag": "recon",
-        "text": "found /admin endpoint",
-        "ts": deps.notes[0]["ts"],
-    }
+    assert deps.notes[0].seq == 1
+    assert deps.notes[0].tag == "recon"
+    assert deps.notes[0].text == "found /admin endpoint"
     assert deps.tool_calls == 2  # each note counts against the ceiling
 
 
@@ -419,7 +421,7 @@ def test_note_text_truncated(tmp_path):
 
     deps = _deps(tmp_path)
     note(deps, "B" * (_MAX_NOTE_LEN + 500))
-    stored = deps.notes[0]["text"]
+    stored = deps.notes[0].text
     assert "truncated" in stored
     assert stored.startswith("B" * _MAX_NOTE_LEN)
 

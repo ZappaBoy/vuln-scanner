@@ -166,3 +166,46 @@ def test_post_task_respects_queue_cap(tmp_path):
     deps = _deps(tmp_path, task_queue=queue, role="lead", can_delegate=True)
     assert "Posted" in post_task(deps, "web", "one", target="https://t.lab")
     assert "budget reached" in post_task(deps, "web", "two", target="https://t.lab").lower()
+
+
+# ── Scope-bypass regression (red-team audit #1): unparseable / IPv6 / homoglyph ──
+
+
+def test_record_asset_host_like_rejects_bypass_vectors(tmp_path):
+    """Host-like assets must fail closed for hosts extract_hosts cannot parse."""
+    board = EngagementState()
+    deps = _deps(tmp_path, blackboard=board, include=("t.lab",))
+    for bad in ["2001:db8::1", "[2001:db8::1]:443", "internal-admin", "localhost", "evil。com"]:
+        msg = record_asset(deps, "host", bad)
+        assert "scope" in msg.lower() or "refused" in msg.lower(), f"{bad!r} was not rejected: {msg}"
+    assert board.counts()["assets"] == 0
+
+
+def test_record_asset_data_types_still_allow_hostless_values(tmp_path):
+    """A param/endpoint value has no reachable host and must not be scope-rejected."""
+    board = EngagementState()
+    deps = _deps(tmp_path, blackboard=board, include=("t.lab",))
+    assert "Recorded" in record_asset(deps, "param", "redirect_uri")
+    assert "Recorded" in record_asset(deps, "endpoint", "/api/v1/users")
+
+
+def test_record_asset_host_like_accepts_in_scope(tmp_path):
+    board = EngagementState()
+    deps = _deps(tmp_path, blackboard=board, include=("t.lab",))
+    assert "Recorded" in record_asset(deps, "host", "t.lab")
+
+
+def test_record_credential_rejects_ipv6_out_of_scope(tmp_path):
+    board = EngagementState()
+    deps = _deps(tmp_path, blackboard=board, include=("t.lab",))
+    msg = record_credential(deps, kind="password", secret="p", username="a", host="2001:db8::1")
+    assert "scope" in msg.lower() or "refused" in msg.lower()
+    assert board.counts()["credentials"] == 0
+
+
+def test_post_task_rejects_ipv6_out_of_scope_target(tmp_path):
+    queue = TaskQueue()
+    deps = _deps(tmp_path, task_queue=queue, role="lead", can_delegate=True, include=("t.lab",))
+    msg = post_task(deps, "network", "enum", target="[2001:db8::1]:443")
+    assert "scope" in msg.lower() or "refused" in msg.lower()
+    assert queue.pending_count() == 0

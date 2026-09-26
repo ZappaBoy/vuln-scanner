@@ -28,6 +28,11 @@ _MAX_RESP_BYTES = 16384  # cap captured response body (matches sandbox _OUT_TRUN
 _SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 _HTTP_METHODS = _SAFE_METHODS | {"POST", "PUT", "PATCH", "DELETE"}
 _STATE_LIST_LIMIT = 50  # cap items returned by read_state so shared state can't blow the context
+_MAX_OBJECTIVE_LEN = 2000  # cap a delegated objective so a runaway agent can't post huge tasks
+# record_asset types whose value IS a host/URL, so it must pass the fail-closed
+# target scope check.  Other types (param, path, endpoint, tech, email) carry no
+# reachable host and use the best-effort check instead.
+_HOST_LIKE_ASSET_TYPES = {"host", "hostname", "subdomain", "domain", "ip", "url", "vhost", "live_host"}
 
 
 def _remaining_timeout(deps: AgentDeps, default: int) -> int:
@@ -647,7 +652,10 @@ def record_asset(deps: AgentDeps, asset_type: str, value: str) -> str:
         return "No shared blackboard available (running solo)."
 
     try:
-        deps.assert_in_scope(value)
+        if asset_type.strip().lower() in _HOST_LIKE_ASSET_TYPES:
+            deps.assert_target_in_scope(value)
+        else:
+            deps.assert_in_scope(value)
     except ScopeViolation as exc:
         deps.audit.record("record_asset", refused="scope", value=value)
         return str(exc)
@@ -677,7 +685,7 @@ def record_credential(
 
     if host:
         try:
-            deps.assert_in_scope(host)
+            deps.assert_target_in_scope(host)
         except ScopeViolation as exc:
             deps.audit.record("record_credential", refused="scope", host=host)
             return str(exc)
@@ -716,11 +724,12 @@ def post_task(deps: AgentDeps, role: str, objective: str, target: str = "") -> s
 
     if target:
         try:
-            deps.assert_in_scope(target)
+            deps.assert_target_in_scope(target)
         except ScopeViolation as exc:
             deps.audit.record("post_task", refused="scope", target=target)
             return str(exc)
 
+    objective = objective.strip()[:_MAX_OBJECTIVE_LEN]
     task = deps.task_queue.post(
         target_role, objective, target=target, created_by=deps.agent.name, parent=deps.current_task
     )

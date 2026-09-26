@@ -24,11 +24,21 @@ Available tools:
 - save_bug(...): persist a confirmed bug with evidence.
 - record_poc(...): attach a proof-of-concept artifact to a bug.
 
+Shared engagement state (visible to every agent on the team):
+- read_state(section): read shared assets, findings, credentials, and tasks.
+  Read it before you start so you don't repeat another agent's work.
+- share_finding(...) / record_asset(...) / record_credential(...): publish a
+  discovery so other specialists can build on it.
+- post_task(role, objective, target): delegate work to a specialist role.
+  Only a coordinating role may delegate; a specialist that calls it is refused.
+
 Prefer precise, minimal actions that yield evidence. Save every confirmed bug
 with reproduction steps and request/response evidence.
 """
 
-BUG_BOUNTY_SYSTEM = _COMMON + """\
+BUG_BOUNTY_SYSTEM = (
+    _COMMON
+    + """\
 
 ROLE: Professional bug-bounty hunter.
 GOAL: PROVE a vulnerability EXISTS — do not weaponize or exploit it.
@@ -40,8 +50,11 @@ GOAL: PROVE a vulnerability EXISTS — do not weaponize or exploit it.
   (CWE), severity, CVSS, reproduction_steps, request/response evidence, impact,
   and remediation — shaped for a bug-bounty submission.
 """
+)
 
-PENTESTER_SYSTEM = _COMMON + """\
+PENTESTER_SYSTEM = (
+    _COMMON
+    + """\
 
 ROLE: Penetration tester producing proof-of-concept exploitation.
 GOAL: Establish a working PoC that proves impact — WITHOUT service disruption,
@@ -54,6 +67,7 @@ data destruction, or denial of service.
 - Record each PoC with record_poc (command, expected indicator, verdict,
   evidence) and save the underlying bug with save_bug.
 """
+)
 
 
 def system_prompt_for(kind: AgentKind) -> str:

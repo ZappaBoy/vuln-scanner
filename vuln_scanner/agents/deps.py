@@ -16,7 +16,9 @@ from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentPoc, Agen
 from vuln_scanner.scope import ScopeValidator
 
 if TYPE_CHECKING:
+    from vuln_scanner.agents.blackboard import EngagementState
     from vuln_scanner.agents.oob import OobSession
+    from vuln_scanner.agents.tasks import Task, TaskQueue
 
 
 class ScopeViolation(Exception):
@@ -59,15 +61,25 @@ class AgentDeps:
     # Never surfaced into the report by default — pure inter-tool-call memory.
     notes: list[dict] = field(default_factory=list)
 
+    # ── Multi-agent collaboration (None on the single-agent path) ─────────────
+    # Shared blackboard and task queue for a multi-agent engagement, plus this
+    # agent's role and the task it is currently handling.  ``can_delegate`` is
+    # the enforced privilege boundary: only a delegating role (the lead) may
+    # post tasks for other agents.  All default to the safe, non-collaborative
+    # value so a solo agent behaves exactly as before.
+    blackboard: "EngagementState | None" = None
+    task_queue: "TaskQueue | None" = None
+    role: str = ""
+    current_task: "Task | None" = None
+    can_delegate: bool = False
+
     # ── Gates ────────────────────────────────────────────────────────────────
 
     def require_container(self, action: str) -> None:
         """Refuse a container-only action outside the Docker image."""
         if not is_in_container():
             self.audit.record(action, refused="not_in_container")
-            raise ContainerGateError(
-                f"{action} is only allowed inside the container (VS_IN_CONTAINER=1)."
-            )
+            raise ContainerGateError(f"{action} is only allowed inside the container (VS_IN_CONTAINER=1).")
 
     def past_deadline(self) -> bool:
         return self.deadline is not None and time.monotonic() >= self.deadline

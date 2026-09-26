@@ -150,6 +150,11 @@ _EXPECTED_TOOLS = {
     "oob_check",
     "note",
     "recall",
+    "read_state",
+    "share_finding",
+    "record_asset",
+    "record_credential",
+    "post_task",
 }
 
 

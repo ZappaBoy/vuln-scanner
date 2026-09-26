@@ -321,6 +321,43 @@ class AgentOrchestrator:
         def _recall(ctx: RunContext[AgentDeps], tag: str = "") -> str:
             return agent_tools.recall(ctx.deps, tag)
 
+        def _read_state(ctx: RunContext[AgentDeps], section: str = "") -> dict:
+            return agent_tools.read_state(ctx.deps, section)
+
+        def _share_finding(
+            ctx: RunContext[AgentDeps],
+            title: str,
+            severity: str = "info",
+            target: str = "",
+            affected_url: str = "",
+            summary: str = "",
+            vuln_class: list[str] | None = None,
+        ) -> str:
+            return agent_tools.share_finding(
+                ctx.deps,
+                title=title,
+                severity=severity,
+                target=target,
+                affected_url=affected_url,
+                summary=summary,
+                vuln_class=vuln_class,
+            )
+
+        def _record_asset(ctx: RunContext[AgentDeps], asset_type: str, value: str) -> str:
+            return agent_tools.record_asset(ctx.deps, asset_type, value)
+
+        def _record_credential(
+            ctx: RunContext[AgentDeps],
+            kind: str,
+            secret: str,
+            username: str = "",
+            host: str = "",
+        ) -> str:
+            return agent_tools.record_credential(ctx.deps, kind=kind, secret=secret, username=username, host=host)
+
+        def _post_task(ctx: RunContext[AgentDeps], role: str, objective: str, target: str = "") -> str:
+            return agent_tools.post_task(ctx.deps, role, objective, target)
+
         tools = [
             Tool(_list_tools, takes_ctx=True, name="list_tools"),
             Tool(_run_tool, takes_ctx=True, name="run_tool"),
@@ -332,6 +369,11 @@ class AgentOrchestrator:
             Tool(_oob_check, takes_ctx=True, name="oob_check"),
             Tool(_note, takes_ctx=True, name="note"),
             Tool(_recall, takes_ctx=True, name="recall"),
+            Tool(_read_state, takes_ctx=True, name="read_state"),
+            Tool(_share_finding, takes_ctx=True, name="share_finding"),
+            Tool(_record_asset, takes_ctx=True, name="record_asset"),
+            Tool(_record_credential, takes_ctx=True, name="record_credential"),
+            Tool(_post_task, takes_ctx=True, name="post_task"),
         ]
 
         system = agent_cfg.system_prompt or system_prompt_for(agent_cfg.kind)

@@ -56,6 +56,6 @@ class InferTool(AbstractTool):
                             raw=bug,
                         )
                     )
-            except json.JSONDecodeError, OSError:
+            except (json.JSONDecodeError, OSError):
                 pass
         return findings

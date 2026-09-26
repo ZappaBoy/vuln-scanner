@@ -4,6 +4,8 @@ on:
   push:
     branches: ["**"]
   pull_request:
+  # Reused by release.yml as a gate before bumping/releasing.
+  workflow_call:
 
 # Cancel superseded runs on the same ref.
 concurrency:

@@ -19,6 +19,8 @@ Available tools:
   capture raw request/response evidence (the primary in-band probe).
 - run_code(language, code): run code in the hardened sandbox for proof.
 - oob_get_callback() / oob_check(): out-of-band (OAST) callback for blind bugs.
+- note(text, tag) / recall(tag): scratchpad — record findings-in-progress
+  (endpoints, params, hypotheses) and recall them before summarizing.
 - save_bug(...): persist a confirmed bug with evidence.
 - record_poc(...): attach a proof-of-concept artifact to a bug.
 

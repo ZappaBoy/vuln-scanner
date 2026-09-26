@@ -5,7 +5,9 @@ from pathlib import Path
 from vuln_scanner.agents.agent_tools import (
     http_request,
     list_tools,
+    note,
     oob_get_callback,
+    recall,
     record_poc,
     run_code,
     run_tool,
@@ -330,3 +332,93 @@ def test_http_request_body_truncated(tmp_path, monkeypatch):
     assert out["truncated"] is True
     assert len(out["body"]) == _MAX_RESP_BYTES
     assert "truncated" in out["response"].lower()
+
+
+# ── note / recall (scratchpad) ──────────────────────────────────────────────────
+
+
+def test_note_appends_and_increments_seq(tmp_path):
+    deps = _deps(tmp_path)
+    assert note(deps, "found /admin endpoint", tag="recon") == "Noted #1 [recon]"
+    assert note(deps, "param id looks injectable") == "Noted #2"
+    assert len(deps.notes) == 2
+    assert deps.notes[0] == {
+        "seq": 1,
+        "tag": "recon",
+        "text": "found /admin endpoint",
+        "ts": deps.notes[0]["ts"],
+    }
+    assert deps.tool_calls == 2  # each note counts against the ceiling
+
+
+def test_note_ignores_empty_text(tmp_path):
+    deps = _deps(tmp_path)
+    out = note(deps, "   ")
+    assert "Empty note" in out
+    assert deps.notes == []
+
+
+def test_recall_returns_all_notes(tmp_path):
+    deps = _deps(tmp_path)
+    note(deps, "a", tag="recon")
+    note(deps, "b")
+    out = recall(deps)
+    assert out == "#1 [recon]: a\n#2: b"
+
+
+def test_recall_filters_by_tag(tmp_path):
+    deps = _deps(tmp_path)
+    note(deps, "a", tag="recon")
+    note(deps, "b", tag="probe")
+    note(deps, "c", tag="recon")
+    out = recall(deps, tag="recon")
+    assert "a" in out and "c" in out and "b" not in out
+
+
+def test_recall_empty_state(tmp_path):
+    deps = _deps(tmp_path)
+    assert "No notes recorded" in recall(deps)
+    assert "tagged [x]" in recall(deps, tag="x")
+
+
+def test_note_ceiling_blocks(tmp_path):
+    deps = _deps(tmp_path, max_tool_calls=0)
+    out = note(deps, "should be blocked")
+    assert "ceiling" in out.lower()
+    assert deps.notes == []
+
+
+def test_recall_ceiling_blocks(tmp_path):
+    deps = _deps(tmp_path, max_tool_calls=0)
+    out = recall(deps)
+    assert "ceiling" in out.lower()
+
+
+def test_note_respects_allow_deny_filter(tmp_path):
+    deps = _deps(tmp_path)
+    deps.agent.denied_tools = ["note"]
+    out = note(deps, "x")
+    assert "denied" in out.lower()
+    assert deps.notes == []
+
+
+def test_note_count_cap_enforced(tmp_path):
+    from vuln_scanner.agents.agent_tools import _MAX_NOTES
+
+    deps = _deps(tmp_path, max_tool_calls=_MAX_NOTES + 5)
+    for _ in range(_MAX_NOTES):
+        note(deps, "x")
+    assert len(deps.notes) == _MAX_NOTES
+    out = note(deps, "one too many")
+    assert "full" in out.lower()
+    assert len(deps.notes) == _MAX_NOTES
+
+
+def test_note_text_truncated(tmp_path):
+    from vuln_scanner.agents.agent_tools import _MAX_NOTE_LEN
+
+    deps = _deps(tmp_path)
+    note(deps, "B" * (_MAX_NOTE_LEN + 500))
+    stored = deps.notes[0]["text"]
+    assert "truncated" in stored
+    assert stored.startswith("B" * _MAX_NOTE_LEN)

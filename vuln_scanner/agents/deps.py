@@ -55,6 +55,9 @@ class AgentDeps:
     findings: list[AgentFinding] = field(default_factory=list)
     pocs: list[AgentPoc] = field(default_factory=list)
     exploit_plan: list[str] = field(default_factory=list)
+    # Agent scratchpad: timestamped working-memory notes ({seq, tag, text, ts}).
+    # Never surfaced into the report by default — pure inter-tool-call memory.
+    notes: list[dict] = field(default_factory=list)
 
     # ── Gates ────────────────────────────────────────────────────────────────
 

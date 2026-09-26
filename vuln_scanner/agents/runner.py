@@ -315,6 +315,12 @@ class AgentOrchestrator:
         def _oob_check(ctx: RunContext[AgentDeps]) -> dict:
             return agent_tools.oob_check(ctx.deps)
 
+        def _note(ctx: RunContext[AgentDeps], text: str, tag: str = "") -> str:
+            return agent_tools.note(ctx.deps, text, tag)
+
+        def _recall(ctx: RunContext[AgentDeps], tag: str = "") -> str:
+            return agent_tools.recall(ctx.deps, tag)
+
         tools = [
             Tool(_list_tools, takes_ctx=True, name="list_tools"),
             Tool(_run_tool, takes_ctx=True, name="run_tool"),
@@ -324,6 +330,8 @@ class AgentOrchestrator:
             Tool(_record_poc, takes_ctx=True, name="record_poc"),
             Tool(_oob_get_callback, takes_ctx=True, name="oob_get_callback"),
             Tool(_oob_check, takes_ctx=True, name="oob_check"),
+            Tool(_note, takes_ctx=True, name="note"),
+            Tool(_recall, takes_ctx=True, name="recall"),
         ]
 
         system = agent_cfg.system_prompt or system_prompt_for(agent_cfg.kind)

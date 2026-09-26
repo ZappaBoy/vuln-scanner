@@ -10,6 +10,7 @@ import logging
 import shutil
 import time
 
+from vuln_scanner.agents.audit import _MAX_FIELD, _truncate
 from vuln_scanner.agents.deps import AgentDeps, ContainerGateError, ScopeViolation
 from vuln_scanner.agents.guards import denylist_check
 from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentPoc
@@ -20,6 +21,8 @@ log = logging.getLogger(__name__)
 
 _DEFAULT_EXEC_TIMEOUT = 300
 _DEFAULT_HTTP_TIMEOUT = 30
+_MAX_NOTES = 200  # cap scratchpad size so a runaway agent can't blow memory/tokens
+_MAX_NOTE_LEN = _MAX_FIELD  # per-note text cap (reuse audit truncation width)
 _MAX_RESP_BYTES = 16384  # cap captured response body (matches sandbox _OUT_TRUNCATE)
 _SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 _HTTP_METHODS = _SAFE_METHODS | {"POST", "PUT", "PATCH", "DELETE"}
@@ -461,3 +464,60 @@ def oob_check(deps: AgentDeps) -> dict:
     new = deps.oob_session.check()
     deps.audit.record("oob_check", new_interactions=len(new))
     return {"interactions": new, "count": len(new)}
+
+
+# ── note / recall (agent scratchpad) ───────────────────────────────────────────
+
+
+def note(deps: AgentDeps, text: str, tag: str = "") -> str:
+    """Record a working-memory note to the run's scratchpad.
+
+    A lightweight, persistent scratchpad for intermediate observations
+    (discovered endpoints, params, hypotheses, credentials-to-retest) that
+    should survive across tool calls without being burned into the final
+    summary.  Network-free — it never contacts a host, so there is no scope or
+    container gate — but it still goes through :func:`_precheck` (ceiling/
+    deadline, allow/deny filter) and is audited.
+    """
+    blocked = _precheck(deps, "note")
+    if blocked:
+        return blocked
+
+    text = (text or "").strip()
+    if not text:
+        return "Empty note ignored — pass text to record."
+    if len(deps.notes) >= _MAX_NOTES:
+        deps.audit.record("note", refused="cap", cap=_MAX_NOTES)
+        return f"Scratchpad full ({_MAX_NOTES} notes) — recall and consolidate before adding more."
+
+    tag = (tag or "").strip()
+    text = _truncate(text)  # caps at _MAX_NOTE_LEN and appends a truncation marker
+    seq = len(deps.notes) + 1
+    entry = {"seq": seq, "tag": tag, "text": text, "ts": time.time()}
+    deps.notes.append(entry)
+    deps.audit.record("note", seq=seq, tag=tag, text=text)
+    return f"Noted #{seq}" + (f" [{tag}]" if tag else "")
+
+
+def recall(deps: AgentDeps, tag: str = "") -> str:
+    """Return the scratchpad notes recorded so far, oldest first.
+
+    Optionally filter by *tag*.  Read these back before summarizing so nothing
+    discovered mid-run is lost when the context window rolls.
+    """
+    blocked = _precheck(deps, "recall")
+    if blocked:
+        return blocked
+
+    tag = (tag or "").strip()
+    entries = [n for n in deps.notes if not tag or n["tag"] == tag]
+    deps.audit.record("recall", tag=tag, count=len(entries))
+    if not entries:
+        scope = f" tagged [{tag}]" if tag else ""
+        return f"No notes recorded{scope} yet."
+
+    lines = [
+        f"#{n['seq']}" + (f" [{n['tag']}]" if n["tag"] else "") + f": {n['text']}"
+        for n in entries
+    ]
+    return "\n".join(lines)

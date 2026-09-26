@@ -42,13 +42,13 @@ _MAX_STATE_ASSETS = 25
 
 class Supervisor:
     def __init__(self, orchestrator: "AgentOrchestrator", cfg: OrchestrationConfig) -> None:
-        self._orch = orchestrator
+        self._orchestrator = orchestrator
         self._cfg = cfg
         self._host_locks: dict[str, asyncio.Lock] = {}
         self._runs = 0  # specialist runs so far (bounded by max_agent_runs)
 
     async def orchestrate(self, assessment: "Assessment") -> list[AgentReport]:
-        blackboard = self._orch.new_blackboard()
+        blackboard = self._orchestrator.new_blackboard()
         queue = TaskQueue(max_tasks=self._cfg.max_tasks, max_depth=self._cfg.max_depth)
         self._seed_blackboard(blackboard, assessment)
 
@@ -62,7 +62,7 @@ class Supervisor:
 
             lead_prompt = self._lead_prompt(assessment, blackboard, round_num)
             log.info("Supervisor: round %d — lead planning.", round_num)
-            lead_report = await self._orch.run_role_agent(
+            lead_report = await self._orchestrator.run_role_agent(
                 lead_role, lead_prompt, blackboard=blackboard, task_queue=queue, label=f"lead-r{round_num}"
             )
             reports.append(lead_report)
@@ -97,7 +97,7 @@ class Supervisor:
 
         semaphore = asyncio.Semaphore(max(1, self._cfg.max_concurrent))
         results = await asyncio.gather(*[self._run_task(task, queue, blackboard, semaphore) for task in claimed])
-        return [r for r in results if r is not None]
+        return [report for report in results if report is not None]
 
     async def _run_task(
         self,
@@ -116,7 +116,7 @@ class Supervisor:
         async with semaphore:
             async with self._host_lock(task.target):
                 try:
-                    report = await self._orch.run_role_agent(
+                    report = await self._orchestrator.run_role_agent(
                         role,
                         prompt,
                         blackboard=blackboard,
@@ -153,14 +153,14 @@ class Supervisor:
     # ── Seeding & prompts ────────────────────────────────────────────────────
 
     def _seed_blackboard(self, blackboard: "EngagementState", assessment: "Assessment") -> None:
-        for host in sorted(self._orch._allowlist):
+        for host in sorted(self._orchestrator._allowlist):
             blackboard.add_asset("host", host, source="scope")
         # Defense in depth: only seed in-scope scan targets, so an out-of-scope
         # target from an imported/foreign finding is never surfaced to a
         # specialist (the tool layer re-validates scope regardless).
         for _tool, finding in assessment.all_findings:
             target = finding.target or ""
-            if target and self._orch._scope.is_in_scope(target, discovered=True):
+            if target and self._orchestrator._scope.is_in_scope(target, discovered=True):
                 blackboard.add_asset("target", target, source=f"scan:{finding.tool}")
 
     def _lead_prompt(self, assessment: "Assessment", blackboard: "EngagementState", round_num: int) -> str:
@@ -173,7 +173,7 @@ class Supervisor:
             "engagement, then post only NEW, well-scoped work. Reply with a short "
             "plan summary when done.",
             "",
-            f"In-scope hosts: {', '.join(sorted(self._orch._allowlist)) or '(scope config)'}",
+            f"In-scope hosts: {', '.join(sorted(self._orchestrator._allowlist)) or '(scope config)'}",
             f"Shared state so far: {blackboard.counts()}",
             "",
             "Findings already reported by automated tools:",
@@ -190,7 +190,7 @@ class Supervisor:
 
     def _specialist_prompt(self, task: Task, blackboard: "EngagementState") -> str:
         assets = blackboard.assets()[:_MAX_STATE_ASSETS]
-        asset_lines = "\n".join(f"- {a.type}: {a.value}" for a in assets) or "- (none yet)"
+        asset_lines = "\n".join(f"- {asset.type}: {asset.value}" for asset in assets) or "- (none yet)"
         target = task.target or "(see objective / shared state)"
         return (
             f"Delegated task {task.id} for role '{task.role}'.\n"

@@ -24,26 +24,33 @@ from pydantic import BaseModel, Field
 
 
 class TaskStatus(str, Enum):
-    PENDING = "pending"  # posted, not yet claimed
-    CLAIMED = "claimed"  # a specialist is working it
-    COMPLETED = "completed"  # finished with a result summary
-    FAILED = "failed"  # abandoned with a reason
+    """Lifecycle of a delegated task.
+
+    ``PENDING`` — posted, not yet claimed; ``CLAIMED`` — a specialist is working
+    it; ``COMPLETED`` — finished with a result summary; ``FAILED`` — abandoned
+    with a reason.
+    """
+
+    PENDING = "pending"
+    CLAIMED = "claimed"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 
 class Task(BaseModel):
     """A unit of work addressed to a specialist role."""
 
-    id: str
-    role: str  # target specialist role name (see roles.py); "" = any
-    objective: str
-    target: str = ""  # scope hint; re-validated against scope at execution time
-    status: TaskStatus = TaskStatus.PENDING
-    created_by: str = ""  # agent name that posted it
-    claimed_by: str = ""  # agent name that claimed it
-    result_summary: str = ""
-    parent_id: str = ""  # the task being handled when this was posted (delegation edge)
-    depth: int = 0  # delegation depth; root tasks (posted by the lead) are depth 1
-    ts: float = Field(default_factory=time.time)
+    id: str = Field(description="Stable task identifier, e.g. task-0001.")
+    role: str = Field(description="Target specialist role name (see roles.py); empty means any.")
+    objective: str = Field(description="What the specialist should accomplish.")
+    target: str = Field("", description="Scope hint; re-validated against scope at execution time.")
+    status: TaskStatus = Field(TaskStatus.PENDING, description="Current lifecycle status.")
+    created_by: str = Field("", description="Agent name that posted the task.")
+    claimed_by: str = Field("", description="Agent name that claimed the task.")
+    result_summary: str = Field("", description="Result or failure reason once finished.")
+    parent_id: str = Field("", description="Task being handled when this was posted (delegation edge).")
+    depth: int = Field(0, description="Delegation depth; root tasks posted by the lead are depth 1.")
+    ts: float = Field(default_factory=time.time, description="Unix timestamp when the task was posted.")
 
 
 class TaskQueue:
@@ -102,12 +109,12 @@ class TaskQueue:
         """
         want = role.strip()
         with self._lock:
-            pending = [t for t in self._tasks.values() if t.status == TaskStatus.PENDING]
+            pending = [task for task in self._tasks.values() if task.status == TaskStatus.PENDING]
             if want:
-                pending = [t for t in pending if t.role == want or t.role == ""]
+                pending = [task for task in pending if task.role == want or task.role == ""]
             if not pending:
                 return None
-            task = min(pending, key=lambda t: t.ts)
+            task = min(pending, key=lambda task: task.ts)
             task.status = TaskStatus.CLAIMED
             task.claimed_by = claimed_by
             return task
@@ -132,10 +139,10 @@ class TaskQueue:
         with self._lock:
             tasks = list(self._tasks.values())
         if status is not None:
-            tasks = [t for t in tasks if t.status == status]
+            tasks = [task for task in tasks if task.status == status]
         if want_role:
-            tasks = [t for t in tasks if t.role == want_role]
-        return sorted(tasks, key=lambda t: t.ts)
+            tasks = [task for task in tasks if task.role == want_role]
+        return sorted(tasks, key=lambda task: task.ts)
 
     def pending_count(self, role: str = "") -> int:
         return len(self.list(status=TaskStatus.PENDING, role=role))
@@ -143,4 +150,6 @@ class TaskQueue:
     def has_open_work(self) -> bool:
         """True while any task is still pending or claimed (drives the scheduler)."""
         with self._lock:
-            return any(t.status in (TaskStatus.PENDING, TaskStatus.CLAIMED) for t in self._tasks.values())
+            return any(
+                task.status in (TaskStatus.PENDING, TaskStatus.CLAIMED) for task in self._tasks.values()
+            )

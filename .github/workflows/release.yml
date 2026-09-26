@@ -1,0 +1,162 @@
+name: Release
+
+# Bumps the project version (pyproject.toml + uv.lock, semver), tags it,
+# publishes a GitHub release and builds/pushes the Docker image.
+#
+# Triggers:
+#   - push to main: the bump level is derived from the Conventional Commits
+#     since the last `v*` tag:
+#       <type>!: / BREAKING CHANGE  -> major
+#       feat:                       -> minor
+#       anything else               -> patch
+#   - release published (manual, from the GitHub UI/API): the release tag
+#     (e.g. `v1.4.0`) is the version. pyproject.toml is bumped to match on the
+#     default branch and the tag is moved onto that bump commit.
+#
+# Loop safety: commits, tags and releases created with GITHUB_TOKEN do not
+# trigger new workflow runs, so the bump commit / tag / release made here will
+# not re-trigger this workflow (or docker.yml). The `chore(release):` guard is
+# an extra safety net in case a PAT is ever used instead.
+#
+# NOTE: if `main` is branch-protected, allow github-actions[bot] to bypass the
+# protection (or use a PAT/GitHub App token) so the bump commit can be pushed.
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+
+# Never run two releases at once. If several merges queue up, GitHub keeps only
+# the latest pending run; that's fine because each run bumps based on *all*
+# commits since the last tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    if: >-
+      github.event_name == 'release' ||
+      !startsWith(github.event.head_commit.message, 'chore(release):')
+    uses: ./.github/workflows/ci.yml
+
+  bump:
+    name: Bump version and release
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      sha: ${{ steps.commit.outputs.sha }}
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Compute next version
+        id: version
+        env:
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          semver='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+
+          if [ "$EVENT" = "release" ]; then
+            version="${RELEASE_TAG#v}"
+            if ! [[ "$version" =~ $semver ]]; then
+              echo "::error::Release tag '$RELEASE_TAG' is not a semantic version (expected vMAJOR.MINOR.PATCH)."
+              exit 1
+            fi
+            uv version "$version" --no-sync
+          else
+            last_tag="$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)"
+            range="${last_tag:+$last_tag..}HEAD"
+            subjects="$(git log --format='%s' "$range")"
+            bodies="$(git log --format='%b' "$range")"
+
+            if grep -qE '^[a-z]+(\([^)]*\))?!:' <<<"$subjects" || grep -qE '^BREAKING[ -]CHANGE:' <<<"$bodies"; then
+              bump=major
+            elif grep -qE '^feat(\([^)]*\))?:' <<<"$subjects"; then
+              bump=minor
+            else
+              bump=patch
+            fi
+            echo "Last tag: ${last_tag:-<none>} -> bump: $bump"
+            uv version --bump "$bump" --no-sync
+            version="$(uv version --short)"
+          fi
+
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null && [ "$EVENT" != "release" ]; then
+            echo "::error::Tag v$version already exists."
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT" = "release" ]; then
+            echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit, tag and push
+        id: commit
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "Version already $VERSION, nothing to commit."
+          else
+            git commit -am "chore(release): $TAG"
+            git push origin "HEAD:$BRANCH"
+          fi
+
+          # For a manual release the tag already exists: move it onto the bump
+          # commit so the tagged source carries the matching version.
+          git tag -fa "$TAG" -m "Release $TAG"
+          if [ "$EVENT" = "release" ]; then
+            git push --force origin "refs/tags/$TAG"
+          else
+            git push origin "refs/tags/$TAG"
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: gh release create "$TAG" --title "$TAG" --generate-notes --verify-tag
+
+  docker:
+    name: Docker image
+    needs: bump
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker.yml
+    with:
+      ref: ${{ needs.bump.outputs.sha }}
+      version: ${{ needs.bump.outputs.version }}
+      push: true

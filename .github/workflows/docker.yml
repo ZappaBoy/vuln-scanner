@@ -17,11 +17,23 @@ on:
         description: "Push the built image to GHCR"
         type: boolean
         default: false
-  push:
-    tags: ["v*"]
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref/SHA to build"
+        type: string
+        required: true
+      version:
+        description: "Semantic version (without the leading v) used to tag the image"
+        type: string
+        required: true
+      push:
+        description: "Push the built image to GHCR"
+        type: boolean
+        default: true
 
 concurrency:
-  group: docker-${{ github.ref }}
+  group: docker-${{ inputs.version || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -37,6 +49,8 @@ jobs:
       IMAGE: ghcr.io/${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
 
       # Reclaim ~30 GB by removing preinstalled toolchains we don't need.
       # Necessary (but may still be insufficient) for an image this large.
@@ -51,11 +65,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Push happens on tags, or on manual dispatch when the `push` input is set.
+      # Push when the caller / manual dispatch asks for it via the `push` input.
       - name: Decide whether to push
         id: decide
+        env:
+          PUSH: ${{ inputs.push }}
         run: |
-          if [ "${{ github.event_name }}" = "push" ] || [ "${{ inputs.push }}" = "true" ]; then
+          if [ "$PUSH" = "true" ]; then
             echo "push=true" >> "$GITHUB_OUTPUT"
           else
             echo "push=false" >> "$GITHUB_OUTPUT"
@@ -74,10 +90,16 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE }}
+          # Release builds (inputs.version set): X.Y.Z, X.Y, X (not for 0.x) and
+          # latest (stable versions only). Manual builds: manual-<run id>.
+          flavor: |
+            latest=false
           tags: |
-            type=ref,event=tag
-            type=raw,value=latest,enable=${{ github.ref_type == 'tag' }}
-            type=raw,value=manual-${{ github.run_id }},enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=semver,pattern={{version}},value=${{ inputs.version }},enable=${{ inputs.version != '' }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }},enable=${{ inputs.version != '' }}
+            type=semver,pattern={{major}},value=${{ inputs.version }},enable=${{ inputs.version != '' && !startsWith(inputs.version, '0.') }}
+            type=raw,value=latest,enable=${{ inputs.version != '' && !contains(inputs.version, '-') }}
+            type=raw,value=manual-${{ github.run_id }},enable=${{ inputs.version == '' }}
 
       - name: Build image
         uses: docker/build-push-action@v6

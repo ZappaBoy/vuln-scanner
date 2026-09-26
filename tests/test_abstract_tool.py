@@ -49,19 +49,19 @@ class TestVerboseFlags:
         inp = _scan_input()
         captured_cmds = []
 
-        def fake_run(cmd, **kwargs):
+        def fake_popen(cmd, **kwargs):
             captured_cmds.append(cmd)
             m = MagicMock()
-            m.stdout = ""
-            m.stderr = ""
+            m.communicate.return_value = ("", "")
             m.returncode = 0
+            m.pid = 4321
             return m
 
-        with patch("subprocess.run", side_effect=fake_run):
+        with patch("subprocess.Popen", side_effect=fake_popen):
             with patch.object(logging.Logger, "isEnabledFor", return_value=True):
                 tool.run("http://example.com", inp)
 
-        assert captured_cmds, "subprocess.run was not called"
+        assert captured_cmds, "subprocess.Popen was not called"
         cmd = captured_cmds[0]
         assert "--quiet" not in cmd
         assert "-v" in cmd
@@ -71,15 +71,15 @@ class TestVerboseFlags:
         inp = _scan_input()
         captured_cmds = []
 
-        def fake_run(cmd, **kwargs):
+        def fake_popen(cmd, **kwargs):
             captured_cmds.append(cmd)
             m = MagicMock()
-            m.stdout = ""
-            m.stderr = ""
+            m.communicate.return_value = ("", "")
             m.returncode = 0
+            m.pid = 4321
             return m
 
-        with patch("subprocess.run", side_effect=fake_run):
+        with patch("subprocess.Popen", side_effect=fake_popen):
             with patch.object(logging.Logger, "isEnabledFor", return_value=False):
                 tool.run("http://example.com", inp)
 

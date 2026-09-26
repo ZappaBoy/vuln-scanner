@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from vuln_scanner.agents.models import AgentsConfig
     from vuln_scanner.llm.models import LLMConfig
 
 from pydantic import BaseModel, Field, field_validator
@@ -229,6 +230,8 @@ class AppLLMConfig(BaseModel):
     seed: int | None = None
     stop: list[str] | None = None
     extra_body: dict[str, Any] = Field(default_factory=dict)
+    min_severity: str = "medium"
+    log_responses: bool = True
     include_tools: list[str] = Field(default_factory=list)
     exclude_tools: list[str] = Field(default_factory=list)
     include_categories: list[str] = Field(default_factory=list)
@@ -239,6 +242,21 @@ class AppLLMConfig(BaseModel):
     category_features: dict[str, Any] = Field(default_factory=dict)
     prompts: dict[str, str] = Field(default_factory=dict)
     poc: dict[str, Any] = Field(default_factory=dict)
+
+
+class AppAgentsConfig(BaseModel):
+    """Thin shim for the agentic layer, embedded in AppConfig.
+
+    Stored as raw dict-compatible fields so it can live in AppConfig without
+    importing the pydantic-ai / openai runtime.  Converted to the typed
+    ``AgentsConfig`` lazily via ``AppConfig.build_agents_config()``.
+    """
+
+    enabled: bool = False
+    scope_enforcement: bool = True
+    agents: list[dict[str, Any]] = Field(default_factory=list)
+    sandbox: dict[str, Any] = Field(default_factory=dict)
+    submission: dict[str, Any] = Field(default_factory=dict)
 
 
 class AppConfig(BaseModel):
@@ -254,6 +272,7 @@ class AppConfig(BaseModel):
     nuclei: NucleiConfig = Field(default_factory=NucleiConfig)
     recon: ReconConfig = Field(default_factory=ReconConfig)
     chaining: ChainingConfig = Field(default_factory=ChainingConfig)
+    agents: AppAgentsConfig = Field(default_factory=AppAgentsConfig)
 
     def build_llm_config(self) -> "LLMConfig":
         """Convert AppLLMConfig → typed LLMConfig (lazy, avoids circular imports)."""
@@ -276,3 +295,9 @@ class AppConfig(BaseModel):
             prompts=LLMPrompts(**prompts_data) if prompts_data else LLMPrompts(),
             poc=PocConfig(**poc_data) if poc_data else PocConfig(),
         )
+
+    def build_agents_config(self) -> "AgentsConfig":
+        """Convert AppAgentsConfig → typed AgentsConfig (lazy import)."""
+        from vuln_scanner.agents.models import AgentsConfig
+
+        return AgentsConfig.model_validate(self.agents.model_dump())

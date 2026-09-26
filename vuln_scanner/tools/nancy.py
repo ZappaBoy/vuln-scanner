@@ -53,7 +53,7 @@ class NancyTool(AbstractTool):
                             raw=vuln,
                         )
                     )
-        except json.JSONDecodeError, ValueError:
+        except (json.JSONDecodeError, ValueError):
             pass
         return findings
 

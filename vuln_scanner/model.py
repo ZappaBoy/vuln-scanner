@@ -7,6 +7,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from vuln_scanner.agents.models import AgentReport
 from vuln_scanner.tools.enums import ScanStatus, Severity
 from vuln_scanner.tools.models import Finding, ScanResult
 
@@ -132,6 +133,7 @@ class Assessment(BaseModel):
     poc_asset_paths: list[str] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
     chain_edges: list[ChainEdge] = Field(default_factory=list)
+    agent_reports: list[AgentReport] = Field(default_factory=list)
 
     @classmethod
     def from_results(
@@ -145,6 +147,7 @@ class Assessment(BaseModel):
         chain_edges: list[ChainEdge] | None = None,
         assets_by_type: dict[str, int] | None = None,
         waves_run: int = 0,
+        agent_reports: list[AgentReport] | None = None,
     ) -> "Assessment":
         stats = _compute_stats(results)
         if assets_by_type:
@@ -158,7 +161,20 @@ class Assessment(BaseModel):
             poc_asset_paths=poc_asset_paths or [],
             metadata=metadata or {},
             chain_edges=chain_edges or [],
+            agent_reports=agent_reports or [],
         )
+
+    def refresh_stats(self) -> None:
+        """Recompute stats from current results, preserving chaining fields.
+
+        Call after mutating ``results`` (e.g. bridging in agent findings) so
+        severity counts, tool counts, and dedup totals stay correct.
+        """
+        assets_by_type = self.stats.assets_by_type
+        waves_run = self.stats.waves_run
+        self.stats = _compute_stats(self.results)
+        self.stats.assets_by_type = assets_by_type
+        self.stats.waves_run = waves_run
 
     @property
     def all_findings(self) -> list[tuple[str, Finding]]:

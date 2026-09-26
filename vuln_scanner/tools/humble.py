@@ -56,7 +56,7 @@ class HumbleTool(AbstractTool):
         try:
             data = json.loads(raw)
             return self._parse_json(data, target)
-        except json.JSONDecodeError, ValueError:
+        except (json.JSONDecodeError, ValueError):
             pass
 
         # Fall back to text output parsing

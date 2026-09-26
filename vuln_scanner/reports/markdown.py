@@ -155,6 +155,8 @@ class MarkdownReporter(AbstractReporter):
         lines += self._section_detailed_findings(target_groups, section_num=findings_section)
         if has_chain:
             lines += self._section_chain(assessment)
+        if assessment.agent_reports:
+            lines += self._section_agents(assessment)
         if has_errors:
             lines += self._appendix_errors(target_errors)
         if has_pocs:
@@ -603,6 +605,59 @@ class MarkdownReporter(AbstractReporter):
                     f"| {edge.wave} | `{edge.source_tool}` | `{edge.asset_type}` | `{val}` | `{edge.triggered_tool}` |"
                 )
             lines.append("")
+        lines += ["---", ""]
+        return lines
+
+    # ── Agent Operations ──────────────────────────────────────────────────────
+
+    def _section_agents(self, assessment: Assessment) -> list[str]:
+        lines = ["## Agent Operations", ""]
+        for r in assessment.agent_reports:
+            lines += [
+                f"### {r.agent_name} ({r.kind.value})",
+                "",
+                f"- **Status:** {r.status.value}",
+                f"- **Actions taken:** {r.actions_taken}"
+                + (f" · **Tokens:** {r.tokens_used}" if r.tokens_used else ""),
+                f"- **Duration:** {r.duration:.0f}s",
+            ]
+            if r.action_log_path:
+                lines.append(f"- **Audit log:** `{r.action_log_path}`")
+            lines.append("")
+            if r.summary:
+                lines += ["**Summary**", "", r.summary.strip(), ""]
+
+            if r.findings:
+                lines += [
+                    "**Bugs proven**",
+                    "",
+                    "| Severity | Title | Class | Affected | Verified |",
+                    "| --- | --- | --- | --- | --- |",
+                ]
+                for f in r.findings:
+                    cls = ", ".join(f.vuln_class) or "—"
+                    affected = f.affected_url or f.target or "—"
+                    lines.append(
+                        f"| {f.severity.value} | {f.title} | {cls} | `{affected}` | "
+                        f"{'yes' if f.verified else 'no'} |"
+                    )
+                lines.append("")
+
+            if r.pocs:
+                lines += ["**Proof-of-concept artifacts**", ""]
+                for p in r.pocs:
+                    ran = "executed" if p.executed else "not executed"
+                    path = f" — `{p.script_path}`" if p.script_path else ""
+                    lines.append(f"- `{p.id}` [{p.language}] {p.description} ({ran}, {p.verdict}){path}")
+                lines.append("")
+
+            if r.exploit_plan:
+                lines += ["**Dry-run exploit plan** (not executed)", ""]
+                for i, step in enumerate(r.exploit_plan, 1):
+                    step_short = step if len(step) <= 200 else step[:197] + "..."
+                    lines.append(f"{i}. `{step_short}`")
+                lines.append("")
+
         lines += ["---", ""]
         return lines
 

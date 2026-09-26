@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
 
 from vuln_scanner.model import Assessment, Cluster
+from vuln_scanner.progress import ProgressTracker
 from vuln_scanner.tools.enums import Confidence, ScanStatus, Severity, _parse_severity
 from vuln_scanner.tools.models import Finding, ScanResult
 
@@ -34,6 +35,12 @@ def _severity_at_least(finding_sev: Severity, min_sev: Severity) -> bool:
 
 _TRUNCATE_RAW = 2_000   # chars of in-memory raw_output to send to LLM (fallback)
 _LOG_TRUNCATE_LLM = 8_000  # chars read from the on-disk log file for LLM context
+
+
+def _oneline(text: str, limit: int) -> str:
+    """Collapse *text* to a single truncated line for a log record."""
+    flat = " ".join((text or "").split())
+    return flat if len(flat) <= limit else flat[: limit - 1] + "…"
 
 
 class LLMAnalyzer:
@@ -75,6 +82,7 @@ class LLMAnalyzer:
 
         # Triage & PoC design (per result, threaded)
         poc_plans: dict[str, str] = {}  # finding key → poc_plan
+        tracker = ProgressTracker(len(in_scope), phase="LLM triage")
         with ThreadPoolExecutor(max_workers=4) as ex:
             futures = {ex.submit(self._triage_result, r): r for r in in_scope}
             for fut in as_completed(futures):
@@ -82,8 +90,11 @@ class LLMAnalyzer:
                 try:
                     plans = fut.result()
                     poc_plans.update(plans)
+                    tracker.advance(ScanStatus.SUCCESS)
                 except Exception as exc:
                     log.warning("LLM triage failed for %s/%s: %s", r.tool, r.target, exc)
+                    tracker.advance(ScanStatus.FAILED)
+        tracker.close()
 
         # PoC generation (deferred to poc/generator.py, called from main.py)
         # The poc_plans dict is stored in assessment.metadata for the generator to consume.
@@ -101,6 +112,7 @@ class LLMAnalyzer:
         # Clustering + executive summary
         features = self._config.features
         if features.cluster:
+            log.info("LLM: clustering findings + generating executive summary…")
             try:
                 self._cluster(assessment)
             except Exception as exc:
@@ -187,6 +199,17 @@ class LLMAnalyzer:
                 if poc_plan and features.generate_poc:
                     poc_plans[self._finding_key(finding)] = poc_plan
 
+                if cfg.log_responses:
+                    log.info(
+                        "LLM triage · %s → conf=%s cwe=%s fp=%s%s%s",
+                        finding.title[:60],
+                        finding.confidence.value,
+                        ",".join(finding.cwe) or "-",
+                        finding.false_positive,
+                        f" cvss={finding.cvss_score}" if finding.cvss_score else "",
+                        " +poc-plan" if poc_plan else "",
+                    )
+
                 if features.false_positive_filter and finding.false_positive is True:
                     log.info("LLM suppressed false-positive: %s (target: %s)", finding.title, finding.target)
 
@@ -234,6 +257,12 @@ class LLMAnalyzer:
                 data = client.complete_json(system, user)
                 finding.mitigation = data.get("mitigation", "")
                 finding.remediation = data.get("remediation", "")
+                if cfg.log_responses and (finding.mitigation or finding.remediation):
+                    log.info(
+                        "LLM mitigation · %s → %s",
+                        finding.title[:60],
+                        _oneline(finding.mitigation or finding.remediation, 100),
+                    )
             except Exception as exc:
                 log.debug("LLM mitigation error on '%s': %s", finding.title, exc)
 
@@ -288,6 +317,11 @@ class LLMAnalyzer:
             clusters.append(cluster)
 
         assessment.clusters = clusters
+
+        if self._config.log_responses:
+            log.info("LLM clusters · %d cluster(s): %s", len(clusters), ", ".join(c.title for c in clusters) or "-")
+            if assessment.executive_summary:
+                log.info("LLM summary · %s", _oneline(assessment.executive_summary, 160))
 
     @staticmethod
     def _parse_severity(s: str) -> "Severity":  # type: ignore[return]

@@ -10,6 +10,7 @@ FROM golang:latest AS go-builder
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go install github.com/projectdiscovery/katana/cmd/katana@latest                           && \
+    go install github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest            && \
     go install github.com/securego/gosec/v2/cmd/gosec@latest                                  && \
     go install github.com/aquasecurity/kube-bench@latest                                      && \
     go install github.com/BishopFox/jsluice/cmd/jsluice@latest                               && \

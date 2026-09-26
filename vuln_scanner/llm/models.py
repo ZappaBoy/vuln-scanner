@@ -68,6 +68,10 @@ class LLMConfig(BaseModel):
     # Default "medium" means INFO and LOW findings are not sent to the LLM.
     min_severity: str = "medium"
 
+    # Log a concise one-line summary of each LLM response as it arrives, so the
+    # user can watch the analysis progress live.  Set False to silence.
+    log_responses: bool = True
+
     # Scope filters (mirror orchestrator include/exclude semantics)
     include_tools: list[str] = Field(default_factory=list)
     exclude_tools: list[str] = Field(default_factory=list)

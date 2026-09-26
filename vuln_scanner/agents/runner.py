@@ -18,6 +18,8 @@ from vuln_scanner.agents.deps import AgentDeps
 from vuln_scanner.agents.guards import extract_hosts, is_in_container
 from vuln_scanner.agents.models import (
     AgentConfig,
+    AgentFinding,
+    AgentPoc,
     AgentReport,
     AgentsConfig,
     AgentStatus,
@@ -226,71 +228,11 @@ class AgentOrchestrator:
         def _run_code(ctx: RunContext[AgentDeps], language: str, code: str) -> dict:
             return agent_tools.run_code(ctx.deps, language, code)
 
-        def _save_bug(
-            ctx: RunContext[AgentDeps],
-            title: str,
-            severity: str = "info",
-            target: str = "",
-            affected_url: str = "",
-            affected_param: str = "",
-            vuln_class: list[str] | None = None,
-            summary: str = "",
-            reproduction_steps: list[str] | None = None,
-            request: str = "",
-            response: str = "",
-            impact: str = "",
-            remediation: str = "",
-            references: list[str] | None = None,
-            oob_evidence: str = "",
-            cvss_vector: str = "",
-            cvss_score: float | None = None,
-            confidence: str = "unknown",
-        ) -> str:
-            return agent_tools.save_bug(
-                ctx.deps,
-                title=title,
-                severity=severity,
-                target=target,
-                affected_url=affected_url,
-                affected_param=affected_param,
-                vuln_class=vuln_class,
-                summary=summary,
-                reproduction_steps=reproduction_steps,
-                request=request,
-                response=response,
-                impact=impact,
-                remediation=remediation,
-                references=references,
-                oob_evidence=oob_evidence,
-                cvss_vector=cvss_vector,
-                cvss_score=cvss_score,
-                confidence=confidence,
-            )
+        def _save_bug(ctx: RunContext[AgentDeps], bug: AgentFinding) -> str:
+            return agent_tools.save_bug(ctx.deps, bug)
 
-        def _record_poc(
-            ctx: RunContext[AgentDeps],
-            finding_title: str,
-            language: str,
-            description: str,
-            command: str = "",
-            script: str = "",
-            expected_indicator: str = "",
-            executed: bool = False,
-            verdict: str = "not_run",
-            evidence: str = "",
-        ) -> str:
-            return agent_tools.record_poc(
-                ctx.deps,
-                finding_title=finding_title,
-                language=language,
-                description=description,
-                command=command,
-                script=script,
-                expected_indicator=expected_indicator,
-                executed=executed,
-                verdict=verdict,
-                evidence=evidence,
-            )
+        def _record_poc(ctx: RunContext[AgentDeps], poc: AgentPoc, script: str = "") -> str:
+            return agent_tools.record_poc(ctx.deps, poc, script)
 
         def _oob_get_callback(ctx: RunContext[AgentDeps]) -> str:
             return agent_tools.oob_get_callback(ctx.deps)

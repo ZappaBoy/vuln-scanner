@@ -12,13 +12,16 @@ import time
 
 from vuln_scanner.agents.deps import AgentDeps, ContainerGateError, ScopeViolation
 from vuln_scanner.agents.guards import denylist_check
-from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentPoc
+from vuln_scanner.agents.models import AgentFinding, AgentKind, AgentPoc, CodeLanguage
 from vuln_scanner.agents.sandbox import run_code_sandboxed
-from vuln_scanner.tools.enums import Severity, _parse_severity
 
 log = logging.getLogger(__name__)
 
 _DEFAULT_EXEC_TIMEOUT = 300
+_POC_ID_PREFIX = "agent-poc-"
+
+_STOP_DEADLINE = "STOP: time budget exhausted — finalize and summarize your findings now."
+_STOP_CEILING = "STOP: tool-call ceiling reached — finalize and summarize your findings now."
 
 
 def _remaining_timeout(deps: AgentDeps, default: int) -> int:
@@ -32,9 +35,9 @@ def _remaining_timeout(deps: AgentDeps, default: int) -> int:
 def _precheck(deps: AgentDeps, tool: str) -> str | None:
     """Shared gate for every agent tool. Returns an error string if blocked."""
     if deps.past_deadline():
-        return "STOP: time budget exhausted — finalize and summarize your findings now."
+        return _STOP_DEADLINE
     if deps.ceiling_reached():
-        return "STOP: tool-call ceiling reached — finalize and summarize your findings now."
+        return _STOP_CEILING
     allowed = deps.agent.allowed_tools
     if allowed and tool not in allowed:
         return f"Tool '{tool}' is not permitted for this agent."
@@ -54,16 +57,15 @@ def list_tools(deps: AgentDeps, category: str = "") -> str:
     lines: list[str] = []
     for name, cls in sorted(TOOL_REGISTRY.items()):
         try:
-            inst = cls()
+            instance = cls()
         except Exception:
             continue
-        if category and inst.category != category:
+        if category and instance.category != category:
             continue
-        binary = inst.binary or name
-        present = shutil.which(binary) is not None
-        if not present:
+        binary = instance.binary or name
+        if shutil.which(binary) is None:
             continue
-        lines.append(f"{name} [{inst.category}] → {binary}")
+        lines.append(f"{name} [{instance.category}] → {binary}")
     deps.audit.record("list_tools", category=category, count=len(lines))
     return "\n".join(lines) if lines else "No installed tools match."
 
@@ -146,8 +148,7 @@ def run_code(deps: AgentDeps, language: str, code: str) -> dict:
 
     # Pentester dry-run gate: record the plan instead of executing.
     if deps.agent.kind == AgentKind.PENTESTER and not deps.live_exploit_allowed:
-        step = f"[{language}] {code}"
-        deps.exploit_plan.append(step)
+        deps.exploit_plan.append(f"[{language}] {code}")
         deps.audit.record("run_code", mode="dry_run", language=language, code=code)
         return {
             "executed": False,
@@ -185,98 +186,31 @@ def run_code(deps: AgentDeps, language: str, code: str) -> dict:
 # ── save_bug ──────────────────────────────────────────────────────────────────
 
 
-def save_bug(
-    deps: AgentDeps,
-    title: str,
-    severity: str = "info",
-    target: str = "",
-    affected_url: str = "",
-    affected_param: str = "",
-    vuln_class: list[str] | None = None,
-    summary: str = "",
-    reproduction_steps: list[str] | None = None,
-    request: str = "",
-    response: str = "",
-    impact: str = "",
-    remediation: str = "",
-    references: list[str] | None = None,
-    oob_evidence: str = "",
-    cvss_vector: str = "",
-    cvss_score: float | None = None,
-    confidence: str = "unknown",
-) -> str:
+def save_bug(deps: AgentDeps, bug: AgentFinding) -> str:
     """Persist a confirmed bug (evidence of existence) for reporting/submission."""
-    try:
-        sev: Severity = _parse_severity(severity)
-    except Exception:
-        sev = Severity.INFO
-    finding = AgentFinding(
-        title=title,
-        severity=sev,
-        target=target,
-        affected_url=affected_url,
-        affected_param=affected_param,
-        vuln_class=vuln_class or [],
-        summary=summary,
-        reproduction_steps=reproduction_steps or [],
-        request=request,
-        response=response,
-        impact=impact,
-        remediation=remediation,
-        references=references or [],
-        oob_evidence=oob_evidence,
-        cvss_vector=cvss_vector,
-        cvss_score=cvss_score,
-        confidence=confidence,
-        discovered_by=deps.agent.name,
-    )
-    deps.findings.append(finding)
-    deps.audit.record("save_bug", title=title, severity=sev.value, target=target)
-    return f"Saved bug #{len(deps.findings)}: {title} [{sev.value}]"
+    bug.discovered_by = deps.agent.name
+    deps.findings.append(bug)
+    deps.audit.record("save_bug", title=bug.title, severity=bug.severity.value, target=bug.target)
+    return f"Saved bug #{len(deps.findings)}: {bug.title} [{bug.severity.value}]"
 
 
 # ── record_poc ────────────────────────────────────────────────────────────────
 
 
-def record_poc(
-    deps: AgentDeps,
-    finding_title: str,
-    language: str,
-    description: str,
-    command: str = "",
-    script: str = "",
-    expected_indicator: str = "",
-    executed: bool = False,
-    verdict: str = "not_run",
-    evidence: str = "",
-) -> str:
-    """Record a PoC artifact; writes the script to the agent artifact dir."""
-    poc_id = f"agent-poc-{len(deps.pocs) + 1:03d}"
-    script_path = ""
+def record_poc(deps: AgentDeps, poc: AgentPoc, script: str = "") -> str:
+    """Record a PoC artifact; writes *script* (if any) to the agent artifact dir."""
+    poc.id = f"{_POC_ID_PREFIX}{len(deps.pocs) + 1:03d}"
     if script.strip():
-        ext = {"python": ".py", "bash": ".sh", "sh": ".sh"}.get(language.lower(), ".txt")
-        path = deps.artifact_dir / f"{poc_id}{ext}"
+        path = deps.artifact_dir / f"{poc.id}{CodeLanguage.extension_for(poc.language)}"
         try:
             deps.artifact_dir.mkdir(parents=True, exist_ok=True)
             path.write_text(script, encoding="utf-8")
-            script_path = str(path)
+            poc.script_path = str(path)
         except OSError as exc:  # pragma: no cover - defensive
             log.warning("PoC write failed: %s", exc)
-    poc = AgentPoc(
-        id=poc_id,
-        finding_title=finding_title,
-        language=language,
-        description=description,
-        command=command,
-        script_path=script_path,
-        expected_indicator=expected_indicator,
-        executed=executed,
-        verdict=verdict,
-        evidence=evidence,
-    )
     deps.pocs.append(poc)
-    deps.audit.record("record_poc", id=poc_id, finding=finding_title, verdict=verdict)
-    return f"Recorded {poc_id} for '{finding_title}' (verdict: {verdict})"
+    deps.audit.record("record_poc", id=poc.id, finding=poc.finding_title, verdict=poc.verdict)
+    return f"Recorded {poc.id} for '{poc.finding_title}' (verdict: {poc.verdict})"
 
 
 # ── OOB / OAST ────────────────────────────────────────────────────────────────
@@ -312,6 +246,6 @@ def oob_check(deps: AgentDeps) -> dict:
         return {"error": blocked}
     if deps.oob_session is None or not deps.oob_session.available:
         return {"interactions": [], "note": "No active OOB session."}
-    new = deps.oob_session.check()
-    deps.audit.record("oob_check", new_interactions=len(new))
-    return {"interactions": new, "count": len(new)}
+    new_interactions = deps.oob_session.check()
+    deps.audit.record("oob_check", new_interactions=len(new_interactions))
+    return {"interactions": new_interactions, "count": len(new_interactions)}

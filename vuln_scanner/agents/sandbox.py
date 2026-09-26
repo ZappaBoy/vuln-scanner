@@ -19,56 +19,41 @@ import tempfile
 import time
 from pathlib import Path
 
-from pydantic import BaseModel
-
 from vuln_scanner.agents.guards import denylist_check, is_in_container
-from vuln_scanner.agents.models import SandboxConfig
+from vuln_scanner.agents.models import CodeLanguage, SandboxConfig, SandboxResult
 
 log = logging.getLogger(__name__)
 
-# language → (file extension, interpreter argv prefix)
-_LANG_RUNNERS: dict[str, tuple[str, list[str]]] = {
-    "python": (".py", ["python3"]),
-    "bash": (".sh", ["bash"]),
-    "sh": (".sh", ["sh"]),
-    "ruby": (".rb", ["ruby"]),
-    "perl": (".pl", ["perl"]),
-    "php": (".php", ["php"]),
-    "javascript": (".js", ["node"]),
-    "node": (".js", ["node"]),
+# Interpreter argv prefix for each supported language.
+_INTERPRETERS: dict[CodeLanguage, list[str]] = {
+    CodeLanguage.PYTHON: ["python3"],
+    CodeLanguage.BASH: ["bash"],
+    CodeLanguage.SH: ["sh"],
+    CodeLanguage.RUBY: ["ruby"],
+    CodeLanguage.PERL: ["perl"],
+    CodeLanguage.PHP: ["php"],
+    CodeLanguage.JAVASCRIPT: ["node"],
+    CodeLanguage.NODE: ["node"],
 }
 
 _OUT_TRUNCATE = 16384
 
-
-class SandboxResult(BaseModel):
-    language: str
-    exit_code: int | None = None
-    stdout: str = ""
-    stderr: str = ""
-    timed_out: bool = False
-    duration: float = 0.0
-    blocked: bool = False  # refused before execution
-    block_reason: str = ""
-    network: str = ""
+_BLOCK_NOT_IN_CONTAINER = "not_in_container"
+_TEMP_WORKDIR_PREFIX = "vs_agent_sbx_"
+_TEMP_CODE_PREFIX = "code_"
 
 
-def _rlimit_preexec(cfg: SandboxConfig):
+def _rlimit_preexec(config: SandboxConfig):
     """Return a preexec_fn that applies rlimits + a new session in the child."""
 
     def _apply() -> None:  # pragma: no cover - runs in forked child
         os.setsid()
-        # CPU seconds (SIGXCPU then SIGKILL)
-        resource.setrlimit(resource.RLIMIT_CPU, (cfg.cpu_seconds, cfg.cpu_seconds + 1))
-        # Address space / virtual memory
-        mem = cfg.memory_mb * 1024 * 1024
-        resource.setrlimit(resource.RLIMIT_AS, (mem, mem))
-        # Max processes (fork-bomb guard)
-        resource.setrlimit(resource.RLIMIT_NPROC, (cfg.max_procs, cfg.max_procs))
-        # Max file size the process may create
-        fsize = cfg.file_size_mb * 1024 * 1024
-        resource.setrlimit(resource.RLIMIT_FSIZE, (fsize, fsize))
-        # No core dumps
+        resource.setrlimit(resource.RLIMIT_CPU, (config.cpu_seconds, config.cpu_seconds + 1))
+        memory_bytes = config.memory_mb * 1024 * 1024
+        resource.setrlimit(resource.RLIMIT_AS, (memory_bytes, memory_bytes))
+        resource.setrlimit(resource.RLIMIT_NPROC, (config.max_procs, config.max_procs))
+        file_size_bytes = config.file_size_mb * 1024 * 1024
+        resource.setrlimit(resource.RLIMIT_FSIZE, (file_size_bytes, file_size_bytes))
         resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
     return _apply
@@ -87,77 +72,79 @@ def run_code_sandboxed(
     Refuses (``blocked=True``) outside the container, for unsupported or
     disallowed languages, or on a denylist match — before running anything.
     """
-    lang = language.lower().strip()
+    name = language.lower().strip()
+    network = sandbox.network.value
 
     if not is_in_container():
+        return SandboxResult(language=name, blocked=True, block_reason=_BLOCK_NOT_IN_CONTAINER, network=network)
+    if allowed_languages and name not in [allowed.lower() for allowed in allowed_languages]:
         return SandboxResult(
-            language=lang, blocked=True, block_reason="not_in_container", network=sandbox.network
+            language=name, blocked=True, block_reason=f"language '{name}' not allowed", network=network
         )
-    if allowed_languages and lang not in [x.lower() for x in allowed_languages]:
+    code_language = CodeLanguage.from_name(name)
+    if code_language is None:
         return SandboxResult(
-            language=lang, blocked=True, block_reason=f"language '{lang}' not allowed", network=sandbox.network
-        )
-    if lang not in _LANG_RUNNERS:
-        return SandboxResult(
-            language=lang, blocked=True, block_reason=f"unsupported language '{lang}'", network=sandbox.network
+            language=name, blocked=True, block_reason=f"unsupported language '{name}'", network=network
         )
 
     safe, reason = denylist_check(code)
     if not safe:
         log.warning("run_code denylist block: %s", reason)
-        return SandboxResult(language=lang, blocked=True, block_reason=reason, network=sandbox.network)
+        return SandboxResult(language=name, blocked=True, block_reason=reason, network=network)
 
-    ext, runner = _LANG_RUNNERS[lang]
-    wd = workdir or Path(tempfile.mkdtemp(prefix="vs_agent_sbx_"))
-    wd.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(suffix=ext, prefix="code_", dir=str(wd))
-    os.close(fd)
-    Path(tmp).write_text(code, encoding="utf-8")
+    interpreter = _INTERPRETERS[code_language]
+    work_dir = workdir or Path(tempfile.mkdtemp(prefix=_TEMP_WORKDIR_PREFIX))
+    work_dir.mkdir(parents=True, exist_ok=True)
+    file_descriptor, code_path = tempfile.mkstemp(
+        suffix=code_language.extension, prefix=_TEMP_CODE_PREFIX, dir=str(work_dir)
+    )
+    os.close(file_descriptor)
+    Path(code_path).write_text(code, encoding="utf-8")
 
     start = time.monotonic()
     try:
-        proc = subprocess.Popen(
-            runner + [tmp],
+        process = subprocess.Popen(
+            interpreter + [code_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            cwd=str(wd),
+            cwd=str(work_dir),
             preexec_fn=_rlimit_preexec(sandbox),
         )
         try:
-            stdout, stderr = proc.communicate(timeout=sandbox.timeout)
+            stdout, stderr = process.communicate(timeout=sandbox.timeout)
         except subprocess.TimeoutExpired:
             try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                os.killpg(os.getpgid(process.pid), signal.SIGKILL)
             except (ProcessLookupError, OSError):
-                proc.kill()
-            stdout, stderr = proc.communicate()
+                process.kill()
+            stdout, stderr = process.communicate()
             return SandboxResult(
-                language=lang,
+                language=name,
                 stdout=(stdout or "")[:_OUT_TRUNCATE],
                 stderr=(stderr or "")[:_OUT_TRUNCATE],
                 timed_out=True,
                 duration=float(sandbox.timeout),
-                network=sandbox.network,
+                network=network,
             )
 
         return SandboxResult(
-            language=lang,
-            exit_code=proc.returncode,
+            language=name,
+            exit_code=process.returncode,
             stdout=(stdout or "")[:_OUT_TRUNCATE],
             stderr=(stderr or "")[:_OUT_TRUNCATE],
             duration=time.monotonic() - start,
-            network=sandbox.network,
+            network=network,
         )
     except FileNotFoundError:
         return SandboxResult(
-            language=lang,
+            language=name,
             blocked=True,
-            block_reason=f"interpreter not found: {runner[0]}",
-            network=sandbox.network,
+            block_reason=f"interpreter not found: {interpreter[0]}",
+            network=network,
         )
     finally:
         try:
-            os.unlink(tmp)
+            os.unlink(code_path)
         except OSError:
             pass

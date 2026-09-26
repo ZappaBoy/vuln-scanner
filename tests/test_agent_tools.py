@@ -12,9 +12,10 @@ from vuln_scanner.agents.agent_tools import (
 )
 from vuln_scanner.agents.audit import ActionLog
 from vuln_scanner.agents.deps import AgentDeps
-from vuln_scanner.agents.models import AgentConfig, AgentKind, AgentsConfig
+from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentKind, AgentPoc, AgentsConfig
 from vuln_scanner.agents.oob import parse_callback_domain, parse_interaction
 from vuln_scanner.scope import ScopeValidator
+from vuln_scanner.tools.enums import Severity
 
 
 def _deps(
@@ -128,11 +129,13 @@ def test_save_bug_appends(tmp_path):
     deps = _deps(tmp_path)
     msg = save_bug(
         deps,
-        title="Reflected XSS in q param",
-        severity="high",
-        target="t.lab",
-        affected_param="q",
-        reproduction_steps=["visit /?q=<script>", "observe alert"],
+        AgentFinding(
+            title="Reflected XSS in q param",
+            severity=Severity.HIGH,
+            target="t.lab",
+            affected_param="q",
+            reproduction_steps=["visit /?q=<script>", "observe alert"],
+        ),
     )
     assert "Saved bug" in msg
     assert len(deps.findings) == 1
@@ -146,11 +149,13 @@ def test_record_poc_writes_script(tmp_path):
     deps = _deps(tmp_path)
     msg = record_poc(
         deps,
-        finding_title="SSRF",
-        language="python",
-        description="fetch internal metadata",
+        AgentPoc(
+            finding_title="SSRF",
+            language="python",
+            description="fetch internal metadata",
+            verdict="confirmed",
+        ),
         script="print('poc')",
-        verdict="confirmed",
     )
     assert "agent-poc-001" in msg
     assert len(deps.pocs) == 1

@@ -6,19 +6,17 @@ agent tool must call :meth:`AgentDeps.assert_in_scope` before acting.
 """
 
 import time
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from vuln_scanner.agents.audit import ActionLog
+from vuln_scanner.agents.blackboard import EngagementState
 from vuln_scanner.agents.guards import canonical_host, extract_hosts, is_in_container
-from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentPoc, AgentsConfig
+from vuln_scanner.agents.models import AgentConfig, AgentFinding, AgentNote, AgentPoc, AgentsConfig
+from vuln_scanner.agents.oob import OobSession
+from vuln_scanner.agents.tasks import Task, TaskQueue
 from vuln_scanner.scope import ScopeValidator
-
-if TYPE_CHECKING:
-    from vuln_scanner.agents.blackboard import EngagementState
-    from vuln_scanner.agents.oob import OobSession
-    from vuln_scanner.agents.tasks import Task, TaskQueue
 
 
 class ScopeViolation(Exception):
@@ -29,49 +27,60 @@ class ContainerGateError(Exception):
     """Raised when a container-only action is attempted outside the container."""
 
 
-@dataclass
-class AgentDeps:
+def _default_code_languages() -> list[str]:
+    return ["python", "bash"]
+
+
+class AgentDeps(BaseModel):
     """Dependencies + mutable state for a single agent run."""
 
-    agent: AgentConfig
-    agents_cfg: AgentsConfig
-    scope: ScopeValidator
-    audit: ActionLog
-    artifact_dir: Path
-    # Explicit allowlist (original scan targets + in-scope discovered assets).
-    allowlist: set[str] = field(default_factory=set)
-    # Wall-clock deadline (monotonic seconds); None = no deadline.
-    deadline: float | None = None
-    # Whether live exploitation may actually execute (pentester gate):
-    # allow_exploitation AND active/aggressive mode AND container AND not require_approval.
-    live_exploit_allowed: bool = False
-    # Ceiling on tool calls; incremented by the runner/tools.
-    tool_calls: int = 0
-    # Languages the sandbox will accept for run_code (from PoC config).
-    code_languages: list[str] = field(default_factory=lambda: ["python", "bash"])
-    # OOB/interactsh server + token (from nuclei config) and lazy session.
-    oob_server: str = ""
-    oob_token: str = ""
-    oob_session: "OobSession | None" = None
-    # Collectors the agent tools append to.
-    findings: list[AgentFinding] = field(default_factory=list)
-    pocs: list[AgentPoc] = field(default_factory=list)
-    exploit_plan: list[str] = field(default_factory=list)
-    # Agent scratchpad: timestamped working-memory notes ({seq, tag, text, ts}).
-    # Never surfaced into the report by default — pure inter-tool-call memory.
-    notes: list[dict] = field(default_factory=list)
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    # ── Multi-agent collaboration (None on the single-agent path) ─────────────
-    # Shared blackboard and task queue for a multi-agent engagement, plus this
-    # agent's role and the task it is currently handling.  ``can_delegate`` is
-    # the enforced privilege boundary: only a delegating role (the lead) may
-    # post tasks for other agents.  All default to the safe, non-collaborative
+    agent: AgentConfig = Field(description="Configuration of the agent this context serves.")
+    agents_cfg: AgentsConfig = Field(description="Top-level agentic-layer configuration.")
+    scope: ScopeValidator = Field(description="Validator for the assessment scope.")
+    audit: ActionLog = Field(description="Append-only audit log for this agent's actions.")
+    artifact_dir: Path = Field(description="Directory for PoC scripts and other artifacts.")
+    allowlist: set[str] = Field(
+        default_factory=set,
+        description="Original scan targets + in-scope discovered assets allowed without a scope check.",
+    )
+    deadline: float | None = Field(
+        None, description="Monotonic wall-clock deadline in seconds; None means no deadline."
+    )
+    live_exploit_allowed: bool = Field(
+        False, description="Whether live exploitation may actually execute (pentester gate)."
+    )
+    tool_calls: int = Field(0, description="Running count of tool calls, for the ceiling.")
+    code_languages: list[str] = Field(
+        default_factory=_default_code_languages, description="Languages the sandbox accepts for run_code."
+    )
+    oob_server: str = Field("", description="interactsh/OAST server URL, if configured.")
+    oob_token: str = Field("", description="interactsh/OAST auth token, if configured.")
+    oob_session: OobSession | None = Field(None, description="Lazily-started OOB session.")
+    findings: list[AgentFinding] = Field(default_factory=list, description="Bugs the agent has saved.")
+    pocs: list[AgentPoc] = Field(default_factory=list, description="PoC artifacts the agent has recorded.")
+    exploit_plan: list[str] = Field(
+        default_factory=list, description="Dry-run exploit-plan steps recorded but not executed."
+    )
+    notes: list[AgentNote] = Field(
+        default_factory=list,
+        description="Working-memory scratchpad notes; never surfaced into the report by default.",
+    )
+
+    # Multi-agent collaboration — all default to the safe, non-collaborative
     # value so a solo agent behaves exactly as before.
-    blackboard: "EngagementState | None" = None
-    task_queue: "TaskQueue | None" = None
-    role: str = ""
-    current_task: "Task | None" = None
-    can_delegate: bool = False
+    blackboard: EngagementState | None = Field(
+        None, description="Shared engagement blackboard, or None on the single-agent path."
+    )
+    task_queue: TaskQueue | None = Field(
+        None, description="Shared delegation task queue, or None on the single-agent path."
+    )
+    role: str = Field("", description="This agent's specialist role name.")
+    current_task: Task | None = Field(None, description="The task this agent is currently handling.")
+    can_delegate: bool = Field(
+        False, description="Enforced privilege boundary: only a delegating role may post tasks."
+    )
 
     # ── Gates ────────────────────────────────────────────────────────────────
 

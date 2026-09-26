@@ -43,10 +43,10 @@ _MAX_CREDENTIALS = 1000
 class SharedAsset(BaseModel):
     """An asset one agent discovered and published for the others."""
 
-    type: str  # free-form asset class (e.g. "url", "subdomain", "endpoint", "param")
-    value: str
-    source: str = ""  # agent name / tool that surfaced it
-    ts: float = Field(default_factory=time.time)
+    type: str = Field(description="Free-form asset class, e.g. url / subdomain / endpoint / param.")
+    value: str = Field(description="The asset value itself.")
+    source: str = Field("", description="Agent name / tool that surfaced it.")
+    ts: float = Field(default_factory=time.time, description="Unix timestamp when it was published.")
 
 
 class Credential(BaseModel):
@@ -55,12 +55,12 @@ class Credential(BaseModel):
     Engagement-private: never emit these into a report without scrubbing.
     """
 
-    kind: str  # "password" | "hash" | "token" | "key" | "cookie" | ...
-    username: str = ""
-    secret: str = ""
-    host: str = ""
-    source: str = ""  # agent name that captured it
-    ts: float = Field(default_factory=time.time)
+    kind: str = Field(description="Secret kind: password / hash / token / key / cookie / ...")
+    username: str = Field("", description="Associated username, if any.")
+    secret: str = Field("", description="The captured secret value.")
+    host: str = Field("", description="Host the credential belongs to.")
+    source: str = Field("", description="Agent name that captured it.")
+    ts: float = Field(default_factory=time.time, description="Unix timestamp when it was captured.")
 
 
 def _asset_key(asset_type: str, value: str) -> str:
@@ -118,8 +118,8 @@ class EngagementState:
         with self._lock:
             items = list(self._assets.values())
         if want:
-            items = [a for a in items if a.type == want]
-        return sorted(items, key=lambda a: a.ts)
+            items = [asset for asset in items if asset.type == want]
+        return sorted(items, key=lambda asset: asset.ts)
 
     # ── Findings ────────────────────────────────────────────────────────────────
 

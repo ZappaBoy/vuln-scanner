@@ -6,6 +6,7 @@ host-touching function routes through the M2 guards (container gate, scope,
 denylist, audit) before acting.
 """
 
+import json
 import logging
 import shutil
 import time
@@ -469,6 +470,21 @@ def oob_check(deps: AgentDeps) -> dict:
 # ── note / recall (agent scratchpad) ───────────────────────────────────────────
 
 
+def _persist_note(deps: AgentDeps, entry: dict) -> None:
+    """Best-effort append of a note to ``<agent>.notes.jsonl`` beside the action log.
+
+    Gives the scratchpad the same post-hoc auditability as the action log without
+    ever surfacing raw notes into the submission report.  Never raises — a
+    notes-write failure must not crash an agent run.
+    """
+    path = deps.audit.path.parent / f"{deps.audit.path.stem}.notes.jsonl"
+    try:
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+    except OSError as exc:  # pragma: no cover - defensive
+        log.warning("Notes log write failed for %s: %s", deps.agent.name, exc)
+
+
 def note(deps: AgentDeps, text: str, tag: str = "") -> str:
     """Record a working-memory note to the run's scratchpad.
 
@@ -496,6 +512,7 @@ def note(deps: AgentDeps, text: str, tag: str = "") -> str:
     entry = {"seq": seq, "tag": tag, "text": text, "ts": time.time()}
     deps.notes.append(entry)
     deps.audit.record("note", seq=seq, tag=tag, text=text)
+    _persist_note(deps, entry)
     return f"Noted #{seq}" + (f" [{tag}]" if tag else "")
 
 

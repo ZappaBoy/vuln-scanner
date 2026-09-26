@@ -422,3 +422,20 @@ def test_note_text_truncated(tmp_path):
     stored = deps.notes[0]["text"]
     assert "truncated" in stored
     assert stored.startswith("B" * _MAX_NOTE_LEN)
+
+
+def test_note_persists_to_jsonl(tmp_path):
+    import json
+
+    deps = _deps(tmp_path)
+    note(deps, "endpoint /admin", tag="recon")
+    note(deps, "param id")
+    notes_file = Path(tmp_path) / "hunter.notes.jsonl"
+    assert notes_file.exists()
+    lines = notes_file.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 2
+    rec = json.loads(lines[0])
+    assert rec == {"seq": 1, "tag": "recon", "text": "endpoint /admin", "ts": rec["ts"]}
+    # empty and capped notes are not persisted
+    note(deps, "   ")
+    assert len(notes_file.read_text(encoding="utf-8").splitlines()) == 2

@@ -172,3 +172,63 @@ def test_different_host_tasks_run_concurrently(tmp_path, monkeypatch):
     )
     orch.run(Assessment.from_results([]))
     assert active["max"] == 2  # distinct hosts → allowed to overlap
+
+
+# ── Per-run artifact/audit isolation (red-team audit #2) ─────────────────────────
+
+
+def test_same_role_runs_do_not_overwrite_artifacts(tmp_path, monkeypatch):
+    """Two specialists of the same role must not share an artifact dir / PoC id."""
+    monkeypatch.setenv("VS_IN_CONTAINER", "1")
+
+    def _driver(messages, info: AgentInfo) -> ModelResponse:
+        text = _messages_text(messages)
+        if "You are the lead" in text:
+            if _has_tool_return(messages):
+                return ModelResponse(parts=[TextPart("planned")])
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        tool_name="post_task",
+                        args={"role": "web", "objective": "OBJ_ALPHA", "target": "https://a.lab/p"},
+                    ),
+                    ToolCallPart(
+                        tool_name="post_task",
+                        args={"role": "web", "objective": "OBJ_BETA", "target": "https://b.lab/p"},
+                    ),
+                ]
+            )
+        if _has_tool_return(messages):
+            return ModelResponse(parts=[TextPart("done")])
+        marker = "ALPHA" if "OBJ_ALPHA" in text else "BETA"
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    tool_name="record_poc",
+                    args={
+                        "finding_title": "poc " + marker,
+                        "language": "python",
+                        "description": "d",
+                        "script": f"print('POC FROM {marker}')\n",
+                    },
+                )
+            ]
+        )
+
+    orch = _orch(
+        tmp_path,
+        OrchestrationConfig(enabled=True, max_rounds=1, max_concurrent=4),
+        FunctionModel(_driver),
+        allowlist=("a.lab", "b.lab"),
+        include=("a.lab", "b.lab"),
+    )
+    reports = orch.run(Assessment.from_results([]))
+    assert len([r for r in reports if r.agent_name == "web"]) == 2
+
+    # Each run got its own artifact dir keyed by task id; both PoC scripts survive.
+    artifacts = Path(tmp_path) / "agent_artifacts"
+    scripts = sorted(p.read_text().strip() for p in artifacts.rglob("*.py"))
+    assert scripts == ["print('POC FROM ALPHA')", "print('POC FROM BETA')"]
+    # And each run wrote its own audit log (no shared web.jsonl).
+    logs = sorted(p.name for p in (Path(tmp_path) / "agent_logs").glob("web*.jsonl"))
+    assert logs == ["web-task-0001.jsonl", "web-task-0002.jsonl"]

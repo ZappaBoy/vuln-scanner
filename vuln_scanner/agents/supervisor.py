@@ -63,7 +63,7 @@ class Supervisor:
             lead_prompt = self._lead_prompt(assessment, blackboard, round_num)
             log.info("Supervisor: round %d — lead planning.", round_num)
             lead_report = await self._orch.run_role_agent(
-                lead_role, lead_prompt, blackboard=blackboard, task_queue=queue
+                lead_role, lead_prompt, blackboard=blackboard, task_queue=queue, label=f"lead-r{round_num}"
             )
             reports.append(lead_report)
 
@@ -117,7 +117,12 @@ class Supervisor:
             async with self._host_lock(task.target):
                 try:
                     report = await self._orch.run_role_agent(
-                        role, prompt, blackboard=blackboard, task_queue=queue, current_task=task
+                        role,
+                        prompt,
+                        blackboard=blackboard,
+                        task_queue=queue,
+                        current_task=task,
+                        label=f"{task.role}-{task.id}",
                     )
                 except Exception as exc:  # a crashing specialist must not sink the round
                     log.exception("Specialist '%s' crashed on %s: %s", task.role, task.id, exc)
@@ -127,8 +132,12 @@ class Supervisor:
         return report
 
     def _host_lock(self, target: str) -> asyncio.Lock:
-        """Per-host lock so no two agents touch the same host concurrently.
+        """Lock keyed on a task's declared target host, so two specialists with
+        the same target host never run concurrently.
 
+        This serializes on the *declared* ``task.target`` only; an agent whose
+        objective leads it to a host its task never named is not serialized
+        against that host (scope enforcement at the tool layer still applies).
         A task with no host target gets its own throwaway lock (uncontended), so
         hostless work still runs in parallel up to ``max_concurrent``.
         """
@@ -146,9 +155,12 @@ class Supervisor:
     def _seed_blackboard(self, blackboard: "EngagementState", assessment: "Assessment") -> None:
         for host in sorted(self._orch._allowlist):
             blackboard.add_asset("host", host, source="scope")
+        # Defense in depth: only seed in-scope scan targets, so an out-of-scope
+        # target from an imported/foreign finding is never surfaced to a
+        # specialist (the tool layer re-validates scope regardless).
         for _tool, finding in assessment.all_findings:
             target = finding.target or ""
-            if target:
+            if target and self._orch._scope.is_in_scope(target, discovered=True):
                 blackboard.add_asset("target", target, source=f"scan:{finding.tool}")
 
     def _lead_prompt(self, assessment: "Assessment", blackboard: "EngagementState", round_num: int) -> str:

@@ -222,9 +222,15 @@ class AgentOrchestrator:
         role: str = "",
         current_task=None,
         can_delegate: bool = False,
+        label: str = "",
     ) -> AgentDeps:
+        # On-disk namespace for this run's audit log and artifacts.  Orchestrated
+        # runs reuse role names (two "web" specialists, or one role across
+        # rounds), so the label must be unique per run or PoC artifacts and audit
+        # lines from different runs collide and overwrite each other.
+        run_label = label or agent_cfg.name
         log_dir = self._run_dir / "agent_logs"
-        artifact_dir = self._run_dir / "agent_artifacts" / agent_cfg.name
+        artifact_dir = self._run_dir / "agent_artifacts" / run_label
         live = (
             agent_cfg.allow_exploitation
             and self._mode in _ACTIVE_MODES
@@ -235,7 +241,7 @@ class AgentOrchestrator:
             agent=agent_cfg,
             agents_cfg=self._cfg,
             scope=self._scope,
-            audit=ActionLog(log_dir, agent_cfg.name),
+            audit=ActionLog(log_dir, run_label),
             artifact_dir=artifact_dir,
             allowlist=set(self._allowlist),
             deadline=time.monotonic() + agent_cfg.timeout,
@@ -277,8 +283,14 @@ class AgentOrchestrator:
         blackboard: "EngagementState",
         task_queue: "TaskQueue",
         current_task=None,
+        label: str = "",
     ) -> AgentReport:
-        """Run one role's agent against shared state; verify + scrub as usual."""
+        """Run one role's agent against shared state; verify + scrub as usual.
+
+        *label* namespaces this run's audit log and artifacts on disk; it must be
+        unique per run (role names repeat across specialists and rounds).  The
+        returned report still carries ``role.name`` as ``agent_name``.
+        """
         agent_cfg = self._role_agent_config(role)
         deps = self._build_deps(
             agent_cfg,
@@ -287,6 +299,7 @@ class AgentOrchestrator:
             role=role.name,
             current_task=current_task,
             can_delegate=role.can_delegate,
+            label=label,
         )
         return await self._run_agent(agent_cfg, deps, prompt)
 

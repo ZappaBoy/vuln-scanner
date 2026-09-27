@@ -80,10 +80,12 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 FROM blackarchlinux/blackarch:latest AS tool-builder
 
 # Build essentials + interpreters + the .NET SDK (needed only to install DevSkim).
+# jre-openjdk: joern-install.sh runs joern to install its default plugins at
+# build time and aborts without a JVM (the final stage ships jdk-openjdk).
 RUN --mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
     pacman -Syu --noconfirm && \
     pacman -S --noconfirm --needed \
-    base-devel git curl unzip sudo \
+    base-devel git curl unzip sudo jre-openjdk \
     python python-pip ruby nodejs npm dotnet-sdk
 
 # ── Ruby gems (scripts → /usr/local/bin, libs → /usr/lib/ruby/gems) ────────────

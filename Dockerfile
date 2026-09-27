@@ -230,16 +230,22 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     chmod +x /usr/local/bin/dnsreaper && \
     rm -rf /opt/dnsreaper/.git
 
-# ── TLS-Attacker ──────────────────────────────────────────────────────────────
+# ── TLS-Attacker (TLS-Scanner) ──────────────────────────────────────────────────
+# v7 releases ship an "apps" tarball (apps/TLS-Server-Scanner.jar plus an
+# apps/lib/ dependency dir), not a zip. Download it, extract it, and wrap the
+# server scanner — which the tool drives with `-connect host:port` — as the
+# TLS-Scanner command.
 RUN TLS_URL=$(curl -s https://api.github.com/repos/tls-attacker/TLS-Scanner/releases/latest \
-    | grep '"browser_download_url"' | grep '\.zip"' | head -1 | cut -d'"' -f4) && \
+    | grep '"browser_download_url"' | grep 'apps\.tar\.gz"' | head -1 | cut -d'"' -f4) && \
     [ -n "$TLS_URL" ] && \
-    curl -sL "$TLS_URL" -o /tmp/tls-scanner.zip && \
-    unzip -q /tmp/tls-scanner.zip -d /opt/tls-scanner && \
-    JAR=$(find /opt/tls-scanner -name "*.jar" | head -1) && \
-    printf "#!/bin/sh\nexec java -jar %s \"\$@\"\n" "$JAR" > /usr/local/bin/TLS-Scanner && \
+    mkdir -p /opt/tls-scanner && \
+    curl -sL "$TLS_URL" -o /tmp/tls-scanner.tar.gz && \
+    tar -xzf /tmp/tls-scanner.tar.gz -C /opt/tls-scanner && \
+    JAR=$(find /opt/tls-scanner -name 'TLS-Server-Scanner.jar' | head -1) && \
+    [ -n "$JAR" ] && \
+    printf '#!/bin/sh\nexec java -jar "%s" "$@"\n' "$JAR" > /usr/local/bin/TLS-Scanner && \
     chmod +x /usr/local/bin/TLS-Scanner && \
-    rm /tmp/tls-scanner.zip
+    rm /tmp/tls-scanner.tar.gz
 
 # ── Source-only tools (git clone + optional requirements.txt) ─────────────────
 RUN --mount=type=cache,target=/root/.cache/pip \
